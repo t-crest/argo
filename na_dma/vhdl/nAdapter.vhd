@@ -39,6 +39,9 @@ signal slt_index	: std_logic_vector(SLT_WIDTH-1 downto 0);
 signal sc_en		: std_logic;
 signal slt_en		: std_logic;
 
+signal slt_entry	: std_logic_vector(DMA_IND_WIDTH downto 0);
+signal vld_slt		: std_logic;
+
 signal config		: std_logic_vector(3 downto 0);
 signal config_reg	: std_logic_vector(4 downto 0);
 
@@ -163,34 +166,17 @@ begin
 			else '0';
 -- Slot Table
 	slt_table : bram
-		generic map ( DATA=>DMA_IND_WIDTH, ADDR=>SLT_WIDTH )
+		generic map ( DATA=>DMA_IND_WIDTH+1, ADDR=>SLT_WIDTH )
 		port map (clk => na_clk,
 			rd_addr => slt_index,
 			wr_addr => proc_in.MAddr(SLT_WIDTH-1 downto 0),
-			wr_data => proc_in.MData(DMA_IND_WIDTH-1 downto 0),
+			wr_data => proc_in.MData(DMA_IND_WIDTH downto 0),
 			wr_ena => slt_en,
-			rd_data => dma_index
+			rd_data => slt_entry
 		);
 
---process(na_clk, na_reset) begin
---		if na_reset='1' then
---			dma_index <= (others=>'0');
---		elsif rising_edge(na_clk) then
---			dma_index <= slot_table(conv_integer(slt_index)) after PDELAY;
-			--if config <= ST_ACCESS and proc_in.MCmd(1)='1' then
---			if slt_en = '1' then
---				slot_table(conv_integer(proc_in.MAddr(SLT_WIDTH-1 downto 0))) 
---					<= proc_in.MData(DMA_IND_WIDTH-1 downto 0);
---					<= proc_in.MData(OCP_DATA_WIDTH-1 downto OCP_DATA_WIDTH-8);
---				slot_table((to_integer(proc_in.MAddr(SLT_WIDTH-1 downto 0))+1) 
---					<= proc_in.MData(OCP_DATA_WIDTH-9 downto OCP_DATA_WIDTH-16);
---				slot_table((to_integer(proc_in.MAddr(SLT_WIDTH-1 downto 0))+2) 
---					<= proc_in.MData(OCP_DATA_WIDTH-17 downto OCP_DATA_WIDTH-24)
---				slot_table((to_integer(proc_in.MAddr(SLT_WIDTH-1 downto 0))+3) 
---					<= proc_in.MData(OCP_DATA_WIDTH-25 downto OCP_DATA_WIDTH-32);
---			end if;
---		end if;
---	end process;
+	dma_index <= slt_entry(DMA_IND_WIDTH-1 downto 0);
+	vld_slt <= slt_entry(DMA_IND_WIDTH);
 
 -- configuration interface --------------------------------------------------------------------
 -- decode inputs -------------------------------------
@@ -423,7 +409,11 @@ begin
 				end if;
 			end if;	
 
-			dma_entry <= dma_rdata;
+			if vld_slt='1' then
+				dma_entry <= dma_rdata;
+			else
+				dma_entry <= (others=>'0');
+			end if;
 		
 		when others =>
 			dma_waddr <= (others => '0');
@@ -438,7 +428,7 @@ begin
 
 -- DMA control 0 decode dma entry
 	--valid dma entry and transfer not done yet
-	dma_ctrl <= dma_entry(DMA_WIDTH-1) and (not dma_entry(DMA_WIDTH-2));	--reg this?
+	dma_ctrl <= dma_entry(DMA_WIDTH-1) and (not dma_entry(DMA_WIDTH-2));
 	dma_cnt <= unsigned(dma_entry(61 downto 48));
 
 -- update dma entry fields

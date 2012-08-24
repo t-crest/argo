@@ -205,51 +205,59 @@ begin
 
 	--initialize slot table
 	wait for 43 ns; --1
+	-- ST(0) <= v0
 	p_ocp_master.MCmd <="11";
 	p_ocp_master.MAddr <= ST_MASK & x"000000";
-	p_ocp_master.MData <= x"00000000";
+	p_ocp_master.MData <= x"00000004";
 
 	pkt_from_noc.phit <= "100" & x"00000000";
 
 	wait for 10 ns; --2
+	-- ST(1) <= v1
 	p_ocp_master.MAddr <= ST_MASK & x"000001";
-	p_ocp_master.MData <= x"00000001";
+	p_ocp_master.MData <= x"00000005";
 
 	pkt_from_noc.phit <= "010" & x"00010002";
 
 	wait for 10 ns; --3
+	-- ST(2) <= v2
 	p_ocp_master.MAddr <= ST_MASK & x"000002";
-	p_ocp_master.MData <= x"00000002";
+	p_ocp_master.MData <= x"00000006";
 
 	pkt_from_noc.phit <= "001" & x"00030004";
 
 	wait for 10 ns; --1
+	-- ST(3) <= v0
 	p_ocp_master.MAddr <= ST_MASK & x"000003";
-	p_ocp_master.MData <= x"00000000";
+	p_ocp_master.MData <= x"00000004";
 
-	pkt_from_noc.phit <= "100" & x"00000001";
+	pkt_from_noc.phit <= "100" & x"00010000";
 
 	wait for 10 ns; --2
+	-- ST(4) <= v1
 	p_ocp_master.MAddr <= ST_MASK & x"000004";
-	p_ocp_master.MData <= x"00000001";
+	p_ocp_master.MData <= x"00000005";
 
 	pkt_from_noc.phit <= "010" & x"00050006";
 
 	wait for 10 ns; --3
+	-- ST(5) <= v0
 	p_ocp_master.MAddr <= ST_MASK & x"000005";
-	p_ocp_master.MData <= x"00000000";
+	p_ocp_master.MData <= x"00000004";
 
 	pkt_from_noc.phit <= "001" & x"00070008";
 
 	wait for 10 ns; --1
+	-- ST(6) <= v1
 	p_ocp_master.MAddr <= ST_MASK & x"000006";
 	p_ocp_master.MData <= x"00000001";
 
-	pkt_from_noc.phit <= "100" & x"00000002";
+	pkt_from_noc.phit <= "100" & x"00020000";
 
 	wait for 10 ns; --2
+	-- ST(7) <= v0
 	p_ocp_master.MAddr <= ST_MASK & x"000007";
-	p_ocp_master.MData <= x"00000000";
+	p_ocp_master.MData <= x"00000004";
 
 	pkt_from_noc.phit <= "010" & x"0009000a";
 
@@ -265,7 +273,7 @@ begin
 	p_ocp_master.MAddr <= DMA_P_MASK & x"000000";
 	p_ocp_master.MData <= x"12345678";
 
-	pkt_from_noc.phit <= "100" & x"00000003";
+	pkt_from_noc.phit <= "100" & x"00030000";
 	
 	wait for 10 ns; --2
 	p_ocp_master.MAddr <= DMA_P_MASK & x"000001";

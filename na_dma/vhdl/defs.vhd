@@ -24,7 +24,7 @@ package defs is
 	constant MAX_PERIOD	: integer :=128;
 	
 	-- DMA
-	constant DMA_IND_WIDTH	: integer := 4;
+	constant DMA_IND_WIDTH	: integer := 6;
 	constant NODES		: integer := 2**DMA_IND_WIDTH;	-- 2^2 = 4 nodes
 	constant DMA_WIDTH	: integer := 64;
 	--DMA banks sizes

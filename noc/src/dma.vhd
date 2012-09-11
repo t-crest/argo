@@ -26,7 +26,7 @@ end dma_sdp;
 
 architecture rtl of dma_sdp is
 
--- component declarations
+----------------------- component declarations ---------------------------------
 component bram
 generic (
 	DATA    : integer := 32;
@@ -43,20 +43,7 @@ port (
 end component;
 
 
---signal declarations
-
---signal conf		: std_logic;
---signal protect		: std_logic;
---signal rsel		: std_logic;
---signal prsel		: std_logic;
-
---signal sel_raddr	: std_logic_vector(ADDR-1 downto 0);
---signal sel_rdata0	: std_logic_vector(BANK0_W-1 downto 0);
---signal sel_rdata1	: std_logic_vector(BANK1_W-1 downto 0);
---signal sel_rdata2	: std_logic_vector(BANK2_W-1 downto 0);
---signal dout_val		: std_logic_vector(CDATA-1 downto 0);
-
---signal sel_waddr	: std_logic_vector(ADDR-1 downto 0);
+----------------------- signal declarations ------------------------------------
 signal rdata0		: std_logic_vector(BANK0_W-1 downto 0);
 signal rdata1		: std_logic_vector(BANK1_W-1 downto 0);
 signal rdata2		: std_logic_vector(BANK2_W-1 downto 0);
@@ -96,7 +83,7 @@ begin
 
 
 	wdata0 <= wdata(DATA-1 downto DATA-BANK0_W);
-	-- holds control bits and cnt
+	-- holds control bits and word-count to be transfered
 	dma0 : bram
 	generic map (DATA=>BANK0_W, ADDR=>ADDR)
 	port map (clk => clk,
@@ -108,7 +95,7 @@ begin
 	);
 
 	wdata1 <= wdata(DATA-BANK0_W-1 downto DATA-BANK0_W-BANK1_W);
-	-- holds rp, wp
+	-- holds read-pointer, write-pointer
 	dma1 : bram
 	generic map (DATA=>BANK1_W, ADDR=>ADDR)
 	port map (clk => clk,
@@ -120,7 +107,7 @@ begin
 	);
 
 	wdata2 <= wdata(BANK2_W-1 downto 0);
-	-- holds route, accessed only in priviledged mode
+	-- holds route, accessed only in protected mode
 	dma2 : bram
 	generic map (DATA=>BANK2_W, ADDR=>ADDR)
 	port map (clk => clk,

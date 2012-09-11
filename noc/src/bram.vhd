@@ -1,4 +1,4 @@
--- A parameterized, inferable, simple dual-port, -clock block RAM in VHDL.
+-- A parameterized, inferable, simple dual-port, single-clock block RAM.
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;

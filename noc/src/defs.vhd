@@ -32,7 +32,7 @@ package defs is
 	constant BANK1_W	: integer := 32;
 	constant BANK2_W	: integer := 16;
 
-	--type state_type is (hdr, data1, data2);
+	-- simulation delays
 	constant PDELAY		: time := 500 ps;
 	constant NA_HPERIOD	: time := 5 ns;
 	constant P_HPERIOD	: time := 5 ns;
@@ -42,9 +42,9 @@ package defs is
 	--starting address of DMA table (0,1) -unprotected 00100000 xxxx...
 	constant DMA_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00100000";
 	--starting address of DMA route table (2) -protected 00010000 xxx.....
-	constant DMA_P_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00010000";
+	constant DMA_P_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00011000";
 	--starting address of slot-table -protected 00011000 xxx.....
-	constant ST_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00011000";	
+	constant ST_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00010000";	
 
 	--configuration options
 	constant CNULL		: std_logic_vector(3 downto 0) := "0000";
@@ -53,7 +53,7 @@ package defs is
 	constant DMA_H_ACCESS	: std_logic_vector(3 downto 0) := "0100";
 	constant DMA_L_ACCESS	: std_logic_vector(3 downto 0) := "0010";
 
-	--for reconfigurable slot table needed
+	--for reconfigurable slot table
 	type sltt_type is array (PRD_LENGTH-1 downto 0) of std_logic_vector (DMA_IND_WIDTH-1 downto 0);  
 
 	type ocp_master is record
@@ -68,11 +68,6 @@ package defs is
 		SData		: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
 	end record;
 
---	type ocp_interface is record
---		ocp_m		: ocp_master;
---		ocp_s		: ocp_slave;
---	end record;
-
 	type ocp_master_spm is record
 		MCmd		: std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
 	    	MAddr		: std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
@@ -85,11 +80,6 @@ package defs is
 		SData		: std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
 	end record;
 
---	type ocp_spm_interface is record
---		ocp_m		: ocp_master_spm;
---		ocp_s		: ocp_slave_spm;
---	end record;
-
 --------------------------------------------------router------------------------
 	subtype	network_link is std_logic_vector(PHIT_WIDTH-1 downto 0);
 	type	routerPort is array(4 downto 0) of network_link;
@@ -100,6 +90,7 @@ package defs is
 	-- NOC dimension
 	constant N		: integer := 2;
 
+	--arrays
 	type proc_m is array(N-1 downto 0) of ocp_master;
 	type proc_s is array(N-1 downto 0) of ocp_slave;
 	type procMasters is array(N-1 downto 0) of proc_m;
@@ -115,12 +106,6 @@ end package defs;
 
 package body defs is
 
---function vectorize(s: std_logic) return std_logic_vector is
---variable v: std_logic_vector(0 downto 0);
---begin
---	v(0) := s;
---	return v;
---end;
 
 end package body defs;
 

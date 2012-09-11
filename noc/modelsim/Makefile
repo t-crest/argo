@@ -24,8 +24,20 @@ endif
 
 
 all: clean base
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test_noc2x2.vhd
-	$(WINE) vsim -do sim.do test_noc2x2
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_noc2x2.vhd
+	$(WINE) vsim -do sim.do test0_noc2x2
+
+test0: clean base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_noc2x2.vhd
+	$(WINE) vsim -do sim0.do test0_noc2x2
+
+test1: clean base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test1_noc2x2.vhd
+	$(WINE) vsim -do sim1.do test1_noc2x2
+
+test2: clean base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2.vhd
+	$(WINE) vsim -do sim2.do test2_noc2x2
 
 base:
 	$(WINE) vlib work

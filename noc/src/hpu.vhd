@@ -1,7 +1,7 @@
 -- hpu.vhd
 -- A. Bentzon, 2012. BSc thesis, 'Mesochronous TDM-based Network-on-Chip'.
 
--- Header parsing unit for the NoC router. See [thesis, Fig. 3.4].
+-- Header parsing unit for the TDM NoC router. See [thesis, Fig. 3.4].
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -48,7 +48,7 @@ begin
 	begin
 		if reset = '1' then
 			selInt <= (others => '0');
-		elsif clk'event and clk = '1' then
+		elsif rising_edge(clk) then
 			selInt <= selIntNext;
 		end if;
 	end process;

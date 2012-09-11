@@ -1,3 +1,18 @@
+--node (0,0)
+--DMA0:  Channel1: north
+--DMA1:  Channel2: east
+--DMA2:  Channel3: east -> north
+--
+--SCHEDULE
+--DMA0
+--DMA1
+--DMA2
+--DMA0
+--DMA1
+--DMA2
+--DMA0
+--DMA1
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
@@ -5,11 +20,11 @@ use ieee.numeric_std.all;
 use work.defs.all;
 
 
-entity test_noc2x2 is
-end test_noc2x2;
+entity test1_noc2x2 is
+end test1_noc2x2;
 
 
-architecture behav of test_noc2x2 is
+architecture behav of test1_noc2x2 is
 
 -----------------------component declarations------------------------------
 component noc is
@@ -94,70 +109,70 @@ process begin
 --initialize spm
 --initialize slot table
 	wait for 43 ns; --1
-	-- ST(0) <= v0
+	-- ST(0) <= valid DMA0
 	p_masters(0)(0).MCmd <="11";
 	p_masters(0)(0).MAddr <= ST_MASK & x"000000";
 	p_masters(0)(0).MData <= x"00000004";
 
 	spm_masters(0)(0).MCmd <="11";
 	spm_masters(0)(0).MAddr <= (others=>'0');
-	spm_masters(0)(0).MData <= x"0001000200030004";
+	spm_masters(0)(0).MData <= x"0000000011111111";
 
 	wait for 10 ns; --2
-	-- ST(1) <= v1
+	-- ST(1) <= valid DMA1
 	p_masters(0)(0).MAddr <= ST_MASK & x"000001";
 	p_masters(0)(0).MData <= x"00000005";
 
 	spm_masters(0)(0).MAddr <= x"00000001";
-	spm_masters(0)(0).MData <= x"0005000600070008";
+	spm_masters(0)(0).MData <= x"2222222233333333";
 
 	wait for 10 ns; --3
-	-- ST(2) <= v2
+	-- ST(2) <= valid DMA2
 	p_masters(0)(0).MAddr <= ST_MASK & x"000002";
 	p_masters(0)(0).MData <= x"00000006";
 
 	spm_masters(0)(0).MAddr <= x"00000002";
-	spm_masters(0)(0).MData <= x"0009000a000b000c";
+	spm_masters(0)(0).MData <= x"4444444455555555";
 
 	wait for 10 ns; --1
-	-- ST(3) <= v0
+	-- ST(3) <= valid DMA0
 	p_masters(0)(0).MAddr <= ST_MASK & x"000003";
 	p_masters(0)(0).MData <= x"00000004";
 
 	spm_masters(0)(0).MAddr <= x"00000003";
-	spm_masters(0)(0).MData <= x"000d000e000f0010";
+	spm_masters(0)(0).MData <= x"6666666677777777";
 
 	wait for 10 ns; --2
-	-- ST(4) <= v1
+	-- ST(4) <= valid DMA1
 	p_masters(0)(0).MAddr <= ST_MASK & x"000004";
 	p_masters(0)(0).MData <= x"00000005";
 
 	spm_masters(0)(0).MAddr <= x"00000004";
-	spm_masters(0)(0).MData <= x"0011001200130014";
+	spm_masters(0)(0).MData <= x"8888888899999999";
 
 	wait for 10 ns; --3
-	-- ST(5) <= v0
+	-- ST(5) <= valid DMA2
 	p_masters(0)(0).MAddr <= ST_MASK & x"000005";
-	p_masters(0)(0).MData <= x"00000004";
+	p_masters(0)(0).MData <= x"00000006";
 
 	spm_masters(0)(0).MAddr <= x"00000005";
-	spm_masters(0)(0).MData <= x"0015001600170018";
+	spm_masters(0)(0).MData <= x"aaaaaaaabbbbbbbb";
 
 	wait for 10 ns; --1
-	-- ST(6) <= v1
+	-- ST(6) <= valid DMA0
 	p_masters(0)(0).MAddr <= ST_MASK & x"000006";
-	p_masters(0)(0).MData <= x"00000005";
-
-	spm_masters(0)(0).MAddr <= x"00000006";
-	spm_masters(0)(0).MData <= x"0019001a001b001c";
-
-	wait for 10 ns; --2
-	-- ST(7) <= v0
-	p_masters(0)(0).MAddr <= ST_MASK & x"000007";
 	p_masters(0)(0).MData <= x"00000004";
 
+	spm_masters(0)(0).MAddr <= x"00000006";
+	spm_masters(0)(0).MData <= x"ccccccccdddddddd";
+
+	wait for 10 ns; --2
+	-- ST(7) <= valid DMA1
+	p_masters(0)(0).MAddr <= ST_MASK & x"000007";
+	p_masters(0)(0).MData <= x"00000005";
+
 	spm_masters(0)(0).MAddr <= x"00000007";
-	spm_masters(0)(0).MData <= x"001d001e001f0020";
+	spm_masters(0)(0).MData <= x"eeeeeeeeffffffff";
 
 	wait for 10 ns; --3
 	p_masters(0)(0).MCmd <= (others=>'0');
@@ -170,14 +185,17 @@ process begin
 	wait for 10 ns; --1
 	p_masters(0)(0).MCmd <="11";
 	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000000";
-	p_masters(0)(0).MData <= x"0000001c";
+	p_masters(0)(0).MData <= x"00000002";
 	
 	wait for 10 ns; --2
 	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000001";
-	p_masters(0)(0).MData <= x"0000000d";
+	p_masters(0)(0).MData <= x"00000007";
 
+	wait for 10 ns; --3 --1 --2
+	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000002";
+	p_masters(0)(0).MData <= x"0000000b";
 
-	wait for 10 ns; --3
+	wait for 30 ns; --3
 	p_masters(0)(0).MCmd <= (others=>'0');
 	p_masters(0)(0).MAddr <= (others=>'0');
 
@@ -189,7 +207,7 @@ process begin
 
 	wait for 10 ns; --2
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
-	p_masters(0)(0).MData <= x"00008004";
+	p_masters(0)(0).MData <= x"00008006";
 
 	wait for 10 ns; --3
 	p_masters(0)(0).MCmd <= (others=>'0');
@@ -198,11 +216,24 @@ process begin
 	wait for 10 ns; --1
 	p_masters(0)(0).MCmd <= "11";
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000003";
-	p_masters(0)(0).MData <= x"00020008";
+	p_masters(0)(0).MData <= x"00060006";
 
 	wait for 10 ns; --2
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000002";
-	p_masters(0)(0).MData <= x"00008002";
+	p_masters(0)(0).MData <= x"00008006";
+
+	wait for 10 ns; --3
+	p_masters(0)(0).MCmd <= (others=>'0');
+	p_masters(0)(0).MAddr <= (others=>'0');
+
+	wait for 10 ns; --1
+	p_masters(0)(0).MCmd <= "11";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000005";
+	p_masters(0)(0).MData <= x"000c000c";
+
+	wait for 10 ns; --2
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000004";
+	p_masters(0)(0).MData <= x"00008004";
 
 	wait for 10 ns; --3
 	p_masters(0)(0).MCmd <= (others=>'0');
@@ -210,25 +241,29 @@ process begin
 
 -- read transaction from proc in remote spm	
 	wait for 370 ns; --1
+	spm_masters(1)(0).MCmd <= "00";
+	spm_masters(1)(0).MAddr <= x"00000000";
+
+	spm_masters(0)(1).MCmd <= "00";
+	spm_masters(0)(1).MAddr <= x"00000003";
+
 	spm_masters(1)(1).MCmd <= "00";
-	spm_masters(1)(1).MAddr <= x"00000000";
-	spm_masters(0)(1).MAddr <= x"00000007";
+	spm_masters(1)(1).MAddr <= x"00000006";
 
 	wait for 10 ns; --2
-	spm_masters(1)(1).MAddr <= x"00000001";
-	spm_masters(0)(1).MAddr <= x"00000008";
+	spm_masters(1)(0).MAddr <= x"00000001";
+	spm_masters(0)(1).MAddr <= x"00000004";
+	spm_masters(1)(1).MAddr <= x"00000007";
 
 	wait for 10 ns; --3
-	spm_masters(1)(1).MAddr <= x"00000002";
-	spm_masters(0)(1).MAddr <= x"00000009";
+	spm_masters(1)(0).MAddr <= x"00000002";
+	spm_masters(0)(1).MAddr <= x"00000005";
+	spm_masters(1)(1).MAddr <= x"00000008";
 
 	wait for 10 ns; --1
-	spm_masters(1)(1).MAddr <= x"00000003";
-	spm_masters(0)(1).MAddr <= x"0000000a";
-
-	wait for 10 ns; --2
-	spm_masters(1)(1).MAddr <= x"00000004";
-	spm_masters(0)(1).MAddr <= x"00000000";
+	spm_masters(1)(0).MAddr <= x"00000003";
+	spm_masters(0)(1).MAddr <= x"00000006";
+	spm_masters(1)(1).MAddr <= x"00000009";
 
 
 

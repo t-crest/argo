@@ -1,4 +1,4 @@
--- A parameterized, inferable, true dual-port, dual-clock block RAM in VHDL.
+-- A parameterized, inferable, true dual-port, dual-clock block RAM.
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
@@ -36,8 +36,6 @@ architecture rtl of bram_tdp is
     shared variable mem : mem_type := (others => (others => '0'));
 
 begin
-
---mem := (1=>x"00000001", (others => (others=>'0')));
 
 -- Port A
 process(a_clk)

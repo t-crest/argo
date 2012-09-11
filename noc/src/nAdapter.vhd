@@ -34,7 +34,8 @@ end nAdapter;
 
 architecture rtl of nAdapter is
 
--- Signals
+
+------------------------------ signal declarations --------------------------------
 signal slt_index	: std_logic_vector(SLT_WIDTH-1 downto 0);
 signal sc_en		: std_logic;
 signal slt_en		: std_logic;
@@ -79,7 +80,6 @@ signal dOutreg_ld	: std_logic;
 signal dInreg_ld	: std_logic;
 signal adreg_ld		: std_logic;
 
---signal mux_sel		: std_logic_vector(1 downto 0);
 signal mux_out		: std_logic_vector(DATA_WIDTH-1 downto 0);
 signal hdr_phit		: std_logic_vector(DATA_WIDTH-1 downto 0);
 
@@ -90,9 +90,8 @@ signal pkt_ctrl		: std_logic;
 signal dma_ctrl_reg	: std_logic;
 signal ctrlOutreg_ld	: std_logic;
 
---signal slot_table : sltt_type := (others => (others => '0'));
 
--- Components
+-------------------------------- Components declarations --------------------------------
 component counter
 	generic (
 		WIDTH	: integer
@@ -211,20 +210,11 @@ begin
 
 		case state_cnt is
 		when "00" =>
-			--if config_reg=('0' & ST_ACCESS) then
-			--	proc_out.SData <= "000000000000000000000000000000" & dma_index;
-			--	proc_out.SResp <= '1';
 			if config_reg=('0' & DMA_R_ACCESS) or config_reg=('0' & DMA_H_ACCESS) or config_reg=('0' & DMA_L_ACCESS) then
 				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
 				proc_out.SResp <= '1';
-			--else
-			--	proc_out.SData <= (others=>'0');
-			--	proc_out.SResp <= '0';
 			end if;
 		when "01" =>
-			--if config_reg=('0' & ST_ACCESS) then
-			--	proc_out.SData <= "000000000000000000000000000000" & dma_index;
-			--	proc_out.SResp <= '1';
 			if config_reg=('0' & DMA_R_ACCESS) or config_reg=('0' & DMA_H_ACCESS) or config_reg=('0' & DMA_L_ACCESS) then
 				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
 				proc_out.SResp <= '1';
@@ -242,10 +232,10 @@ begin
 	spm_interface : process (state_cnt, pkt_ctrl, dma_entry, address) begin
 		if state_cnt = "00" and pkt_ctrl = '1' then
 			spm_out.MCmd <= "11";
-			spm_out.MAddr <= x"0000" & address;
+			spm_out.MAddr <= x"0000" & '0' & address(SPM_ADDR_WIDTH-1 downto 1);
 		else 			
 			spm_out.MCmd <= "00";
-			spm_out.MAddr <= x"0000" & dma_entry(47 downto 32);
+			spm_out.MAddr <= x"0000" & '0' & dma_entry(47 downto 33);
 		end if;
 	end process;
 	spm_out.MData(SPM_DATA_WIDTH-1 downto DATA_WIDTH) <= dIn_h;
@@ -253,7 +243,7 @@ begin
 
 -- network interface -------------------------------------------------------------------------
 -- input pkt control-------------------------------
--- decode incoming packet --TODO:check if control bits -if pkt is valid
+-- decode incoming packet 
 	pkt_ctrl <= phitIn(PHIT_WIDTH-1) or phitIn(PHIT_WIDTH-2) or phitIn(PHIT_WIDTH-3);
 
 
@@ -346,7 +336,6 @@ begin
 					dma_ren <= config(2 downto 0);
 					--build ocp read data
 					proc_out.SCmdAccept <= '1';
-				--elsif config=ST_MASK
 				else
 					dma_waddr <= (others => '0');
 					dma_wdata <= (others => '0');
@@ -405,7 +394,6 @@ begin
 					dma_raddr <= (others => '0');
 					dma_ren <= (others => '0');
 					proc_out.SCmdAccept <= '0';
-				--elsif config=ST_MASK
 				end if;
 			end if;	
 
@@ -432,9 +420,9 @@ begin
 	dma_cnt <= unsigned(dma_entry(61 downto 48));
 
 -- update dma entry fields
-	dma_cnt_new <= dma_cnt - 1;
-	dma_rp_new <= unsigned(dma_entry(47 downto 32)) + 1;
-	dma_wp_new <= unsigned(dma_entry(31 downto 16)) + 1;
+	dma_cnt_new <= dma_cnt - 2;
+	dma_rp_new <= unsigned(dma_entry(47 downto 32)) + 2;
+	dma_wp_new <= unsigned(dma_entry(31 downto 16)) + 2;
 
 	done <= '1' when dma_cnt_new=0
 		else '0';
@@ -478,13 +466,9 @@ begin
 		--ld dataOut_reg
 		dOutreg_ld <= '1';
 	elsif state_cnt="01" then
-		--read slot_table
-		--read DMA
-		--decode 
 		--ld addr_reg
 		adreg_ld <= '1';
 	elsif state_cnt="10" then
-		--read SPM	==OCP????
 		--load dataIn_reg
 		dInreg_ld <= '1';
 		ctrlOutreg_ld <='1';

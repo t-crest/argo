@@ -198,7 +198,7 @@ begin
 		);
 
 
-	slt_en <= '1' when config=ST_ACCESS and proc_in.MCmd(1)='1'
+	slt_en <= '1' when config=ST_ACCESS and proc_in.MCmd(0)='1'
 			else '0';
 -- Slot Table
 	slt_table : bram
@@ -355,6 +355,11 @@ begin
 					dma_wdata <= x"0000" & proc_in.MData & x"0000";
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
+				elsif config=ST_ACCESS then
+					dma_waddr <= (others => '0');
+					dma_wdata <= (others => '0');
+					dma_wen <= (others => '0');
+					proc_out.SCmdAccept <= '1';
 				else
 					dma_waddr <= (others => '0');
 					dma_wdata <= (others => '0');
@@ -398,6 +403,11 @@ begin
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
 					dma_wdata <= x"0000" & proc_in.MData & x"0000";
 					dma_wen <= config(2 downto 0);
+					proc_out.SCmdAccept <= '1';
+				elsif config=ST_ACCESS then
+					dma_waddr <= (others => '0');
+					dma_wdata <= (others => '0');
+					dma_wen <= (others => '0');
 					proc_out.SCmdAccept <= '1';
 				else
 					dma_waddr <= (others => '0');

@@ -60,7 +60,7 @@ architecture rtl of counter is
 
 begin
 	cnt <= std_logic_vector(reg);
-	val <= reg+1;
+	val <= reg+1 when to_integer(reg) < MAX_PERIOD-1 else (others => '0');
 
 	process(clk, reset)
 	begin

@@ -247,12 +247,12 @@ begin
 
 		case state_cnt is
 		when "00" =>
-			if config_reg=('0' & DMA_R_ACCESS) or config_reg=('0' & DMA_H_ACCESS) or config_reg=('0' & DMA_L_ACCESS) then
+			if config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS) then
 				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
 				proc_out.SResp <= '1';
 			end if;
 		when "01" =>
-			if config_reg=('0' & DMA_R_ACCESS) or config_reg=('0' & DMA_H_ACCESS) or config_reg=('0' & DMA_L_ACCESS) then
+			if config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS) then
 				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
 				proc_out.SResp <= '1';
 			end if;
@@ -269,7 +269,7 @@ begin
 	spm_interface : process (state_cnt, pkt_ctrl, dma_entry, address) begin
 		if state_cnt = "00" and pkt_ctrl = '1' then
 			spm_out.MCmd <= "11";
-			spm_out.MAddr <= x"0000" & '0' & address(SPM_ADDR_WIDTH-1 downto 1);
+			spm_out.MAddr <= std_logic_vector(to_unsigned(0,OCP_ADDR_WIDTH-(SPM_ADDR_WIDTH-1))) & address(SPM_ADDR_WIDTH-1 downto 1);
 		else 			
 			spm_out.MCmd <= "00";
 			spm_out.MAddr <= x"0000" & '0' & dma_entry(47 downto 33);
@@ -468,8 +468,8 @@ begin
 
 -- update dma entry fields
 	dma_cnt_new <= dma_cnt - 2;
-	dma_rp_new <= unsigned(dma_entry(47 downto 32)) + 2;
-	dma_wp_new <= unsigned(dma_entry(31 downto 16)) + 2;
+	dma_rp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+32 downto 32)) + 2;
+	dma_wp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+16 downto 16)) + 2;
 
 	done <= '1' when dma_cnt_new=0
 		else '0';
@@ -479,8 +479,8 @@ begin
 -- updated dma entry
 	dma_entry_updated <= (dma_ctrl_new & 
 				std_logic_vector(dma_cnt_new) & 
-				std_logic_vector(dma_rp_new) & 
-				std_logic_vector(dma_wp_new) & 
+				"0000000" & std_logic_vector(dma_rp_new) & 
+				"0000000" & std_logic_vector(dma_wp_new) & 
 				dma_entry(15 downto 0)) when dma_ctrl='1' else
 				dma_entry;
 	
@@ -549,7 +549,7 @@ begin
 				dma_ctrl_reg <= dma_ctrl after PDELAY;
 			end if;
 			if adreg_ld='1' then
-				address <= phitIn(31 downto 16) after PDELAY;
+				address <= phitIn(SPM_ADDR_WIDTH-1+16 downto 16) after PDELAY;
 			end if;
 			if dInreg_ld='1' then
 				dIn_h <= phitIn(DATA_WIDTH-1 downto 0) after PDELAY;

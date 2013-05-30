@@ -28,23 +28,12 @@
 -- policies, either expressed or implied, of the copyright holder.
 -- 
 
-
 --------------------------------------------------------------------------------
--- Testbench for a 2x2 TDM NoC, with 8 slot period and 4 DMAs,
+-- Testbench for a 2x2 TDM NoC gate-netlist, with slot period of 8 and 4 DMAs,
 -- with the following configuration:
 -- node (0,0)
 -- DMA0:  Channel1: south -> east
 -- DMA1:  Channel2: west
---
--- SCHEDULE
--- 0:DMA0
--- 1:DMA1
--- 2:invalid
--- 3:DMA0
--- 4:DMA1
--- 5:DMA0
--- 6:DMA1
--- 7:DMA0
 --
 -- Author: Evangelia Kasapaki
 --------------------------------------------------------------------------------

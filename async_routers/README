@@ -1,0 +1,3 @@
+A range of asynchronous routers designed for the T-CREST TDM NOC.
+
+Each directory contains the vhdl source code, implementation scripts and simulation files for each design. Scripts for synthesis and for soc layout are given, as well as some for text manipulation scripts. The scripts for layout are not standalone as some manual optization and manipulation steps are needed in the process. The output netlist are also included and input vectors for simulation.

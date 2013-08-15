@@ -1,0 +1,1 @@
+sroute -connect { corePin floatingStripe } -layerChangeRange { 1 8 } -blockPinTarget { nearestTarget } -checkAlignedSecondaryPin 1 -allowJogging 1 -crossoverViaBottomLayer 1 -allowLayerChange 1 -targetViaTopLayer 8 -crossoverViaTopLayer 8 -targetViaBottomLayer 1 -nets { GND VDD }

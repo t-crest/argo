@@ -1,0 +1,3 @@
+2-phase bundled-data router design with clock gating.
+
+Includes source code, synthesis scripts, soc layout scripts, input vectors for simulation, output netlists and file manipulation scripts.

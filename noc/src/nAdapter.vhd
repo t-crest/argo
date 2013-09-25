@@ -479,8 +479,8 @@ begin
 -- updated dma entry
 	dma_entry_updated <= (dma_ctrl_new & 
 				std_logic_vector(dma_cnt_new) & 
-				"0000000" & std_logic_vector(dma_rp_new) & 
-				"0000000" & std_logic_vector(dma_wp_new) & 
+				std_logic_vector(dma_rp_new) & 
+				std_logic_vector(dma_wp_new) & 
 				dma_entry(15 downto 0)) when dma_ctrl='1' else
 				dma_entry;
 	

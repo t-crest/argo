@@ -83,6 +83,10 @@ signal vld_slt		: std_logic;
 signal config		: std_logic_vector(3 downto 0);
 signal config_reg	: std_logic_vector(4 downto 0);
 
+signal ocp_cmd_valid	: std_logic;
+signal ocp_cmd_read	: std_logic;
+signal ocp_cmd_write	: std_logic;
+
 signal dma_index	: std_logic_vector(DMA_IND_WIDTH-1 downto 0);
 signal dma_entry	: std_logic_vector(DMA_WIDTH-1 downto 0);
 signal dma_entry_updated: std_logic_vector(DMA_WIDTH-1 downto 0);
@@ -198,7 +202,7 @@ begin
 		);
 
 
-	slt_en <= '1' when config=ST_ACCESS and proc_in.MCmd(0)='1'
+	slt_en <= '1' when config=ST_ACCESS and ocp_cmd_write='1'--proc_in.MCmd(0)='1'
 			else '0';
 -- Slot Table
 	slt_table : bram
@@ -238,6 +242,10 @@ begin
 		end if;
 	end process;
 
+-- ocp command decoding
+	ocp_cmd_valid <= '1' when proc_in.MCmd="000" else '0';
+	ocp_cmd_read <= '1' when proc_in.MCmd="010" else '0';
+	ocp_cmd_write <= '1' when proc_in.MCmd="001" else '0';
 
 -- build outputs -------------------------------------
 	-- ocp data response
@@ -265,13 +273,13 @@ begin
 
 
 -- SPM interface ------------------------------------------------------------------------------
---- construct SPM interface signals -->ocp???
+--- construct SPM interface signals --ocp
 	spm_interface : process (state_cnt, pkt_ctrl, dma_entry, address) begin
 		if state_cnt = "00" and pkt_ctrl = '1' then
-			spm_out.MCmd <= "11";
+			spm_out.MCmd <= "001"; --write
 			spm_out.MAddr <= std_logic_vector(to_unsigned(0,OCP_ADDR_WIDTH-(SPM_ADDR_WIDTH-1))) & address(SPM_ADDR_WIDTH-1 downto 1);
 		else 			
-			spm_out.MCmd <= "00";
+			spm_out.MCmd <= "010"; --read
 			spm_out.MAddr <= x"0000" & '0' & dma_entry(47 downto 33);
 		end if;
 	end process;
@@ -339,7 +347,8 @@ begin
 		case state_cnt is
 		when "00" =>
 			-- configuration write
-			if proc_in.MCmd(0)='1' then
+			--if proc_in.MCmd(0)='1' then
+			if ocp_cmd_write='1' then
 				if config=DMA_R_ACCESS then
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
 					dma_wdata <= x"00000000" & proc_in.MData;
@@ -364,10 +373,12 @@ begin
 					dma_waddr <= (others => '0');
 					dma_wdata <= (others => '0');
 					dma_wen <= (others => '0');
+					dma_raddr <= (others => '0');
+					dma_ren <= (others => '0');
 					proc_out.SCmdAccept <= '0';
 				end if;
 			--configuration read or no read
-			else
+			elsif ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
 					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
 					dma_ren <= config(2 downto 0);
@@ -382,13 +393,22 @@ begin
 					dma_waddr <= (others => '0');
 					dma_wdata <= (others => '0');
 					dma_wen <= (others => '0');
-					--build ocp read data
+					dma_raddr <= (others => '0');
+					dma_ren <= (others => '0');
 					proc_out.SCmdAccept <= '0';
-				end if;					
+				end if;
+			else
+				dma_waddr <= (others => '0');
+				dma_wdata <= (others => '0');
+				dma_wen <= (others => '0');
+				dma_raddr <= (others => '0');
+				dma_ren <= (others => '0');
+				proc_out.SCmdAccept <= '0';
 			end if;
 			
 		when "01" =>
-			if proc_in.MCmd(0)='1' then
+			--if proc_in.MCmd(0)='1' then
+			if ocp_cmd_write='1' then
 				if config=DMA_R_ACCESS then
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
 					dma_wdata <= x"00000000" & proc_in.MData;
@@ -428,7 +448,8 @@ begin
 				dma_wen <= "000";
 			end if;
 
-			if proc_in.MCmd(0)='0' then
+			--if proc_in.MCmd(0)='0' then
+			if ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
 					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
 					dma_ren <= config(2 downto 0);
@@ -442,6 +463,11 @@ begin
 					dma_ren <= (others => '0');
 					proc_out.SCmdAccept <= '0';
 				end if;
+			else
+				dma_raddr <= (others => '0');
+				dma_ren <= (others => '0');
+				proc_out.SCmdAccept <= '0';
+
 			end if;	
 
 			if vld_slt='1' then
@@ -559,7 +585,8 @@ begin
 			end if;
 			phitIn <= pkt_in after PDELAY;
 			pkt_out <= phitOut after PDELAY;
-			config_reg <= proc_in.MCmd(1) & config;
+			--config_reg <= proc_in.MCmd(1) & config;
+			config_reg <= ocp_cmd_valid & config;
 
 		end if;
 	end process;

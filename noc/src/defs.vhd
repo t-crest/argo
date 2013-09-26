@@ -47,7 +47,7 @@ package defs is
 	constant BLK_CNT	: integer := 14;
 
 	-- OCP
-	constant OCP_CMD_WIDTH	: integer := 2;		-- 8 possible cmds --> 2
+	constant OCP_CMD_WIDTH	: integer := 3;		-- 8 possible cmds --> 2
 	constant OCP_ADDR_WIDTH	: integer := 32;	--32
 	constant OCP_DATA_WIDTH	: integer := DATA_WIDTH;
 

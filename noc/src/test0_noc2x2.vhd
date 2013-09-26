@@ -147,11 +147,11 @@ process begin
 --initialize slot table
 	wait for 43 ns; --1
 	-- ST(0) <= valid DMA0
-	p_masters(0)(0).MCmd <="11";
+	p_masters(0)(0).MCmd <="001";
 	p_masters(0)(0).MAddr <= ST_MASK & x"000000";
 	p_masters(0)(0).MData <= x"00000004";
 
-	spm_masters(0)(0).MCmd <="11";
+	spm_masters(0)(0).MCmd <="001";
 	spm_masters(0)(0).MAddr <= (others=>'0');
 	spm_masters(0)(0).MData <= x"0001000200030004";
 
@@ -215,13 +215,13 @@ process begin
 	p_masters(0)(0).MCmd <= (others=>'0');
 	p_masters(0)(0).MAddr <= ST_MASK & x"000000";
 
-	spm_masters(0)(0).MCmd <= "00";
+	spm_masters(0)(0).MCmd <= "000";
 	spm_masters(0)(0).MAddr <= (others=>'0');
 
 --initialize routes
 	wait for 10 ns; --1
 	-- DMA0 s->e
-	p_masters(0)(0).MCmd <="11";
+	p_masters(0)(0).MCmd <="001";
 	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000000";
 	p_masters(0)(0).MData <= x"0000001c";
 	
@@ -238,7 +238,7 @@ process begin
 --initialize dmas
 	wait for 10 ns; --1
 	--DMA0 rp:0, wp:0
-	p_masters(0)(0).MCmd <= "11";
+	p_masters(0)(0).MCmd <= "001";
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000001";
 	p_masters(0)(0).MData <= x"00000000";
 
@@ -254,7 +254,7 @@ process begin
 
 	wait for 10 ns; --1
 	--DMA1 rp: 0004, wp:16
-	p_masters(0)(0).MCmd <= "11";
+	p_masters(0)(0).MCmd <= "001";
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000003";
 	p_masters(0)(0).MData <= x"00040010";
 
@@ -271,7 +271,8 @@ process begin
 
 -- read transaction from proc in remote spm	
 	wait for 10 ns; --1
-	spm_masters(1)(1).MCmd <= "00";
+	spm_masters(1)(1).MCmd <= "010";
+	spm_masters(0)(1).MCmd <= "010";
 	spm_masters(1)(1).MAddr <= x"00000000";
 	spm_masters(0)(1).MAddr <= x"00000007";
 
@@ -291,6 +292,8 @@ process begin
 	spm_masters(1)(1).MAddr <= x"00000004";
 	spm_masters(0)(1).MAddr <= x"00000000";
 
+	spm_masters(1)(1).MCmd <= (others=>'0');
+	spm_masters(0)(1).MCmd <= (others=>'0');
 
 
 

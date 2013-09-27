@@ -51,8 +51,8 @@ port (
 	proc_in		: in ocp_master;
 	proc_out	: out ocp_slave;
 
-	spm_in		: in ocp_master_spm;
-	spm_out		: out ocp_slave_spm;
+	spm_in		: in spm_master;
+	spm_out		: out spm_slave;
 
 	inNorth		: in network_link;
 	inSouth		: in network_link;
@@ -111,8 +111,8 @@ port (
 	proc_out	: out ocp_slave;
 	     
 -- SPM Data Port - OCP?
-	spm_in		: in ocp_slave_spm;
-	spm_out		: out ocp_master_spm;
+	spm_in		: in spm_slave;
+	spm_out		: out spm_master;
 
 -- Network Ports
 -- Incoming Port
@@ -139,8 +139,8 @@ end component;
 signal ip_to_net	: network_link;
 signal net_to_ip	: network_link;
 
-signal spm_to_net	: ocp_slave_spm;
-signal net_to_spm	: ocp_master_spm;
+signal spm_to_net	: spm_slave;
+signal net_to_spm	: spm_master;
 
 begin
 

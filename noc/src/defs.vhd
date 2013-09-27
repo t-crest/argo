@@ -42,6 +42,7 @@ package defs is
 
 	-- SPM
 	constant DATA_WIDTH	: integer := 32;
+	constant SPM_CMD_WIDTH	: integer := 1;		-- 8 possible cmds --> 2
 	constant SPM_DATA_WIDTH	: integer := 64;
 	constant SPM_ADDR_WIDTH	: integer := 16;	-- 14 --> 64 kB address space -16->256kb
 	constant BLK_CNT	: integer := 14;
@@ -97,6 +98,7 @@ package defs is
 		MCmd		: std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
 	    	MAddr		: std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
 		MData		: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+		MRespAccept	: std_logic;
 	end record;
 
 	type ocp_slave is record
@@ -105,15 +107,15 @@ package defs is
 		SData		: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
 	end record;
 
-	type ocp_master_spm is record
-		MCmd		: std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
-	    	MAddr		: std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
+	type spm_master is record
+		MCmd		: std_logic_vector(SPM_CMD_WIDTH-1 downto 0);
+	    	MAddr		: std_logic_vector(SPM_ADDR_WIDTH-1 downto 0);
 		MData		: std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
 	end record;
 
-	type ocp_slave_spm is record
-		SCmdAccept	: std_logic;
-		SResp		: std_logic;
+	type spm_slave is record
+		--SCmdAccept	: std_logic;
+		--SResp		: std_logic;
 		SData		: std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
 	end record;
 
@@ -133,8 +135,8 @@ package defs is
 	type procMasters is array(N-1 downto 0) of proc_m;
 	type procSlaves is array(N-1 downto 0) of proc_s;
 
-	type spm_m  is array(N-1 downto 0) of ocp_master_spm;
-	type spm_s  is array(N-1 downto 0) of ocp_slave_spm;
+	type spm_m  is array(N-1 downto 0) of spm_master;
+	type spm_s  is array(N-1 downto 0) of spm_slave;
 	type spmMasters is array(N-1 downto 0) of spm_m;
 	type spmSlaves is array(N-1 downto 0) of spm_s;
 

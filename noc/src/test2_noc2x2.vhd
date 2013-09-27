@@ -161,112 +161,112 @@ process begin
 	p_masters(1)(1).MAddr <= ST_MASK & x"000000";
 	p_masters(1)(1).MData <= x"00000004";
 
-	spm_masters(0)(0).MCmd <="001";
-	spm_masters(0)(0).MAddr <= x"00000000";
+	spm_masters(0)(0).MCmd <="1";
+	spm_masters(0)(0).MAddr <= x"0000";
 	spm_masters(0)(0).MData <= x"0000000011111111";
-	spm_masters(0)(1).MCmd <="001";
-	spm_masters(0)(1).MAddr <= x"00000002";
+	spm_masters(0)(1).MCmd <="1";
+	spm_masters(0)(1).MAddr <= x"0002";
 	spm_masters(0)(1).MData <= x"4444444455555555";
-	spm_masters(1)(0).MCmd <="001";
-	spm_masters(1)(0).MAddr <= x"00000004";
+	spm_masters(1)(0).MCmd <="1";
+	spm_masters(1)(0).MAddr <= x"0004";
 	spm_masters(1)(0).MData <= x"8888888899999999";
-	spm_masters(1)(1).MCmd <="001";
-	spm_masters(1)(1).MAddr <= x"00000006";
+	spm_masters(1)(1).MCmd <="1";
+	spm_masters(1)(1).MAddr <= x"0006";
 	spm_masters(1)(1).MData <= x"ccccccccdddddddd";
 
 	wait for 10 ns; --2
 	-- ST(1) <= valid DMA1
-	p_masters(0)(0).MAddr <= ST_MASK & x"000001";
+	p_masters(0)(0).MAddr <= ST_MASK & x"000004";
 	p_masters(0)(0).MData <= x"00000005";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000001";
+	p_masters(0)(1).MAddr <= ST_MASK & x"000004";
 	p_masters(0)(1).MData <= x"00000005";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000001";
+	p_masters(1)(0).MAddr <= ST_MASK & x"000004";
 	p_masters(1)(0).MData <= x"00000005";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000001";
+	p_masters(1)(1).MAddr <= ST_MASK & x"000004";
 	p_masters(1)(1).MData <= x"00000005";
 
-	spm_masters(0)(0).MAddr <= x"00000001";
+	spm_masters(0)(0).MAddr <= x"0001";
 	spm_masters(0)(0).MData <= x"2222222233333333";
-	spm_masters(0)(1).MAddr <= x"00000003";
+	spm_masters(0)(1).MAddr <= x"0003";
 	spm_masters(0)(1).MData <= x"6666666677777777";
-	spm_masters(1)(0).MAddr <= x"00000005";
+	spm_masters(1)(0).MAddr <= x"0005";
 	spm_masters(1)(0).MData <= x"aaaaaaaabbbbbbbb";
-	spm_masters(1)(1).MAddr <= x"00000007";
+	spm_masters(1)(1).MAddr <= x"0007";
 	spm_masters(1)(1).MData <= x"eeeeeeeeffffffff";
 
 	wait for 10 ns; --3
 	-- ST(2) <= valid DMA2
-	p_masters(0)(0).MAddr <= ST_MASK & x"000002";
+	p_masters(0)(0).MAddr <= ST_MASK & x"000008";
 	p_masters(0)(0).MData <= x"00000006";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000002";
+	p_masters(0)(1).MAddr <= ST_MASK & x"000008";
 	p_masters(0)(1).MData <= x"00000006";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000002";
+	p_masters(1)(0).MAddr <= ST_MASK & x"000008";
 	p_masters(1)(0).MData <= x"00000006";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000002";
+	p_masters(1)(1).MAddr <= ST_MASK & x"000008";
 	p_masters(1)(1).MData <= x"00000006";
 
-	spm_masters(0)(0).MCmd <="000";
+	spm_masters(0)(0).MCmd <="0";
 	spm_masters(0)(0).MAddr <= (others=>'0');
-	spm_masters(0)(1).MCmd <="000";
+	spm_masters(0)(1).MCmd <="0";
 	spm_masters(0)(1).MAddr <= (others=>'0');
-	spm_masters(1)(0).MCmd <="000";
+	spm_masters(1)(0).MCmd <="0";
 	spm_masters(1)(0).MAddr <= (others=>'0');
-	spm_masters(1)(1).MCmd <="000";
+	spm_masters(1)(1).MCmd <="0";
 	spm_masters(1)(1).MAddr <= (others=>'0');
 
 	wait for 10 ns; --1
 	-- ST(3) <= invalid
-	p_masters(0)(0).MAddr <= ST_MASK & x"000003";
+	p_masters(0)(0).MAddr <= ST_MASK & x"00000c";
 	p_masters(0)(0).MData <= x"00000000";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000003";
+	p_masters(0)(1).MAddr <= ST_MASK & x"00000c";
 	p_masters(0)(1).MData <= x"00000000";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000003";
+	p_masters(1)(0).MAddr <= ST_MASK & x"00000c";
 	p_masters(1)(0).MData <= x"00000000";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000003";
+	p_masters(1)(1).MAddr <= ST_MASK & x"00000c";
 	p_masters(1)(1).MData <= x"00000000";
 
 	wait for 10 ns; --2
 	-- ST(4) <= valid DMA0
-	p_masters(0)(0).MAddr <= ST_MASK & x"000004";
+	p_masters(0)(0).MAddr <= ST_MASK & x"000010";
 	p_masters(0)(0).MData <= x"00000004";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000004";
+	p_masters(0)(1).MAddr <= ST_MASK & x"000010";
 	p_masters(0)(1).MData <= x"00000004";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000004";
+	p_masters(1)(0).MAddr <= ST_MASK & x"000010";
 	p_masters(1)(0).MData <= x"00000004";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000004";
+	p_masters(1)(1).MAddr <= ST_MASK & x"000010";
 	p_masters(1)(1).MData <= x"00000004";
 
 	wait for 10 ns; --3
 	-- ST(5) <= valid DMA1
-	p_masters(0)(0).MAddr <= ST_MASK & x"000005";
+	p_masters(0)(0).MAddr <= ST_MASK & x"000014";
 	p_masters(0)(0).MData <= x"00000005";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000005";
+	p_masters(0)(1).MAddr <= ST_MASK & x"000014";
 	p_masters(0)(1).MData <= x"00000005";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000005";
+	p_masters(1)(0).MAddr <= ST_MASK & x"000014";
 	p_masters(1)(0).MData <= x"00000005";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000005";
+	p_masters(1)(1).MAddr <= ST_MASK & x"000014";
 	p_masters(1)(1).MData <= x"00000005";
 
 	wait for 10 ns; --1
 	-- ST(6) <= valid DMA2
-	p_masters(0)(0).MAddr <= ST_MASK & x"000006";
+	p_masters(0)(0).MAddr <= ST_MASK & x"000018";
 	p_masters(0)(0).MData <= x"00000006";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000006";
+	p_masters(0)(1).MAddr <= ST_MASK & x"000018";
 	p_masters(0)(1).MData <= x"00000006";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000006";
+	p_masters(1)(0).MAddr <= ST_MASK & x"000018";
 	p_masters(1)(0).MData <= x"00000006";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000006";
+	p_masters(1)(1).MAddr <= ST_MASK & x"000018";
 	p_masters(1)(1).MData <= x"00000006";
 
 	wait for 10 ns; --2
 	-- ST(7) <= invalid
-	p_masters(0)(0).MAddr <= ST_MASK & x"000007";
+	p_masters(0)(0).MAddr <= ST_MASK & x"00001c";
 	p_masters(0)(0).MData <= x"00000000";
-	p_masters(0)(1).MAddr <= ST_MASK & x"000007";
+	p_masters(0)(1).MAddr <= ST_MASK & x"00001c";
 	p_masters(0)(1).MData <= x"00000000";
-	p_masters(1)(0).MAddr <= ST_MASK & x"000007";
+	p_masters(1)(0).MAddr <= ST_MASK & x"00001c";
 	p_masters(1)(0).MData <= x"00000000";
-	p_masters(1)(1).MAddr <= ST_MASK & x"000007";
+	p_masters(1)(1).MAddr <= ST_MASK & x"00001c";
 	p_masters(1)(1).MData <= x"00000000";
 
 	wait for 10 ns; --3
@@ -295,23 +295,23 @@ process begin
 	p_masters(1)(1).MData <= x"00000002";
 	
 	wait for 10 ns; --2
-	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000001";
+	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000004";
 	p_masters(0)(0).MData <= x"00000007";
-	p_masters(0)(1).MAddr <= DMA_P_MASK & x"000001";
+	p_masters(0)(1).MAddr <= DMA_P_MASK & x"000004";
 	p_masters(0)(1).MData <= x"00000007";
-	p_masters(1)(0).MAddr <= DMA_P_MASK & x"000001";
+	p_masters(1)(0).MAddr <= DMA_P_MASK & x"000004";
 	p_masters(1)(0).MData <= x"00000007";
-	p_masters(1)(1).MAddr <= DMA_P_MASK & x"000001";
+	p_masters(1)(1).MAddr <= DMA_P_MASK & x"000004";
 	p_masters(1)(1).MData <= x"00000007";
 
 	wait for 10 ns; --3 --1 --2
-	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000002";
+	p_masters(0)(0).MAddr <= DMA_P_MASK & x"000008";
 	p_masters(0)(0).MData <= x"0000000b";
-	p_masters(0)(1).MAddr <= DMA_P_MASK & x"000002";
+	p_masters(0)(1).MAddr <= DMA_P_MASK & x"000008";
 	p_masters(0)(1).MData <= x"0000000b";
-	p_masters(1)(0).MAddr <= DMA_P_MASK & x"000002";
+	p_masters(1)(0).MAddr <= DMA_P_MASK & x"000008";
 	p_masters(1)(0).MData <= x"0000000b";
-	p_masters(1)(1).MAddr <= DMA_P_MASK & x"000002";
+	p_masters(1)(1).MAddr <= DMA_P_MASK & x"000008";
 	p_masters(1)(1).MData <= x"0000000b";
 
 	wait for 30 ns; --3
@@ -327,27 +327,27 @@ process begin
 --initialize dmas
 	wait for 10 ns; --1
 	p_masters(0)(0).MCmd <= "001";
-	p_masters(0)(0).MAddr <= DMA_MASK & x"000001";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000004";
 	p_masters(0)(0).MData <= x"00000000";
 	p_masters(0)(1).MCmd <= "001";
-	p_masters(0)(1).MAddr <= DMA_MASK & x"000001";
-	p_masters(0)(1).MData <= x"00040004";
+	p_masters(0)(1).MAddr <= DMA_MASK & x"000004";
+	p_masters(0)(1).MData <= x"00020002";
 	p_masters(1)(0).MCmd <= "001";
-	p_masters(1)(0).MAddr <= DMA_MASK & x"000001";
-	p_masters(1)(0).MData <= x"00080008";
+	p_masters(1)(0).MAddr <= DMA_MASK & x"000004";
+	p_masters(1)(0).MData <= x"00040004";
 	p_masters(1)(1).MCmd <= "001";
-	p_masters(1)(1).MAddr <= DMA_MASK & x"000001";
-	p_masters(1)(1).MData <= x"000c000c";
+	p_masters(1)(1).MAddr <= DMA_MASK & x"000004";
+	p_masters(1)(1).MData <= x"00060006";
 
 	wait for 10 ns; --2
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
-	p_masters(0)(0).MData <= x"00008004";
+	p_masters(0)(0).MData <= x"00008002";
 	p_masters(0)(1).MAddr <= DMA_MASK & x"000000";
-	p_masters(0)(1).MData <= x"00008004";
+	p_masters(0)(1).MData <= x"00008002";
 	p_masters(1)(0).MAddr <= DMA_MASK & x"000000";
-	p_masters(1)(0).MData <= x"00008004";
+	p_masters(1)(0).MData <= x"00008002";
 	p_masters(1)(1).MAddr <= DMA_MASK & x"000000";
-	p_masters(1)(1).MData <= x"00008004";
+	p_masters(1)(1).MData <= x"00008002";
 
 	wait for 10 ns; --3
 	p_masters(0)(0).MCmd <= "010";--(others=>'0');
@@ -357,27 +357,27 @@ process begin
 
 	wait for 10 ns; --1
 	p_masters(0)(0).MCmd <= "001";
-	p_masters(0)(0).MAddr <= DMA_MASK & x"000003";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"00000c";
 	p_masters(0)(0).MData <= x"00000000";
 	p_masters(0)(1).MCmd <= "001";
-	p_masters(0)(1).MAddr <= DMA_MASK & x"000003";
-	p_masters(0)(1).MData <= x"00040004";
+	p_masters(0)(1).MAddr <= DMA_MASK & x"00000c";
+	p_masters(0)(1).MData <= x"00020002";
 	p_masters(1)(0).MCmd <= "001";
-	p_masters(1)(0).MAddr <= DMA_MASK & x"000003";
-	p_masters(1)(0).MData <= x"00080008";
+	p_masters(1)(0).MAddr <= DMA_MASK & x"00000c";
+	p_masters(1)(0).MData <= x"00040004";
 	p_masters(1)(1).MCmd <= "001";
-	p_masters(1)(1).MAddr <= DMA_MASK & x"000003";
-	p_masters(1)(1).MData <= x"000c000c";
+	p_masters(1)(1).MAddr <= DMA_MASK & x"00000c";
+	p_masters(1)(1).MData <= x"00060006";
 
 	wait for 10 ns; --2
-	p_masters(0)(0).MAddr <= DMA_MASK & x"000002";
-	p_masters(0)(0).MData <= x"00008004";
-	p_masters(0)(1).MAddr <= DMA_MASK & x"000002";
-	p_masters(0)(1).MData <= x"00008004";
-	p_masters(1)(0).MAddr <= DMA_MASK & x"000002";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000008";
+	p_masters(0)(0).MData <= x"00008002";
+	p_masters(0)(1).MAddr <= DMA_MASK & x"000008";
+	p_masters(0)(1).MData <= x"00008002";
+	p_masters(1)(0).MAddr <= DMA_MASK & x"000008";
 	p_masters(1)(0).MData <= x"00008004";
-	p_masters(1)(1).MAddr <= DMA_MASK & x"000002";
-	p_masters(1)(1).MData <= x"00008004";
+	p_masters(1)(1).MAddr <= DMA_MASK & x"000008";
+	p_masters(1)(1).MData <= x"00008002";
 
 	wait for 10 ns; --3
 	p_masters(0)(0).MCmd <= "010";--(others=>'0');
@@ -387,27 +387,27 @@ process begin
 
 	wait for 10 ns; --1
 	p_masters(0)(0).MCmd <= "001";
-	p_masters(0)(0).MAddr <= DMA_MASK & x"000005";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000014";
 	p_masters(0)(0).MData <= x"00000000";
 	p_masters(0)(1).MCmd <= "001";
-	p_masters(0)(1).MAddr <= DMA_MASK & x"000005";
-	p_masters(0)(1).MData <= x"00040004";
+	p_masters(0)(1).MAddr <= DMA_MASK & x"000014";
+	p_masters(0)(1).MData <= x"00020002";
 	p_masters(1)(0).MCmd <= "001";
-	p_masters(1)(0).MAddr <= DMA_MASK & x"000005";
-	p_masters(1)(0).MData <= x"00080008";
+	p_masters(1)(0).MAddr <= DMA_MASK & x"000014";
+	p_masters(1)(0).MData <= x"00040004";
 	p_masters(1)(1).MCmd <= "001";
-	p_masters(1)(1).MAddr <= DMA_MASK & x"000005";
-	p_masters(1)(1).MData <= x"000c000c";
+	p_masters(1)(1).MAddr <= DMA_MASK & x"000014";
+	p_masters(1)(1).MData <= x"00060006";
 
 	wait for 10 ns; --2
-	p_masters(0)(0).MAddr <= DMA_MASK & x"000004";
-	p_masters(0)(0).MData <= x"00008004";
-	p_masters(0)(1).MAddr <= DMA_MASK & x"000004";
-	p_masters(0)(1).MData <= x"00008004";
-	p_masters(1)(0).MAddr <= DMA_MASK & x"000004";
-	p_masters(1)(0).MData <= x"00008004";
-	p_masters(1)(1).MAddr <= DMA_MASK & x"000004";
-	p_masters(1)(1).MData <= x"00008004";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000010";
+	p_masters(0)(0).MData <= x"00008002";
+	p_masters(0)(1).MAddr <= DMA_MASK & x"000010";
+	p_masters(0)(1).MData <= x"00008002";
+	p_masters(1)(0).MAddr <= DMA_MASK & x"000010";
+	p_masters(1)(0).MData <= x"00008002";
+	p_masters(1)(1).MAddr <= DMA_MASK & x"000010";
+	p_masters(1)(1).MData <= x"00008002";
 
 	wait for 10 ns; --3
 	p_masters(0)(0).MCmd <= (others=>'0');
@@ -421,59 +421,59 @@ process begin
 
 -- read transaction from proc in remote spm	
 	wait for 370 ns; --1
-	spm_masters(0)(0).MCmd <= "010";
-	spm_masters(0)(0).MAddr <= x"00000000";
+	spm_masters(0)(0).MCmd <= "0";
+	spm_masters(0)(0).MAddr <= x"0000";
 
-	spm_masters(0)(1).MCmd <= "010";
-	spm_masters(0)(1).MAddr <= x"00000000";
+	spm_masters(0)(1).MCmd <= "0";
+	spm_masters(0)(1).MAddr <= x"0000";
 
-	spm_masters(1)(0).MCmd <= "010";
-	spm_masters(1)(0).MAddr <= x"00000000";
+	spm_masters(1)(0).MCmd <= "0";
+	spm_masters(1)(0).MAddr <= x"0000";
 
-	spm_masters(1)(1).MCmd <= "010";
-	spm_masters(1)(1).MAddr <= x"00000000";
+	spm_masters(1)(1).MCmd <= "0";
+	spm_masters(1)(1).MAddr <= x"0000";
 
 	wait for 10 ns; --2
-	spm_masters(0)(0).MAddr <= x"00000001";
-	spm_masters(0)(1).MAddr <= x"00000001";
-	spm_masters(1)(0).MAddr <= x"00000001";
-	spm_masters(1)(1).MAddr <= x"00000001";
+	spm_masters(0)(0).MAddr <= x"0001";
+	spm_masters(0)(1).MAddr <= x"0001";
+	spm_masters(1)(0).MAddr <= x"0001";
+	spm_masters(1)(1).MAddr <= x"0001";
 
 	wait for 10 ns; --3
-	spm_masters(0)(0).MAddr <= x"00000002";
-	spm_masters(0)(1).MAddr <= x"00000002";
-	spm_masters(1)(0).MAddr <= x"00000002";
-	spm_masters(1)(1).MAddr <= x"00000002";
+	spm_masters(0)(0).MAddr <= x"0002";
+	spm_masters(0)(1).MAddr <= x"0002";
+	spm_masters(1)(0).MAddr <= x"0002";
+	spm_masters(1)(1).MAddr <= x"0002";
 
 	wait for 10 ns; --1
-	spm_masters(0)(0).MAddr <= x"00000003";
-	spm_masters(0)(1).MAddr <= x"00000003";
-	spm_masters(1)(0).MAddr <= x"00000003";
-	spm_masters(1)(1).MAddr <= x"00000003";
+	spm_masters(0)(0).MAddr <= x"0003";
+	spm_masters(0)(1).MAddr <= x"0003";
+	spm_masters(1)(0).MAddr <= x"0003";
+	spm_masters(1)(1).MAddr <= x"0003";
 
 	wait for 10 ns; --2
-	spm_masters(0)(0).MAddr <= x"00000004";
-	spm_masters(0)(1).MAddr <= x"00000004";
-	spm_masters(1)(0).MAddr <= x"00000004";
-	spm_masters(1)(1).MAddr <= x"00000004";
+	spm_masters(0)(0).MAddr <= x"0004";
+	spm_masters(0)(1).MAddr <= x"0004";
+	spm_masters(1)(0).MAddr <= x"0004";
+	spm_masters(1)(1).MAddr <= x"0004";
 
 	wait for 10 ns; --3
-	spm_masters(0)(0).MAddr <= x"00000005";
-	spm_masters(0)(1).MAddr <= x"00000005";
-	spm_masters(1)(0).MAddr <= x"00000005";
-	spm_masters(1)(1).MAddr <= x"00000005";
+	spm_masters(0)(0).MAddr <= x"0005";
+	spm_masters(0)(1).MAddr <= x"0005";
+	spm_masters(1)(0).MAddr <= x"0005";
+	spm_masters(1)(1).MAddr <= x"0005";
 
 	wait for 10 ns; --1
-	spm_masters(0)(0).MAddr <= x"00000006";
-	spm_masters(0)(1).MAddr <= x"00000006";
-	spm_masters(1)(0).MAddr <= x"00000006";
-	spm_masters(1)(1).MAddr <= x"00000006";
+	spm_masters(0)(0).MAddr <= x"0006";
+	spm_masters(0)(1).MAddr <= x"0006";
+	spm_masters(1)(0).MAddr <= x"0006";
+	spm_masters(1)(1).MAddr <= x"0006";
 
 	wait for 10 ns; --2
-	spm_masters(0)(0).MAddr <= x"00000007";
-	spm_masters(0)(1).MAddr <= x"00000007";
-	spm_masters(1)(0).MAddr <= x"00000007";
-	spm_masters(1)(1).MAddr <= x"00000007";
+	spm_masters(0)(0).MAddr <= x"0007";
+	spm_masters(0)(1).MAddr <= x"0007";
+	spm_masters(1)(0).MAddr <= x"0007";
+	spm_masters(1)(1).MAddr <= x"0007";
 
 	wait for 10 ns; --3
 	spm_masters(0)(0).MCmd <= (others=>'0');

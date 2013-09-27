@@ -72,8 +72,8 @@ port (
 	proc_in		: in ocp_master;
 	proc_out	: out ocp_slave;
  
-	spm_in		: in ocp_master_spm;
-	spm_out		: out ocp_slave_spm;
+	spm_in		: in spm_master;
+	spm_out		: out spm_slave;
 
 	inNorth		: in network_link;
 	inSouth		: in network_link;

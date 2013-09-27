@@ -55,8 +55,8 @@ port (
 	proc_out	: out ocp_slave;
 	     
 -- SPM Data Port - OCP?
-	spm_in		: in ocp_slave_spm;
-	spm_out		: out ocp_master_spm;
+	spm_in		: in spm_slave;
+	spm_out		: out spm_master;
 
 -- Network Ports
 -- Incoming Port
@@ -183,7 +183,9 @@ end component;
 
 begin
 
+-----------------------------------------------------------------------------------------------
 -- component instantiations ------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 -- Slot Counter
 	slt_cnt : counter
 		generic map ( WIDTH=>SLT_WIDTH )
@@ -209,8 +211,8 @@ begin
 		generic map ( DATA=>DMA_IND_WIDTH+1, ADDR=>SLT_WIDTH )
 		port map (clk => na_clk,
 			rd_addr => slt_index,
-			wr_addr => proc_in.MAddr(SLT_WIDTH-1 downto 0),
-			wr_data => proc_in.MData(DMA_IND_WIDTH downto 0),
+			wr_addr => proc_in.MAddr(SLT_WIDTH+1 downto 2), -- byte addresses
+			wr_data => proc_in.MData(DMA_IND_WIDTH downto 0), -- LS bits
 			wr_ena => slt_en,
 			rd_data => slt_entry
 		);
@@ -218,7 +220,9 @@ begin
 	dma_index <= slt_entry(DMA_IND_WIDTH-1 downto 0);
 	vld_slt <= slt_entry(DMA_IND_WIDTH);
 
+-----------------------------------------------------------------------------------------------
 -- configuration interface --------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 -- decode inputs -------------------------------------
 -- address map decoding
 	ocp_decode : process (proc_in.MAddr) begin
@@ -231,10 +235,10 @@ begin
 			config <= DMA_R_ACCESS;
 		-- DMA 1,2 configuration
 		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK 
-				and proc_in.MAddr(0)='0' then
+				and proc_in.MAddr(2)='0' then
 			config <= DMA_H_ACCESS;
 		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK 
-				and proc_in.MAddr(0)='1' then
+				and proc_in.MAddr(2)='1' then
 			config <= DMA_L_ACCESS;
 		-- not configuration
 		else
@@ -271,22 +275,25 @@ begin
 	end process;
 
 
-
+-----------------------------------------------------------------------------------------------
 -- SPM interface ------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 --- construct SPM interface signals --ocp
 	spm_interface : process (state_cnt, pkt_ctrl, dma_entry, address) begin
 		if state_cnt = "00" and pkt_ctrl = '1' then
-			spm_out.MCmd <= "001"; --write
-			spm_out.MAddr <= std_logic_vector(to_unsigned(0,OCP_ADDR_WIDTH-(SPM_ADDR_WIDTH-1))) & address(SPM_ADDR_WIDTH-1 downto 1);
+			spm_out.MCmd <= "1"; --write
+			spm_out.MAddr <= address;
 		else 			
-			spm_out.MCmd <= "010"; --read
-			spm_out.MAddr <= x"0000" & '0' & dma_entry(47 downto 33);
+			spm_out.MCmd <= "0"; --read
+			spm_out.MAddr <= dma_entry(47 downto 32);
 		end if;
 	end process;
 	spm_out.MData(SPM_DATA_WIDTH-1 downto DATA_WIDTH) <= dIn_h;
 	spm_out.MData(DATA_WIDTH-1 downto 0) <= phitIn(DATA_WIDTH-1 downto 0);
 
+-----------------------------------------------------------------------------------------------
 -- network interface -------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 -- input pkt control-------------------------------
 -- decode incoming packet 
 	pkt_ctrl <= phitIn(PHIT_WIDTH-1) or phitIn(PHIT_WIDTH-2) or phitIn(PHIT_WIDTH-3);
@@ -334,7 +341,9 @@ begin
 	phitOut(PHIT_WIDTH-4 downto 0) <= mux_out;
 
 
+-----------------------------------------------------------------------------------------------
 -- DMA signals --------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 	dma_state_control : process (state_cnt, config, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata) begin
 		dma_waddr <= (others => '0');
 		dma_wdata <= (others => '0');
@@ -350,17 +359,17 @@ begin
 			--if proc_in.MCmd(0)='1' then
 			if ocp_cmd_write='1' then
 				if config=DMA_R_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
+					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2); --byte-address
 					dma_wdata <= x"00000000" & proc_in.MData;
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
+					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				elsif config=DMA_L_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
+					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= x"0000" & proc_in.MData & x"0000";
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
@@ -380,12 +389,12 @@ begin
 			--configuration read or no read
 			elsif ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
+					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2); --byte-address
 					dma_ren <= config(2 downto 0);
 					--build ocp slave signals
 					proc_out.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS or config=DMA_L_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
+					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_ren <= config(2 downto 0);
 					--build ocp read data
 					proc_out.SCmdAccept <= '1';
@@ -407,20 +416,21 @@ begin
 			end if;
 			
 		when "01" =>
+			-- configuration write
 			--if proc_in.MCmd(0)='1' then
 			if ocp_cmd_write='1' then
 				if config=DMA_R_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
+					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2); --byte-address
 					dma_wdata <= x"00000000" & proc_in.MData;
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';					
 				elsif config=DMA_H_ACCESS then 
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
+					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				elsif config=DMA_L_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
+					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= x"0000" & proc_in.MData & x"0000";
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
@@ -436,10 +446,12 @@ begin
 					proc_out.SCmdAccept <= '0';
 				end if;
 			end if;
+			-- DMA read
 			dma_raddr <= dma_index;
 			dma_ren <= "111";
 
 		when "10" =>
+			-- DMA update
 			dma_waddr <= dma_index;
 			dma_wdata <= dma_entry_updated;
 			if dma_ctrl='1' then
@@ -448,14 +460,15 @@ begin
 				dma_wen <= "000";
 			end if;
 
+			-- configuration read
 			--if proc_in.MCmd(0)='0' then
 			if ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH-1 downto 0);
+					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2); --byte-address
 					dma_ren <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS or config=DMA_L_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH downto 1);
+					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_ren <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				else
@@ -470,6 +483,7 @@ begin
 
 			end if;	
 
+			-- hold dma_entry
 			if vld_slt='1' then
 				dma_entry <= dma_rdata;
 			else
@@ -493,9 +507,9 @@ begin
 	dma_cnt <= unsigned(dma_entry(61 downto 48));
 
 -- update dma entry fields
-	dma_cnt_new <= dma_cnt - 2;
-	dma_rp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+32 downto 32)) + 2;
-	dma_wp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+16 downto 16)) + 2;
+	dma_cnt_new <= dma_cnt - 1;
+	dma_rp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+32 downto 32)) + 1;
+	dma_wp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+16 downto 16)) + 1;
 
 	done <= '1' when dma_cnt_new=0
 		else '0';
@@ -512,7 +526,9 @@ begin
 	
 
 
+-----------------------------------------------------------------------------------------------
 -- control FSM - just counter --------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 	val <= state_cnt + 1;
 	process (na_reset, na_clk)
 	begin 

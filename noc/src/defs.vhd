@@ -103,7 +103,7 @@ package defs is
 
 	type ocp_slave is record
 		SCmdAccept	: std_logic;
-		SResp		: std_logic;
+		SResp		: std_logic_vector(1 downto 0);
 		SData		: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
 	end record;
 

@@ -136,6 +136,7 @@ process begin
 			p_masters(i)(j).MCmd  <= (others=>'0');
 			p_masters(i)(j).MAddr <= (others=>'0');
 			p_masters(i)(j).MData <= (others=>'0');
+			p_masters(i)(j).MRespAccept <= '0';
 
 			spm_masters(i)(j).MCmd  <= (others=>'0');
 			spm_masters(i)(j).MAddr <= (others=>'0');

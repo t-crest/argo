@@ -82,10 +82,20 @@ signal vld_slt		: std_logic;
 
 signal config		: std_logic_vector(3 downto 0);
 signal config_reg	: std_logic_vector(4 downto 0);
+signal read_cmd_reg	: std_logic;
 
 signal ocp_cmd_valid	: std_logic;
 signal ocp_cmd_read	: std_logic;
 signal ocp_cmd_write	: std_logic;
+
+signal response_ld_control : std_logic;
+signal ocp_read_control : std_logic;
+signal ocp_dataresp	: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+signal ocp_response	: std_logic_vector(1 downto 0);
+signal resp_ld		: std_logic;
+signal ocp_dataresp_reg : std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+signal ocp_response_reg : std_logic_vector(1 downto 0);
+
 
 signal dma_index	: std_logic_vector(DMA_IND_WIDTH-1 downto 0);
 signal dma_entry	: std_logic_vector(DMA_WIDTH-1 downto 0);
@@ -247,32 +257,48 @@ begin
 	end process;
 
 -- ocp command decoding
-	ocp_cmd_valid <= '1' when proc_in.MCmd="000" else '0';
+	ocp_cmd_valid <= '0' when proc_in.MCmd="000" else '1';
 	ocp_cmd_read <= '1' when proc_in.MCmd="010" else '0';
 	ocp_cmd_write <= '1' when proc_in.MCmd="001" else '0';
 
 -- build outputs -------------------------------------
-	-- ocp data response
-	ocp_response : process ( state_cnt, config_reg, dma_rdata) begin
-		proc_out.SData <= (others=>'0');
-		proc_out.SResp <= '0';
 
-		case state_cnt is
-		when "00" =>
-			if config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS) then
-				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
-				proc_out.SResp <= '1';
-			end if;
-		when "01" =>
-			if config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS) then
-				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
-				proc_out.SResp <= '1';
-			end if;
+	ocp_read_control <= '1' when (state_cnt="00" or state_cnt="01") and (config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS)) and read_cmd_reg='1' else '0';
+	resp_ld <= '1' when (ocp_read_control='1' or proc_in.MRespAccept='1') else '0';
+
+	response_ld_control <= '1' when (ocp_read_control='1' and proc_in.MRespAccept='0') else '0';
+
+
+	response_ld : process (response_ld_control, dma_rdata) begin
+		ocp_dataresp <= (others=>'0');
+		ocp_response <= (others=>'0');
+
+		case response_ld_control is
+		when '1' => 
+			ocp_dataresp <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
+			ocp_response <= "10";
 		when others =>
-			proc_out.SData <= (others=>'0');
-			proc_out.SResp <= '0';
+			ocp_dataresp <= (others=>'0');
+			ocp_response <= (others=>'0');
 		end case;
 	end process;
+
+	
+	-- ocp data response
+	ocp_response_output : process ( ocp_read_control, dma_rdata, ocp_dataresp_reg, ocp_response_reg ) begin
+		proc_out.SData <= (others=>'0');
+		proc_out.SResp <= (others=>'0');
+
+		case ocp_read_control is
+		when '1' =>
+			proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
+			proc_out.SResp <= "10";
+		when others =>
+			proc_out.SData <= ocp_dataresp_reg;
+			proc_out.SResp <= ocp_response_reg;
+		end case;
+	end process;
+
 
 
 -----------------------------------------------------------------------------------------------
@@ -344,7 +370,7 @@ begin
 -----------------------------------------------------------------------------------------------
 -- DMA signals --------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
-	dma_state_control : process (state_cnt, config, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata) begin
+	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata) begin
 		dma_waddr <= (others => '0');
 		dma_wdata <= (others => '0');
 		dma_wen <= (others => '0');
@@ -584,7 +610,9 @@ begin
 			dOut_l <= (others=>'0') after PDELAY;
 			phitIn <= (others=>'0') after PDELAY;
 			pkt_out <= (others=>'0') after PDELAY;
-			config_reg <= (others=>'0');
+			config_reg <= (others=>'0') after PDELAY;
+			ocp_dataresp_reg <= (others=>'0') after PDELAY;
+			ocp_response_reg <= (others=>'0') after PDELAY;
 
 		elsif rising_edge(na_clk) then
 			if ctrlOutreg_ld='1' then
@@ -602,14 +630,16 @@ begin
 			phitIn <= pkt_in after PDELAY;
 			pkt_out <= phitOut after PDELAY;
 			--config_reg <= proc_in.MCmd(1) & config;
-			config_reg <= ocp_cmd_valid & config;
+			config_reg <= ocp_cmd_valid & config after PDELAY;
+			read_cmd_reg <= ocp_cmd_read after PDELAY;
+
+			if resp_ld='1' then
+				ocp_dataresp_reg <= ocp_dataresp after PDELAY;
+				ocp_response_reg <= ocp_response after PDELAY;
+			end if;
 
 		end if;
 	end process;
-
-
-	
-
  
 end rtl;
 

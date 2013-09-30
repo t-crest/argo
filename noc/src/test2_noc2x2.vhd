@@ -137,6 +137,7 @@ process begin
 			p_masters(i)(j).MCmd  <= (others=>'0');
 			p_masters(i)(j).MAddr <= (others=>'0');
 			p_masters(i)(j).MData <= (others=>'0');
+			p_masters(i)(j).MRespAccept <= '0';
 
 			spm_masters(i)(j).MCmd  <= (others=>'0');
 			spm_masters(i)(j).MAddr <= (others=>'0');
@@ -146,7 +147,7 @@ process begin
 
 --initialize spm
 --initialize slot table
-	wait for 43 ns; --1
+	wait for 41 ns; --1
 	-- ST(0) <= valid DMA0
 	p_masters(0)(0).MCmd <="001";
 	p_masters(0)(0).MAddr <= ST_MASK & x"000000";
@@ -356,6 +357,10 @@ process begin
 	p_masters(1)(1).MCmd <= "010";--(others=>'0');
 
 	wait for 10 ns; --1
+	p_masters(0)(0).MRespAccept <= '1';
+	p_masters(0)(1).MRespAccept <= '1';
+	p_masters(1)(0).MRespAccept <= '1';
+	p_masters(1)(1).MRespAccept <= '1';
 	p_masters(0)(0).MCmd <= "001";
 	p_masters(0)(0).MAddr <= DMA_MASK & x"00000c";
 	p_masters(0)(0).MData <= x"00000000";
@@ -370,6 +375,10 @@ process begin
 	p_masters(1)(1).MData <= x"00060006";
 
 	wait for 10 ns; --2
+	p_masters(0)(0).MRespAccept <= '0';
+	p_masters(0)(1).MRespAccept <= '0';
+	p_masters(1)(0).MRespAccept <= '0';
+	p_masters(1)(1).MRespAccept <= '0';
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000008";
 	p_masters(0)(0).MData <= x"00008002";
 	p_masters(0)(1).MAddr <= DMA_MASK & x"000008";
@@ -386,6 +395,10 @@ process begin
 	p_masters(1)(1).MCmd <= "010";--(others=>'0');
 
 	wait for 10 ns; --1
+	p_masters(0)(0).MRespAccept <= '1';
+	p_masters(0)(1).MRespAccept <= '1';
+	p_masters(1)(0).MRespAccept <= '1';
+	p_masters(1)(1).MRespAccept <= '1';
 	p_masters(0)(0).MCmd <= "001";
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000014";
 	p_masters(0)(0).MData <= x"00000000";
@@ -400,6 +413,10 @@ process begin
 	p_masters(1)(1).MData <= x"00060006";
 
 	wait for 10 ns; --2
+	p_masters(0)(0).MRespAccept <= '0';
+	p_masters(0)(1).MRespAccept <= '0';
+	p_masters(1)(0).MRespAccept <= '0';
+	p_masters(1)(1).MRespAccept <= '0';
 	p_masters(0)(0).MAddr <= DMA_MASK & x"000010";
 	p_masters(0)(0).MData <= x"00008002";
 	p_masters(0)(1).MAddr <= DMA_MASK & x"000010";
@@ -420,7 +437,25 @@ process begin
 	p_masters(1)(1).MAddr <= (others=>'0');
 
 -- read transaction from proc in remote spm	
-	wait for 370 ns; --1
+	wait for 360 ns; --3
+
+
+-- read transaction from proc in local DMA
+	wait for 10 ns; --1
+	p_masters(0)(0).MCmd <= "010";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
+
+	wait for 10 ns; --2
+	p_masters(0)(0).MCmd <= "000";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
+
+	wait for 10 ns; --3
+
+	wait for 10 ns; --1
+	p_masters(0)(0).MRespAccept <= '1';
+	wait for 10 ns; --2
+	p_masters(0)(0).MRespAccept <= '0';
+	wait for 10 ns; --3
 	spm_masters(0)(0).MCmd <= "0";
 	spm_masters(0)(0).MAddr <= x"0000";
 
@@ -433,13 +468,25 @@ process begin
 	spm_masters(1)(1).MCmd <= "0";
 	spm_masters(1)(1).MAddr <= x"0000";
 
+	p_masters(0)(0).MCmd <= "010";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
+
 	wait for 10 ns; --2
+	p_masters(0)(0).MRespAccept <= '1';
+	p_masters(0)(0).MCmd <= "000";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
+
+
 	spm_masters(0)(0).MAddr <= x"0001";
 	spm_masters(0)(1).MAddr <= x"0001";
 	spm_masters(1)(0).MAddr <= x"0001";
 	spm_masters(1)(1).MAddr <= x"0001";
 
 	wait for 10 ns; --3
+	p_masters(0)(0).MRespAccept <= '0';
+	p_masters(0)(0).MCmd <= "010";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
+
 	spm_masters(0)(0).MAddr <= x"0002";
 	spm_masters(0)(1).MAddr <= x"0002";
 	spm_masters(1)(0).MAddr <= x"0002";
@@ -452,12 +499,18 @@ process begin
 	spm_masters(1)(1).MAddr <= x"0003";
 
 	wait for 10 ns; --2
+	p_masters(0)(0).MRespAccept <= '1';
+	p_masters(0)(0).MCmd <= "000";
+	p_masters(0)(0).MAddr <= DMA_MASK & x"000000";
+
 	spm_masters(0)(0).MAddr <= x"0004";
 	spm_masters(0)(1).MAddr <= x"0004";
 	spm_masters(1)(0).MAddr <= x"0004";
 	spm_masters(1)(1).MAddr <= x"0004";
 
 	wait for 10 ns; --3
+	p_masters(0)(0).MRespAccept <= '0';
+
 	spm_masters(0)(0).MAddr <= x"0005";
 	spm_masters(0)(1).MAddr <= x"0005";
 	spm_masters(1)(0).MAddr <= x"0005";

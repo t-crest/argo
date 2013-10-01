@@ -1,17 +1,17 @@
--- 
+--
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
--- 
+--
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
--- 
+--
 --    1. Redistributions of source code must retain the above copyright notice,
 --       this list of conditions and the following disclaimer.
--- 
+--
 --    2. Redistributions in binary form must reproduce the above copyright
 --       notice, this list of conditions and the following disclaimer in the
 --       documentation and/or other materials provided with the distribution.
--- 
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 -- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -22,11 +22,11 @@
 -- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 -- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 -- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--- 
+--
 -- The views and conclusions contained in the software and documentation are
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
--- 
+--
 
 
 --------------------------------------------------------------------------------
@@ -39,7 +39,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
-use work.defs.all;
+use work.noc_defs.all;
+use work.noc_interface.all;
 
 
 entity noc_node is
@@ -86,7 +87,7 @@ port (
     a_addr  : in  std_logic_vector(ADDR-1 downto 0);
     a_din   : in  std_logic_vector(DATA-1 downto 0);
     a_dout  : out std_logic_vector(DATA-1 downto 0);
-     
+
 -- Port B
     b_clk   : in  std_logic;
     b_wr    : in  std_logic;
@@ -109,7 +110,7 @@ port (
 -- DMA Configuration Port - OCP
 	proc_in		: in ocp_master;
 	proc_out	: out ocp_slave;
-	     
+
 -- SPM Data Port - OCP?
 	spm_in		: in spm_slave;
 	spm_out		: out spm_master;
@@ -126,7 +127,7 @@ end component;
 
 --1 router
 component router is
-	port (	
+	port (
 		clk	: in std_logic;
 		reset	: in std_logic;
 		inPort	: in routerPort;
@@ -148,43 +149,43 @@ begin
 -- High SPM instance
 spm_h : bram_tdp
 generic map (DATA=>DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-port map (a_clk => p_clk, 
-	a_wr => spm_in.MCmd(0), 
-	a_addr => spm_in.MAddr(SPM_ADDR_WIDTH-1 downto 0), 
-	a_din => spm_in.MData(63 downto 32), 
-	a_dout => spm_out.SData(63 downto 32), 
+port map (a_clk => p_clk,
+	a_wr => spm_in.MCmd(0),
+	a_addr => spm_in.MAddr(SPM_ADDR_WIDTH-1 downto 0),
+	a_din => spm_in.MData(63 downto 32),
+	a_dout => spm_out.SData(63 downto 32),
 	b_clk => n_clk,
-	b_wr => net_to_spm.MCmd(0), 
-	b_addr => net_to_spm.MAddr(SPM_ADDR_WIDTH-1 downto 0), 
-	b_din => net_to_spm.MData(63 downto 32), 
+	b_wr => net_to_spm.MCmd(0),
+	b_addr => net_to_spm.MAddr(SPM_ADDR_WIDTH-1 downto 0),
+	b_din => net_to_spm.MData(63 downto 32),
 	b_dout => spm_to_net.SData(63 downto 32));
 
 -- Low SPM instance
 spm_l : bram_tdp
 generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-port map (a_clk => p_clk, 
-	a_wr => spm_in.MCmd(0), 
-	a_addr => spm_in.MAddr(SPM_ADDR_WIDTH-1 downto 0), 
-	a_din => spm_in.MData(31 downto 0), 
-	a_dout => spm_out.SData(31 downto 0), 
+port map (a_clk => p_clk,
+	a_wr => spm_in.MCmd(0),
+	a_addr => spm_in.MAddr(SPM_ADDR_WIDTH-1 downto 0),
+	a_din => spm_in.MData(31 downto 0),
+	a_dout => spm_out.SData(31 downto 0),
 	b_clk => n_clk,
-	b_wr => net_to_spm.MCmd(0), 
-	b_addr => net_to_spm.MAddr(SPM_ADDR_WIDTH-1 downto 0), 
-	b_din => net_to_spm.MData(31 downto 0), 
+	b_wr => net_to_spm.MCmd(0),
+	b_addr => net_to_spm.MAddr(SPM_ADDR_WIDTH-1 downto 0),
+	b_din => net_to_spm.MData(31 downto 0),
 	b_dout => spm_to_net.SData(31 downto 0));
 
 -- NA instance
 na : nAdapter
 port map(
 	-- General
-	na_clk=>n_clk, 
+	na_clk=>n_clk,
 	na_reset=>reset,
 
 	-- Processor Ports
 	-- DMA Configuration Port - OCP
 	proc_in=>proc_in,
 	proc_out=>proc_out,
-	     
+
 	-- SPM Data Port - OCP?
 	spm_in=>spm_to_net,
 	spm_out=>net_to_spm,

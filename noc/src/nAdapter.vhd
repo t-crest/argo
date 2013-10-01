@@ -1,17 +1,17 @@
--- 
+--
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
--- 
+--
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
--- 
+--
 --    1. Redistributions of source code must retain the above copyright notice,
 --       this list of conditions and the following disclaimer.
--- 
+--
 --    2. Redistributions in binary form must reproduce the above copyright
 --       notice, this list of conditions and the following disclaimer in the
 --       documentation and/or other materials provided with the distribution.
--- 
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 -- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -22,11 +22,11 @@
 -- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 -- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 -- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--- 
+--
 -- The views and conclusions contained in the software and documentation are
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
--- 
+--
 
 
 --------------------------------------------------------------------------------
@@ -39,7 +39,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
-use work.defs.all;
+use work.noc_defs.all;
+use work.noc_interface.all;
+use work.ocp.all;
 
 
 entity nAdapter is
@@ -53,7 +55,7 @@ port (
 -- DMA Configuration Port - OCP
 	proc_in		: in ocp_master;
 	proc_out	: out ocp_slave;
-	     
+
 -- SPM Data Port - OCP?
 	spm_in		: in spm_slave;
 	spm_out		: out spm_master;
@@ -170,7 +172,7 @@ component dma_sdp
 		wdata	 	: in std_logic_vector(DATA-1 downto 0);
 		raddr 		: in std_logic_vector(ADDR-1 downto 0);
 		rdata		: out std_logic_vector(DATA-1 downto 0)
-	);		
+	);
 end component;
 
 component bram
@@ -244,10 +246,10 @@ begin
 		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_P_MASK then
 			config <= DMA_R_ACCESS;
 		-- DMA 1,2 configuration
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK 
+		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
 				and proc_in.MAddr(2)='0' then
 			config <= DMA_H_ACCESS;
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK 
+		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
 				and proc_in.MAddr(2)='1' then
 			config <= DMA_L_ACCESS;
 		-- not configuration
@@ -274,7 +276,7 @@ begin
 		ocp_response <= (others=>'0');
 
 		case response_ld_control is
-		when '1' => 
+		when '1' =>
 			ocp_dataresp <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
 			ocp_response <= "10";
 		when others =>
@@ -283,7 +285,7 @@ begin
 		end case;
 	end process;
 
-	
+
 	-- ocp data response
 	ocp_response_output : process ( ocp_read_control, dma_rdata, ocp_dataresp_reg, ocp_response_reg ) begin
 		proc_out.SData <= (others=>'0');
@@ -309,7 +311,7 @@ begin
 		if state_cnt = "00" and pkt_ctrl = '1' then
 			spm_out.MCmd <= "1"; --write
 			spm_out.MAddr <= address;
-		else 			
+		else
 			spm_out.MCmd <= "0"; --read
 			spm_out.MAddr <= dma_entry(47 downto 32);
 		end if;
@@ -321,7 +323,7 @@ begin
 -- network interface -------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 -- input pkt control-------------------------------
--- decode incoming packet 
+-- decode incoming packet
 	pkt_ctrl <= phitIn(PHIT_WIDTH-1) or phitIn(PHIT_WIDTH-2) or phitIn(PHIT_WIDTH-3);
 
 
@@ -356,7 +358,7 @@ begin
 		when others =>
 			mux_out <= (others=>'0');
 		end case;
-	end process;	
+	end process;
 
 -- build outgoing packet
 	--control bits
@@ -440,7 +442,7 @@ begin
 				dma_ren <= (others => '0');
 				proc_out.SCmdAccept <= '0';
 			end if;
-			
+
 		when "01" =>
 			-- configuration write
 			--if proc_in.MCmd(0)='1' then
@@ -449,8 +451,8 @@ begin
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2); --byte-address
 					dma_wdata <= x"00000000" & proc_in.MData;
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';					
-				elsif config=DMA_H_ACCESS then 
+					proc_out.SCmdAccept <= '1';
+				elsif config=DMA_H_ACCESS then
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";
 					dma_wen <= config(2 downto 0);
@@ -507,7 +509,7 @@ begin
 				dma_ren <= (others => '0');
 				proc_out.SCmdAccept <= '0';
 
-			end if;	
+			end if;
 
 			-- hold dma_entry
 			if vld_slt='1' then
@@ -515,7 +517,7 @@ begin
 			else
 				dma_entry <= (others=>'0');
 			end if;
-		
+
 		when others =>
 			dma_waddr <= (others => '0');
 			dma_wdata <= (others => '0');
@@ -543,13 +545,13 @@ begin
 	dma_ctrl_new <= dma_entry(DMA_WIDTH-1) & done_new;
 
 -- updated dma entry
-	dma_entry_updated <= (dma_ctrl_new & 
-				std_logic_vector(dma_cnt_new) & 
-				std_logic_vector(dma_rp_new) & 
-				std_logic_vector(dma_wp_new) & 
+	dma_entry_updated <= (dma_ctrl_new &
+				std_logic_vector(dma_cnt_new) &
+				std_logic_vector(dma_rp_new) &
+				std_logic_vector(dma_wp_new) &
 				dma_entry(15 downto 0)) when dma_ctrl='1' else
 				dma_entry;
-	
+
 
 
 -----------------------------------------------------------------------------------------------
@@ -557,7 +559,7 @@ begin
 -----------------------------------------------------------------------------------------------
 	val <= state_cnt + 1;
 	process (na_reset, na_clk)
-	begin 
+	begin
 		if na_reset='1' then
 			state_cnt <= (others=>'0') after PDELAY;
 		elsif rising_edge(na_clk) then
@@ -570,7 +572,7 @@ begin
 	end process;
 
 	reg_control : process(state_cnt)
-	begin	
+	begin
 	dOutreg_ld <= '0';
 	adreg_ld <= '0';
 	dInreg_ld <= '0';
@@ -640,6 +642,6 @@ begin
 
 		end if;
 	end process;
- 
+
 end rtl;
 

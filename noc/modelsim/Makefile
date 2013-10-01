@@ -41,7 +41,10 @@ test2: clean base
 
 base:
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram_tdp.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/counter.vhd

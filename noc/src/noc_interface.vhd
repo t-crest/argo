@@ -1,4 +1,3 @@
---
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
 --
@@ -30,48 +29,62 @@
 
 
 --------------------------------------------------------------------------------
--- A simple enable counter
+-- Definitions package
 --
 -- Author: Evangelia Kasapaki
+-- Author: Rasmus Bo Soerensen
 --------------------------------------------------------------------------------
 
 library ieee;
-use ieee.std_logic_1164.all ;
-use ieee.numeric_std.all;
+use ieee.std_logic_1164.all;
 
-library work;
+use work.config.all;
+use work.ocp.all;
 use work.noc_defs.all;
 
-entity counter is
-	generic (
-		WIDTH	: integer :=8
-	);
-	port (
-		clk 	: in std_logic ;
-		reset 	: in std_logic ;
-		enable	: in std_logic;
-		cnt 	: out std_logic_vector(WIDTH-1 downto 0)
-	);
-end counter;
+package noc_interface is
 
-architecture rtl of counter is
+    type ocp_core_m_a is array((N*M)-1 downto 0) of ocp_core_m;
+    type ocp_core_s_a is array((N*M)-1 downto 0) of ocp_core_s;
 
-	signal val , reg : unsigned(WIDTH-1 downto 0);
+    type ocp_io_m_a is array((N*M)-1 downto 0) of ocp_io_m;
+    type ocp_io_s_a is array((N*M)-1 downto 0) of ocp_io_s;
 
-begin
-	cnt <= std_logic_vector(reg);
-	val <= reg+1 when to_integer(reg) < MAX_PERIOD-1 else (others => '0');
 
-	process(clk, reset)
-	begin
-		if reset ='1' then
-			reg <= (others => '0') after PDELAY;
-		elsif rising_edge(clk) then
-			if enable = '1' then
-				reg <= val after PDELAY;
-			end if;
-		end if ;
-	end process;
+    type ocp_master is record
+        MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
+        MAddr       : std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
+        MData       : std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+        MRespAccept : std_logic;
+    end record;
 
-end rtl ;
+    type ocp_slave is record
+        SCmdAccept  : std_logic;
+        SResp       : std_logic_vector(1 downto 0);
+        SData       : std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+    end record;
 
+    type spm_master is record
+        MCmd        : std_logic_vector(SPM_CMD_WIDTH-1 downto 0);
+        MAddr       : std_logic_vector(SPM_ADDR_WIDTH-1 downto 0);
+        MData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
+    end record;
+
+    type spm_slave is record
+        --SCmdAccept    : std_logic;
+        --SResp     : std_logic;
+        SData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
+    end record;
+
+    --arrays
+    type proc_m is array(N-1 downto 0) of ocp_master;
+    type proc_s is array(N-1 downto 0) of ocp_slave;
+    type procMasters is array(N-1 downto 0) of proc_m;
+    type procSlaves is array(N-1 downto 0) of proc_s;
+
+    type spm_m  is array(N-1 downto 0) of spm_master;
+    type spm_s  is array(N-1 downto 0) of spm_slave;
+    type spmMasters is array(N-1 downto 0) of spm_m;
+    type spmSlaves is array(N-1 downto 0) of spm_s;
+
+end package ; -- noc_interface

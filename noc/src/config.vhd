@@ -1,4 +1,3 @@
---
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
 --
@@ -30,48 +29,15 @@
 
 
 --------------------------------------------------------------------------------
--- A simple enable counter
+-- Definitions package
 --
 -- Author: Evangelia Kasapaki
+-- Author: Rasmus Bo Soerensen
 --------------------------------------------------------------------------------
 
-library ieee;
-use ieee.std_logic_1164.all ;
-use ieee.numeric_std.all;
+package config is
 
-library work;
-use work.noc_defs.all;
+    constant N : integer := 2; -- Horizontal width
+    constant M : integer := 2; -- Vertical Height
 
-entity counter is
-	generic (
-		WIDTH	: integer :=8
-	);
-	port (
-		clk 	: in std_logic ;
-		reset 	: in std_logic ;
-		enable	: in std_logic;
-		cnt 	: out std_logic_vector(WIDTH-1 downto 0)
-	);
-end counter;
-
-architecture rtl of counter is
-
-	signal val , reg : unsigned(WIDTH-1 downto 0);
-
-begin
-	cnt <= std_logic_vector(reg);
-	val <= reg+1 when to_integer(reg) < MAX_PERIOD-1 else (others => '0');
-
-	process(clk, reset)
-	begin
-		if reset ='1' then
-			reg <= (others => '0') after PDELAY;
-		elsif rising_edge(clk) then
-			if enable = '1' then
-				reg <= val after PDELAY;
-			end if;
-		end if ;
-	end process;
-
-end rtl ;
-
+end package ; -- aegean_def

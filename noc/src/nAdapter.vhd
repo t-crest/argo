@@ -93,10 +93,10 @@ signal ocp_cmd_write	: std_logic;
 signal response_ld_control : std_logic;
 signal ocp_read_control : std_logic;
 signal ocp_dataresp	: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
-signal ocp_response	: std_logic_vector(1 downto 0);
+signal ocp_response	: std_logic_vector(OCP_RESP_WIDTH-1 downto 0);
 signal resp_ld		: std_logic;
 signal ocp_dataresp_reg : std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
-signal ocp_response_reg : std_logic_vector(1 downto 0);
+signal ocp_response_reg : std_logic_vector(OCP_RESP_WIDTH-1 downto 0);
 
 
 signal dma_index	: std_logic_vector(DMA_IND_WIDTH-1 downto 0);
@@ -273,15 +273,15 @@ begin
 
 	response_ld : process (response_ld_control, dma_rdata) begin
 		ocp_dataresp <= (others=>'0');
-		ocp_response <= (others=>'0');
+		ocp_response <= OCP_RESP_NULL;
 
 		case response_ld_control is
 		when '1' =>
 			ocp_dataresp <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
-			ocp_response <= "10";
+			ocp_response <= OCP_RESP_DVA;
 		when others =>
 			ocp_dataresp <= (others=>'0');
-			ocp_response <= (others=>'0');
+			ocp_response <= OCP_RESP_NULL;
 		end case;
 	end process;
 
@@ -289,12 +289,12 @@ begin
 	-- ocp data response
 	ocp_response_output : process ( ocp_read_control, dma_rdata, ocp_dataresp_reg, ocp_response_reg ) begin
 		proc_out.SData <= (others=>'0');
-		proc_out.SResp <= (others=>'0');
+		proc_out.SResp <= OCP_RESP_NULL;
 
 		case ocp_read_control is
 		when '1' =>
 			proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
-			proc_out.SResp <= "10";
+			proc_out.SResp <= OCP_RESP_DVA;
 		when others =>
 			proc_out.SData <= ocp_dataresp_reg;
 			proc_out.SResp <= ocp_response_reg;
@@ -614,7 +614,7 @@ begin
 			pkt_out <= (others=>'0') after PDELAY;
 			config_reg <= (others=>'0') after PDELAY;
 			ocp_dataresp_reg <= (others=>'0') after PDELAY;
-			ocp_response_reg <= (others=>'0') after PDELAY;
+			ocp_response_reg <= OCP_RESP_NULL after PDELAY;
 
 		elsif rising_edge(na_clk) then
 			if ctrlOutreg_ld='1' then

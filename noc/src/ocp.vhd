@@ -48,13 +48,18 @@ package ocp is
     constant OCP_RESP_WIDTH : integer := 2;
 
     constant OCP_CMD_IDLE : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "000";
-    constant OCP_CMD_WRITE: std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "001";
-    constant OCP_CMD_READ : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "010";
+    constant OCP_CMD_WR   : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "001";
+    constant OCP_CMD_RD   : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "010";
+    --constant OCP_CMD_RDEX : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "011";
+    --constant OCP_CMD_RDL  : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "100";
+    --constant OCP_CMD_WRNP : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "101";
+    --constant OCP_CMD_WRC  : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "110";
+    --constant OCP_CMD_BCST : std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := "111";
 
-    constant OCP_RESP_NO   : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "00";
-    constant OCP_RESP_VALID: std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "01";
-    constant OCP_RESP_ERROR: std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "10";
-    constant OCP_RESP_FAULT: std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "11";
+    constant OCP_RESP_NULL : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "00";
+    constant OCP_RESP_DVA  : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "01";
+    constant OCP_RESP_FAIL : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "10";
+    constant OCP_RESP_ERR  : std_logic_vector(OCP_RESP_WIDTH-1 downto 0) := "11";
 
     type ocp_core_m is record
         MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);

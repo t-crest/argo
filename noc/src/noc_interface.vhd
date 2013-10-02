@@ -55,6 +55,7 @@ package noc_interface is
         MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
         MAddr       : std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
         MData       : std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
+        MByteEn     : std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
         MRespAccept : std_logic;
     end record;
 
@@ -75,6 +76,9 @@ package noc_interface is
         --SResp     : std_logic;
         SData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
     end record;
+
+    type spm_masters is array((N*M)-1 downto 0) of spm_master;
+    type spm_slaves is array((N*M)-1 downto 0) of spm_slave;
 
     --arrays
     type proc_m is array(N-1 downto 0) of ocp_master;

@@ -53,8 +53,8 @@ port (
 
 -- Processor Ports
 -- DMA Configuration Port - OCP
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
+	proc_in		: in ocp_io_m;
+	proc_out	: out ocp_io_s;
 
 -- SPM Data Port - OCP?
 	spm_in		: in spm_slave;

@@ -92,6 +92,7 @@ signal ocp_cmd_write	: std_logic;
 
 signal response_ld_control : std_logic;
 signal ocp_read_control : std_logic;
+signal ocp_write_control : std_logic;
 signal ocp_dataresp	: std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
 signal ocp_response	: std_logic_vector(OCP_RESP_WIDTH-1 downto 0);
 signal resp_ld		: std_logic;
@@ -266,9 +267,10 @@ begin
 -- build outputs -------------------------------------
 
 	ocp_read_control <= '1' when (state_cnt="00" or state_cnt="01") and (config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS)) and read_cmd_reg='1' else '0';
-	resp_ld <= '1' when (ocp_read_control='1' or proc_in.MRespAccept='1') else '0';
+	ocp_write_control <= '1' when (state_cnt="00" or state_cnt="01") and (config=DMA_R_ACCESS or config=DMA_H_ACCESS or config=DMA_L_ACCESS) and ocp_cmd_write='1' else '0';
+	resp_ld <= '1' when (ocp_read_control='1' or ocp_write_control='1' or proc_in.MRespAccept='1') else '0';
 
-	response_ld_control <= '1' when (ocp_read_control='1' and proc_in.MRespAccept='0') else '0';
+	response_ld_control <= '1' when ((ocp_read_control='1' or ocp_write_control='1') and proc_in.MRespAccept='0') else '0';
 
 
 	response_ld : process (response_ld_control, dma_rdata) begin
@@ -287,18 +289,25 @@ begin
 
 
 	-- ocp data response
-	ocp_response_output : process ( ocp_read_control, dma_rdata, ocp_dataresp_reg, ocp_response_reg ) begin
+	ocp_response_output : process ( ocp_read_control, ocp_write_control, dma_rdata, ocp_dataresp_reg, ocp_response_reg ) begin
 		proc_out.SData <= (others=>'0');
 		proc_out.SResp <= OCP_RESP_NULL;
 
 		case ocp_read_control is
 		when '1' =>
 			proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
-			proc_out.SResp <= OCP_RESP_DVA;
 		when others =>
 			proc_out.SData <= ocp_dataresp_reg;
-			proc_out.SResp <= ocp_response_reg;
 		end case;
+
+		case( ocp_read_control or ocp_write_control ) is
+		when '1' =>
+			proc_out.SResp <= OCP_RESP_DVA;
+		when others =>
+			proc_out.SResp <= ocp_response_reg;
+		end case ;
+
+
 	end process;
 
 
@@ -391,6 +400,7 @@ begin
 					dma_wdata <= x"00000000" & proc_in.MData;
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
+
 				elsif config=DMA_H_ACCESS then
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";

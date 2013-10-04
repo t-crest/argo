@@ -73,11 +73,11 @@ package noc_defs is
 	--addressing
 	constant ADDR_MASK_W	: integer := 8;
 	--starting address of DMA table (0,1) -unprotected 00100000 xxxx...
-	constant DMA_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00100000";
+	constant DMA_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "11100000";
 	--starting address of DMA route table (2) -protected 00010000 xxx.....
-	constant DMA_P_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00011000";
+	constant DMA_P_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "11100001";
 	--starting address of slot-table -protected 00011000 xxx.....
-	constant ST_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "00010000";
+	constant ST_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "11100010";
 
 	--configuration options
 	constant CNULL		: std_logic_vector(3 downto 0) := "0000";

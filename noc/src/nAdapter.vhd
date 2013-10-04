@@ -381,7 +381,7 @@ begin
 -----------------------------------------------------------------------------------------------
 -- DMA signals --------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
-	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata) begin
+	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata, vld_slt) begin
 		dma_waddr <= (others => '0');
 		dma_wdata <= (others => '0');
 		dma_wen <= (others => '0');

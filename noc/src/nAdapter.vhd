@@ -267,7 +267,7 @@ begin
 -- build outputs -------------------------------------
 
 	ocp_read_control <= '1' when (state_cnt="00" or state_cnt="01") and (config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS)) and read_cmd_reg='1' else '0';
-	ocp_write_control <= '1' when (state_cnt="00" or state_cnt="01") and (config=DMA_R_ACCESS or config=DMA_H_ACCESS or config=DMA_L_ACCESS) and ocp_cmd_write='1' else '0';
+	ocp_write_control <= '1' when (state_cnt="00" or state_cnt="01") and (config=DMA_R_ACCESS or config=DMA_H_ACCESS or config=DMA_L_ACCESS or config=ST_ACCESS) and ocp_cmd_write='1' else '0';
 	resp_ld <= '1' when (ocp_read_control='1' or ocp_write_control='1' or proc_in.MRespAccept='1') else '0';
 
 	response_ld_control <= '1' when ((ocp_read_control='1' or ocp_write_control='1') and proc_in.MRespAccept='0') else '0';

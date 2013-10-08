@@ -51,8 +51,8 @@ package noc_defs is
 	constant PHIT_WIDTH	: integer := 35;	-- see packet format -->32 + 3 control bits
 
 	-- scheduling
-	constant SLT_WIDTH	: integer := 3;
-	constant PRD_LENGTH	: integer := 2**SLT_WIDTH;	-- 2^6 = 64 -- 2^3 = 8
+	constant ADDR_SLT_WIDTH	: integer := 3;
+	constant PRD_LENGTH	: integer := 2**ADDR_SLT_WIDTH;	-- 2^6 = 64 -- 2^3 = 8
 
 	constant MAX_PERIOD	: integer :=128;
 

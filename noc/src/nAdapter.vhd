@@ -75,7 +75,7 @@ architecture rtl of nAdapter is
 
 
 ------------------------------ signal declarations --------------------------------
-signal slt_index	: std_logic_vector(SLT_WIDTH-1 downto 0);
+signal slt_index	: std_logic_vector(ADDR_SLT_WIDTH-1 downto 0);
 signal sc_en		: std_logic;
 signal slt_en		: std_logic;
 
@@ -201,7 +201,7 @@ begin
 -----------------------------------------------------------------------------------------------
 -- Slot Counter
 	slt_cnt : counter
-		generic map ( WIDTH=>SLT_WIDTH )
+		generic map ( WIDTH=>ADDR_SLT_WIDTH )
 		port map ( clk=>na_clk, reset=>na_reset, enable=>sc_en, cnt=>slt_index );
 
 -- DMA Table - simple block ram
@@ -221,10 +221,10 @@ begin
 			else '0';
 -- Slot Table
 	slt_table : bram
-		generic map ( DATA=>DMA_IND_WIDTH+1, ADDR=>SLT_WIDTH )
+		generic map ( DATA=>DMA_IND_WIDTH+1, ADDR=>ADDR_SLT_WIDTH )
 		port map (clk => na_clk,
 			rd_addr => slt_index,
-			wr_addr => proc_in.MAddr(SLT_WIDTH+1 downto 2), -- byte addresses
+			wr_addr => proc_in.MAddr(ADDR_SLT_WIDTH+1 downto 2), -- byte addresses
 			wr_data => proc_in.MData(DMA_IND_WIDTH downto 0), -- LS bits
 			wr_ena => slt_en,
 			rd_data => slt_entry

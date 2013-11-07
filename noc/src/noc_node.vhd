@@ -33,12 +33,14 @@
 -- NoC node for the TDM NoC, including SPMs, NI, router.
 --
 -- Author: Evangelia Kasapaki
+-- Author: Rasmus Bo Soerensen (rasmus@rbscloud.dk)
 --------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
+use work.ocp.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
 
@@ -49,11 +51,11 @@ port (
 	n_clk		: std_logic;
 	reset		: std_logic;
 
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
+	proc_m		: in ocp_io_m;
+	proc_s      : out ocp_io_s;
 
-	spm_in		: in spm_master;
-	spm_out		: out spm_slave;
+	spm_m		: out spm_master;
+	spm_s		: in spm_slave;
 
 	inNorth		: in network_link;
 	inSouth		: in network_link;
@@ -72,30 +74,6 @@ end noc_node;
 architecture struct of noc_node is
 
 ------------------------------component declarations----------------------------
---2 spms
-component bram_tdp is
-
-generic (
-    DATA    : integer := 32;
-    ADDR    : integer := 14
-);
-
-port (
--- Port A
-    a_clk   : in  std_logic;
-    a_wr    : in  std_logic;
-    a_addr  : in  std_logic_vector(ADDR-1 downto 0);
-    a_din   : in  std_logic_vector(DATA-1 downto 0);
-    a_dout  : out std_logic_vector(DATA-1 downto 0);
-
--- Port B
-    b_clk   : in  std_logic;
-    b_wr    : in  std_logic;
-    b_addr  : in  std_logic_vector(ADDR-1 downto 0);
-    b_din   : in  std_logic_vector(DATA-1 downto 0);
-    b_dout  : out std_logic_vector(DATA-1 downto 0)
-);
-end component;
 
 --1 na
 component nAdapter is
@@ -108,8 +86,8 @@ port (
 
 -- Processor Ports
 -- DMA Configuration Port - OCP
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
+	proc_in		: in ocp_io_m;
+	proc_out	: out ocp_io_s;
 
 -- SPM Data Port - OCP?
 	spm_in		: in spm_slave;
@@ -140,39 +118,7 @@ end component;
 signal ip_to_net	: network_link;
 signal net_to_ip	: network_link;
 
-signal spm_to_net	: spm_slave;
-signal net_to_spm	: spm_master;
-
 begin
-
-
--- High SPM instance
-spm_h : bram_tdp
-generic map (DATA=>DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-port map (a_clk => p_clk,
-	a_wr => spm_in.MCmd(0),
-	a_addr => spm_in.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	a_din => spm_in.MData(63 downto 32),
-	a_dout => spm_out.SData(63 downto 32),
-	b_clk => n_clk,
-	b_wr => net_to_spm.MCmd(0),
-	b_addr => net_to_spm.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	b_din => net_to_spm.MData(63 downto 32),
-	b_dout => spm_to_net.SData(63 downto 32));
-
--- Low SPM instance
-spm_l : bram_tdp
-generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-port map (a_clk => p_clk,
-	a_wr => spm_in.MCmd(0),
-	a_addr => spm_in.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	a_din => spm_in.MData(31 downto 0),
-	a_dout => spm_out.SData(31 downto 0),
-	b_clk => n_clk,
-	b_wr => net_to_spm.MCmd(0),
-	b_addr => net_to_spm.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	b_din => net_to_spm.MData(31 downto 0),
-	b_dout => spm_to_net.SData(31 downto 0));
 
 -- NA instance
 na : nAdapter
@@ -183,12 +129,12 @@ port map(
 
 	-- Processor Ports
 	-- DMA Configuration Port - OCP
-	proc_in=>proc_in,
-	proc_out=>proc_out,
+	proc_in=>proc_m,
+	proc_out=>proc_s,
 
 	-- SPM Data Port - OCP?
-	spm_in=>spm_to_net,
-	spm_out=>net_to_spm,
+	spm_in=>spm_s,
+	spm_out=>spm_m,
 
 	-- Network Ports
 	-- Incoming Port

@@ -33,6 +33,7 @@
 -- NxN bi-torus NoC.
 --
 -- Author: Evangelia Kasapaki
+-- Author: Rasmus Bo Soerensen (rasmus@rbscloud.dk)
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -40,22 +41,21 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 use work.config.all;
+use work.ocp.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
 
 
 entity noc is
-
 port (
-	p_clk		: in std_logic;
-	n_clk		: in std_logic;
+	clk			: in std_logic;
 	reset		: in std_logic;
 
-	p_ports_in	: in procMasters;
-	p_ports_out	: out procSlaves;
+	ocp_io_ms	: in ocp_io_m_a;
+	ocp_io_ss	: out ocp_io_s_a;
 
-	spm_ports_in	: in spmMasters;
-	spm_ports_out	: out spmSlaves
+	spm_ports_m	: out spm_masters;
+	spm_ports_s	: in spm_slaves
 
 );
 
@@ -71,11 +71,11 @@ port (
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
+	proc_m		: in ocp_io_m;
+	proc_s	    : out ocp_io_s;
 
-	spm_in		: in spm_master;
-	spm_out		: out spm_slave;
+	spm_m		: out spm_master;
+	spm_s		: in spm_slave;
 
 	inNorth		: in network_link;
 	inSouth		: in network_link;
@@ -94,7 +94,7 @@ end component;
 ------------------------------signal declarations----------------------------
 
 type link_n is array(0 to (N - 1)) of network_link;
-type link_m is array(0 to (N - 1)) of link_n;
+type link_m is array(0 to (M - 1)) of link_n;
 
 signal north_in  : link_m;
 signal east_in   : link_m;
@@ -108,19 +108,19 @@ signal west_out  : link_m;
 
 begin
 
-	nodes_m : for i in N-1 downto 0 generate
-		nodes_n : for j in N-1 downto 0 generate
+	nodes_m : for i in 0 to M-1 generate
+		nodes_n : for j in 0 to N-1 generate
 			node : noc_node
 			port map (
-				p_clk => p_clk,
-				n_clk => n_clk,
+				p_clk => clk,
+				n_clk => clk,
 				reset => reset,
 
-				proc_in => p_ports_in(i)(j),
-				proc_out => p_ports_out(i)(j),
+				proc_m => ocp_io_ms((i*N)+j),
+				proc_s => ocp_io_ss((i*N)+j),
 
-				spm_in => spm_ports_in(i)(j),
-				spm_out => spm_ports_out(i)(j),
+				spm_m => spm_ports_m((i*N)+j),
+				spm_s => spm_ports_s((i*N)+j),
 
 				inNorth => north_in(i)(j),
 				inSouth => south_in(i)(j),
@@ -136,25 +136,25 @@ begin
 		end generate nodes_n;
 	end generate nodes_m;
 
-	links_m : for i in 0 to N-1 generate
+	links_m : for i in 0 to M-1 generate
 		links_n : for j in 0 to N-1 generate
 			top : if (i = 0) generate
-				north_in(i)(j) <= south_out(N-1)(j);
-				south_in(N-1)(j) <= north_out(i)(j);
+				north_in(i)(j) <= south_out(M-1)(j);
+				south_in(M-1)(j) <= north_out(i)(j);
       			end generate top;
 			left : if (j = 0) generate
 			        west_in(i)(j) <= east_out(i)(N-1);
 			        east_in(i)(N-1) <= west_out(i)(j);
 			end generate left;
-			bottom : if (i = (N-1) and j < (N-1)) generate
+			bottom : if (i = (M-1) and j < (N-1)) generate
         			east_in(i)(j) <= west_out(i)(j+1);
 				west_in(i)(j+1) <= east_out(i)(j);
      			end generate bottom;
-			right : if (i < (N-1) and j = (N-1)) generate
+			right : if (i < (M-1) and j = (N-1)) generate
 			        south_in(i)(j) <= north_out(i+1)(j);
 			        north_in(i+1)(j) <= south_out(i)(j);
       			end generate right;
-			center : if (i < (N-1) and j < (N-1)) generate
+			center : if (i < (M-1) and j < (N-1)) generate
 				north_in(i+1)(j) <= south_out(i)(j);
 				south_in(i)(j) <= north_out(i+1)(j);
 				west_in(i)(j+1) <= east_out(i)(j);

@@ -43,6 +43,7 @@ package ocp is
        -- OCP
     constant OCP_CMD_WIDTH  : integer := 3;     -- 8 possible cmds --> 2
     constant OCP_ADDR_WIDTH : integer := 32;    --32
+    constant OCP_BURST_ADDR_WIDTH : integer := 21;    --32
     constant OCP_DATA_WIDTH : integer := 32;
     constant OCP_BYTE_WIDTH : integer := OCP_DATA_WIDTH/8;
     constant OCP_RESP_WIDTH : integer := 2;
@@ -89,7 +90,7 @@ package ocp is
 
     type ocp_burst_m is record
         MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);
-        MAddr       : std_logic_vector(OCP_ADDR_WIDTH-1 downto 0);
+        MAddr       : std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0);
         MData       : std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
         MDataByteEn : std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
         MDataValid  : std_logic;

@@ -50,6 +50,8 @@ package noc_interface is
     type ocp_io_m_a is array((N*M)-1 downto 0) of ocp_io_m;
     type ocp_io_s_a is array((N*M)-1 downto 0) of ocp_io_s;
 
+    type ocp_burst_m_a is array((N*M)-1 downto 0) of ocp_burst_m;
+    type ocp_burst_s_a is array((N*M)-1 downto 0) of ocp_burst_s;
 
     type ocp_master is record
         MCmd        : std_logic_vector(OCP_CMD_WIDTH-1 downto 0);

@@ -30,15 +30,13 @@
 
 
 --------------------------------------------------------------------------------
--- The latch stage of the HPU of the asynchronous router.
+-- Header parsing unit for the TDM NoC router.
 --
 -- Author: Evangelia Kasapaki
---	   Rasmus Bo Sorensen
 --------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
-use work.defs.all;
+use work.noc_defs.all;
 
 
 entity hpu is
@@ -95,6 +93,8 @@ begin
 	);
 
 	-- The pipeline lathes of the HPU stage
+        resource_port: if is_ni=TRUE generate
+          
 	token_latch : entity work.channel_latch(struct)
 	generic map (
 		init_token => EMPTY_TOKEN
@@ -107,5 +107,25 @@ begin
 		right_in  => chan_int_out_b,
                 lt_enable => lt_en
 	);
+
+        end generate resource_port;
+
+        other_port: if is_ni=FALSE generate
+          
+ 	token_latch : entity work.channel_latch(struct)
+	generic map (
+		init_token => VALID_TOKEN
+	)
+	port map (
+		preset    => preset,
+		left_in   => chan_internal_f,
+		left_out  => chan_internal_b,
+		right_out => chan_int_out_f,
+		right_in  => chan_int_out_b,
+                lt_enable => lt_en
+	);
+
+        end generate other_port;
+
 	
 end architecture struct;

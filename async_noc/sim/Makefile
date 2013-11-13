@@ -25,24 +25,36 @@ endif
 
 
 all: clean sim_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2.vhd
 	$(WINE) vsim -voptargs=+acc -do sim2.do test2_noc2x2
 
 test0: clean sim_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_noc2x2.vhd
 	$(WINE) vsim -voptargs=+acc -do sim0.do test0_noc2x2
 
 test1: clean sim_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test1_noc2x2.vhd
 	$(WINE) vsim -voptargs=+acc -do sim1.do test1_noc2x2
 
 test2: clean sim_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2.vhd
 	$(WINE) vsim -voptargs=+acc -do sim2.do test2_noc2x2
 
+test2_m: clean sim_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n_m.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_m.vhd
+	$(WINE) vsim -voptargs=+acc -do sim2_m.do test2_noc2x2
+
 sim_base:
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/sr_latch.vhd 
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/c_gate_generic.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/latch_controller.vhd
@@ -58,7 +70,6 @@ sim_base:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_node.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/cmd_util.vhd
 

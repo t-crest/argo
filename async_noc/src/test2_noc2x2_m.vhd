@@ -59,7 +59,10 @@ use ieee.numeric_std.all;
 use std.textio.all;
 use work.txt_util.all;
 use work.cmd_util.all;
-use work.defs.all;
+use work.config.all;
+use work.noc_defs.all;
+use work.ocp.all;
+use work.noc_interface.all;
 
 
 entity test2_noc2x2 is
@@ -71,8 +74,9 @@ architecture behav of test2_noc2x2 is
 -----------------------component declarations------------------------------
 component noc is
 port (
-	p_clk		: in std_logic;
+	--p_clk		: in std_logic;
 	n_clk		: in std_logic;
+        n_clk_skd	: in std_logic;
 	reset		: in std_logic;
 
 	p_ports_in	: in procMasters;
@@ -84,7 +88,7 @@ port (
 );
 end component;
 
---2 spms
+
 component bram_tdp is
 
 generic (
@@ -112,20 +116,16 @@ end component;
 -------------------------signal declarations-------------------------------
 signal n_clk		: std_logic := '1';
 signal p_clk		: std_logic := '1';
+signal n_clk_sk		: std_logic := '1';
+signal p_clk_sk		: std_logic := '1';
 signal reset		: std_logic := '1';
 
 signal p_masters	: procMasters;
 signal p_slaves		: procSlaves;
 signal p_spm_masters	: spmMasters;
-signal p_spm_slaves	: spmSlaves;
+signal P_spm_slaves	: spmSlaves;
 signal n_spm_masters	: spmMasters;
 signal n_spm_slaves	: spmSlaves;
-
-signal p_masters_flat   : std_logic_vector(263 downto 0);
-signal p_slaves_flat    : std_logic_vector(135 downto 0);
-signal n_spm_slaves_flat  : std_logic_vector(263 downto 0);
-signal n_spm_masters_flat : std_logic_vector(391 downto 0);
- 
 
 constant SCHED_FILE     : string (23 downto 1) := "../sim/all_to_all.sched";
 file schedule0          : text open READ_MODE is SCHED_FILE;
@@ -133,14 +133,48 @@ file schedule1          : text open READ_MODE is SCHED_FILE;
 file schedule2          : text open READ_MODE is SCHED_FILE;
 file schedule3          : text open READ_MODE is SCHED_FILE;
 
+constant SPM_INIT_SIZE : integer := 4;
 
 begin
 
 
-spm_m : for i in N-1 downto 0 generate
+	spm_m : for i in N-1 downto 0 generate
 		spm_n : for j in N-1 downto 0 generate
+                  
+                        skewed: if i=0 and j=0 generate        
 			-- High SPM instance
-                        spm_h : entity work.bram_tdp
+                        spm_h : bram_tdp
+                          generic map (DATA=>DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
+                          port map (a_clk => p_clk_sk, 
+                                    a_wr => p_spm_masters(i)(j).MCmd(0), 
+                                    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0), 
+                                    a_din => p_spm_masters(i)(j).MData(63 downto 32), 
+                                    a_dout => p_spm_slaves(i)(j).SData(63 downto 32), 
+                                    b_clk => n_clk_sk,
+                                    b_wr => n_spm_masters(i)(j).MCmd(0), 
+                                    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0), 
+                                    b_din => n_spm_masters(i)(j).MData(63 downto 32), 
+                                    b_dout => n_spm_slaves(i)(j).SData(63 downto 32));
+
+                        -- Low SPM instance
+                        spm_l : bram_tdp
+                          generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
+                          port map (a_clk => p_clk_sk, 
+                                    a_wr => p_spm_masters(i)(j).MCmd(0), 
+                                    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0), 
+                                    a_din => p_spm_masters(i)(j).MData(31 downto 0), 
+                                    a_dout => p_spm_slaves(i)(j).SData(31 downto 0), 
+                                    b_clk => n_clk_sk,
+                                    b_wr => n_spm_masters(i)(j).MCmd(0), 
+                                    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0), 
+                                    b_din => n_spm_masters(i)(j).MData(31 downto 0), 
+                                    b_dout => n_spm_slaves(i)(j).SData(31 downto 0));
+
+                        end generate skewed;
+
+                        not_skewed: if not(i=0) or not(j=0) generate
+                        -- High SPM instance
+                        spm_h : bram_tdp
                           generic map (DATA=>DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
                           port map (a_clk => p_clk, 
                                     a_wr => p_spm_masters(i)(j).MCmd(0), 
@@ -154,7 +188,7 @@ spm_m : for i in N-1 downto 0 generate
                                     b_dout => n_spm_slaves(i)(j).SData(63 downto 32));
 
                         -- Low SPM instance
-                        spm_l : entity work.bram_tdp
+                        spm_l : bram_tdp
                           generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
                           port map (a_clk => p_clk, 
                                     a_wr => p_spm_masters(i)(j).MCmd(0), 
@@ -166,60 +200,26 @@ spm_m : for i in N-1 downto 0 generate
                                     b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0), 
                                     b_din => n_spm_masters(i)(j).MData(31 downto 0), 
                                     b_dout => n_spm_slaves(i)(j).SData(31 downto 0));
+                        
+                        end generate not_skewed;
+
                           
                 end generate spm_n;
-end generate spm_m;
+        end generate spm_m;
+  
 
-        
-p_masters_flat(263 downto 198) <= p_masters(1)(1).MCmd & p_masters(1)(1).MAddr & p_masters(1)(1).MData;
-p_masters_flat(197 downto 132) <= p_masters(1)(0).MCmd & p_masters(1)(0).MAddr & p_masters(1)(0).MData;        
-p_masters_flat(131 downto 66) <= p_masters(0)(1).MCmd & p_masters(0)(1).MAddr & p_masters(0)(1).MData;        
-p_masters_flat(65 downto 0) <= p_masters(0)(0).MCmd & p_masters(0)(0).MAddr & p_masters(0)(0).MData;
-        
-p_slaves(1)(1).SCmdAccept <= p_slaves_flat(135);
-p_slaves(1)(1).SResp <= p_slaves_flat(134);
-p_slaves(1)(1).SData <= p_slaves_flat(133 downto 102);
-p_slaves(1)(0).SCmdAccept  <= p_slaves_flat(101);
-p_slaves(1)(0).SResp <= p_slaves_flat(100);
-p_slaves(1)(0).SData <= p_slaves_flat(99 downto 68);
-p_slaves(0)(1).SCmdAccept <= p_slaves_flat(67);
-p_slaves(0)(1).SResp <= p_slaves_flat(66);
-p_slaves(0)(1).SData <= p_slaves_flat(65 downto 34);
-p_slaves(0)(0).SCmdAccept <= p_slaves_flat(33);
-p_slaves(0)(0).SResp <= p_slaves_flat(32);
-p_slaves(0)(0).SData <= p_slaves_flat(31 downto 0);
-      
-n_spm_slaves_flat(263 downto 198) <= n_spm_slaves(1)(1).SCmdAccept & n_spm_slaves(1)(1).SResp & n_spm_slaves(1)(1).SData;
-n_spm_slaves_flat(197 downto 132) <= n_spm_slaves(1)(0).SCmdAccept & n_spm_slaves(1)(0).SResp & n_spm_slaves(1)(0).SData;
-n_spm_slaves_flat(131 downto 66) <= n_spm_slaves(0)(1).SCmdAccept & n_spm_slaves(0)(1).SResp & n_spm_slaves(0)(1).SData;
-n_spm_slaves_flat(65 downto 0) <= n_spm_slaves(0)(0).SCmdAccept & n_spm_slaves(0)(0).SResp & n_spm_slaves(0)(0).SData;
-        
-n_spm_masters(1)(1).MCmd <= n_spm_masters_flat(391 downto 390);
-n_spm_masters(1)(1).MAddr <= n_spm_masters_flat(389 downto 358);
-n_spm_masters(1)(1).MData <= n_spm_masters_flat(357 downto 294);
-n_spm_masters(1)(0).MCmd <= n_spm_masters_flat(293 downto 292);
-n_spm_masters(1)(0).MAddr <= n_spm_masters_flat(291 downto 260);
-n_spm_masters(1)(0).MData <= n_spm_masters_flat(259 downto 196);
-n_spm_masters(0)(1).MCmd <= n_spm_masters_flat(195 downto 194);
-n_spm_masters(0)(1).MAddr <= n_spm_masters_flat(193 downto 162);
-n_spm_masters(0)(1).MData <= n_spm_masters_flat(161 downto 98);
-n_spm_masters(0)(0).MCmd <= n_spm_masters_flat(97 downto 96);
-n_spm_masters(0)(0).MAddr <= n_spm_masters_flat(95 downto 64);
-n_spm_masters(0)(0).MData <= n_spm_masters_flat(63 downto 0);
-
-        
-
-noc2x2 : entity work.noc (MODULE)
+noc2x2 : noc
 port map (
-	p_clk => p_clk,
+	--p_clk => p_clk,
 	n_clk => n_clk,
+	n_clk_skd => n_clk_sk,
 	reset => reset,
 
-	p_ports_in => p_masters_flat,
-	p_ports_out => p_slaves_flat,
+	p_ports_in => p_masters,
+	p_ports_out => p_slaves,
 
-	spm_ports_in => n_spm_slaves_flat,
-	spm_ports_out => n_spm_masters_flat
+	spm_ports_in => n_spm_slaves,
+	spm_ports_out => n_spm_masters
 );
 
 
@@ -228,6 +228,8 @@ na_clk_generate: process
 begin
 	wait for NA_HPERIOD;
 	n_clk <= not n_clk;
+        wait for SKEW;
+        n_clk_sk <= n_clk;
 end process;
 
 --proc clock 
@@ -235,6 +237,8 @@ proc_clk_generate: process
 begin
 	wait for P_HPERIOD;
 	p_clk <= not p_clk;
+        wait for SKEW;
+        p_clk_sk <= p_clk;
 end process;
 
 --reset
@@ -253,7 +257,7 @@ spm_initilize: process
   variable count : natural := 0;
 
 begin
---p_spm_masters(0)(0).MCmd  <= (others=>'0');
+
    	for i in 0 to N-1 loop
 		for j in 0 to N-1 loop
                   p_spm_masters(i)(j).MCmd  <= (others=>'0');
@@ -270,17 +274,17 @@ begin
                 wait until rising_edge(n_clk);
                 wait for delay;
 
-                p_spm_masters(0)(0).MCmd <="11";
-                p_spm_masters(0)(0).MAddr <= std_logic_vector(to_unsigned(count,32));--x"00000000";
+                p_spm_masters(0)(0).MCmd <="1";
+                p_spm_masters(0)(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000000";
                 p_spm_masters(0)(0).MData <= x"0000000011111111";
-                p_spm_masters(0)(1).MCmd <="11";
-                p_spm_masters(0)(1).MAddr <= std_logic_vector(to_unsigned(count+SPM_INIT_SIZE,32));--x"00000002";
+                p_spm_masters(0)(1).MCmd <="1";
+                p_spm_masters(0)(1).MAddr <= std_logic_vector(to_unsigned(count+SPM_INIT_SIZE,16));--x"00000002";
                 p_spm_masters(0)(1).MData <= x"2222222233333333";
-                p_spm_masters(1)(0).MCmd <="11";
-                p_spm_masters(1)(0).MAddr <= std_logic_vector(to_unsigned(count+2*SPM_INIT_SIZE,32));--x"00000004";
+                p_spm_masters(1)(0).MCmd <="1";
+                p_spm_masters(1)(0).MAddr <= std_logic_vector(to_unsigned(count+2*SPM_INIT_SIZE,16));--x"00000004";
                 p_spm_masters(1)(0).MData <= x"4444444455555555";
-                p_spm_masters(1)(1).MCmd <="11";
-                p_spm_masters(1)(1).MAddr <= std_logic_vector(to_unsigned(count+3*SPM_INIT_SIZE,32));--x"00000006";
+                p_spm_masters(1)(1).MCmd <="1";
+                p_spm_masters(1)(1).MAddr <= std_logic_vector(to_unsigned(count+3*SPM_INIT_SIZE,16));--x"00000006";
                 p_spm_masters(1)(1).MData <= x"6666666677777777";
 
                 count := count + 1;
@@ -288,17 +292,19 @@ begin
         end loop;
 
         wait until rising_edge(n_clk);
-        
-        p_spm_masters(0)(0).MCmd <="00";
+        --wait until rising_edge(n_clk);
+        wait for delay;
+       
+        p_spm_masters(0)(0).MCmd <="0";
         p_spm_masters(0)(0).MAddr <= (others=>'0');
         p_spm_masters(0)(0).MData <= (others=>'0');
-        p_spm_masters(0)(1).MCmd <="00";
+        p_spm_masters(0)(1).MCmd <="0";
         p_spm_masters(0)(1).MAddr <= (others=>'0');
         p_spm_masters(0)(1).MData <= (others=>'0');
-        p_spm_masters(1)(0).MCmd <="00";
+        p_spm_masters(1)(0).MCmd <="0";
         p_spm_masters(1)(0).MAddr <= (others=>'0');
         p_spm_masters(1)(0).MData <= (others=>'0');
-        p_spm_masters(1)(1).MCmd <="00";
+        p_spm_masters(1)(1).MCmd <="0";
         p_spm_masters(1)(1).MAddr <= (others=>'0');
         p_spm_masters(1)(1).MData <= (others=>'0');
 
@@ -313,14 +319,14 @@ begin
                 wait until rising_edge(n_clk);
                 wait for delay;
 
-                p_spm_masters(0)(0).MCmd <="10";
-                p_spm_masters(0)(0).MAddr <= std_logic_vector(to_unsigned(count,32));--x"00000000";
-                p_spm_masters(0)(1).MCmd <="10";
-                p_spm_masters(0)(1).MAddr <= std_logic_vector(to_unsigned(count,32));--x"00000002";
-                p_spm_masters(1)(0).MCmd <="10";
-                p_spm_masters(1)(0).MAddr <= std_logic_vector(to_unsigned(count,32));--x"00000004";
-                p_spm_masters(1)(1).MCmd <="10";
-                p_spm_masters(1)(1).MAddr <= std_logic_vector(to_unsigned(count,32));--x"00000006";
+                p_spm_masters(0)(0).MCmd <="0";
+                p_spm_masters(0)(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000000";
+                p_spm_masters(0)(1).MCmd <="0";
+                p_spm_masters(0)(1).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000002";
+                p_spm_masters(1)(0).MCmd <="0";
+                p_spm_masters(1)(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000004";
+                p_spm_masters(1)(1).MCmd <="0";
+                p_spm_masters(1)(1).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000006";
 
                 count := count + 1;
 
@@ -346,11 +352,12 @@ begin
         p_masters(0)(0).MCmd  <= (others=>'0');
         p_masters(0)(0).MAddr <= (others=>'0');
         p_masters(0)(0).MData <= (others=>'0');
+        p_masters(0)(0).MByteEn <= (others=>'0');
+        p_masters(0)(0).MRespAccept <= '0';
 
                     
         wait until falling_edge(reset);
       	wait for 6*NA_HPERIOD;
-        wait for 3 ns;
 
         if not endfile(schedule0) then
 
@@ -377,7 +384,8 @@ begin
                         --st_write
                         --print str(slt);
                         st_write(p_masters(0)(0),
-                                 std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                 p_slaves(0)(0),
+                                 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                  slt, p_clk);
                         cnt := cnt + 1;
                         exit when cnt = slt_num or endfile(schedule0);
@@ -397,32 +405,36 @@ begin
                         --report str(route);
                         route_write (p_masters(0)(0),
                                      p_slaves(0)(0),
-                                     std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                      route, p_clk);
                         cnt := cnt + 1;
-                        exit when cnt = NxN or endfile(schedule0);
+                        exit when cnt = N*N or endfile(schedule0);
                 end loop;
 
                 --DMA 1
                 dma_write (p_masters(0)(0), p_slaves(0)(0),
-                           x"000003", x"00000000", p_clk);
+                           x"00000c", x"00000000", p_clk);
                 --DMA 2
                 dma_write (p_masters(0)(0), p_slaves(0)(0),
-                           x"000005", x"00000000", p_clk);
+                           x"000014", x"00000000", p_clk);
                 --DMA 3
                 dma_write (p_masters(0)(0), p_slaves(0)(0),
-                           x"000007", x"00000000", p_clk);
+                           x"00001c", x"00000000", p_clk);
 
                 --enable and start
                 --DMA 1
                 dma_write (p_masters(0)(0), p_slaves(0)(0),
-                           x"000002", x"00008008", p_clk);
+                           x"000008", x"00008004", p_clk);
                 --DMA 2
                 dma_write (p_masters(0)(0), p_slaves(0)(0),
-                           x"000004", x"00008008", p_clk);
+                           x"000010", x"00008004", p_clk);
                 --DMA 3
                 dma_write (p_masters(0)(0), p_slaves(0)(0),
-                           x"000006", x"00008008", p_clk);
+                           x"000018", x"00008004", p_clk);
+
+                -- DMA 1 read for testing
+                dma_read (p_masters(0)(0), p_slaves(0)(0),
+                           x"000008", p_clk);
         end if;
           
 end process;
@@ -442,10 +454,11 @@ begin
         p_masters(0)(1).MCmd  <= (others=>'0');
         p_masters(0)(1).MAddr <= (others=>'0');
         p_masters(0)(1).MData <= (others=>'0');
-
+        p_masters(0)(1).MByteEn <= (others=>'0');
+        p_masters(0)(1).MRespAccept <= '0';
+        
         wait until falling_edge(reset);
       	wait for 6*NA_HPERIOD;
-        wait for 3 ns;
 
         if not endfile(schedule1) then
 
@@ -473,7 +486,8 @@ begin
                         --st_write
                         --print str(slt);
                         st_write(p_masters(0)(1),
-                                 std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                 p_slaves(0)(1),
+                                 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                  slt, p_clk);
                         cnt := cnt + 1;
                         exit when cnt = slt_num or endfile(schedule1);
@@ -493,32 +507,32 @@ begin
                         --print str(route);
                         route_write (p_masters(0)(1),
                                      p_slaves(0)(1),
-                                     std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                      route, p_clk);
                         cnt := cnt + 1;
-                        exit when cnt = NxN or endfile(schedule1);
+                        exit when cnt = N*N or endfile(schedule1);
                 end loop;
 
                 --DMA 0
                 dma_write (p_masters(0)(1), p_slaves(0)(1),
-                           x"000001", x"00080008", p_clk);
+                           x"000004", x"00040004", p_clk);
                 --DMA 2
                 dma_write (p_masters(0)(1), p_slaves(0)(1),
-                           x"000005", x"00080008", p_clk);
+                           x"000014", x"00040004", p_clk);
                 --DMA 3
                 dma_write (p_masters(0)(1), p_slaves(0)(1),
-                           x"000007", x"00080008", p_clk);
+                           x"00001c", x"00040004", p_clk);
 
                 --enable and start
                 --DMA 0
                 dma_write (p_masters(0)(1), p_slaves(0)(1),
-                           x"000000", x"00008008", p_clk);
+                           x"000000", x"00008004", p_clk);
                 --DMA 2
                 dma_write (p_masters(0)(1), p_slaves(0)(1),
-                           x"000004", x"00008008", p_clk);
+                           x"000010", x"00008004", p_clk);
                 --DMA 3
                 dma_write (p_masters(0)(1), p_slaves(0)(1),
-                           x"000006", x"00008008", p_clk);                
+                           x"000018", x"00008004", p_clk);                
         end if;
           
 end process;
@@ -540,10 +554,11 @@ begin
         p_masters(1)(0).MCmd  <= (others=>'0');
         p_masters(1)(0).MAddr <= (others=>'0');
         p_masters(1)(0).MData <= (others=>'0');
-  
+        p_masters(1)(0).MByteEn <= (others=>'0');
+        p_masters(1)(0).MRespAccept <= '0';
+        
         wait until falling_edge(reset);
       	wait for 6*NA_HPERIOD;
-        wait for 3 ns;
 
         if not endfile(schedule2) then
 
@@ -571,7 +586,8 @@ begin
                         --st_write
                         --print str(slt);
                         st_write(p_masters(1)(0),
-                                 std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                 p_slaves(1)(0),
+                                 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                  slt, p_clk);
                         cnt := cnt + 1;
                         exit when cnt = slt_num or endfile(schedule2);
@@ -591,32 +607,32 @@ begin
                         --print str(route);
                         route_write (p_masters(1)(0),
                                      p_slaves(1)(0),
-                                     std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                      route, p_clk);
                         cnt := cnt + 1;
-                        exit when cnt = NxN or endfile(schedule2);
+                        exit when cnt = N*N or endfile(schedule2);
                 end loop;
 
                 --DMA 0
                 dma_write (p_masters(1)(0), p_slaves(1)(0),
-                           x"000001", x"00100010", p_clk);
+                           x"000004", x"00080008", p_clk);
                 --DMA 1
                 dma_write (p_masters(1)(0), p_slaves(1)(0),
-                           x"000003", x"00100010", p_clk);
+                           x"00000c", x"00080008", p_clk);
                 --DMA 3
                 dma_write (p_masters(1)(0), p_slaves(1)(0),
-                           x"000007", x"00100010", p_clk);
+                           x"00001c", x"00080008", p_clk);
 
                 --enable and start
                 --DMA 0
                 dma_write (p_masters(1)(0), p_slaves(1)(0),
-                           x"000000", x"00008008", p_clk);
+                           x"000000", x"00008004", p_clk);
                 --DMA 1
                 dma_write (p_masters(1)(0), p_slaves(1)(0),
-                           x"000002", x"00008008", p_clk);
+                           x"000008", x"00008004", p_clk);
                 --DMA 3
                 dma_write (p_masters(1)(0), p_slaves(1)(0),
-                           x"000006", x"00008008", p_clk);
+                           x"000018", x"00008004", p_clk);
                 
         end if;
           
@@ -638,10 +654,11 @@ begin
         p_masters(1)(1).MCmd  <= (others=>'0');
         p_masters(1)(1).MAddr <= (others=>'0');
         p_masters(1)(1).MData <= (others=>'0');
-
+        p_masters(1)(1).MByteEn <= (others=>'0');
+        p_masters(1)(1).MRespAccept <= '0';
+        
         wait until falling_edge(reset);
       	wait for 6*NA_HPERIOD;
-        wait for 3 ns;
 
         if not endfile(schedule3) then
 
@@ -669,7 +686,8 @@ begin
                         --st_write
                         --print str(slt);
                         st_write(p_masters(1)(1),
-                                 std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                  p_slaves(1)(1),
+                                std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                  slt, p_clk);
                         cnt := cnt + 1;
                         exit when cnt = slt_num or endfile(schedule3);
@@ -689,32 +707,32 @@ begin
                         --print str(route);
                         route_write (p_masters(1)(1),
                                      p_slaves(1)(1),
-                                     std_logic_vector(to_unsigned(cnt, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                                      route, p_clk);
                         cnt := cnt + 1;
-                        exit when cnt = NxN or endfile(schedule3);
+                        exit when cnt = N*N or endfile(schedule3);
                 end loop;
 
                 --DMA 0
                 dma_write (p_masters(1)(1), p_slaves(1)(1),
-                           x"000001", x"00180018", p_clk);
+                           x"000004", x"000c000c", p_clk);
                 --DMA 1
                 dma_write (p_masters(1)(1), p_slaves(1)(1),
-                           x"000003", x"00180018", p_clk);
+                           x"00000c", x"000c000c", p_clk);
                 --DMA 2
                 dma_write (p_masters(1)(1), p_slaves(1)(1),
-                           x"000005", x"00180018", p_clk);
+                           x"000014", x"000c000c", p_clk);
 
                 --enable and start
                 --DMA 0
                 dma_write (p_masters(1)(1), p_slaves(1)(1),
-                           x"000000", x"00008008", p_clk);
+                           x"000000", x"00008004", p_clk);
                 --DMA 1
                 dma_write (p_masters(1)(1), p_slaves(1)(1),
-                           x"000002", x"00008008", p_clk);
+                           x"000008", x"00008004", p_clk);
                 --DMA 2
                 dma_write (p_masters(1)(1), p_slaves(1)(1),
-                           x"000004", x"00008008", p_clk);
+                           x"000010", x"00008004", p_clk);
                                 
         end if;          
 end process;

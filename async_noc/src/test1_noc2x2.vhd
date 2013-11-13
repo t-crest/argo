@@ -30,7 +30,23 @@
 
 
 --------------------------------------------------------------------------------
--- Testbench for a 2x2 TDM NoC, with 4 DMAs, and one-to-all communication
+-- Testbench for a 2x2 TDM NoC, with 8 slot period and 4 DMAs,
+-- with the following configuration:
+-- all-to-all communication
+-- all nodes
+-- DMA0:  Channel1: north
+-- DMA1:  Channel2: east
+-- DMA2:  Channel3: east -> north
+--
+-- SCHEDULE
+-- 0:DMA0
+-- 1:DMA1
+-- 2:DMA2
+-- 3:invalid
+-- 4:DMA0
+-- 5:DMA1
+-- 6:DMA2
+-- 7:invalid
 --
 -- Author: Evangelia Kasapaki
 --------------------------------------------------------------------------------

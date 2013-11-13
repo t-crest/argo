@@ -38,7 +38,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use work.defs.all;
+use work.noc_defs.all;
 
 
 entity channel_latch is
@@ -86,7 +86,7 @@ begin
 	);
 	
 	-- Normal transparent latch, cf. figure 6.21 in S&F
-	type_latch: process(left_in, lt_en, preset)
+	type_latch: process(type_in, lt_en, preset)
 	begin
 		if (lt_en = '1') then
                   type_out <= transport type_in after delay;

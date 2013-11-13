@@ -28,12 +28,28 @@
 -- policies, either expressed or implied, of the copyright holder.
 -- 
 
+
 --------------------------------------------------------------------------------
--- Testbench for a 2x2 TDM NoC, with 4 DMAs, and all-to-all communication
+-- Testbench for a 2x2 TDM NoC, with 8 slot period and 4 DMAs,
+-- with the following configuration:
+-- all-to-all communication
+-- all nodes
+-- DMA0:  Channel1: north
+-- DMA1:  Channel2: east
+-- DMA2:  Channel3: east -> north
+--
+-- SCHEDULE
+-- 0:DMA0
+-- 1:DMA1
+-- 2:DMA2
+-- 3:invalid
+-- 4:DMA0
+-- 5:DMA1
+-- 6:DMA2
+-- 7:invalid
 --
 -- Author: Evangelia Kasapaki
 --------------------------------------------------------------------------------
-
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -55,7 +71,7 @@ architecture behav of test2_noc2x2 is
 -----------------------component declarations------------------------------
 component noc is
 port (
-	p_clk		: in std_logic;
+	--p_clk		: in std_logic;
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 
@@ -150,7 +166,7 @@ begin
 
 noc2x2 : noc
 port map (
-	p_clk => p_clk,
+	--p_clk => p_clk,
 	n_clk => n_clk,
 	reset => reset,
 

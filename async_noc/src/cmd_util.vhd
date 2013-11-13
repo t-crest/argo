@@ -35,25 +35,27 @@
 -- Author: Evangelia Kasapaki
 --------------------------------------------------------------------------------
 
-
 library ieee;
 use ieee.std_logic_1164.all;
 use std.textio.all;
-use work.defs.all;
+use work.noc_defs.all;
+use work.ocp.all;
+use work.noc_interface.all;
 
 
 package cmd_util is
 
-    constant SIMDELAY : time := 3 ns;
+    constant SIMDELAY : time := 500 ps;  -- 400ps for netlist simulation
+                                         -- 500ps for vhdl simulation
 
     --writes a 64bit value from a processor to spm
-    procedure spm_write (signal core: out ocp_master_spm; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
+    procedure spm_write (signal core: out spm_master; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
 
     --reads a 64bit value from spm to processor
-    procedure spm_read (signal core: out ocp_master_spm; addr: std_logic_vector; signal clk: in std_logic);
+    procedure spm_read (signal core: out spm_master; addr: std_logic_vector; signal clk: in std_logic);
 
     --writes a Slot Table entry
-    procedure st_write (signal core : out ocp_master; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
+    procedure st_write (signal core : out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
 
     --reads a Slot Table entry
     procedure st_read (signal core: out ocp_master; addr: std_logic_vector; signal clk: in std_logic);
@@ -64,11 +66,15 @@ package cmd_util is
     --write a DMA controller
     procedure dma_write (signal core: out ocp_master; signal slave: in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
 
+    --read a DMA controller
+    procedure dma_read (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; signal clk: in std_logic);
+
+
     --generic processor write
     procedure proc_write (signal core: out ocp_master; signal slave: in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
 
     --generic processor read
-    procedure proc_read (signal core: out ocp_master; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
+    procedure proc_read (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
 
 
 end cmd_util;
@@ -80,10 +86,11 @@ package body cmd_util is
 
 
   --writes a 64bit value from a processor to spm
-  procedure spm_write (signal core: out ocp_master_spm; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
+  procedure spm_write (signal core: out spm_master; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "11";
+    core.MCmd <= "1";
     core.MAddr <= addr;
     core.MData <= data;
     wait until rising_edge(clk);
@@ -97,40 +104,46 @@ package body cmd_util is
 
   
   --reads a 64bit value from spm to processor
-  procedure spm_read (signal core: out ocp_master_spm; addr: std_logic_vector; signal clk: in std_logic) is
+  procedure spm_read (signal core: out spm_master; addr: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "10";
+    core.MCmd <= "0";
     core.MAddr <= addr;
     wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "00";
+    --core.MCmd <= "00";
     core.MAddr <= (others=>'0');
     --wait until rising_edge(clk);
     return;
   end spm_read;
 
   --writes a Slot Table entry
-  procedure st_write (signal core : out ocp_master; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
+  procedure st_write (signal core : out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "11";
+    core.MCmd <= OCP_CMD_WR;
     core.MAddr <= ST_MASK & addr;
     core.MData <= x"000000" & "000" & data;
-    wait until rising_edge(clk);
+    wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
     wait for SIMDELAY;
     core.MCmd <= (others=>'0');
     core.MAddr <= (others=>'0');
     core.MData <= (others=>'0');
-    --wait until rising_edge(clk);
+    core.MRespAccept <= '1';
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MRespAccept <= '0';
     return;
   end st_write;
 
   --reads a Slot Table entry
   procedure st_read (signal core: out ocp_master; addr: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "10";
+    core.MCmd <= OCP_CMD_RD;
     core.MAddr <= ST_MASK & addr;
     wait until rising_edge(clk);
     wait for SIMDELAY;
@@ -143,63 +156,102 @@ package body cmd_util is
   --write a DMA route
   procedure route_write (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "11";
+    core.MCmd <= OCP_CMD_WR;
     core.MAddr <= DMA_P_MASK & addr;
     core.MData <= x"0000" & data;
-    wait until rising_edge(clk) and slave.SResp='1';
+    wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
     wait for SIMDELAY;
     core.MCmd <= (others=>'0');
     core.MAddr <= (others=>'0');
     core.MData <= (others=>'0');
-    --wait until rising_edge(clk);
+    core.MRespAccept <= '1';
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MRespAccept <= '0';
     return;
   end route_write;
 
   --write a DMA controller
   procedure dma_write (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "11";
+    core.MCmd <= OCP_CMD_WR;
     core.MAddr <= DMA_MASK & addr;
     core.MData <= data;
-    wait until rising_edge(clk) and slave.SResp='1';
+    wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
     wait for SIMDELAY;
     core.MCmd <= (others=>'0');
     core.MAddr <= (others=>'0');
     core.MData <= (others=>'0');
+    core.MRespAccept <= '1';
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MRespAccept <= '0';
     --wait until rising_edge(clk);
     return;
   end dma_write;
 
+   -- read a DMA controller
+  procedure dma_read (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; signal clk: in std_logic) is
+  begin
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MCmd <= OCP_CMD_RD;
+    core.MAddr <= DMA_MASK & addr;
+    wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
+    wait for SIMDELAY;
+    core.MCmd <= (others=>'0');
+    core.MAddr <= (others=>'0');
+    core.MRespAccept <= '1';
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MRespAccept <= '0';
+    --wait until rising_edge(clk);
+    return;
+  end dma_read;
+
+
   --generic processor write
   procedure proc_write (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "11";
+    core.MCmd <= OCP_CMD_WR;
     core.MAddr <= addr;
     core.MData <= data;
-    wait until rising_edge(clk) and slave.SResp='1';
+    wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
     wait for SIMDELAY;
     core.MCmd <= (others=>'0');
     core.MAddr <= (others=>'0');
     core.MData <= (others=>'0');    
+    core.MRespAccept <= '1';
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MRespAccept <= '0';
     --wait until rising_edge(clk);
     return;
   end proc_write;
 
   --generic processor read
-  procedure proc_read (signal core: out ocp_master; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
+  procedure proc_read (signal core: out ocp_master; signal slave : in ocp_slave; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    wait until rising_edge(clk);
     wait for SIMDELAY;
-    core.MCmd <= "00";
+    core.MCmd <= OCP_CMD_RD;
     core.MAddr <= addr;
     core.MData <= data;
-    wait until rising_edge(clk);
+    wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
     wait for SIMDELAY;
     core.MCmd <= (others=>'0');
     core.MAddr <= (others=>'0');
     core.MData <= (others=>'0');   
+     core.MRespAccept <= '1';
+    wait until rising_edge(clk);
+    wait for SIMDELAY;
+    core.MRespAccept <= '0';
     --wait until rising_edge(clk);
     return;
   end proc_read;

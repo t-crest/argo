@@ -39,8 +39,7 @@
 library ieee;
 use ieee.NUMERIC_STD.all;
 use ieee.std_logic_1164.all;
-library work;
-use work.defs.all;
+use work.noc_defs.all;
 
 entity crossbar_stage is
 	port(
@@ -86,7 +85,7 @@ begin
  			
  			ch_latch : entity work.channel_latch(struct)
  			generic map (
- 				init_token => VALID_TOKEN,
+ 				init_token => EMPTY_TOKEN,
  				init_data => (others => '0')
 			)
 			port map (

@@ -39,20 +39,21 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
-use work.defs.all;
+use work.noc_defs.all;
+use work.noc_interface.all;
 
 
 entity noc_node is
 port (
-	p_clk		: std_logic;
+	--p_clk		: std_logic;
 	n_clk		: std_logic;
 	reset		: std_logic;
 
 	proc_in		: in ocp_master;
 	proc_out	: out ocp_slave;
 
-	spm_in		: in ocp_slave_spm;
-	spm_out		: out ocp_master_spm;
+	spm_in		: in spm_slave;
+	spm_out		: out spm_master;
 
         -- router ports
        	north_in_f     : in channel_forward;  	north_in_b     : out channel_backward;
@@ -89,8 +90,8 @@ port (
 	proc_out	: out ocp_slave;
 	     
 -- SPM Data Port - OCP?
-	spm_in		: in ocp_slave_spm;
-	spm_out		: out ocp_master_spm;
+	spm_in		: in spm_slave;
+	spm_out		: out spm_master;
 
 -- Network Ports
 -- Incoming Port
@@ -112,6 +113,9 @@ signal net_to_ip_b	: channel_backward;
 
 signal ip_to_net	: link_t;
 signal net_to_ip        : link_t;
+
+signal fifo_to_net      : channel;
+signal net_to_fifo      : channel;
 
 --signal spm_to_net	: ocp_slave_spm;
 --signal net_to_spm	: ocp_master_spm;
@@ -155,23 +159,26 @@ half_clk_gen: process (n_clk, reset)
 begin
         if reset='1' then
           half_clk <= '0';
-        elsif rising_edge(n_clk) then
+        elsif falling_edge(n_clk) then
               half_clk <= not half_clk;
         end if;
 end process half_clk_gen;
+
 
 del_half_clk0 <= not half_clk;
 --del_half_clk1 <= not del_half_clk0;
 ip_to_net_f.req <= not del_half_clk0 after 2 ns;
 ip_to_net_f.data <= ip_to_net;
+
+
 -- <= ip_to_net_b.ack;
 -- <= net_to_ip_f.req;
 net_to_ip <= net_to_ip_f.data;
 net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
 
-	-- NoC switch instance
-	r : entity work.noc_switch(struct)
-	port map (
+-- NoC switch instance
+   r : entity work.noc_switch(struct)
+   port map (
 		preset         => reset,
 		-- Input ports
 		north_in_f     => north_in_f,
@@ -195,6 +202,9 @@ net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
 		west_out_b     => west_out_b,
 		resource_out_f => net_to_ip_f,
 		resource_out_b => net_to_ip_b
-	);
+
+   );
+
+
 
 end struct;

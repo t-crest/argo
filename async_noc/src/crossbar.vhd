@@ -39,7 +39,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.NUMERIC_STD.all;
-use work.defs.all;
+use work.noc_defs.all;
 
 
 -- Index in channel signals for ARITY = 5 are
@@ -73,7 +73,7 @@ begin
 	-- A C-element for synchronizing the request signal in the router
 	c_sync_req : entity work.c_gate_generic(sr_latch_impl)
 	generic map (
-		C_INIT => '1',
+		C_INIT => '0',
 		WIDTH => ARITY
 	)
 	port map (
@@ -88,7 +88,7 @@ begin
 	-- A C-element for synchronizing the acknowledge signal in the router
 	c_sync_ack : entity work.c_gate_generic(sr_latch_impl)
 	generic map (
-		C_INIT => '1',
+		C_INIT => '0',
 		WIDTH => ARITY
 	)
 	port map (

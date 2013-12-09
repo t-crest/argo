@@ -181,7 +181,7 @@ begin
 
       end generate skewed_e;
 
-      skewed_l : if i = 1 and j = 1 generate
+      skewed_l : if i = 1 and j = 0 generate
 	-- High SPM instance
 	spm_h : bram_tdp
 	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
@@ -212,7 +212,7 @@ begin
 
       end generate skewed_l;
 
-      not_skewed : if j /= i generate
+      not_skewed : if j = 1 generate
 	-- High SPM instance
 	spm_h : bram_tdp
 	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
@@ -556,7 +556,7 @@ begin
     p_masters(0)(1).MByteEn	<= (others => '0');
     p_masters(0)(1).MRespAccept <= '0';
 
-    wait until falling_edge(reset);
+    wait until falling_edge(reset_sk_l);
     wait for 6*NA_HPERIOD;
     wait for 3 ns;
 
@@ -588,7 +588,7 @@ begin
 	st_write(p_masters(0)(1),
 		 p_slaves(0)(1),
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, p_clk);
+		 slt, p_clk_sk_l);
 	cnt := cnt + 1;
 	exit when cnt = slt_num or endfile(schedule1);
       end loop;
@@ -608,31 +608,31 @@ begin
 	route_write (p_masters(0)(1),
 		     p_slaves(0)(1),
 		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, p_clk);
+		     route, p_clk_sk_l);
 	cnt := cnt + 1;
 	exit when cnt = N*N or endfile(schedule1);
       end loop;
 
       --DMA 0
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000004", x"00040004", p_clk);
+		 x"000004", x"00040004", p_clk_sk_l);
       --DMA 2
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000014", x"00040004", p_clk);
+		 x"000014", x"00040004", p_clk_sk_l);
       --DMA 3
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"00001c", x"00040004", p_clk);
+		 x"00001c", x"00040004", p_clk_sk_l);
 
       --enable and start
       --DMA 0
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000000", x"00008004", p_clk);
+		 x"000000", x"00008004", p_clk_sk_l);
       --DMA 2
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000010", x"00008004", p_clk);
+		 x"000010", x"00008004", p_clk_sk_l);
       --DMA 3
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000018", x"00008004", p_clk);		
+		 x"000018", x"00008004", p_clk_sk_l);		
     end if;
     
   end process;
@@ -758,7 +758,7 @@ begin
     p_masters(1)(1).MByteEn	<= (others => '0');
     p_masters(1)(1).MRespAccept <= '0';
 
-    wait until falling_edge(reset_sk_l);
+    wait until falling_edge(reset);
     wait for 6*NA_HPERIOD;
     wait for 3 ns;
 
@@ -790,7 +790,7 @@ begin
 	st_write(p_masters(1)(1),
 		 p_slaves(1)(1),
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, p_clk_sk_l);
+		 slt, p_clk);
 	cnt := cnt + 1;
 	exit when cnt = slt_num or endfile(schedule3);
       end loop;
@@ -810,31 +810,31 @@ begin
 	route_write (p_masters(1)(1),
 		     p_slaves(1)(1),
 		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, p_clk_sk_l);
+		     route, p_clk);
 	cnt := cnt + 1;
 	exit when cnt = N*N or endfile(schedule3);
       end loop;
 
       --DMA 0
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000004", x"000c000c", p_clk_sk_l);
+		 x"000004", x"000c000c", p_clk);
       --DMA 1
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"00000c", x"000c000c", p_clk_sk_l);
+		 x"00000c", x"000c000c", p_clk);
       --DMA 2
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000014", x"000c000c", p_clk_sk_l);
+		 x"000014", x"000c000c", p_clk);
 
       --enable and start
       --DMA 0
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000000", x"00008004", p_clk_sk_l);
+		 x"000000", x"00008004", p_clk);
       --DMA 1
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000008", x"00008004", p_clk_sk_l);
+		 x"000008", x"00008004", p_clk);
       --DMA 2
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000010", x"00008004", p_clk_sk_l);
+		 x"000010", x"00008004", p_clk);
 
     end if;
   end process;

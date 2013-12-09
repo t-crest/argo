@@ -172,7 +172,7 @@ begin
 	    );
       end generate skewed_early;
 
-      skewed_late : if i = 1 and j = 0 generate
+      skewed_late : if i = 0 and j = 1 generate
 	
 	node : noc_node
 	  port map (
@@ -208,7 +208,7 @@ begin
 
 
 
-      not_skewed : if j = 1 generate
+      not_skewed : if i = 1 generate
 
 	node : noc_node
 	  port map (

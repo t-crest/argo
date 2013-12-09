@@ -1,9 +1,12 @@
-analyze -library WORK -format vhdl {/home/piraten/eit-eik/noc/src/defs.vhd /home/piraten/eit-eik/noc/src/sr_latch.vhd /home/piraten/eit-eik/noc/src/c_gate_generic.vhd /home/piraten/eit-eik/noc/src/latch_controller.vhd /home/piraten/eit-eik/noc/src/channel_latch.vhd /home/piraten/eit-eik/noc/src/hpu_comb.vhd /home/piraten/eit-eik/noc/src/crossbar.vhd /home/piraten/eit-eik/noc/src/hpu.vhd /home/piraten/eit-eik/noc/src/crossbar_stage.vhd /home/piraten/eit-eik/noc/src/noc_switch.vhd /home/piraten/eit-eik/noc/src/bram.vhd  /home/piraten/eit-eik/noc/src/counter.vhd /home/piraten/eit-eik/noc/src/dma.vhd /home/piraten/eit-eik/noc/src/nAdapter.vhd /home/piraten/eit-eik/noc/src/noc_node.vhd  /home/piraten/eit-eik/noc/src/noc_n.vhd }
+# cleanup
+remove_design [get_designs]
 
+analyze -library WORK -format vhdl {vhdl/ocp.vhd vhdl/noc_defs.vhd vhdl/config.vhd vhdl/noc_interface.vhd vhdl/sr_latch.vhd vhdl/c_gate_generic.vhd vhdl/latch_controller.vhd vhdl/channel_latch.vhd vhdl/hpu_comb.vhd vhdl/crossbar.vhd vhdl/hpu.vhd vhdl/crossbar_stage.vhd vhdl/noc_switch.vhd vhdl/bram.vhd  vhdl/counter.vhd vhdl/dma.vhd vhdl/fifo.vhd vhdl/noc_node_fifos.vhd  vhdl/noc_skew_diagonal.vhd }
+#vhdl/nAdapter.vhd 
 elaborate NOC -architecture STRUCT -library WORK -update
 
 #uniquify
 
-write -hierarchy -format ddc -output /home/piraten/eit-eik/noc/synthesis/db/unmapped_unconstrained.ddc
+write -hierarchy -format ddc -output unmapped_unconstrained.ddc
 
 

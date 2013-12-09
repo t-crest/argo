@@ -17,68 +17,26 @@ set_disable_timing node_*_*/r/xbar_with_latches/crossbar/c_sync_req/latch/C9/B
 
 set_disable_timing node_*_*/r/xbar_with_latches/crossbar/c_sync_ack/latch/C9/B
 
-
 # controller latches loops
 set_disable_timing node_*_*/r/*_in_latch/controller/r_next_reg/enable
 set_disable_timing node_*_*/r/*_hpu/token_latch/controller/r_next_reg/enable
 set_disable_timing node_*_*/r/xbar_with_latches/ch_latch_*/controller/r_next_reg/enable
 
-
-
-
 # Delay Elements -matching HPU combinational logic
-set_max_delay -from node_0_0/r/north_hpu/I_0/A -to node_0_0/r/north_hpu/I_1/Z 0.27
-set_max_delay -from node_0_0/r/south_hpu/I_0/A -to node_0_0/r/south_hpu/I_1/Z 0.27
-set_max_delay -from node_0_0/r/east_hpu/I_0/A -to node_0_0/r/east_hpu/I_1/Z 0.27
-set_max_delay -from node_0_0/r/west_hpu/I_0/A -to node_0_0/r/west_hpu/I_1/Z 0.27
-set_max_delay -from node_0_0/r/resource_hpu/I_0/A -to node_0_0/r/resource_hpu/I_1/Z 0.27
 
-set_max_delay -from node_0_1/r/north_hpu/I_0/A -to node_0_1/r/north_hpu/I_1/Z 0.27
-set_max_delay -from node_0_1/r/south_hpu/I_0/A -to node_0_1/r/south_hpu/I_1/Z 0.27
-set_max_delay -from node_0_1/r/east_hpu/I_0/A -to node_0_1/r/east_hpu/I_1/Z 0.27
-set_max_delay -from node_0_1/r/west_hpu/I_0/A -to node_0_1/r/west_hpu/I_1/Z 0.27
-set_max_delay -from node_0_1/r/resource_hpu/I_0/A -to node_0_1/r/resource_hpu/I_1/Z 0.27
+foreach node [get_object_name [get_cells node_*_*]] {
+    set_max_delay -from $node/r/north_hpu/I_0/A -to $node/r/north_hpu/I_1/Z 0.27
+    set_max_delay -from $node/r/south_hpu/I_0/A -to $node/r/south_hpu/I_1/Z 0.27
+    set_max_delay -from $node/r/east_hpu/I_0/A -to $node/r/east_hpu/I_1/Z 0.27
+    set_max_delay -from $node/r/west_hpu/I_0/A -to $node/r/west_hpu/I_1/Z 0.27
+    set_max_delay -from $node/r/resource_hpu/I_0/A -to $node/r/resource_hpu/I_1/Z 0.27
 
-set_max_delay -from node_1_0/r/north_hpu/I_0/A -to node_1_0/r/north_hpu/I_1/Z 0.27
-set_max_delay -from node_1_0/r/south_hpu/I_0/A -to node_1_0/r/south_hpu/I_1/Z 0.27
-set_max_delay -from node_1_0/r/east_hpu/I_0/A -to node_1_0/r/east_hpu/I_1/Z 0.27
-set_max_delay -from node_1_0/r/west_hpu/I_0/A -to node_1_0/r/west_hpu/I_1/Z 0.27
-set_max_delay -from node_1_0/r/resource_hpu/I_0/A -to node_1_0/r/resource_hpu/I_1/Z 0.27
-
-set_max_delay -from node_1_1/r/north_hpu/I_0/A -to node_1_1/r/north_hpu/I_1/Z 0.27
-set_max_delay -from node_1_1/r/south_hpu/I_0/A -to node_1_1/r/south_hpu/I_1/Z 0.27
-set_max_delay -from node_1_1/r/east_hpu/I_0/A -to node_1_1/r/east_hpu/I_1/Z 0.27
-set_max_delay -from node_1_1/r/west_hpu/I_0/A -to node_1_1/r/west_hpu/I_1/Z 0.27
-set_max_delay -from node_1_1/r/resource_hpu/I_0/A -to node_1_1/r/resource_hpu/I_1/Z 0.27
-
-
-
-
-set_min_delay -from node_0_0/r/north_hpu/I_0/A -to node_0_0/r/north_hpu/I_1/Z 0.22
-set_min_delay -from node_0_0/r/south_hpu/I_0/A -to node_0_0/r/south_hpu/I_1/Z 0.22
-set_min_delay -from node_0_0/r/east_hpu/I_0/A -to node_0_0/r/east_hpu/I_1/Z 0.22
-set_min_delay -from node_0_0/r/west_hpu/I_0/A -to node_0_0/r/west_hpu/I_1/Z 0.22
-set_min_delay -from node_0_0/r/resource_hpu/I_0/A -to node_0_0/r/resource_hpu/I_1/Z 0.22
-
-set_min_delay -from node_0_1/r/north_hpu/I_0/A -to node_0_1/r/north_hpu/I_1/Z 0.22
-set_min_delay -from node_0_1/r/south_hpu/I_0/A -to node_0_1/r/south_hpu/I_1/Z 0.22
-set_min_delay -from node_0_1/r/east_hpu/I_0/A -to node_0_1/r/east_hpu/I_1/Z 0.22
-set_min_delay -from node_0_1/r/west_hpu/I_0/A -to node_0_1/r/west_hpu/I_1/Z 0.22
-set_min_delay -from node_0_1/r/resource_hpu/I_0/A -to node_0_1/r/resource_hpu/I_1/Z 0.22
-
-set_min_delay -from node_1_0/r/north_hpu/I_0/A -to node_1_0/r/north_hpu/I_1/Z 0.22
-set_min_delay -from node_1_0/r/south_hpu/I_0/A -to node_1_0/r/south_hpu/I_1/Z 0.22
-set_min_delay -from node_1_0/r/east_hpu/I_0/A -to node_1_0/r/east_hpu/I_1/Z 0.22
-set_min_delay -from node_1_0/r/west_hpu/I_0/A -to node_1_0/r/west_hpu/I_1/Z 0.22
-set_min_delay -from node_1_0/r/resource_hpu/I_0/A -to node_1_0/r/resource_hpu/I_1/Z 0.22
-
-set_min_delay -from node_1_1/r/north_hpu/I_0/A -to node_1_1/r/north_hpu/I_1/Z 0.22
-set_min_delay -from node_1_1/r/south_hpu/I_0/A -to node_1_1/r/south_hpu/I_1/Z 0.22
-set_min_delay -from node_1_1/r/east_hpu/I_0/A -to node_1_1/r/east_hpu/I_1/Z 0.22
-set_min_delay -from node_1_1/r/west_hpu/I_0/A -to node_1_1/r/west_hpu/I_1/Z 0.22
-set_min_delay -from node_1_1/r/resource_hpu/I_0/A -to node_1_1/r/resource_hpu/I_1/Z 0.22
-
-
+    set_min_delay -from $node/r/north_hpu/I_0/A -to $node/r/north_hpu/I_1/Z 0.22
+    set_min_delay -from $node/r/south_hpu/I_0/A -to $node/r/south_hpu/I_1/Z 0.22
+    set_min_delay -from $node/r/east_hpu/I_0/A -to $node/r/east_hpu/I_1/Z 0.22
+    set_min_delay -from $node/r/west_hpu/I_0/A -to $node/r/west_hpu/I_1/Z 0.22
+    set_min_delay -from $node/r/resource_hpu/I_0/A -to $node/r/resource_hpu/I_1/Z 0.22
+}
 
 
 # Delay Element -matching CROSSBAR combinational logic
@@ -97,8 +55,9 @@ set_min_delay -from node_1_1/r/xbar_with_latches/crossbar/I_0/A -to node_1_1/r/x
 ##########################################checked
 
 
-create_clock -name "clkNI" -period 2 -waveform {0.0 1.0} [get_ports n_clk]
-create_clock -name "clkP" -period 2 -waveform {0.0 1.0} [get_ports p_clk]
+create_clock -name "clkNI" -period 2 -waveform {0.0 1.0} [get_ports {n_clk n_clk_sk_e n_clk_sk_l}]
+
+#create_clock -name "clkP" -period 2 -waveform {0.0 1.0} [get_ports p_clk]
 
 
 
@@ -114,7 +73,19 @@ create_clock -name "clkM" -period 0.8 -waveform {0 0.4} [get_pins { node_0_0/r/*
 									node_1_1/r/*_in_latch/C171/Z \
 									node_1_1/r/xbar_with_latches/ch_latch_*/controller/I_0/Z \
 									node_1_1/r/xbar_with_latches/ch_latch_*/C172/Z \
+ 									# node_0_0/r/xbar_with_latches/ch_latch_*/C157/Z \
+ 									# node_1_1/r/xbar_with_latches/ch_latch_*/C157/Z \
 								    } ]
+
+# create_clock -name "clkM" -period 0.8 -waveform {0 0.4} [get_pins { node_0_0/r/*_in_latch/controller/I_0/Z \
+# 									node_0_0/r/xbar_with_latches/ch_latch_*/controller/I_0/Z \
+# 									node_0_0/r/xbar_with_latches/ch_latch_*/C157/Z \
+# 									node_0_1/r/*_hpu/token_latch/controller/I_0/Z \
+# 									node_1_0/r/*_hpu/token_latch/controller/I_0/Z \
+# 									node_1_1/r/*_in_latch/controller/I_0/Z \
+# 									node_1_1/r/xbar_with_latches/ch_latch_*/controller/I_0/Z \
+# 									node_1_1/r/xbar_with_latches/ch_latch_*/C157/Z \
+# 								    } ]
 
 
 
@@ -131,30 +102,55 @@ create_clock -name "clkS" -period 0.8 -waveform {0.4 0.8} [get_pins {node_0_0/r/
 									 node_1_0/r/xbar_with_latches/ch_latch_*/C172/Z\
 									 node_1_1/r/*_hpu/token_latch/controller/I_0/Z \
 									 node_1_1/r/*_hpu/token_latch/C171/Z \
-} ]
+ 									 # node_1_0/r/xbar_with_latches/ch_latch_*/C157/Z\
+ 									 # node_0_1/r/xbar_with_latches/ch_latch_*/C157/Z\
+ } ]
 
+# create_clock -name "clkS" -period 0.8 -waveform {0.4 0.8} [get_pins {node_0_0/r/*_hpu/token_latch/controller/I_0/Z \
+# 									 node_0_1/r/*_in_latch/controller/I_0/Z\
+# 									 node_0_1/r/xbar_with_latches/ch_latch_*/controller/I_0/Z\
+# 									 node_0_1/r/xbar_with_latches/ch_latch_*/C157/Z\
+# 									 node_1_0/r/*_in_latch/controller/I_0/Z\
+# 									 node_1_0/r/xbar_with_latches/ch_latch_*/controller/I_0/Z\
+# 									 node_1_0/r/xbar_with_latches/ch_latch_*/C157/Z\
+# 									 node_1_1/r/*_hpu/token_latch/controller/I_0/Z \
+# } ]
 
 set_ideal_network -no_propagate {node_*_*/r/*_in_latch/controller/I_0/Z}
 set_ideal_network -no_propagate {node_*_*/r/*_hpu/token_latch/controller/I_0/Z}
 set_ideal_network -no_propagate {node_*_*/r/xbar_with_latches/ch_latch_*/controller/I_0/Z}
 
+
 set_ideal_network -no_propagate {node_*_*/r/*_in_latch/C171/Z_0}
 set_ideal_network -no_propagate {node_*_*/r/*_hpu/token_latch/C171/Z_0}
 set_ideal_network -no_propagate {node_*_*/r/xbar_with_latches/ch_latch_*/C171/Z_0}
 
+# was: C172
 set_ideal_network -no_propagate {node_*_*/r/*_in_latch/C172/Z_0}
 set_ideal_network -no_propagate {node_*_*/r/*_hpu/token_latch/C172/Z_0}
 set_ideal_network -no_propagate {node_*_*/r/xbar_with_latches/ch_latch_*/C172/Z_0}
 
+set_ideal_network -no_propagate {node_*_*/r/*_in_latch/C159/Z_0}
+set_ideal_network -no_propagate {node_*_*/r/*_hpu/token_latch/C159/Z_0}
+set_ideal_network -no_propagate {node_*_*/r/xbar_with_latches/ch_latch_*/C159/Z_0}
 
+#get_pins -of_objects [get_cells -hierarchical data_reg* -filter is_sequential] -filter pin_name==enable
 
 ####################################################### for network only
 
 # Delay elements from NI to routers
-set_min_delay -from node_1_1/I_1/A -to node_1_1/I_2/Z 0.45
-set_min_delay -from node_1_0/I_1/A -to node_1_0/I_2/Z 0.45
-set_min_delay -from node_0_1/I_1/A -to node_0_1/I_2/Z 0.45
-set_min_delay -from node_0_0/I_1/A -to node_0_0/I_2/Z 0.45
+# set_min_delay -from node_1_1/I_1/A -to node_1_1/I_2/Z 0.45
+# set_min_delay -from node_1_0/I_1/A -to node_1_0/I_2/Z 0.45
+# set_min_delay -from node_0_1/I_1/A -to node_0_1/I_2/Z 0.45
+# set_min_delay -from node_0_0/I_1/A -to node_0_0/I_2/Z 0.45
+
+foreach node [get_object_name [get_cells node_*_*]] {
+    #get the input and output pins of the delay line buffers
+    set inv_in [get_cells -of_objects [get_pins -of_objects [get_nets "$node/del_half_clk0"] -filter pin_direction==out]]
+    set inv_out [get_cells -of_objects [get_pins -of_objects [get_nets "$node/ip_to_net_f\[REQ\]"] -filter pin_direction==out]]
+    set_min_delay -from [get_pins -of_objects $inv_in -filter pin_direction==in] -to [get_pins -of_objects $inv_out -filter pin_direction==out] 0.3
+}
+
 
 #for {set i 0}{$i<32} {$i=$i+2} {
 #puts $i
@@ -199,6 +195,6 @@ set_min_delay -from I_62/A -to I_63/Z 0.3
 
 
 #set_wire_load_model -name area_6Kto7K
-write -hierarchy -format ddc -output /home/piraten/eit-eik/noc/synthesis/db/unmapped_constrained.ddc
+write -hierarchy -format ddc -output unmapped_constrained.ddc
 
 

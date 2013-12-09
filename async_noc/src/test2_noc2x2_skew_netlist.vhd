@@ -181,7 +181,7 @@ begin
 
       end generate skewed_e;
 
-      skewed_l : if i = 1 and j = 0 generate
+      skewed_l : if i = 0 and j = 1 generate
 	-- High SPM instance
 	spm_h : bram_tdp
 	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
@@ -212,7 +212,7 @@ begin
 
       end generate skewed_l;
 
-      not_skewed : if j = 1 generate
+      not_skewed : if i = 1 generate
 	-- High SPM instance
 	spm_h : bram_tdp
 	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)

@@ -41,6 +41,7 @@ use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 use work.config.all;
 use work.noc_defs.all;
+use work.ocp.all;
 use work.noc_interface.all;
 
 
@@ -52,11 +53,11 @@ port (
 
 	reset		: in std_logic;
 
-	p_ports_in	: in procMasters;
-	p_ports_out	: out procSlaves;
+	p_ports_in	: in ocp_io_m_a;
+	p_ports_out	: out ocp_io_s_a;
 
-	spm_ports_in	: in spmSlaves;
-	spm_ports_out	: out spmMasters
+	spm_ports_in	: in spm_slaves;
+	spm_ports_out	: out spm_masters
 
 );
 
@@ -72,11 +73,11 @@ port (
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
+	proc_in		: in ocp_io_m;
+	proc_out	: out ocp_io_s;
 
-	spm_in		: in ocp_slave_spm;
-	spm_out		: out ocp_master_spm;
+	spm_in		: in spm_slave;
+	spm_out		: out spm_master;
 
 
     	north_in_f     : in channel_forward;  	north_in_b     : out channel_backward;
@@ -96,8 +97,8 @@ end component;
 
 ------------------------------signal declarations----------------------------
 
-type link_n is array(0 to (N - 1)) of channel;
-type link_m is array(0 to (N - 1)) of link_n;
+--type link_n is array(0 to (N - 1)) of channel;
+--type link_m is array(0 to (N - 1)) of link_n;
 
 signal north_in  : link_m;
 signal east_in   : link_m;
@@ -134,66 +135,66 @@ constant req_delay : time := 2 ns;
 
 begin
 
-	nodes_m : for i in N-1 downto 0 generate
-		nodes_n : for j in N-1 downto 0 generate
+	nodes_m : for i in 0 to M-1 generate
+		nodes_n : for j in 0 to N-1 generate
 			node : noc_node
 			port map (
 				--p_clk => p_clk,
 				n_clk => n_clk,
 				reset => reset,
 
-				proc_in => p_ports_in(i)(j),
-				proc_out => p_ports_out(i)(j),
+				proc_in => p_ports_in((i*N)+j),
+				proc_out => p_ports_out((i*N)+j),
 
-				spm_in => spm_ports_in(i)(j),
-				spm_out => spm_ports_out(i)(j),
+				spm_in => spm_ports_in((i*N)+j),
+				spm_out => spm_ports_out((i*N)+j),
 
-                                north_in_f => north_in(i)(j).forward,
-                                north_in_b => north_in(i)(j).backward,
-                                east_in_f => east_in(i)(j).forward,
-                                east_in_b => east_in(i)(j).backward,
-                                south_in_f => south_in(i)(j).forward,
-                                south_in_b => south_in(i)(j).backward,
-                                west_in_f => west_in(i)(j).forward,
-                                west_in_b => west_in(i)(j).backward,
+                north_in_f => north_in(i)(j).forward,
+                north_in_b => north_in(i)(j).backward,
+                east_in_f => east_in(i)(j).forward,
+                east_in_b => east_in(i)(j).backward,
+                south_in_f => south_in(i)(j).forward,
+                south_in_b => south_in(i)(j).backward,
+                west_in_f => west_in(i)(j).forward,
+                west_in_b => west_in(i)(j).backward,
 
-                                north_out_f => north_out(i)(j).forward,
-                                north_out_b => north_out(i)(j).backward,
-                                east_out_f => east_out(i)(j).forward,
-                                east_out_b => east_out(i)(j).backward,
-                                south_out_f => south_out(i)(j).forward,
-                                south_out_b => south_out(i)(j).backward,
-                                west_out_f => west_out(i)(j).forward,
-                                west_out_b => west_out(i)(j).backward
+                north_out_f => north_out(i)(j).forward,
+                north_out_b => north_out(i)(j).backward,
+                east_out_f => east_out(i)(j).forward,
+                east_out_b => east_out(i)(j).backward,
+                south_out_f => south_out(i)(j).forward,
+                south_out_b => south_out(i)(j).backward,
+                west_out_f => west_out(i)(j).forward,
+                west_out_b => west_out(i)(j).backward
 
-                                );
+                );
 
 		end generate nodes_n;
 	end generate nodes_m;
 
-        delayed_reqs_m :  for i in N-1 downto 0 generate
-                delayed_reqs_n : for j in N-1 downto 0 generate
-                                north_out_req0(i)(j) <= not north_out(i)(j).forward.req;
-                                north_out_req1(i)(j) <= not north_out_req0(i)(j);
-                                east_out_req0(i)(j) <= not east_out(i)(j).forward.req;
-                                east_out_req1(i)(j) <= not east_out_req0(i)(j);
-                                south_out_req0(i)(j) <= not south_out(i)(j).forward.req;
-                                south_out_req1(i)(j) <= not south_out_req0(i)(j);
-                                west_out_req0(i)(j) <= not west_out(i)(j).forward.req;
-                                west_out_req1(i)(j) <= not west_out_req0(i)(j);
+    delayed_reqs_m :  for i in N-1 downto 0 generate
+        delayed_reqs_n : for j in N-1 downto 0 generate
+            north_out_req0(i)(j) <= not north_out(i)(j).forward.req;
+            north_out_req1(i)(j) <= not north_out_req0(i)(j);
+            east_out_req0(i)(j) <= not east_out(i)(j).forward.req;
+            east_out_req1(i)(j) <= not east_out_req0(i)(j);
+            south_out_req0(i)(j) <= not south_out(i)(j).forward.req;
+            south_out_req1(i)(j) <= not south_out_req0(i)(j);
+            west_out_req0(i)(j) <= not west_out(i)(j).forward.req;
+            west_out_req1(i)(j) <= not west_out_req0(i)(j);
 
-                                north_in_ack0(i)(j) <= not north_in(i)(j).backward.ack;
-                                north_in_ack1(i)(j) <= not north_in_ack0(i)(j);
-                                east_in_ack0(i)(j) <= not east_in(i)(j).backward.ack;
-                                east_in_ack1(i)(j) <= not east_in_ack0(i)(j);
-                                south_in_ack0(i)(j) <= not south_in(i)(j).backward.ack;
-                                south_in_ack1(i)(j) <= not south_in_ack0(i)(j);
-                                west_in_ack0(i)(j) <= not west_in(i)(j).backward.ack;
-                                west_in_ack1(i)(j) <= not west_in_ack0(i)(j);
+            north_in_ack0(i)(j) <= not north_in(i)(j).backward.ack;
+            north_in_ack1(i)(j) <= not north_in_ack0(i)(j);
+            east_in_ack0(i)(j) <= not east_in(i)(j).backward.ack;
+            east_in_ack1(i)(j) <= not east_in_ack0(i)(j);
+            south_in_ack0(i)(j) <= not south_in(i)(j).backward.ack;
+            south_in_ack1(i)(j) <= not south_in_ack0(i)(j);
+            west_in_ack0(i)(j) <= not west_in(i)(j).backward.ack;
+            west_in_ack1(i)(j) <= not west_in_ack0(i)(j);
 
 
-                end generate delayed_reqs_n;
-        end generate delayed_reqs_m;
+        end generate delayed_reqs_n;
+    end generate delayed_reqs_m;
 
 
 

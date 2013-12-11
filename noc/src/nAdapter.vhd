@@ -137,8 +137,8 @@ signal adreg_ld		: std_logic;
 signal mux_out		: std_logic_vector(DATA_WIDTH-1 downto 0);
 signal hdr_phit		: std_logic_vector(DATA_WIDTH-1 downto 0);
 
-signal phitOut		: std_logic_vector(PHIT_WIDTH-1 downto 0);
-signal phitIn		: std_logic_vector(PHIT_WIDTH-1 downto 0);
+signal phitOut		: std_logic_vector(LINK_WIDTH-1 downto 0);
+signal phitIn		: std_logic_vector(LINK_WIDTH-1 downto 0);
 
 signal pkt_ctrl		: std_logic;
 signal dma_ctrl_reg	: std_logic;
@@ -184,6 +184,7 @@ component bram
 
 	port (
 		clk 	: in std_logic ;
+		reset   : in std_logic ;
 		rd_addr : in std_logic_vector(ADDR-1 downto 0);
 		wr_addr : in std_logic_vector(ADDR-1 downto 0);
 		wr_data : in std_logic_vector(DATA-1 downto 0);
@@ -223,6 +224,7 @@ begin
 	slt_table : bram
 		generic map ( DATA=>DMA_IND_WIDTH+1, ADDR=>ADDR_SLT_WIDTH )
 		port map (clk => na_clk,
+			reset => na_reset,
 			rd_addr => slt_index,
 			wr_addr => proc_in.MAddr(ADDR_SLT_WIDTH+1 downto 2), -- byte addresses
 			wr_data => proc_in.MData(DMA_IND_WIDTH downto 0), -- LS bits
@@ -333,7 +335,7 @@ begin
 -----------------------------------------------------------------------------------------------
 -- input pkt control-------------------------------
 -- decode incoming packet
-	pkt_ctrl <= phitIn(PHIT_WIDTH-1) or phitIn(PHIT_WIDTH-2) or phitIn(PHIT_WIDTH-3);
+	pkt_ctrl <= phitIn(LINK_WIDTH-1) or phitIn(LINK_WIDTH-2) or phitIn(LINK_WIDTH-3);
 
 
 -- output pkt construction---------------------------
@@ -371,11 +373,11 @@ begin
 
 -- build outgoing packet
 	--control bits
-	phitOut(PHIT_WIDTH-1) <= state_cnt(1) and dma_ctrl;	--hdr
-	phitOut(PHIT_WIDTH-2) <= not (state_cnt(0) or state_cnt(1)) and dma_ctrl_reg;	--md
-	phitOut(PHIT_WIDTH-3) <= state_cnt(0) and dma_ctrl_reg;	--eop
+	phitOut(LINK_WIDTH-1) <= state_cnt(1) and dma_ctrl;	--hdr
+	phitOut(LINK_WIDTH-2) <= not (state_cnt(0) or state_cnt(1)) and dma_ctrl_reg;	--md
+	phitOut(LINK_WIDTH-3) <= state_cnt(0) and dma_ctrl_reg;	--eop
 	--hdr or payload
-	phitOut(PHIT_WIDTH-4 downto 0) <= mux_out;
+	phitOut(LINK_WIDTH-4 downto 0) <= mux_out;
 
 
 -----------------------------------------------------------------------------------------------

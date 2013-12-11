@@ -1,17 +1,17 @@
--- 
+--
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
--- 
+--
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
--- 
+--
 --    1. Redistributions of source code must retain the above copyright notice,
 --       this list of conditions and the following disclaimer.
--- 
+--
 --    2. Redistributions in binary form must reproduce the above copyright
 --       notice, this list of conditions and the following disclaimer in the
 --       documentation and/or other materials provided with the distribution.
--- 
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 -- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -22,11 +22,11 @@
 -- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 -- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 -- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--- 
+--
 -- The views and conclusions contained in the software and documentation are
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
--- 
+--
 
 
 --------------------------------------------------------------------------------
@@ -42,6 +42,7 @@ use ieee.numeric_std.all;
 use work.config.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
+use work.ocp.all;
 
 
 entity noc is
@@ -53,11 +54,11 @@ port (
 
 	reset		: in std_logic;
 
-	p_ports_in	: in procMasters;
-	p_ports_out	: out procSlaves;
+	p_ports_in	: in ocp_io_m_a;
+	p_ports_out	: out ocp_io_s_a;
 
-	spm_ports_in	: in spmSlaves;
-	spm_ports_out	: out spmMasters
+	spm_ports_in	: in spm_slaves;
+	spm_ports_out	: out spm_masters
 
 );
 
@@ -73,9 +74,9 @@ port (
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
- 
+	proc_in		: in ocp_io_m;
+	proc_out	: out ocp_io_s;
+
 	spm_in		: in spm_slave;
 	spm_out		: out spm_master;
 
@@ -97,8 +98,8 @@ end component;
 
 ------------------------------signal declarations----------------------------
 
-type link_n is array(0 to (N - 1)) of channel;
-type link_m is array(0 to (N - 1)) of link_n;
+--type link_n is array(0 to (N - 1)) of channel;
+--type link_m is array(0 to (N - 1)) of link_n;
 
 signal north_in  : link_m;
 signal east_in   : link_m;
@@ -135,21 +136,21 @@ constant req_delay : time := 2 ns;
 
 begin
 
-	nodes_m : for i in N-1 downto 0 generate
-		nodes_n : for j in N-1 downto 0 generate
+	nodes_m : for i in 0 to M-1 generate
+		nodes_n : for j in 0 to N-1 generate
                         skewed: if i=0 and j=0 generate
-                          
+
 			node : noc_node
 			port map (
 				--p_clk => p_clk,
 				n_clk => n_clk_skd,
 				reset => reset,
 
-				proc_in => p_ports_in(i)(j),
-				proc_out => p_ports_out(i)(j),
+				proc_in => p_ports_in((i*N)+j),
+				proc_out => p_ports_out((i*N)+j),
 
-				spm_in => spm_ports_in(i)(j),
-				spm_out => spm_ports_out(i)(j),
+				spm_in => spm_ports_in((i*N)+j),
+				spm_out => spm_ports_out((i*N)+j),
 
                                 north_in_f => north_in(i)(j).forward,
                                 north_in_b => north_in(i)(j).backward,
@@ -180,11 +181,11 @@ begin
 				n_clk => n_clk,
 				reset => reset,
 
-				proc_in => p_ports_in(i)(j),
-				proc_out => p_ports_out(i)(j),
+				proc_in => p_ports_in((i*N)+j),
+				proc_out => p_ports_out((i*N)+j),
 
-				spm_in => spm_ports_in(i)(j),
-				spm_out => spm_ports_out(i)(j),
+				spm_in => spm_ports_in((i*N)+j),
+				spm_out => spm_ports_out((i*N)+j),
 
                                 north_in_f => north_in(i)(j).forward,
                                 north_in_b => north_in(i)(j).backward,
@@ -233,11 +234,11 @@ begin
                                 west_in_ack0(i)(j) <= not west_in(i)(j).backward.ack;
                                 west_in_ack1(i)(j) <= not west_in_ack0(i)(j);
 
-                                
+
                 end generate delayed_reqs_n;
         end generate delayed_reqs_m;
 
-        
+
 
 	links_m : for i in 0 to N-1 generate
 		links_n : for j in 0 to N-1 generate

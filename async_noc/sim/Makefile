@@ -4,6 +4,7 @@
 
 
 NOCDIR=../src
+COMMON=../../common
 NETLISTDIR=../netlists
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
@@ -51,11 +52,11 @@ test2_m: clean sim_base
 
 sim_base:
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/sr_latch.vhd 
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/config.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/sr_latch.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/c_gate_generic.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/latch_controller.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/channel_latch.vhd
@@ -63,15 +64,15 @@ sim_base:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/hpu.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/crossbar.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/crossbar_stage.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_switch.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram_tdp.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/counter.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/router.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/counter.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_node.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/cmd_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
 
 
 
@@ -90,10 +91,10 @@ netlist2: clean synth_base
 
 synth_base:
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/defs.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/cmd_util.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
 	$(WINE) vlog $(OPTIONS) $(NETLISTDIR)/noc_netlist.v
 
 clean:

@@ -46,13 +46,13 @@ package noc_defs is
 	constant SPM_DATA_WIDTH	: integer := 64;
 	constant SPM_ADDR_WIDTH	: integer := 16;	-- 14 --> 64 kB address space -16->256kb
 	constant BLK_CNT	: integer := 14;
-        constant SPM_ADDR_WIDTH_MAX : integer := 16;
+    constant SPM_ADDR_WIDTH_MAX : integer := 16;
 
 	-- async network
 	--constant PHIT_WIDTH	: integer := 35;	-- see packet format -->32 + 3 control bits
         constant LINK_WIDTH : integer := 35;	-- 32 bit data + 1 type bit 1
                                                 -- SOP and 1 EOP
-	constant PHIT_WIDTH : integer := 34;     -- phit without the type bit
+	constant PHIT_WIDTH : integer := LINK_WIDTH-1;     -- phit without the type bit
         constant ARITY :integer := 5;
 
 	-- scheduling
@@ -74,7 +74,7 @@ package noc_defs is
 	constant PDELAY		: time := 500 ps;
 	constant NA_HPERIOD	: time := 5 ns;
 	constant P_HPERIOD	: time := 5 ns;
-        constant SKEW           : time := 0 ns;
+    constant SKEW           : time := 0 ns;
 
 	--addressing
 	constant ADDR_MASK_W	: integer := 8;
@@ -96,24 +96,28 @@ package noc_defs is
 	type sltt_type is array (PRD_LENGTH-1 downto 0) of std_logic_vector (DMA_IND_WIDTH-1 downto 0);
 
 --------------------------------------------------router-----------------------
-        
+
         -- types for network
         subtype link_t is std_logic_vector(LINK_WIDTH-1 downto 0);
 	subtype type_t is std_logic;
 	subtype phit_t is std_logic_vector(PHIT_WIDTH-1 downto 0);
 	subtype onehot_sel is std_logic_vector(ARITY-1 downto 0);
-        
+
+	type	routerPort is array(4 downto 0) of link_t;
+
+	constant LINE_ZERO: link_t := (others => '0');
+
 
  	-- Channels for bundled-data communication
 	type channel_forward is record
 		req : std_logic;
 		data : link_t;
 	end record channel_forward;
-	
+
 	type channel_backward is record
 		ack : std_logic;
 	end record channel_backward;
-	
+
 	type channel is record
 		forward : channel_forward;
 		backward : channel_backward;
@@ -124,7 +128,7 @@ package noc_defs is
 	type chs_f is array (ARITY-1 downto 0) of channel_forward;
 	type chs_b is array (ARITY-1 downto 0) of channel_backward;
 	type bars_t is array (ARITY-1 downto 0, ARITY-1 downto 0) of link_t;
-	
+
 	type latch_state is (opaque, transparent);
 
  	-- Convenience constants, that add some semantics. Not type-safe!
@@ -132,7 +136,7 @@ package noc_defs is
 	constant EMPTY_BUBBLE : latch_state := transparent;
 	constant VALID_BUBBLE : latch_state := transparent;
 	constant VALID_TOKEN  : latch_state := opaque;	-- Only valid-tokens are opaque latches
-       
+
 	constant delay : time := 0.6 ns;
 
         -- Function prototype
@@ -149,7 +153,7 @@ package body noc_defs is
 			when transparent => return '0';	-- valid-bubbles (and all empties - also empty tokens) are transparent latches
 			when others =>		return '1';	-- Only valid-tokens are opaque latches
 		end case;
-	end function resolve_latch_state;  
+	end function resolve_latch_state;
 
 
 end package body noc_defs;

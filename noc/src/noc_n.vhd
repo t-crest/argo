@@ -77,15 +77,15 @@ port (
 	spm_m		: out spm_master;
 	spm_s		: in spm_slave;
 
-	inNorth		: in network_link;
-	inSouth		: in network_link;
-	inEast		: in network_link;
-	inWest		: in network_link;
+	inNorth		: in link_t;
+	inSouth		: in link_t;
+	inEast		: in link_t;
+	inWest		: in link_t;
 
-	outNorth	: out network_link;
-	outSouth	: out network_link;
-	outEast		: out network_link;
-	outWest		: out network_link
+	outNorth	: out link_t;
+	outSouth	: out link_t;
+	outEast		: out link_t;
+	outWest		: out link_t
 
 );
 
@@ -93,7 +93,7 @@ end component;
 
 ------------------------------signal declarations----------------------------
 
-type link_n is array(0 to (N - 1)) of network_link;
+type link_n is array(0 to (N - 1)) of link_t;
 type link_m is array(0 to (M - 1)) of link_n;
 
 signal north_in  : link_m;

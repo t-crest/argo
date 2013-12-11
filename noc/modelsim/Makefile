@@ -4,6 +4,7 @@
 
 
 NOCDIR=../src
+COMMON=../../common
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -41,14 +42,14 @@ test2: clean base
 
 base:
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram_tdp.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/counter.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/config.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/counter.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/hpu.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/xbar.vhd

@@ -1,17 +1,17 @@
--- 
+--
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
--- 
+--
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
--- 
+--
 --    1. Redistributions of source code must retain the above copyright notice,
 --       this list of conditions and the following disclaimer.
--- 
+--
 --    2. Redistributions in binary form must reproduce the above copyright
 --       notice, this list of conditions and the following disclaimer in the
 --       documentation and/or other materials provided with the distribution.
--- 
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 -- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -22,11 +22,11 @@
 -- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 -- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 -- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--- 
+--
 -- The views and conclusions contained in the software and documentation are
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
--- 
+--
 
 
 --------------------------------------------------------------------------------
@@ -53,9 +53,9 @@ port (
 
 -- Processor Ports
 -- DMA Configuration Port - OCP
-	proc_in		: in ocp_master;
-	proc_out	: out ocp_slave;
-	     
+	proc_in		: in ocp_io_m;
+	proc_out	: out ocp_io_s;
+
 -- SPM Data Port - OCP?
 	spm_in		: in spm_slave;
 	spm_out		: out spm_master;
@@ -190,7 +190,7 @@ component dma_sdp
 		wdata	 	: in std_logic_vector(DATA-1 downto 0);
 		raddr 		: in std_logic_vector(ADDR-1 downto 0);
 		rdata		: out std_logic_vector(DATA-1 downto 0)
-	);		
+	);
 end component;
 
 
@@ -246,10 +246,10 @@ begin
 		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_P_MASK then
 			config <= DMA_R_ACCESS;
 		-- DMA 1,2 configuration
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK 
+		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
 				and proc_in.MAddr(2)='0' then
 			config <= DMA_H_ACCESS;
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK 
+		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
 				and proc_in.MAddr(2)='1' then
 			config <= DMA_L_ACCESS;
 		-- not configuration
@@ -262,7 +262,7 @@ begin
 	ocp_cmd_valid <= '0' when proc_in.MCmd="000" else '1';
 	ocp_cmd_read <= '1' when proc_in.MCmd="010" else '0';
 	ocp_cmd_write <= '1' when proc_in.MCmd="001" else '0';
-        
+
 -- build outputs -------------------------------------
 
 	ocp_read_control <= '1' when (state_cnt="00" or state_cnt="01") and (config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS)) and read_cmd_reg='1' else '0';
@@ -309,7 +309,7 @@ begin
 	end process;
 
 
-        
+
 --	-- ocp data response
 --	ocp_response : process ( state_cnt, config_reg, dma_rdata) begin
 --		proc_out.SData <= (others=>'0');
@@ -340,12 +340,12 @@ begin
                 if na_reset='1' then
                         spm_out.MCmd <= "0";
 			spm_out.MAddr <= (others=>'0');
-                        
+
 		elsif state_cnt = "00" and vld_buf = '1' then
 			spm_out.MCmd <= "1";
 			spm_out.MAddr <= --std_logic_vector(to_unsigned(0,OCP_ADDR_WIDTH-SPM_ADDR_WIDTH+1))
                                          flit_buf(2*DATA_WIDTH+SPM_ADDR_WIDTH-1 downto 2*DATA_WIDTH);--address(SPM_ADDR_WIDTH-1 downto 1);
-		else 			
+		else
 			spm_out.MCmd <= "0";
 			spm_out.MAddr <= dma_entry(47 downto 32);--x"0000" & '0' & dma_entry(47 downto 33);
 		end if;
@@ -355,7 +355,7 @@ begin
 
 -- network interface -------------------------------------------------------------------------
 -- input pkt control-------------------------------
--- decode incoming packet 
+-- decode incoming packet
         sop <= phitIn(LINK_WIDTH-1) and phitIn(LINK_WIDTH-2);
         mop <= phitIn(LINK_WIDTH-1) and (not phitIn(LINK_WIDTH-2)) and (not phitIn(LINK_WIDTH-3));
         eop <= phitIn(LINK_WIDTH-1) and (not phitIn(LINK_WIDTH-2)) and phitIn(LINK_WIDTH-3);
@@ -392,7 +392,7 @@ begin
 		when others =>
 			mux_out <= (others=>'0');
 		end case;
-	end process;	
+	end process;
 
 -- build outgoing packet
 	--control bits
@@ -404,14 +404,14 @@ begin
 	--hdr or payload
 	phit_togo(LINK_WIDTH-4 downto 0) <= mux_out;
 
-        
+
         phase_delay_slection: process (state_cnt)
-        begin 
-          case state_cnt is 
-           
+        begin
+          case state_cnt is
+
             when "00" =>
-              
-              if phase_prev="00" or phase_prev="11" then 
+
+              if phase_prev="00" or phase_prev="11" then
                     if phase_next="00" then
                       pkt_out_sel <= "00";
                     else
@@ -420,7 +420,7 @@ begin
               else
                     pkt_out_sel <= phase_prev;
               end if;
-              
+
             when "01" =>
 
               if phase_prev="00" or phase_prev="01" or phase_prev="11" then
@@ -432,16 +432,16 @@ begin
               else
                     pkt_out_sel <= phase_prev;
               end if;
-                
+
             when "10" =>
               pkt_out_sel <= phase_next;
-              
+
             when others =>
               pkt_out_sel <= "11";
           end case;
         end process;
 
-        
+
         pkt_out_select: process (pkt_out_sel, phitOut0, phitOut1, phitOut2)
         begin  -- process pkt_out_sel
           case pkt_out_sel is
@@ -455,10 +455,10 @@ begin
               pkt_out <= (others=>'0');
           end case;
         end process;
-        
+
 -- DMA signals --------------------------------------------------------------------------------
 	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata, vld_slt) begin
-            --if na_reset='1' then                
+            --if na_reset='1' then
 --                dma_waddr <= (others => '0');
 --                dma_wdata <= (others => '0');
 --                dma_wen <= (others => '0');
@@ -506,7 +506,7 @@ begin
 					dma_wen <= (others => '0');
 					proc_out.SCmdAccept <= '0';
 				end if;
-                                
+
 			--configuration read or no read
 			elsif ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
@@ -532,10 +532,10 @@ begin
 				dma_wen <= (others => '0');
 				dma_raddr <= (others => '0');
 				dma_ren <= (others => '0');
-				proc_out.SCmdAccept <= '0';				
+				proc_out.SCmdAccept <= '0';
 			end if;
 			--dma_entry <= (others=>'0');
-                        
+
 		when "01" =>
 --			if proc_in.MCmd(0)='1' then
 			if ocp_cmd_write='1' then
@@ -543,8 +543,8 @@ begin
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2);
 					dma_wdata <= x"00000000" & proc_in.MData;
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';					
-				elsif config=DMA_H_ACCESS then 
+					proc_out.SCmdAccept <= '1';
+				elsif config=DMA_H_ACCESS then
 					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";
 					dma_wen <= config(2 downto 0);
@@ -601,12 +601,12 @@ begin
 				--dma_wen <= (others => '0');
 				proc_out.SCmdAccept <= '1';
                         else
-                                          
-                          
+
+
 				dma_raddr <= (others => '0');
 				dma_ren <= (others => '0');
 				proc_out.SCmdAccept <= '0';
-			end if;	
+			end if;
 
 
                         --if  vld_slt='1' then
@@ -614,7 +614,7 @@ begin
 			--else
 			--	dma_entry <= (others=>'0');
 			--end if;
-		
+
 		when others =>
 			dma_waddr <= (others => '0');
 			dma_wdata <= (others => '0');
@@ -647,19 +647,19 @@ begin
 	dma_ctrl_new <= dma_entry(DMA_WIDTH-1) & done_new;
 
 -- updated dma entry
-	dma_entry_updated <= (dma_ctrl_new & 
-				std_logic_vector(dma_cnt_new) & 
-				std_logic_vector(dma_rp_new) & 
-				std_logic_vector(dma_wp_new) & 
+	dma_entry_updated <= (dma_ctrl_new &
+				std_logic_vector(dma_cnt_new) &
+				std_logic_vector(dma_rp_new) &
+				std_logic_vector(dma_wp_new) &
 				dma_entry(15 downto 0)) when dma_ctrl='1' else
 				dma_entry;
-	
+
 
 
 -- control FSM - just counter --------------------------------------------------------------------
 	val <= (others=>'0') when state_cnt="10" else (state_cnt + 1) ;
 	process (na_reset, na_clk)
-	begin 
+	begin
 		if na_reset='1' then
 			state_cnt <= (others=>'0') after PDELAY;
 		elsif rising_edge(na_clk) then
@@ -668,7 +668,7 @@ begin
 	end process;
 
 	reg_control : process(state_cnt)
-	begin	
+	begin
 	dOutreg_ld <= '0';
         vld_buf_ld <= '0';
 	ctrlOutreg_ld <= '0';
@@ -713,7 +713,7 @@ begin
                         phase_next <= (others=>'0');
 			ocp_dataresp_reg <= (others=>'0') after PDELAY;
 			ocp_response_reg <= OCP_RESP_NULL after PDELAY;
-                        
+
 		elsif rising_edge(na_clk) then
 			if ctrlOutreg_ld='1' then
 				dma_ctrl_reg <= dma_ctrl after PDELAY;
@@ -746,7 +746,7 @@ begin
                         if pkt_in(LINK_WIDTH-1)='1' then
                           phitIn <= pkt_in after PDELAY;
                         end if;
-                        
+
                         phitOut0 <= phit_togo after PDELAY;
                         phitOut1 <= phitOut0 after PDELAY;
                         phitOut2 <= phitOut1 after PDELAY;
@@ -756,14 +756,14 @@ begin
 			if resp_ld='1' then
 				ocp_dataresp_reg <= ocp_dataresp after PDELAY;
 				ocp_response_reg <= ocp_response after PDELAY;
-			end if;                        
+			end if;
 
 		end if;
 	end process;
 
 
-	
 
- 
+
+
 end rtl;
 

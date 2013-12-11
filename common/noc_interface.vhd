@@ -35,9 +35,43 @@
 -- Author: Rasmus Bo Soerensen
 --------------------------------------------------------------------------------
 
-package config is
+library ieee;
+use ieee.std_logic_1164.all;
 
-    constant N : integer := 2; -- Horizontal width
-    constant M : integer := 2; -- Vertical Height
+use work.config.all;
+use work.ocp.all;
+use work.noc_defs.all;
 
-end package ; -- aegean_def
+package noc_interface is
+
+    type ocp_core_m_a is array((N*M)-1 downto 0) of ocp_core_m;
+    type ocp_core_s_a is array((N*M)-1 downto 0) of ocp_core_s;
+
+    type ocp_io_m_a is array((N*M)-1 downto 0) of ocp_io_m;
+    type ocp_io_s_a is array((N*M)-1 downto 0) of ocp_io_s;
+
+    type ocp_burst_m_a is array((N*M)-1 downto 0) of ocp_burst_m;
+    type ocp_burst_s_a is array((N*M)-1 downto 0) of ocp_burst_s;
+
+    type spm_master is record
+        MCmd        : std_logic_vector(SPM_CMD_WIDTH-1 downto 0);
+        MAddr       : std_logic_vector(SPM_ADDR_WIDTH-1 downto 0);
+        MData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
+    end record;
+
+    type spm_slave is record
+        --SCmdAccept    : std_logic;
+        --SResp     : std_logic;
+        SData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
+    end record;
+
+
+    --arrays
+    type spm_masters is array(0 to (N*M)-1) of spm_master;
+    type spm_slaves is array(0 to (N*M)-1) of spm_slave;
+
+
+    type link_n is array(0 to (N - 1)) of channel;
+    type link_m is array(0 to (M - 1)) of link_n;
+
+end package ; -- noc_interface

@@ -57,15 +57,15 @@ port (
 	spm_m		: out spm_master;
 	spm_s		: in spm_slave;
 
-	inNorth		: in network_link;
-	inSouth		: in network_link;
-	inEast		: in network_link;
-	inWest		: in network_link;
+	inNorth		: in link_t;
+	inSouth		: in link_t;
+	inEast		: in link_t;
+	inWest		: in link_t;
 
-	outNorth	: out network_link;
-	outSouth	: out network_link;
-	outEast		: out network_link;
-	outWest		: out network_link
+	outNorth	: out link_t;
+	outSouth	: out link_t;
+	outEast		: out link_t;
+	outWest		: out link_t
 
 );
 
@@ -95,10 +95,10 @@ port (
 
 -- Network Ports
 -- Incoming Port
-	pkt_in		: in  network_link;
+	pkt_in		: in  link_t;
 
 -- Outgoing Port
-	pkt_out		: out network_link
+	pkt_out		: out link_t
 
 );
 end component;
@@ -115,8 +115,8 @@ end component;
 
 ------------------------------signal declarations----------------------------
 
-signal ip_to_net	: network_link;
-signal net_to_ip	: network_link;
+signal ip_to_net	: link_t;
+signal net_to_ip	: link_t;
 
 begin
 

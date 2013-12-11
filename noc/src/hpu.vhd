@@ -45,8 +45,8 @@ entity HPU is
 	port(
 		clk: 	in std_logic;
 		reset:	in std_logic;
-		inLine: in network_link;
-		outLine: out network_link;
+		inLine: in link_t;
+		outLine: out link_t;
 		sel:	out std_logic_vector(3 downto 0)
 	);
 end HPU;
@@ -59,7 +59,7 @@ architecture struct of HPU is
 
 	signal selInt, selIntNext	: std_logic_vector(3 downto 0);
 	signal decodedSel		: std_logic_vector(3 downto 0);
-	signal outInt			: network_link;
+	signal outInt			: link_t;
 begin
 	SOP <= inLine(PHIT_WIDTH-1);
 	MOP <= inLine(PHIT_WIDTH-2);

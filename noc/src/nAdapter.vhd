@@ -62,10 +62,10 @@ port (
 
 -- Network Ports
 -- Incoming Port
-	pkt_in		: in  network_link;
+	pkt_in		: in  link_t;
 
 -- Outgoing Port
-	pkt_out		: out network_link
+	pkt_out		: out link_t
 
 );
 end nAdapter;

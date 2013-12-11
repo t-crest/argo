@@ -90,10 +90,10 @@ package noc_defs is
 	type sltt_type is array (PRD_LENGTH-1 downto 0) of std_logic_vector (DMA_IND_WIDTH-1 downto 0);
 
 --------------------------------------------------router------------------------
-	subtype	network_link is std_logic_vector(PHIT_WIDTH-1 downto 0);
-	type	routerPort is array(4 downto 0) of network_link;
+	subtype	link_t is std_logic_vector(PHIT_WIDTH-1 downto 0);
+	type	routerPort is array(4 downto 0) of link_t;
 
-	constant LINE_ZERO: network_link := (others => '0');
+	constant LINE_ZERO: link_t := (others => '0');
 
 end package noc_defs;
 

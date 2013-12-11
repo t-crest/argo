@@ -62,25 +62,25 @@ begin
 	sel3 <= func(15 downto 12);
 	sel4 <= func(19 downto 16);
 
-	outPort(0) <= (inPort(1) and (network_link'range=>sel1(0))) or
-				  (inPort(2) and (network_link'range=>sel2(0))) or
-				  (inPort(3) and (network_link'range=>sel3(0))) or
-				  (inPort(4) and (network_link'range=>sel4(0)));
-	outPort(1) <= (inPort(0) and (network_link'range=>sel0(1))) or
-				  (inPort(2) and (network_link'range=>sel2(1))) or
-				  (inPort(3) and (network_link'range=>sel3(1))) or
-				  (inPort(4) and (network_link'range=>sel4(1)));
-	outPort(2) <= (inPort(0) and (network_link'range=>sel0(2))) or
-				  (inPort(1) and (network_link'range=>sel1(2))) or
-				  (inPort(3) and (network_link'range=>sel3(2))) or
-				  (inPort(4) and (network_link'range=>sel4(2)));
-	outPort(3) <= (inPort(0) and (network_link'range=>sel0(3))) or
-				  (inPort(1) and (network_link'range=>sel1(3))) or
-				  (inPort(2) and (network_link'range=>sel2(3))) or
-				  (inPort(4) and (network_link'range=>sel4(3)));
-	outPort(4) <= (inPort(0) and (network_link'range=>sel0(0))) or
-				  (inPort(1) and (network_link'range=>sel1(1))) or
-				  (inPort(2) and (network_link'range=>sel2(2))) or
-				  (inPort(3) and (network_link'range=>sel3(3)));
+	outPort(0) <= (inPort(1) and (link_t'range=>sel1(0))) or
+				  (inPort(2) and (link_t'range=>sel2(0))) or
+				  (inPort(3) and (link_t'range=>sel3(0))) or
+				  (inPort(4) and (link_t'range=>sel4(0)));
+	outPort(1) <= (inPort(0) and (link_t'range=>sel0(1))) or
+				  (inPort(2) and (link_t'range=>sel2(1))) or
+				  (inPort(3) and (link_t'range=>sel3(1))) or
+				  (inPort(4) and (link_t'range=>sel4(1)));
+	outPort(2) <= (inPort(0) and (link_t'range=>sel0(2))) or
+				  (inPort(1) and (link_t'range=>sel1(2))) or
+				  (inPort(3) and (link_t'range=>sel3(2))) or
+				  (inPort(4) and (link_t'range=>sel4(2)));
+	outPort(3) <= (inPort(0) and (link_t'range=>sel0(3))) or
+				  (inPort(1) and (link_t'range=>sel1(3))) or
+				  (inPort(2) and (link_t'range=>sel2(3))) or
+				  (inPort(4) and (link_t'range=>sel4(3)));
+	outPort(4) <= (inPort(0) and (link_t'range=>sel0(0))) or
+				  (inPort(1) and (link_t'range=>sel1(1))) or
+				  (inPort(2) and (link_t'range=>sel2(2))) or
+				  (inPort(3) and (link_t'range=>sel3(3)));
 
 end structure;

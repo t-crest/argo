@@ -65,8 +65,8 @@ component HPU is
 port(
 	clk: 	in std_logic;
 	reset:	in std_logic;
-	inLine: in network_link;
-	outLine: out network_link;
+	inLine: in link_t;
+	outLine: out link_t;
 	sel:	out std_logic_vector(3 downto 0)
 );
 end component;

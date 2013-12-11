@@ -167,12 +167,12 @@ spm_h_0 : bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_0_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(7 downto 0),
     a_dout => SData_h(7 downto 0),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(39 downto 32),
     b_dout => spm_s.SData(39 downto 32));
 
@@ -181,12 +181,12 @@ spm_h_1 : bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_1_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(15 downto 8),
     a_dout => SData_h(15 downto 8),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(47 downto 40),
     b_dout => spm_s.SData(47 downto 40));
 
@@ -195,12 +195,12 @@ spm_h_2 : bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_2_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(23 downto 16),
     a_dout => SData_h(23 downto 16),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(55 downto 48),
     b_dout => spm_s.SData(55 downto 48));
 
@@ -209,12 +209,12 @@ spm_h_3 : bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_3_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(31 downto 24),
     a_dout => SData_h(31 downto 24),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(63 downto 56),
     b_dout => spm_s.SData(63 downto 56));
 
@@ -223,12 +223,12 @@ spm_l_0 : bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_0_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(7 downto 0),
     a_dout => SData_l(7 downto 0),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(7 downto 0),
     b_dout => spm_s.SData(7 downto 0));
 
@@ -237,12 +237,12 @@ spm_l_1 : bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_1_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(15 downto 8),
     a_dout => SData_l(15 downto 8),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(15 downto 8),
     b_dout => spm_s.SData(15 downto 8));
 
@@ -251,12 +251,12 @@ spm_l_2 : bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_2_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(23 downto 16),
     a_dout => SData_l(23 downto 16),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(23 downto 16),
     b_dout => spm_s.SData(23 downto 16));
 
@@ -265,12 +265,12 @@ spm_l_3 : bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_3_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE+1 downto 3),
+    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
     a_din => ocp_core_m.MData(31 downto 24),
     a_dout => SData_l(31 downto 24),
     b_clk => n_clk,
     b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-2 downto 0),
+    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
     b_din => spm_m.MData(31 downto 24),
     b_dout => spm_s.SData(31 downto 24));
 

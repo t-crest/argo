@@ -51,6 +51,9 @@ entity channel_latch is
     -- default: request delay disabled
     constant GENERATE_REQUEST_DELAY : integer := 0;
 
+    -- to fix hold violations: delay the acknowledge
+    constant GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
+
     -- initial state to implement
     constant init_token : latch_state := EMPTY_BUBBLE;
 
@@ -76,6 +79,7 @@ architecture struct of channel_latch is
   signal lt_gated : std_logic;
 
   signal out_req_0, out_req_1, out_req_2 : std_logic;
+  signal out_ack : std_logic;
 begin
   type_in   <= left_in.data(PHIT_WIDTH);
   --lt_gated <= lt_en or (not type_out) after delay;
@@ -90,7 +94,7 @@ begin
     port map(
       preset => preset,
       Rin    => left_in.req,
-      Ain    => left_out.ack,
+      Ain    => out_ack, --left_out.ack,
 
       Rout => out_req_0,
       Aout => right_in.ack,
@@ -98,7 +102,7 @@ begin
       lt_en => lt_en
       );
 
-  
+   
   -- Delay line at the output request
   REQUEST_DELAY: if GENERATE_REQUEST_DELAY = 1 generate
     -- synthesis generates two inverters, ensure the
@@ -106,8 +110,9 @@ begin
     -- definition of a synthesis constraint at synthesis
     -- these buffer just provide "handles" for the delay
     -- definition
-    out_req_2 <= not out_req_1 after 1 ns;
-    out_req_1 <= not out_req_0 after 1 ns;
+    -- out_req_2 <= not out_req_1 after 1 ns;
+    -- out_req_1 <= not out_req_0 after 1 ns;
+    out_req_2 <= inject_delay_line(out_req_0);
   end generate REQUEST_DELAY;
 
   -- No delay line
@@ -115,7 +120,14 @@ begin
     out_req_2 <= out_req_0;
   end generate NO_REQUEST_DELAY;
 
+  ACKNOWLEDGE_DELAY: if GENERATE_ACKNOWLEDGE_DELAY = 1 generate
+    left_out.ack <= inject_delay_line(out_ack);
+  end generate ACKNOWLEDGE_DELAY;
   right_out.req <= out_req_2;
+
+  NO_ACKNOWLEDGE_DELAY: if GENERATE_ACKNOWLEDGE_DELAY = 0 generate
+    left_out.ack <= out_ack;
+  end generate NO_ACKNOWLEDGE_DELAY;
 
   
   GATING : if GATING_ENABLED = 1 generate

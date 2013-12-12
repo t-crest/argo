@@ -75,12 +75,12 @@ architecture behav of test2_noc2x2 is
   component noc is
     port (
       --p_clk		: in std_logic;
-      n_clk	: in std_logic;
-      n_clk_skd : in std_logic;
-      reset	: in std_logic;
-      reset_sk_e: in std_logic;
-      reset_sk_l: in std_logic;
-      
+      n_clk_0	 : in std_logic;
+      n_clk_skd	 : in std_logic;
+      reset	 : in std_logic;
+      reset_sk_e : in std_logic;
+      reset_sk_l : in std_logic;
+
       p_ports_in  : in	procMasters;
       p_ports_out : out procSlaves;
 
@@ -116,13 +116,24 @@ architecture behav of test2_noc2x2 is
   end component;
 
 -------------------------signal declarations-------------------------------
-  signal n_clk	    : std_logic := '1';
-  signal p_clk	    : std_logic := '1';
-  signal n_clk_sk_e : std_logic := '1';
-  signal n_clk_sk_l : std_logic := '1';
-  signal p_clk_sk_e : std_logic := '1';
-  signal p_clk_sk_l : std_logic := '1';
-  signal reset, reset_sk_e, reset_sk_l	    : std_logic := '1';
+  type skew_route is record
+    p_clock : std_logic;
+    n_clock : std_logic;
+    reset   : std_logic;
+  end record;
+  type skew_route_a is array (N-1 downto 0) of skew_route;
+  type skew_route_nodes is array (N-1 downto 0) of skew_route_a;
+
+  signal skew_early, no_skew, skew_late : skew_route;
+  signal skew_nodes			: skew_route_nodes;
+
+  signal n_clk			       : std_logic := '1';
+  signal p_clk			       : std_logic := '1';
+  signal n_clk_sk_e		       : std_logic := '1';
+  signal n_clk_sk_l		       : std_logic := '1';
+  signal p_clk_sk_e		       : std_logic := '1';
+  signal p_clk_sk_l		       : std_logic := '1';
+  signal reset, reset_sk_e, reset_sk_l : std_logic := '1';
 
   signal p_masters     : procMasters;
   signal p_slaves      : procSlaves;
@@ -146,104 +157,43 @@ architecture behav of test2_noc2x2 is
 
 begin
 
+  -----------------------------------------------------------------------------
+  -- configure skew mapping here
+  -----------------------------------------------------------------------------
+
+  skew_nodes(0)(0) <= skew_early;
+  skew_nodes(0)(1) <= skew_late;
+  skew_nodes(1)(0) <= skew_early;
+  skew_nodes(1)(1) <= skew_late;
 
   spm_m : for i in N-1 downto 0 generate
     spm_n : for j in N-1 downto 0 generate
-      
-      skewed_e : if i = 0 and j = 0 generate
-	-- High SPM instance
-	spm_h : bram_tdp
-	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-	  port map (a_clk  => p_clk_sk_e,
-		    a_wr   => p_spm_masters(i)(j).MCmd(0),
-		    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    a_din  => p_spm_masters(i)(j).MData(63 downto 32),
-		    a_dout => p_spm_slaves(i)(j).SData(63 downto 32),
-		    b_clk  => n_clk_sk_e,
-		    b_wr   => n_spm_masters(i)(j).MCmd(0),
-		    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    b_din  => n_spm_masters(i)(j).MData(63 downto 32),
-		    b_dout => n_spm_slaves(i)(j).SData(63 downto 32));
+      spm_h : bram_tdp
+	generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
+	port map (a_clk	 => skew_nodes(i)(j).p_clock,
+		  a_wr	 => p_spm_masters(i)(j).MCmd(0),
+		  a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
+		  a_din	 => p_spm_masters(i)(j).MData(63 downto 32),
+		  a_dout => p_spm_slaves(i)(j).SData(63 downto 32),
+		  b_clk	 => skew_nodes(i)(j).n_clock,
+		  b_wr	 => n_spm_masters(i)(j).MCmd(0),
+		  b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
+		  b_din	 => n_spm_masters(i)(j).MData(63 downto 32),
+		  b_dout => n_spm_slaves(i)(j).SData(63 downto 32));
 
-	-- Low SPM instance
-	spm_l : bram_tdp
-	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-	  port map (a_clk  => p_clk_sk_e,
-		    a_wr   => p_spm_masters(i)(j).MCmd(0),
-		    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    a_din  => p_spm_masters(i)(j).MData(31 downto 0),
-		    a_dout => p_spm_slaves(i)(j).SData(31 downto 0),
-		    b_clk  => n_clk_sk_e,
-		    b_wr   => n_spm_masters(i)(j).MCmd(0),
-		    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    b_din  => n_spm_masters(i)(j).MData(31 downto 0),
-		    b_dout => n_spm_slaves(i)(j).SData(31 downto 0));
-
-      end generate skewed_e;
-
-      skewed_l : if i = 0 and j = 1 generate
-	-- High SPM instance
-	spm_h : bram_tdp
-	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-	  port map (a_clk  => p_clk_sk_l,
-		    a_wr   => p_spm_masters(i)(j).MCmd(0),
-		    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    a_din  => p_spm_masters(i)(j).MData(63 downto 32),
-		    a_dout => p_spm_slaves(i)(j).SData(63 downto 32),
-		    b_clk  => n_clk_sk_l,
-		    b_wr   => n_spm_masters(i)(j).MCmd(0),
-		    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    b_din  => n_spm_masters(i)(j).MData(63 downto 32),
-		    b_dout => n_spm_slaves(i)(j).SData(63 downto 32));
-
-	-- Low SPM instance
-	spm_l : bram_tdp
-	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-	  port map (a_clk  => p_clk_sk_l,
-		    a_wr   => p_spm_masters(i)(j).MCmd(0),
-		    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    a_din  => p_spm_masters(i)(j).MData(31 downto 0),
-		    a_dout => p_spm_slaves(i)(j).SData(31 downto 0),
-		    b_clk  => n_clk_sk_l,
-		    b_wr   => n_spm_masters(i)(j).MCmd(0),
-		    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    b_din  => n_spm_masters(i)(j).MData(31 downto 0),
-		    b_dout => n_spm_slaves(i)(j).SData(31 downto 0));
-
-      end generate skewed_l;
-
-      not_skewed : if i = 1 generate
-	-- High SPM instance
-	spm_h : bram_tdp
-	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-	  port map (a_clk  => p_clk,
-		    a_wr   => p_spm_masters(i)(j).MCmd(0),
-		    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    a_din  => p_spm_masters(i)(j).MData(63 downto 32),
-		    a_dout => p_spm_slaves(i)(j).SData(63 downto 32),
-		    b_clk  => n_clk,
-		    b_wr   => n_spm_masters(i)(j).MCmd(0),
-		    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    b_din  => n_spm_masters(i)(j).MData(63 downto 32),
-		    b_dout => n_spm_slaves(i)(j).SData(63 downto 32));
-
-	-- Low SPM instance
-	spm_l : bram_tdp
-	  generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-	  port map (a_clk  => p_clk,
-		    a_wr   => p_spm_masters(i)(j).MCmd(0),
-		    a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    a_din  => p_spm_masters(i)(j).MData(31 downto 0),
-		    a_dout => p_spm_slaves(i)(j).SData(31 downto 0),
-		    b_clk  => n_clk,
-		    b_wr   => n_spm_masters(i)(j).MCmd(0),
-		    b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
-		    b_din  => n_spm_masters(i)(j).MData(31 downto 0),
-		    b_dout => n_spm_slaves(i)(j).SData(31 downto 0));
-
-      end generate not_skewed;
-
-      
+      -- Low SPM instance
+      spm_l : bram_tdp
+	generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
+	port map (a_clk	 => skew_nodes(i)(j).p_clock,
+		  a_wr	 => p_spm_masters(i)(j).MCmd(0),
+		  a_addr => p_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
+		  a_din	 => p_spm_masters(i)(j).MData(31 downto 0),
+		  a_dout => p_spm_slaves(i)(j).SData(31 downto 0),
+		  b_clk	 => skew_nodes(i)(j).n_clock,
+		  b_wr	 => n_spm_masters(i)(j).MCmd(0),
+		  b_addr => n_spm_masters(i)(j).MAddr(SPM_ADDR_WIDTH-1 downto 0),
+		  b_din	 => n_spm_masters(i)(j).MData(31 downto 0),
+		  b_dout => n_spm_slaves(i)(j).SData(31 downto 0));
     end generate spm_n;
   end generate spm_m;
 
@@ -261,12 +211,15 @@ begin
 
   noc2x2 : entity work.noc (MODULE)
     port map (
-      n_clk	 => n_clk,
-      n_clk_sk_e => n_clk_sk_e,
-      n_clk_sk_l => n_clk_sk_l,
-      reset	 => reset,
-      reset_sk_l => reset_sk_l,
-      reset_sk_e => reset_sk_e,
+      n_clk_0 => skew_nodes(0)(0).n_clock,
+      n_clk_1 => skew_nodes(0)(1).n_clock,
+      n_clk_2 => skew_nodes(1)(0).n_clock,
+      n_clk_3 => skew_nodes(1)(1).n_clock,
+
+      reset_0 => skew_nodes(0)(0).reset,
+      reset_1 => skew_nodes(0)(1).reset,
+      reset_2 => skew_nodes(1)(0).reset,
+      reset_3 => skew_nodes(1)(1).reset,
 
       p_ports_in  => p_masters_flat,
       p_ports_out => p_slaves_flat,
@@ -282,8 +235,8 @@ begin
   begin
     -- negative SKEW
     while true loop
-          wait for (NA_HPERIOD);
-	  n_clk_sk_e <= not n_clk_sk_e;
+      wait for (NA_HPERIOD);
+      n_clk_sk_e <= not n_clk_sk_e;
     end loop;
   end process;
 
@@ -292,22 +245,24 @@ begin
   begin
     wait for SKEW;
     while true loop
-          wait for (NA_HPERIOD);
-	  n_clk      <= not n_clk;
+      wait for (NA_HPERIOD);
+      n_clk <= not n_clk;
     end loop;
   end process;
+
+
 
 --na clock 
   na_clk_generate_l : process
   begin
     wait for 2*SKEW;
     while true loop
-          wait for (NA_HPERIOD);
-	  n_clk_sk_l <= not n_clk_sk_l;
+      wait for (NA_HPERIOD);
+      n_clk_sk_l <= not n_clk_sk_l;
     end loop;
   end process;
 
-  
+
 --proc clock 
   proc_clk_generate_e : process
   begin
@@ -323,7 +278,7 @@ begin
     wait for SKEW;
     while true loop
       wait for (P_HPERIOD);
-      p_clk      <= not p_clk;
+      p_clk <= not p_clk;
     end loop;
   end process;
 
@@ -342,15 +297,25 @@ begin
   begin
     wait for 4*NA_HPERIOD;
     wait for delay;
-    reset_sk_e <= '0' ;
-    reset <= '0' after SKEW;
+    reset_sk_e <= '0';
+    reset      <= '0' after SKEW;
     reset_sk_l <= '0' after 2*SKEW;
     wait;
   end process;
 
+  skew_early.n_clock <= n_clk_sk_e;
+  no_skew.n_clock    <= n_clk;
+  skew_late.n_clock  <= n_clk_sk_l;
 
+  skew_early.p_clock <= p_clk_sk_e;
+  no_skew.p_clock    <= p_clk;
+  skew_late.p_clock  <= p_clk_sk_l;
 
-  spm_initilize : process
+  skew_early.reset <= reset_sk_e;
+  no_skew.reset	   <= reset;
+  skew_late.reset  <= reset_sk_l;
+
+  Spm_initilize : process
 
     variable count : natural := 0;
 

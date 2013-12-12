@@ -18,10 +18,14 @@ set_disable_timing node_*_*/r/xbar_with_latches/crossbar/c_sync_req/latch/C9/B
 set_disable_timing node_*_*/r/xbar_with_latches/crossbar/c_sync_ack/latch/C9/B
 
 # controller latches loops
-set_disable_timing node_*_*/r/*_in_latch/controller/r_next_reg/enable
-set_disable_timing node_*_*/r/*_hpu/token_latch/controller/r_next_reg/enable
-set_disable_timing node_*_*/r/xbar_with_latches/ch_latch_*/controller/r_next_reg/enable
+#set_disable_timing node_*_*/r/*_in_latch/controller/r_next_reg/enable
+#set_disable_timing node_*_*/r/*_hpu/token_latch/controller/r_next_reg/enable
+#set_disable_timing node_*_*/r/xbar_with_latches/ch_latch_*/controller/r_next_reg/enable
 
+foreach controller [get_object_name [get_cells -hierarchical controller]] {
+    set_disable_timing [get_pins -of_objects [get_net $controller/lt_en] -filter pin_direction==out]
+    #$controller/r_next_reg/enable
+}
 # Delay Elements -matching HPU combinational logic
 
 foreach node [get_object_name [get_cells node_*_*]] {

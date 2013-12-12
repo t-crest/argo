@@ -8,7 +8,8 @@ entity fifo is
     N	  : integer;
     TOKEN : latch_state;
     GATING_ENABLED : integer := 0;
-    GENERATE_REQUEST_DELAY : integer := 0
+    GENERATE_REQUEST_DELAY : integer := 0;
+    GENERATE_ACKNOWLEDGE_DELAY : integer := 0
     );
   port (
     preset    : in  std_logic;
@@ -35,7 +36,8 @@ begin
       generic map (
 	init_token => TOKEN,
 	GATING_ENABLED => GATING_ENABLED,
-	GENERATE_REQUEST_DELAY => GENERATE_REQUEST_DELAY
+	GENERATE_REQUEST_DELAY => GENERATE_REQUEST_DELAY,
+	GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY
 	)
       port map (
 	preset	  => preset,

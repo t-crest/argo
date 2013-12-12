@@ -5,6 +5,7 @@
 
 NOCDIR=../src
 COMMON=../../common
+TEST=$(COMMON)/test
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -37,7 +38,9 @@ test1: clean base
 	$(WINE) vsim -do sim1.do test1_noc2x2
 
 test2: clean base
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
+	$(WINE) vcom $(OPTIONS) $(TEST)/test2_noc2x2.vhd
 	$(WINE) vsim -do sim2.do test2_noc2x2
 
 base:
@@ -57,6 +60,9 @@ base:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_node.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 
+sched:
+	../../../local/bin/Poseidon -p bitorus2x2.xml -m GREEDY -s ./sched.xml
+	../../../local/bin/poseidon_converter.sh ./sched.xml all_to_all.sched Source-text
 
 
 clean:

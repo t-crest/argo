@@ -53,12 +53,11 @@ port (
 
 	reset		: in std_logic;
 
-	p_ports_in	: in ocp_io_m_a;
-	p_ports_out	: out ocp_io_s_a;
+    ocp_io_ms   : in ocp_io_m_a;
+    ocp_io_ss   : out ocp_io_s_a;
 
-	spm_ports_in	: in spm_slaves;
-	spm_ports_out	: out spm_masters
-
+    spm_ports_m : out spm_masters;
+    spm_ports_s : in spm_slaves
 );
 
 end noc;
@@ -80,16 +79,16 @@ port (
 	spm_out		: out spm_master;
 
 
-    	north_in_f     : in channel_forward;  	north_in_b     : out channel_backward;
-	east_in_f      : in channel_forward;  	east_in_b      : out channel_backward;
-	south_in_f     : in channel_forward;  	south_in_b     : out channel_backward;
-	west_in_f      : in channel_forward;  	west_in_b      : out channel_backward;
+    north_in    : inout channel;
+	east_in     : inout channel;
+	south_in    : inout channel;
+	west_in     : inout channel;
 
 	-- Output ports
-	north_out_f    : out channel_forward;  north_out_b    : in channel_backward;
-	east_out_f     : out channel_forward; 	east_out_b     : in channel_backward;
-	south_out_f    : out channel_forward; 	south_out_b    : in channel_backward;
-	west_out_f     : out channel_forward; 	west_out_b     : in channel_backward
+	north_out   : inout channel;
+	east_out    : inout channel;
+	south_out   : inout channel;
+	west_out    : inout channel
 
 );
 
@@ -143,30 +142,21 @@ begin
 				n_clk => n_clk,
 				reset => reset,
 
-				proc_in => p_ports_in((i*N)+j),
-				proc_out => p_ports_out((i*N)+j),
+				proc_in => ocp_io_ms((i*N)+j),
+				proc_out => ocp_io_ss((i*N)+j),
 
-				spm_in => spm_ports_in((i*N)+j),
-				spm_out => spm_ports_out((i*N)+j),
+				spm_in => spm_ports_s((i*N)+j),
+				spm_out => spm_ports_m((i*N)+j),
 
-                north_in_f => north_in(i)(j).forward,
-                north_in_b => north_in(i)(j).backward,
-                east_in_f => east_in(i)(j).forward,
-                east_in_b => east_in(i)(j).backward,
-                south_in_f => south_in(i)(j).forward,
-                south_in_b => south_in(i)(j).backward,
-                west_in_f => west_in(i)(j).forward,
-                west_in_b => west_in(i)(j).backward,
+                north_in => north_in(i)(j),
+                east_in => east_in(i)(j),
+                south_in => south_in(i)(j),
+                west_in => west_in(i)(j),
 
-                north_out_f => north_out(i)(j).forward,
-                north_out_b => north_out(i)(j).backward,
-                east_out_f => east_out(i)(j).forward,
-                east_out_b => east_out(i)(j).backward,
-                south_out_f => south_out(i)(j).forward,
-                south_out_b => south_out(i)(j).backward,
-                west_out_f => west_out(i)(j).forward,
-                west_out_b => west_out(i)(j).backward
-
+                north_out => north_out(i)(j),
+                east_out => east_out(i)(j),
+                south_out => south_out(i)(j),
+                west_out => west_out(i)(j)
                 );
 
 		end generate nodes_n;

@@ -41,13 +41,16 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.noc_defs.all;
+use work.noc_interface.all;
 
 entity router is
 	port (
 		clk	: in std_logic;
 		reset	: in std_logic;
-		inPort	: in routerPort;
-		outPort	: out routerPort
+		inPort_f	: in router_port_f;
+		inPort_b	: out router_port_b;
+		outPort_f	: out router_port_f;
+		outPort_b	: in router_port_b
 	);
 end router;
 
@@ -56,8 +59,8 @@ architecture struct of router is
 component Xbar is
 port(
 	func	: in std_logic_vector(19 downto 0);
-	inPort	: in routerPort;
-	outPort	: out routerPort
+	inPort	: in router_port_f;
+	outPort	: out router_port_f
 );
 end component;
 
@@ -65,8 +68,8 @@ component HPU is
 port(
 	clk: 	in std_logic;
 	reset:	in std_logic;
-	inLine: in link_t;
-	outLine: out link_t;
+	inLine: in channel_forward;
+	outLine: out channel_forward;
 	sel:	out std_logic_vector(3 downto 0)
 );
 end component;
@@ -75,10 +78,10 @@ signal sel0, sel1, sel2, sel3, sel4: std_logic_vector(3 downto 0);
 
 -- pipeline registers
 signal XbarSel, XbarSelNext	: std_logic_vector(19 downto 0);
-signal XbarOut, XbarOutNext	: routerPort;
-signal HPUout 			: routerPort;
-signal HPUoutNext		: routerPort;
-signal HPUin			: routerPort;
+signal XbarOut, XbarOutNext	: router_port_f;
+signal HPUout 			: router_port_f;
+signal HPUoutNext		: router_port_f;
+signal HPUin			: router_port_f;
 
 begin
 	port0: HPU
@@ -97,18 +100,19 @@ begin
 	xbarinst : Xbar
 			port map(func=>XbarSel, inPort=>HPUout, outPort=>XbarOutNext);
 
-	outPort <= XbarOut;
+	outPort_f <= XbarOut;
 
 	process(clk, reset)
 	begin
 		if reset = '1' then
 			XbarSel <= (others => '0');
-			XbarOut <= (others => (others => '0' ));
-			HPUout <= (others => (others => '0' ));
+			reset_router_port_f(XbarOut);
+			reset_router_port_f(HPUin);
+			reset_router_port_f(HPUout);
 		elsif rising_edge(clk) then
 			XbarSel <= XbarSelNext;
 			XbarOut <= XbarOutNext;
-			HPUin <= inPort;
+			HPUin <= inPort_f;
 			HPUout <= HPUoutNext;
 		end if;
 	end process;

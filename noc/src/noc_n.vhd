@@ -77,15 +77,23 @@ port (
 	spm_m		: out spm_master;
 	spm_s		: in spm_slave;
 
-	inNorth		: in link_t;
-	inSouth		: in link_t;
-	inEast		: in link_t;
-	inWest		: in link_t;
+	inNorth_f	: in channel_forward;
+	inNorth_b	: out channel_backward;
+	inSouth_f	: in channel_forward;
+	inSouth_b	: out channel_backward;
+	inEast_f	: in channel_forward;
+	inEast_b	: out channel_backward;
+	inWest_f	: in channel_forward;
+	inWest_b	: out channel_backward;
 
-	outNorth	: out link_t;
-	outSouth	: out link_t;
-	outEast		: out link_t;
-	outWest		: out link_t
+	outNorth_f	: out channel_forward;
+	outNorth_b	: in channel_backward;
+	outSouth_f	: out channel_forward;
+	outSouth_b	: in channel_backward;
+	outEast_f	: out channel_forward;
+	outEast_b	: in channel_backward;
+	outWest_f	: out channel_forward;
+	outWest_b	: in channel_backward
 
 );
 
@@ -93,7 +101,7 @@ end component;
 
 ------------------------------signal declarations----------------------------
 
-type link_n is array(0 to (N - 1)) of link_t;
+type link_n is array(0 to (N - 1)) of channel;
 type link_m is array(0 to (M - 1)) of link_n;
 
 signal north_in  : link_m;
@@ -122,15 +130,23 @@ begin
 				spm_m => spm_ports_m((i*N)+j),
 				spm_s => spm_ports_s((i*N)+j),
 
-				inNorth => north_in(i)(j),
-				inSouth => south_in(i)(j),
-				inEast => east_in(i)(j),
-				inWest => west_in(i)(j),
+				inNorth_f => north_in(i)(j).forward,
+				inNorth_b => north_in(i)(j).backward,
+				inSouth_f => south_in(i)(j).forward,
+				inSouth_b => south_in(i)(j).backward,
+				inEast_f => east_in(i)(j).forward,
+				inEast_b => east_in(i)(j).backward,
+				inWest_f => west_in(i)(j).forward,
+				inWest_b => west_in(i)(j).backward,
 
-				outNorth => north_out(i)(j),
-				outSouth => south_out(i)(j),
-				outEast => east_out(i)(j),
-				outWest	=> west_out(i)(j)
+				outNorth_f => north_out(i)(j).forward,
+				outNorth_b => north_out(i)(j).backward,
+				outSouth_f => south_out(i)(j).forward,
+				outSouth_b => south_out(i)(j).backward,
+				outEast_f => east_out(i)(j).forward,
+				outEast_b => east_out(i)(j).backward,
+				outWest_f	=> west_out(i)(j).forward,
+				outWest_b	=> west_out(i)(j).backward
 			);
 
 		end generate nodes_n;

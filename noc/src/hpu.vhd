@@ -45,8 +45,8 @@ entity HPU is
 	port(
 		clk: 	in std_logic;
 		reset:	in std_logic;
-		inLine: in link_t;
-		outLine: out link_t;
+		inLine: in channel_forward;
+		outLine: out channel_forward;
 		sel:	out std_logic_vector(3 downto 0)
 	);
 end HPU;
@@ -61,11 +61,11 @@ architecture struct of HPU is
 	signal decodedSel		: std_logic_vector(3 downto 0);
 	signal outInt			: link_t;
 begin
-	SOP <= inLine(PHIT_WIDTH-1);
-	MOP <= inLine(PHIT_WIDTH-2);
-	EOP <= inLine(PHIT_WIDTH-3);
-	dest <= inLine(1 downto 0);
-	outLine <= outInt;
+	SOP <= inLine.data(LINK_WIDTH-1);
+	MOP <= inLine.data(LINK_WIDTH-2);
+	EOP <= inLine.data(LINK_WIDTH-3);
+	dest <= inLine.data(1 downto 0);
+	outLine.data <= outInt;
 
 	-- binary decoder, dest field into a one-hot signal
 	decodedSel(0) <= '1' when dest = "00" else '0';
@@ -75,7 +75,7 @@ begin
 
 	selIntNext <= decodedSel when SOP = '1' else (selInt and (selInt'range=>(MOP or EOP)));
 	sel <= selInt when (EOP='1' or MOP='1') else selIntNext;
-	outInt <= "100" & inLine(31 downto 16) & "00" & inLine(15 downto 2) when (SOP='1' and MOP='0' and EOP='0') else inLine;
+	outInt <= "100" & inLine.data(31 downto 16) & "00" & inLine.data(15 downto 2) when (SOP='1' and (MOP='0' and EOP='0')) else inLine.data;
 
 	process (reset,clk)
 	begin

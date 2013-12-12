@@ -56,16 +56,16 @@ port (
 	spm_in		: in spm_slave;
 	spm_out		: out spm_master;
 
-        -- router ports
-       	north_in_f     : in channel_forward;  	north_in_b     : out channel_backward;
-	east_in_f      : in channel_forward;  	east_in_b      : out channel_backward;
-	south_in_f     : in channel_forward;  	south_in_b     : out channel_backward;
-	west_in_f      : in channel_forward;  	west_in_b      : out channel_backward;
+    -- router ports
+    north_in 	: inout channel;
+	east_in 	: inout channel;
+	south_in 	: inout channel;
+	west_in 	: inout channel;
 
-	north_out_f    : out channel_forward;  north_out_b    : in channel_backward;
-	east_out_f     : out channel_forward; 	east_out_b     : in channel_backward;
-	south_out_f    : out channel_forward; 	south_out_b    : in channel_backward;
-	west_out_f     : out channel_forward; 	west_out_b     : in channel_backward
+	north_out 	: inout channel;
+	east_out 	: inout channel;
+	south_out 	: inout channel;
+	west_out 	: inout channel
 
 );
 
@@ -78,13 +78,11 @@ architecture struct of noc_node is
 
 ------------------------------signal declarations----------------------------
 
-signal ip_to_net_f	: channel_forward;
-signal ip_to_net_b	: channel_backward;
-signal net_to_ip_f	: channel_forward;
-signal net_to_ip_b	: channel_backward;
+signal ip_to_net	: channel;
+signal net_to_ip	: channel;
 
-signal ip_to_net	: link_t;
-signal net_to_ip        : link_t;
+signal ip_to_net_link	: link_t;
+signal net_to_ip_link   : link_t;
 
 signal fifo_to_net      : channel;
 signal net_to_fifo      : channel;
@@ -119,10 +117,10 @@ port map(
 
 	-- Network Ports
 	-- Incoming Port
-	pkt_in=>net_to_ip,
+	pkt_in=>net_to_ip_link,
 
 	-- Outgoing Port
-	pkt_out=>ip_to_net
+	pkt_out=>ip_to_net_link
 );
 
 
@@ -139,41 +137,31 @@ end process half_clk_gen;
 
 del_half_clk0 <= not half_clk;
 --del_half_clk1 <= not del_half_clk0;
-ip_to_net_f.req <= not del_half_clk0 after 2 ns;
-ip_to_net_f.data <= ip_to_net;
+ip_to_net.forward.req <= not del_half_clk0 after 2 ns;
+ip_to_net.forward.data <= ip_to_net_link;
 
 
 -- <= ip_to_net_b.ack;
 -- <= net_to_ip_f.req;
-net_to_ip <= net_to_ip_f.data;
-net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
+net_to_ip_link <= net_to_ip.forward.data;
+net_to_ip.backward.ack <= not del_half_clk0 after 2 ns;
 
 -- NoC switch instance
    r : entity work.router
    port map (
 		preset         => reset,
 		-- Input ports
-		north_in_f     => north_in_f,
-		north_in_b     => north_in_b,
-		east_in_f      => east_in_f,
-		east_in_b      => east_in_b,
-		south_in_f     => south_in_f,
-		south_in_b     => south_in_b,
-		west_in_f      => west_in_f,
-		west_in_b      => west_in_b,
-		resource_in_f  => ip_to_net_f,
-		resource_in_b  => ip_to_net_b,
+		north_in       => north_in,
+		east_in        => east_in,
+		south_in       => south_in,
+		west_in        => west_in,
+		resource_in    => ip_to_net,
 		-- Output ports
-		north_out_f    => north_out_f,
-		north_out_b    => north_out_b,
-		east_out_f     => east_out_f,
-		east_out_b     => east_out_b,
-		south_out_f    => south_out_f,
-		south_out_b    => south_out_b,
-		west_out_f     => west_out_f,
-		west_out_b     => west_out_b,
-		resource_out_f => net_to_ip_f,
-		resource_out_b => net_to_ip_b
+		north_out      => north_out,
+		east_out       => east_out,
+		south_out      => south_out,
+		west_out       => west_out,
+		resource_out   => net_to_ip
 
    );
 

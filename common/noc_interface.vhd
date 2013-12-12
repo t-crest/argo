@@ -60,8 +60,6 @@ package noc_interface is
     end record;
 
     type spm_slave is record
-        --SCmdAccept    : std_logic;
-        --SResp     : std_logic;
         SData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
     end record;
 
@@ -74,4 +72,36 @@ package noc_interface is
     type link_n is array(0 to (N - 1)) of channel;
     type link_m is array(0 to (M - 1)) of link_n;
 
+    type    router_port_f is array(ARITY-1 downto 0) of channel_forward;
+    type    router_port_b is array(ARITY-1 downto 0) of channel_backward;
+
+
+    procedure reset_router_port_f(
+        signal router_port : out router_port_f
+        );
+
+    procedure reset_router_port_b(
+        signal router_port : out router_port_b
+        );
+
 end package ; -- noc_interface
+
+
+package body noc_interface is
+    procedure reset_router_port_f(signal router_port : out router_port_f) is
+    begin
+    res : for i in 0 to ARITY-1 loop
+        router_port(i).data <= (others => '0');
+        router_port(i).req <= '0';
+    end loop ; -- res
+
+    end reset_router_port_f;
+
+    procedure reset_router_port_b(signal router_port : out router_port_b) is
+    begin
+    res : for i in 0 to ARITY-1 loop
+        router_port(i).ack <= '0';
+    end loop ; -- res
+
+    end reset_router_port_b;
+end noc_interface ;

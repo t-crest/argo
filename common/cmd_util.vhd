@@ -125,7 +125,7 @@ package body cmd_util is
     wait for SIMDELAY;
     core.MCmd <= OCP_CMD_WR;
     core.MAddr <= ST_MASK & addr;
-    core.MData <= x"000000" & "000" & data;
+    core.MData <= x"000000" & "00000" & data;
     wait until rising_edge(clk) and slave.SCmdAccept='1' and slave.SResp=OCP_RESP_DVA;
     wait for SIMDELAY;
     core.MCmd <= (others=>'0');

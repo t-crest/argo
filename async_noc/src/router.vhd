@@ -47,18 +47,18 @@ entity router is
 		preset         : in std_logic;
 
 		-- Input ports
-		north_in_f     : in channel_forward;  	north_in_b     : out channel_backward;
-		east_in_f      : in channel_forward;  	east_in_b      : out channel_backward;
-		south_in_f     : in channel_forward;  	south_in_b     : out channel_backward;
-		west_in_f      : in channel_forward;  	west_in_b      : out channel_backward;
-		resource_in_f  : in channel_forward;  	resource_in_b  : out channel_backward;
+		north_in		 : inout channel;
+		east_in		     : inout channel;
+		south_in		 : inout channel;
+		west_in		     : inout channel;
+		resource_in		 : inout channel;
 
 		-- Output ports
-		north_out_f    : out channel_forward;  north_out_b    : in channel_backward;
-		east_out_f     : out channel_forward; 	east_out_b     : in channel_backward;
-		south_out_f    : out channel_forward; 	south_out_b    : in channel_backward;
-		west_out_f     : out channel_forward; 	west_out_b     : in channel_backward;
-		resource_out_f : out channel_forward; 	resource_out_b : in channel_backward
+		north_out		 : inout channel;
+		east_out		 : inout channel;
+		south_out		 : inout channel;
+		west_out		 : inout channel;
+		resource_out	 : inout channel
 
 		--sim_time	   : in integer
 	);
@@ -66,11 +66,11 @@ end entity router;
 
 
 architecture struct of router is
-	signal north_hpu_f    : channel_forward;	signal north_hpu_b    : channel_backward;
-	signal south_hpu_f    : channel_forward;	signal south_hpu_b    : channel_backward;
-	signal east_hpu_f     : channel_forward;	signal east_hpu_b     : channel_backward;
-	signal west_hpu_f     : channel_forward;	signal west_hpu_b     : channel_backward;
-	signal resource_hpu_f : channel_forward;	signal resource_hpu_b : channel_backward;
+	signal north_hpu   : channel;
+	signal south_hpu   : channel;
+	signal east_hpu    : channel;
+	signal west_hpu    : channel;
+	signal resource_hpu: channel;
 
 	signal switch_sel : switch_sel_t;
 	signal chs_in_f  : chs_f;
@@ -90,10 +90,10 @@ begin
 		)
 		port map (
 			preset    => preset,
-			left_in   => north_in_f,
-			left_out  => north_in_b,
-			right_out => north_hpu_f,
-			right_in  => north_hpu_b,
+			left_in   => north_in.forward,
+			left_out  => north_in.backward,
+			right_out => north_hpu.forward,
+			right_in  => north_hpu.backward,
                         lt_enable => open
 		);
 
@@ -103,10 +103,10 @@ begin
 		)
 		port map (
 			preset    => preset,
-			left_in   => south_in_f,
-			left_out  => south_in_b,
-			right_out => south_hpu_f,
-			right_in  => south_hpu_b,
+			left_in   => south_in.forward,
+			left_out  => south_in.backward,
+			right_out => south_hpu.forward,
+			right_in  => south_hpu.backward,
                         lt_enable => open
 		);
 
@@ -116,10 +116,10 @@ begin
 		)
 		port map (
 			preset    => preset,
-			left_in   => east_in_f,
-			left_out  => east_in_b,
-			right_out => east_hpu_f,
-			right_in  => east_hpu_b,
+			left_in   => east_in.forward,
+			left_out  => east_in.backward,
+			right_out => east_hpu.forward,
+			right_in  => east_hpu.backward,
                         lt_enable => open
 		);
 
@@ -129,10 +129,10 @@ begin
 		)
 		port map (
 			preset    => preset,
-			left_in   => west_in_f,
-			left_out  => west_in_b,
-			right_out => west_hpu_f,
-			right_in  => west_hpu_b,
+			left_in   => west_in.forward,
+			left_out  => west_in.backward,
+			right_out => west_hpu.forward,
+			right_in  => west_hpu.backward,
                         lt_enable => open
 		);
 
@@ -142,10 +142,10 @@ begin
 		)
 		port map (
 			preset    => preset,
-			left_in   => resource_in_f,
-			left_out  => resource_in_b,
-			right_out => resource_hpu_f,
-			right_in  => resource_hpu_b,
+			left_in   => resource_in.forward,
+			left_out  => resource_in.backward,
+			right_out => resource_hpu.forward,
+			right_in  => resource_hpu.backward,
                         lt_enable => open
 		);
 	end block input_latches;
@@ -154,71 +154,71 @@ begin
 	-- The HPUs and a channel latch
 	hpus: block
 	begin
-		north_hpu : entity work.hpu(struct)
+		north_hpu_inst : entity work.hpu(struct)
 		generic map (
 			IS_NI => FALSE,
 			THIS_PORT => "00"
 		)
 		port map (
 			preset     => preset,
-			chan_in_f  => north_hpu_f,
-			chan_in_b  => north_hpu_b,
+			chan_in_f  => north_hpu.forward,
+			chan_in_b  => north_hpu.backward,
 			chan_out_f => chs_in_f(0),
 			chan_out_b => chs_in_b(0),
 			sel        => switch_sel(0)		-- North is index 0
 		);
 
-		south_hpu : entity work.hpu(struct)
+		south_hpu_inst : entity work.hpu(struct)
 		generic map (
 			IS_NI => FALSE,
 			THIS_PORT => "10"
 		)
 		port map (
 			preset     => preset,
-			chan_in_f  => south_hpu_f,
-			chan_in_b  => south_hpu_b,
+			chan_in_f  => south_hpu.forward,
+			chan_in_b  => south_hpu.backward,
 			chan_out_f => chs_in_f(2),
 			chan_out_b => chs_in_b(2),
 			sel        => switch_sel(2)
 		);
 
-		east_hpu : entity work.hpu(struct)
+		east_hpu_inst : entity work.hpu(struct)
 		generic map (
 			IS_NI => FALSE,
 			THIS_PORT => "01"
 		)
 		port map (
 			preset     => preset,
-			chan_in_f  => east_hpu_f,
-			chan_in_b  => east_hpu_b,
+			chan_in_f  => east_hpu.forward,
+			chan_in_b  => east_hpu.backward,
 			chan_out_f => chs_in_f(1),
 			chan_out_b => chs_in_b(1),
 			sel        => switch_sel(1)
 		);
 
-		west_hpu : entity work.hpu(struct)
+		west_hpu_inst : entity work.hpu(struct)
 		generic map (
 			IS_NI => FALSE,
 			THIS_PORT => "11"
 		)
 		port map (
 			preset     => preset,
-			chan_in_f  => west_hpu_f,
-			chan_in_b  => west_hpu_b,
+			chan_in_f  => west_hpu.forward,
+			chan_in_b  => west_hpu.backward,
 			chan_out_f => chs_in_f(3),
 			chan_out_b => chs_in_b(3),
 			sel        => switch_sel(3)
 		);
 
-		resource_hpu : entity work.hpu(struct)
+		resource_hpu_inst : entity work.hpu(struct)
 		generic map (
 			IS_NI => TRUE,
 			THIS_PORT => "--"
 		)
 		port map (
 			preset     => preset,
-			chan_in_f  => resource_hpu_f,
-			chan_in_b  => resource_hpu_b,
+			chan_in_f  => resource_hpu.forward,
+			chan_in_b  => resource_hpu.backward,
 			chan_out_f => chs_in_f(4),
 			chan_out_b => chs_in_b(4),
 			sel        => switch_sel(4)
@@ -239,19 +239,19 @@ begin
 		--sim_time	  => sim_time
 	);
 
-	north_out_f <= latches_out_f(0);
-	latches_out_b(0) <= north_out_b;
+	north_out.forward <= latches_out_f(0);
+	latches_out_b(0) <= north_out.backward;
 
-	south_out_f <= latches_out_f(2);
-	latches_out_b(2) <= south_out_b;
+	south_out.forward <= latches_out_f(2);
+	latches_out_b(2) <= south_out.backward;
 
-	east_out_f <= latches_out_f(1);
-	latches_out_b(1) <= east_out_b;
+	east_out.forward <= latches_out_f(1);
+	latches_out_b(1) <= east_out.backward;
 
-	west_out_f <= latches_out_f(3);
-	latches_out_b(3) <= west_out_b;
+	west_out.forward <= latches_out_f(3);
+	latches_out_b(3) <= west_out.backward;
 
-	resource_out_f <= latches_out_f(4);
-	latches_out_b(4) <= resource_out_b;
+	resource_out.forward <= latches_out_f(4);
+	latches_out_b(4) <= resource_out.backward;
 
 end architecture struct;

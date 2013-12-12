@@ -50,10 +50,10 @@ package noc_defs is
 
 	-- async network
 	--constant PHIT_WIDTH	: integer := 35;	-- see packet format -->32 + 3 control bits
-        constant LINK_WIDTH : integer := 35;	-- 32 bit data + 1 type bit 1
+    constant LINK_WIDTH : integer := 35;	-- 32 bit data + 1 type bit 1
                                                 -- SOP and 1 EOP
 	constant PHIT_WIDTH : integer := LINK_WIDTH-1;     -- phit without the type bit
-        constant ARITY :integer := 5;
+    constant ARITY :integer := 5;
 
 	-- scheduling
 	constant ADDR_SLT_WIDTH	: integer := 3;
@@ -98,12 +98,11 @@ package noc_defs is
 --------------------------------------------------router-----------------------
 
         -- types for network
-        subtype link_t is std_logic_vector(LINK_WIDTH-1 downto 0);
+    subtype link_t is std_logic_vector(LINK_WIDTH-1 downto 0);
 	subtype type_t is std_logic;
 	subtype phit_t is std_logic_vector(PHIT_WIDTH-1 downto 0);
 	subtype onehot_sel is std_logic_vector(ARITY-1 downto 0);
 
-	type	routerPort is array(4 downto 0) of link_t;
 
 	constant LINE_ZERO: link_t := (others => '0');
 

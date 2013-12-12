@@ -57,15 +57,23 @@ port (
 	spm_m		: out spm_master;
 	spm_s		: in spm_slave;
 
-	inNorth		: in link_t;
-	inSouth		: in link_t;
-	inEast		: in link_t;
-	inWest		: in link_t;
+	inNorth_f	: in channel_forward;
+	inNorth_b	: out channel_backward;
+	inSouth_f	: in channel_forward;
+	inSouth_b	: out channel_backward;
+	inEast_f	: in channel_forward;
+	inEast_b	: out channel_backward;
+	inWest_f	: in channel_forward;
+	inWest_b	: out channel_backward;
 
-	outNorth	: out link_t;
-	outSouth	: out link_t;
-	outEast		: out link_t;
-	outWest		: out link_t
+	outNorth_f	: out channel_forward;
+	outNorth_b	: in channel_backward;
+	outSouth_f	: out channel_forward;
+	outSouth_b	: in channel_backward;
+	outEast_f	: out channel_forward;
+	outEast_b	: in channel_backward;
+	outWest_f	: out channel_forward;
+	outWest_b	: in channel_backward
 
 );
 
@@ -108,8 +116,10 @@ component router is
 	port (
 		clk	: in std_logic;
 		reset	: in std_logic;
-		inPort	: in routerPort;
-		outPort	: out routerPort
+		inPort_f	: in router_port_f;
+		inPort_b	: out router_port_b;
+		outPort_f	: out router_port_f;
+		outPort_b	: in router_port_b
 	);
 end component;
 
@@ -117,6 +127,7 @@ end component;
 
 signal ip_to_net	: link_t;
 signal net_to_ip	: link_t;
+signal req, ack : std_logic;
 
 begin
 
@@ -149,16 +160,30 @@ r : router
 port map (
 	clk => n_clk,
 	reset => reset,
-	inPort(0) => inSouth,
-	inPort(1) => inWest,
-	inPort(2) => inNorth,
-	inPort(3) => inEast,
-	inPort(4) => ip_to_net,
-	outPort(0) => outSouth,
-	outPort(1) => outWest,
-	outPort(2) => outNorth,
-	outPort(3) => outEast,
-	outPort(4) => net_to_ip
+	inPort_f(0) => inSouth_f,
+	inPort_f(1) => inWest_f,
+	inPort_f(2) => inNorth_f,
+	inPort_f(3) => inEast_f,
+	inPort_f(4).data => ip_to_net,
+	inPort_f(4).req => '0',
+	outPort_f(0) => outSouth_f,
+	outPort_f(1) => outWest_f,
+	outPort_f(2) => outNorth_f,
+	outPort_f(3) => outEast_f,
+	outPort_f(4).data => net_to_ip,
+	outPort_f(4).req => req,
+
+	inPort_b(0) => inSouth_b,
+	inPort_b(1) => inWest_b,
+	inPort_b(2) => inNorth_b,
+	inPort_b(3) => inEast_b,
+	inPort_b(4).ack => ack,
+	outPort_b(0) => outSouth_b,
+	outPort_b(1) => outWest_b,
+	outPort_b(2) => outNorth_b,
+	outPort_b(3) => outEast_b,
+	outPort_b(4).ack => '0'
 );
+
 
 end struct;

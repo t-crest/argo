@@ -48,7 +48,8 @@ use work.noc_interface.all;
 
 entity noc is
 port (
-	clk			: in std_logic;
+	p_clk		: in std_logic;
+	n_clk		: in std_logic;
 	reset		: in std_logic;
 
 	ocp_io_ms	: in ocp_io_m_a;
@@ -62,42 +63,6 @@ port (
 end noc;
 
 architecture struct of noc is
-
-------------------------------component declarations----------------------------
-
-component noc_node is
-port (
-	p_clk		: in std_logic;
-	n_clk		: in std_logic;
-	reset		: in std_logic;
-
-	proc_m		: in ocp_io_m;
-	proc_s	    : out ocp_io_s;
-
-	spm_m		: out spm_master;
-	spm_s		: in spm_slave;
-
-	inNorth_f	: in channel_forward;
-	inNorth_b	: out channel_backward;
-	inSouth_f	: in channel_forward;
-	inSouth_b	: out channel_backward;
-	inEast_f	: in channel_forward;
-	inEast_b	: out channel_backward;
-	inWest_f	: in channel_forward;
-	inWest_b	: out channel_backward;
-
-	outNorth_f	: out channel_forward;
-	outNorth_b	: in channel_backward;
-	outSouth_f	: out channel_forward;
-	outSouth_b	: in channel_backward;
-	outEast_f	: out channel_forward;
-	outEast_b	: in channel_backward;
-	outWest_f	: out channel_forward;
-	outWest_b	: in channel_backward
-
-);
-
-end component;
 
 ------------------------------signal declarations----------------------------
 
@@ -118,10 +83,10 @@ begin
 
 	nodes_m : for i in 0 to M-1 generate
 		nodes_n : for j in 0 to N-1 generate
-			node : noc_node
+			node : entity work.noc_node
 			port map (
-				p_clk => clk,
-				n_clk => clk,
+				p_clk => p_clk,
+				n_clk => n_clk,
 				reset => reset,
 
 				proc_m => ocp_io_ms((i*N)+j),
@@ -130,23 +95,23 @@ begin
 				spm_m => spm_ports_m((i*N)+j),
 				spm_s => spm_ports_s((i*N)+j),
 
-				inNorth_f => north_in(i)(j).forward,
-				inNorth_b => north_in(i)(j).backward,
-				inSouth_f => south_in(i)(j).forward,
-				inSouth_b => south_in(i)(j).backward,
-				inEast_f => east_in(i)(j).forward,
-				inEast_b => east_in(i)(j).backward,
-				inWest_f => west_in(i)(j).forward,
-				inWest_b => west_in(i)(j).backward,
+				north_in_f => north_in(i)(j).forward,
+                north_in_b => north_in(i)(j).backward,
+                south_in_f => south_in(i)(j).forward,
+                south_in_b => south_in(i)(j).backward,
+                east_in_f => east_in(i)(j).forward,
+                east_in_b => east_in(i)(j).backward,
+                west_in_f => west_in(i)(j).forward,
+                west_in_b => west_in(i)(j).backward,
 
-				outNorth_f => north_out(i)(j).forward,
-				outNorth_b => north_out(i)(j).backward,
-				outSouth_f => south_out(i)(j).forward,
-				outSouth_b => south_out(i)(j).backward,
-				outEast_f => east_out(i)(j).forward,
-				outEast_b => east_out(i)(j).backward,
-				outWest_f	=> west_out(i)(j).forward,
-				outWest_b	=> west_out(i)(j).backward
+                north_out_f => north_out(i)(j).forward,
+                north_out_b => north_out(i)(j).backward,
+                south_out_f => south_out(i)(j).forward,
+                south_out_b => south_out(i)(j).backward,
+                east_out_f => east_out(i)(j).forward,
+                east_out_b => east_out(i)(j).backward,
+                west_out_f   => west_out(i)(j).forward,
+                west_out_b   => west_out(i)(j).backward
 			);
 
 		end generate nodes_n;

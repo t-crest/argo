@@ -64,36 +64,6 @@ end noc;
 
 architecture struct of noc is
 
-------------------------------component declarations----------------------------
-
-component noc_node is
-port (
-	--p_clk		: in std_logic;
-	n_clk		: in std_logic;
-	reset		: in std_logic;
-
-	proc_in		: in ocp_io_m;
-	proc_out	: out ocp_io_s;
-
-	spm_in		: in spm_slave;
-	spm_out		: out spm_master;
-
-
-    north_in    : inout channel;
-	east_in     : inout channel;
-	south_in    : inout channel;
-	west_in     : inout channel;
-
-	-- Output ports
-	north_out   : inout channel;
-	east_out    : inout channel;
-	south_out   : inout channel;
-	west_out    : inout channel
-
-);
-
-end component;
-
 ------------------------------signal declarations----------------------------
 
 --type link_n is array(0 to (N - 1)) of channel;
@@ -136,7 +106,7 @@ begin
 
 	nodes_m : for i in 0 to M-1 generate
 		nodes_n : for j in 0 to N-1 generate
-			node : noc_node
+			node : entity work.noc_node
 			port map (
 				--p_clk => p_clk,
 				n_clk => n_clk,
@@ -148,15 +118,23 @@ begin
 				spm_in => spm_ports_s((i*N)+j),
 				spm_out => spm_ports_m((i*N)+j),
 
-                north_in => north_in(i)(j),
-                east_in => east_in(i)(j),
-                south_in => south_in(i)(j),
-                west_in => west_in(i)(j),
+                north_in_f => north_in(i)(j).forward,
+                north_in_b => north_in(i)(j).backward,
+                south_in_f => south_in(i)(j).forward,
+                south_in_b => south_in(i)(j).backward,
+                east_in_f => east_in(i)(j).forward,
+                east_in_b => east_in(i)(j).backward,
+                west_in_f => west_in(i)(j).forward,
+                west_in_b => west_in(i)(j).backward,
 
-                north_out => north_out(i)(j),
-                east_out => east_out(i)(j),
-                south_out => south_out(i)(j),
-                west_out => west_out(i)(j)
+                north_out_f => north_out(i)(j).forward,
+                north_out_b => north_out(i)(j).backward,
+                south_out_f => south_out(i)(j).forward,
+                south_out_b => south_out(i)(j).backward,
+                east_out_f => east_out(i)(j).forward,
+                east_out_b => east_out(i)(j).backward,
+                west_out_f   => west_out(i)(j).forward,
+                west_out_b   => west_out(i)(j).backward
                 );
 
 		end generate nodes_n;

@@ -66,51 +66,11 @@ use work.ocp.all;
 
 
 entity test2_noc2x2 is
+    generic(SLT_WIDTH : natural );
 end test2_noc2x2;
 
 
 architecture behav of test2_noc2x2 is
-
------------------------component declarations------------------------------
-component noc is
-port (
-	--p_clk		: in std_logic;
-	clk		: in std_logic;
-	reset		: in std_logic;
-
-    ocp_io_ms   : in ocp_io_m_a;
-    ocp_io_ss   : out ocp_io_s_a;
-
-    spm_ports_m : out spm_masters;
-    spm_ports_s : in spm_slaves
-
-);
-end component;
-
-
-component bram_tdp is
-
-generic (
-    DATA    : integer := 32;
-    ADDR    : integer := 14
-);
-
-port (
--- Port A
-    a_clk   : in  std_logic;
-    a_wr    : in  std_logic;
-    a_addr  : in  std_logic_vector(ADDR-1 downto 0);
-    a_din   : in  std_logic_vector(DATA-1 downto 0);
-    a_dout  : out std_logic_vector(DATA-1 downto 0);
-
--- Port B
-    b_clk   : in  std_logic;
-    b_wr    : in  std_logic;
-    b_addr  : in  std_logic_vector(ADDR-1 downto 0);
-    b_din   : in  std_logic_vector(DATA-1 downto 0);
-    b_dout  : out std_logic_vector(DATA-1 downto 0)
-);
-end component;
 
 -------------------------signal declarations-------------------------------
 signal n_clk		: std_logic := '1';
@@ -136,11 +96,10 @@ constant NxN : integer := N*M;
 
 begin
 
-
 	spm_m : for i in 0 to M-1 generate
 		spm_n : for j in 0 to N-1 generate
 			-- High SPM instance
-                        spm_h : bram_tdp
+                        spm_h : entity work.bram_tdp
                           generic map (DATA=>DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
                           port map (a_clk => p_clk,
                                     a_wr => p_spm_masters((i*N)+j).MCmd(0),
@@ -154,7 +113,7 @@ begin
                                     b_dout => n_spm_slaves((i*N)+j).SData(63 downto 32));
 
                         -- Low SPM instance
-                        spm_l : bram_tdp
+                        spm_l : entity work.bram_tdp
                           generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
                           port map (a_clk => p_clk,
                                     a_wr => p_spm_masters((i*N)+j).MCmd(0),
@@ -171,10 +130,10 @@ begin
         end generate spm_m;
 
 
-noc2x2 : noc
+noc2x2 : entity work.noc
 port map (
-	--p_clk => p_clk,
-	clk => n_clk,
+	p_clk => p_clk,
+	n_clk => n_clk,
 	reset => reset,
 
 	ocp_io_ms => p_masters,
@@ -286,7 +245,8 @@ begin
                 p_spm_masters(3).MCmd <="0";
                 p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000006";
 
-                count := count + 4;
+                count := count + 1;
+                report "Reading results";
 
         end loop;
 
@@ -302,7 +262,7 @@ variable word   : string (100 downto 1);--std_logic_vector(15 downto 0) := (othe
 variable cnt    : integer :=0;
 variable slt_num : integer;
 variable l      : line;
-variable slt    : std_logic_vector(2 downto 0);
+variable slt    : std_logic_vector(SLT_WIDTH-1 downto 0);
 variable route  : std_logic_vector(15 downto 0);
 
 begin
@@ -402,7 +362,7 @@ variable word   : string (100 downto 1);--std_logic_vector(15 downto 0) := (othe
 variable cnt    : integer :=0;
 variable slt_num : integer;
 variable l      : line;
-variable slt    : std_logic_vector(2 downto 0);
+variable slt    : std_logic_vector(SLT_WIDTH-1 downto 0);
 variable route  : std_logic_vector(15 downto 0);
 
 begin
@@ -504,7 +464,7 @@ variable word   : string (100 downto 1);--std_logic_vector(15 downto 0) := (othe
 variable cnt    : integer :=0;
 variable slt_num : integer;
 variable l      : line;
-variable slt    : std_logic_vector(2 downto 0);
+variable slt    : std_logic_vector(SLT_WIDTH-1 downto 0);
 variable route  : std_logic_vector(15 downto 0);
 
 begin
@@ -607,7 +567,7 @@ variable word   : string (100 downto 1);--std_logic_vector(15 downto 0) := (othe
 variable cnt    : integer :=0;
 variable l      : line;
 variable slt_num : integer;
-variable slt    : std_logic_vector(2 downto 0);
+variable slt    : std_logic_vector(SLT_WIDTH-1 downto 0);
 variable route  : std_logic_vector(15 downto 0);
 
 begin

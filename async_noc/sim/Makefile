@@ -5,6 +5,7 @@
 
 NOCDIR=../src
 COMMON=../../common
+TEST=$(COMMON)/test
 NETLISTDIR=../netlists
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
@@ -42,20 +43,27 @@ test1: clean sim_base
 
 test2: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2.vhd
-	$(WINE) vsim -voptargs=+acc -do sim2.do test2_noc2x2
+	$(WINE) vcom $(OPTIONS) $(TEST)/test2_noc2x2.vhd
+	$(WINE) vsim -voptargs=+acc -gSLT_WIDTH=5 -do sim2.do test2_noc2x2
 
 test2_m: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n_m.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_m.vhd
 	$(WINE) vsim -voptargs=+acc -do sim2_m.do test2_noc2x2
 
-sim_base:
+sim_base: all_to_all.sched
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/config.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/counter.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/dma.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/sr_latch.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/c_gate_generic.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/latch_controller.vhd
@@ -65,14 +73,8 @@ sim_base:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/crossbar.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/crossbar_stage.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/router.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/counter.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/dma.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_node.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd
-	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
+
 
 
 
@@ -96,6 +98,10 @@ synth_base:
 	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
 	$(WINE) vlog $(OPTIONS) $(NETLISTDIR)/noc_netlist.v
+
+all_to_all.sched: bitorus2x2.xml
+	../../../local/bin/Poseidon -p $< -m GREEDY -s sched.xml
+	../../../local/bin/poseidon_converter.sh sched.xml $@ Source-Phase-text
 
 clean:
 	-rm -f transcript

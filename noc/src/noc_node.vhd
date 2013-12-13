@@ -57,23 +57,25 @@ port (
 	spm_m		: out spm_master;
 	spm_s		: in spm_slave;
 
-	inNorth_f	: in channel_forward;
-	inNorth_b	: out channel_backward;
-	inSouth_f	: in channel_forward;
-	inSouth_b	: out channel_backward;
-	inEast_f	: in channel_forward;
-	inEast_b	: out channel_backward;
-	inWest_f	: in channel_forward;
-	inWest_b	: out channel_backward;
+	    -- router ports
+    north_in_f       : in channel_forward;
+    north_in_b       : out channel_backward;
+    east_in_f        : in channel_forward;
+    east_in_b        : out channel_backward;
+    south_in_f       : in channel_forward;
+    south_in_b       : out channel_backward;
+    west_in_f        : in channel_forward;
+    west_in_b        : out channel_backward;
 
-	outNorth_f	: out channel_forward;
-	outNorth_b	: in channel_backward;
-	outSouth_f	: out channel_forward;
-	outSouth_b	: in channel_backward;
-	outEast_f	: out channel_forward;
-	outEast_b	: in channel_backward;
-	outWest_f	: out channel_forward;
-	outWest_b	: in channel_backward
+    -- Output ports
+    north_out_f      : out channel_forward;
+    north_out_b      : in channel_backward;
+    east_out_f       : out channel_forward;
+    east_out_b       : in channel_backward;
+    south_out_f      : out channel_forward;
+    south_out_b      : in channel_backward;
+    west_out_f       : out channel_forward;
+    west_out_b       : in channel_backward
 
 );
 
@@ -160,28 +162,28 @@ r : router
 port map (
 	clk => n_clk,
 	reset => reset,
-	inPort_f(0) => inSouth_f,
-	inPort_f(1) => inWest_f,
-	inPort_f(2) => inNorth_f,
-	inPort_f(3) => inEast_f,
+	inPort_f(0) => south_in_f,
+	inPort_f(1) => west_in_f,
+	inPort_f(2) => north_in_f,
+	inPort_f(3) => east_in_f,
 	inPort_f(4).data => ip_to_net,
 	inPort_f(4).req => '0',
-	outPort_f(0) => outSouth_f,
-	outPort_f(1) => outWest_f,
-	outPort_f(2) => outNorth_f,
-	outPort_f(3) => outEast_f,
+	outPort_f(0) => south_out_f,
+	outPort_f(1) => west_out_f,
+	outPort_f(2) => north_out_f,
+	outPort_f(3) => east_out_f,
 	outPort_f(4).data => net_to_ip,
 	outPort_f(4).req => req,
 
-	inPort_b(0) => inSouth_b,
-	inPort_b(1) => inWest_b,
-	inPort_b(2) => inNorth_b,
-	inPort_b(3) => inEast_b,
+	inPort_b(0) => south_in_b,
+	inPort_b(1) => west_in_b,
+	inPort_b(2) => north_in_b,
+	inPort_b(3) => east_in_b,
 	inPort_b(4).ack => ack,
-	outPort_b(0) => outSouth_b,
-	outPort_b(1) => outWest_b,
-	outPort_b(2) => outNorth_b,
-	outPort_b(3) => outEast_b,
+	outPort_b(0) => south_out_b,
+	outPort_b(1) => west_out_b,
+	outPort_b(2) => north_out_b,
+	outPort_b(3) => east_out_b,
 	outPort_b(4).ack => '0'
 );
 

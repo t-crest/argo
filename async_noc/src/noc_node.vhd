@@ -57,15 +57,24 @@ port (
 	spm_out		: out spm_master;
 
     -- router ports
-    north_in 	: inout channel;
-	east_in 	: inout channel;
-	south_in 	: inout channel;
-	west_in 	: inout channel;
+    north_in_f		 : in channel_forward;
+	north_in_b		 : out channel_backward;
+	east_in_f	     : in channel_forward;
+	east_in_b	     : out channel_backward;
+	south_in_f		 : in channel_forward;
+	south_in_b		 : out channel_backward;
+	west_in_f	     : in channel_forward;
+	west_in_b	     : out channel_backward;
 
-	north_out 	: inout channel;
-	east_out 	: inout channel;
-	south_out 	: inout channel;
-	west_out 	: inout channel
+	-- Output ports
+	north_out_f		 : out channel_forward;
+	north_out_b		 : in channel_backward;
+	east_out_f		 : out channel_forward;
+	east_out_b		 : in channel_backward;
+	south_out_f		 : out channel_forward;
+	south_out_b		 : in channel_backward;
+	west_out_f		 : out channel_forward;
+	west_out_b		 : in channel_backward
 
 );
 
@@ -151,17 +160,28 @@ net_to_ip.backward.ack <= not del_half_clk0 after 2 ns;
    port map (
 		preset         => reset,
 		-- Input ports
-		north_in       => north_in,
-		east_in        => east_in,
-		south_in       => south_in,
-		west_in        => west_in,
-		resource_in    => ip_to_net,
+		north_in_f		 => north_in_f,
+		north_in_b		 => north_in_b,
+		east_in_f	     => east_in_f,
+		east_in_b	     => east_in_b,
+		south_in_f		 => south_in_f,
+		south_in_b		 => south_in_b,
+		west_in_f	     => west_in_f,
+		west_in_b	     => west_in_b,
+		resource_in_f	 => ip_to_net.forward,
+		resource_in_b	 => ip_to_net.backward,
+
 		-- Output ports
-		north_out      => north_out,
-		east_out       => east_out,
-		south_out      => south_out,
-		west_out       => west_out,
-		resource_out   => net_to_ip
+		north_out_f		 => north_out_f,
+		north_out_b		 => north_out_b,
+		east_out_f		 => east_out_f,
+		east_out_b		 => east_out_b,
+		south_out_f		 => south_out_f,
+		south_out_b		 => south_out_b,
+		west_out_f		 => west_out_f,
+		west_out_b		 => west_out_b,
+		resource_out_f	 => net_to_ip.forward,
+		resource_out_b	 => net_to_ip.backward
 
    );
 

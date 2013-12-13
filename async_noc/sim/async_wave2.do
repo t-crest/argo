@@ -3,43 +3,43 @@ quietly WaveActivateNextPane {} 0
 add wave -noupdate /test2_noc2x2/n_clk
 add wave -noupdate /test2_noc2x2/reset
 add wave -noupdate -divider spm_interface
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0)(0).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0)(0).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0)(0).MData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(0)(0).SData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0)(1).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0)(1).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0)(1).MData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(0)(1).SData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1)(0).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1)(0).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1)(0).MData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(1)(0).SData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1)(1).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1)(1).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1)(1).MData
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(1)(1).SData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(0).MData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(0).SData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(1).MData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(1).SData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(2).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(2).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(2).MData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(2).SData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(3).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(3).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_masters(3).MData
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_spm_slaves(3).SData
 add wave -noupdate -divider proc_interface
-add wave -noupdate /test2_noc2x2/p_masters(0)(0).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(0)(0).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(0)(0).MData
-add wave -noupdate /test2_noc2x2/p_slaves(0)(0).SResp
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(0)(0).SData
-add wave -noupdate /test2_noc2x2/p_masters(0)(1).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(0)(1).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(0)(1).MData
-add wave -noupdate /test2_noc2x2/p_slaves(0)(1).SResp
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(0)(1).SData
-add wave -noupdate /test2_noc2x2/p_masters(1)(0).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(1)(0).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(1)(0).MData
-add wave -noupdate /test2_noc2x2/p_slaves(1)(0).SResp
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(1)(0).SData
-add wave -noupdate /test2_noc2x2/p_masters(1)(1).MCmd
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(1)(1).MAddr
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(1)(1).MData
-add wave -noupdate /test2_noc2x2/p_slaves(1)(1).SResp
-add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(1)(1).SData
+add wave -noupdate /test2_noc2x2/p_masters(0).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(0).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(0).MData
+add wave -noupdate /test2_noc2x2/p_slaves(0).SResp
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(0).SData
+add wave -noupdate /test2_noc2x2/p_masters(1).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(1).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(1).MData
+add wave -noupdate /test2_noc2x2/p_slaves(1).SResp
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(1).SData
+add wave -noupdate /test2_noc2x2/p_masters(2).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(2).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(2).MData
+add wave -noupdate /test2_noc2x2/p_slaves(2).SResp
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(2).SData
+add wave -noupdate /test2_noc2x2/p_masters(3).MCmd
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(3).MAddr
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_masters(3).MData
+add wave -noupdate /test2_noc2x2/p_slaves(3).SResp
+add wave -noupdate -radix hexadecimal /test2_noc2x2/p_slaves(3).SData
 add wave -noupdate -divider NI_00
 add wave -noupdate /test2_noc2x2/noc2x2/n_clk
 add wave -noupdate /test2_noc2x2/noc2x2/nodes_m(0)/nodes_n(0)/node/na/state_cnt

@@ -93,4 +93,8 @@ package noc_interface is
     type spmMasters is array(N-1 downto 0) of spm_m;
     type spmSlaves is array(N-1 downto 0) of spm_s;
 
+
+    type link_n is array(0 to (N - 1)) of network_link;
+    type link_m is array(0 to (M - 1)) of link_n;
+
 end package ; -- noc_interface

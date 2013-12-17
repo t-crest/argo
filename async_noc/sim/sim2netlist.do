@@ -5,4 +5,4 @@ view *
 do netlist_wave2.do
 run 3000ns
 do dump_mem.do
-exit 
+#exit 

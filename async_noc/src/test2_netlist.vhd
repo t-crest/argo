@@ -59,7 +59,10 @@ use ieee.numeric_std.all;
 use std.textio.all;
 use work.txt_util.all;
 use work.cmd_util.all;
-use work.defs.all;
+use work.config.all;
+use work.noc_defs.all;
+use work.noc_interface.all;
+use work.ocp.all;
 
 
 entity test2_noc2x2 is
@@ -71,7 +74,7 @@ architecture behav of test2_noc2x2 is
 -----------------------component declarations------------------------------
 component noc is
 port (
-	p_clk		: in std_logic;
+	--p_clk		: in std_logic;
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 

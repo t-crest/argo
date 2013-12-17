@@ -45,7 +45,7 @@ use work.noc_interface.all;
 
 package cmd_util is
 
-    constant SIMDELAY : time := 500 ps;  -- 400ps for netlist simulation
+    constant SIMDELAY : time := 400 ps;  -- 400ps for netlist simulation
                                          -- 500ps for vhdl simulation
 
     --writes a 64bit value from a processor to spm

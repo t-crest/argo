@@ -4,7 +4,7 @@
 
 
 NOCDIR=../src
-NETLISTDIR=../netlists
+NETLISTDIR=../synthesis/netlists
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -84,13 +84,27 @@ netlist1: clean synth_base
 	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test1_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim1netlist.do work.test1_noc2x2
 
 netlist2: clean synth_base
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_netlist.vhd
-	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/counter.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter_flat.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_skew_netlist.vhd
+	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=$(NETLISTDIR)/noc_netlistFixed.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
 
+netlist2_nogui: clean synth_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/counter.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter_flat.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_skew_netlist.vhd
+	$(WINE) vsim -debugdb=debug.dbg -wlf debug.wlf -c -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=$(NETLISTDIR)/noc_netlistFixed.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
 
 synth_base:
 	$(WINE) vlib work
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd     
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/cmd_util.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram_tdp.vhd
@@ -98,5 +112,5 @@ synth_base:
 
 clean:
 	-rm -f transcript
-	-rm -f *.wlf
+	-rm -f vsim.wlf
 	-rm -rf work

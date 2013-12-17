@@ -109,6 +109,20 @@ begin
 		end if;
 	end process sel_latch;
 	
+	--sel_latch:process (data_valid, VLD, sel_internal, SOP) is
+	--begin
+        --        if preset='1' then
+        --          sel <= (others=>'0');
+	--	-- We must only open the latch when data are valid.
+	--	else
+	--		if (VLD = '1' and SOP = '1' and data_valid = '1') then
+	--			sel <= sel_internal;
+	--		elsif (VLD = '0' and data_valid = '1') then	--  and EOP = '0'
+	--			-- This is an empty space, but other incoming phits may not be.
+	--			sel <= (others => '0');	
+	--		end if;
+	--	end if;
+	--end process sel_latch;	
 	
 	shift:process (data_in, VLD, SOP) is
 	begin

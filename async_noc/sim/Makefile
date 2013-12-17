@@ -4,7 +4,7 @@
 
 
 NOCDIR=../src
-NETLISTDIR=../netlists
+NETLISTDIR=../synthesis/netlists
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -89,7 +89,7 @@ netlist2: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter_flat.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_skew_netlist.vhd
-	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=../netlists/noc_netlistFixed.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
+	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=$(NETLISTDIR)/noc_netlistFixed.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
 
 netlist2_nogui: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/bram.vhd
@@ -97,12 +97,12 @@ netlist2_nogui: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter_flat.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_skew_netlist.vhd
-	$(WINE) vsim -debugdb=debug.dbg -wlf debug.wlf -c -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=../netlists/noc_netlistFixed.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
+	$(WINE) vsim -debugdb=debug.dbg -wlf debug.wlf -c -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=$(NETLISTDIR)/noc_netlistFixed.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
 
 synth_base:
 	$(WINE) vlib work
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
-	$(WINE) vcom $(OPTIONS) noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd     
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd

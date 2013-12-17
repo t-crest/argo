@@ -47,7 +47,7 @@ use work.noc_interface.all;
 entity noc is
 
 port (
-	p_clk		: in std_logic;
+	--p_clk		: in std_logic;
 	n_clk		: in std_logic;
 
 	reset		: in std_logic;
@@ -75,8 +75,8 @@ port (
 	proc_in		: in ocp_master;
 	proc_out	: out ocp_slave;
 
-	spm_in		: in ocp_slave_spm;
-	spm_out		: out ocp_master_spm;
+	spm_in		: in spm_slave;
+	spm_out		: out spm_master;
 
 
     	north_in_f     : in channel_forward;  	north_in_b     : out channel_backward;

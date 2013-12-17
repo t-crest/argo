@@ -51,10 +51,12 @@ test2_m: clean sim_base
 
 sim_base:
 	$(WINE) vlib work
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_defs.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/ocp.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/config.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_interface.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/cmd_util.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/sr_latch.vhd 
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/c_gate_generic.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/latch_controller.vhd
@@ -70,8 +72,6 @@ sim_base:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/nAdapter.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_node.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/txt_util.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/cmd_util.vhd
 
 
 

@@ -6,12 +6,12 @@ To get the synthesis started create a working directory for synopsys according t
 
 Add a symlink to the scripts and netlists folder to your the working directory, start design_vision, and run the provided scripts in the following order:
 
-`
-source scripts/s0_readfiles.tcl  
-source scripts/s1_setTimingConstraints.tcl
-source scripts/s1b_setTimingConstraints.tcl  
-source scripts/s2_compile.tcl  
-source scripts/s3_reports.tcl
-`
+
+    source scripts/s0_readfiles.tcl  
+    source scripts/s1_setTimingConstraints.tcl
+    source scripts/s1b_setTimingConstraints.tcl  
+    source scripts/s2_compile.tcl  
+    source scripts/s3_reports.tcl
+
 
 

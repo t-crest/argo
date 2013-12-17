@@ -315,7 +315,7 @@ begin
   no_skew.reset	   <= reset;
   skew_late.reset  <= reset_sk_l;
 
-  Spm_initilize : process
+  spm_initilize : process
 
     variable count : natural := 0;
 

@@ -163,8 +163,8 @@ begin
 
   skew_nodes(0)(0) <= skew_early;
   skew_nodes(0)(1) <= skew_late;
-  skew_nodes(1)(0) <= skew_early;
-  skew_nodes(1)(1) <= skew_late;
+  skew_nodes(1)(0) <= no_skew;
+  skew_nodes(1)(1) <= no_skew;
 
   spm_m : for i in N-1 downto 0 generate
     spm_n : for j in N-1 downto 0 generate
@@ -419,7 +419,7 @@ begin
     p_masters(0)(0).MRespAccept <= '0';
 
 
-    wait until falling_edge(reset_sk_e);
+    wait until falling_edge(skew_nodes(0)(0).reset);
     wait for 6*NA_HPERIOD;
     wait for PDELAY;
 
@@ -450,7 +450,7 @@ begin
 	st_write(p_masters(0)(0),
 		 p_slaves(0)(0),
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, p_clk_sk_e);
+		 slt, skew_nodes(0)(0).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = slt_num or endfile(schedule0);
       end loop;
@@ -470,35 +470,35 @@ begin
 	route_write (p_masters(0)(0),
 		     p_slaves(0)(0),
 		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, p_clk_sk_e);
+		     route, skew_nodes(0)(0).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = N*N or endfile(schedule0);
       end loop;
 
       --DMA 1
       dma_write (p_masters(0)(0), p_slaves(0)(0),
-		 x"00000c", x"00000000", p_clk_sk_e);
+		 x"00000c", x"00000000",  skew_nodes(0)(0).p_clock);
       --DMA 2
       dma_write (p_masters(0)(0), p_slaves(0)(0),
-		 x"000014", x"00000000", p_clk_sk_e);
+		 x"000014", x"00000000",  skew_nodes(0)(0).p_clock);
       --DMA 3
       dma_write (p_masters(0)(0), p_slaves(0)(0),
-		 x"00001c", x"00000000", p_clk_sk_e);
+		 x"00001c", x"00000000",  skew_nodes(0)(0).p_clock);
 
       --enable and start
       --DMA 1
       dma_write (p_masters(0)(0), p_slaves(0)(0),
-		 x"000008", x"00008004", p_clk_sk_e);
+		 x"000008", x"00008004",  skew_nodes(0)(0).p_clock);
       --DMA 2
       dma_write (p_masters(0)(0), p_slaves(0)(0),
-		 x"000010", x"00008004", p_clk_sk_e);
+		 x"000010", x"00008004",  skew_nodes(0)(0).p_clock);
       --DMA 3
       dma_write (p_masters(0)(0), p_slaves(0)(0),
-		 x"000018", x"00008004", p_clk_sk_e);
+		 x"000018", x"00008004",  skew_nodes(0)(0).p_clock);
 
       -- DMA 1 read for testing
       dma_read (p_masters(0)(0), p_slaves(0)(0),
-		x"000008", p_clk_sk_e);
+		x"000008",  skew_nodes(0)(0).p_clock);
     end if;
     
   end process;
@@ -521,7 +521,7 @@ begin
     p_masters(0)(1).MByteEn	<= (others => '0');
     p_masters(0)(1).MRespAccept <= '0';
 
-    wait until falling_edge(reset_sk_l);
+    wait until falling_edge( skew_nodes(0)(1).reset);
     wait for 6*NA_HPERIOD;
     wait for 3 ns;
 
@@ -553,7 +553,7 @@ begin
 	st_write(p_masters(0)(1),
 		 p_slaves(0)(1),
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, p_clk_sk_l);
+		 slt,  skew_nodes(0)(1).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = slt_num or endfile(schedule1);
       end loop;
@@ -573,31 +573,31 @@ begin
 	route_write (p_masters(0)(1),
 		     p_slaves(0)(1),
 		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, p_clk_sk_l);
+		     route,  skew_nodes(0)(1).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = N*N or endfile(schedule1);
       end loop;
 
       --DMA 0
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000004", x"00040004", p_clk_sk_l);
+		 x"000004", x"00040004",  skew_nodes(0)(1).p_clock);
       --DMA 2
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000014", x"00040004", p_clk_sk_l);
+		 x"000014", x"00040004",  skew_nodes(0)(1).p_clock);
       --DMA 3
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"00001c", x"00040004", p_clk_sk_l);
+		 x"00001c", x"00040004",  skew_nodes(0)(1).p_clock);
 
       --enable and start
       --DMA 0
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000000", x"00008004", p_clk_sk_l);
+		 x"000000", x"00008004",  skew_nodes(0)(1).p_clock);
       --DMA 2
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000010", x"00008004", p_clk_sk_l);
+		 x"000010", x"00008004",  skew_nodes(0)(1).p_clock);
       --DMA 3
       dma_write (p_masters(0)(1), p_slaves(0)(1),
-		 x"000018", x"00008004", p_clk_sk_l);		
+		 x"000018", x"00008004",  skew_nodes(0)(1).p_clock);		
     end if;
     
   end process;
@@ -622,7 +622,7 @@ begin
     p_masters(1)(0).MByteEn	<= (others => '0');
     p_masters(1)(0).MRespAccept <= '0';
 
-    wait until falling_edge(reset);
+    wait until falling_edge( skew_nodes(1)(0).reset);
     wait for 6*NA_HPERIOD;
     wait for 3 ns;
 
@@ -654,7 +654,7 @@ begin
 	st_write(p_masters(1)(0),
 		 p_slaves(1)(0),
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, p_clk);
+		 slt,  skew_nodes(1)(0).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = slt_num or endfile(schedule2);
       end loop;
@@ -674,31 +674,31 @@ begin
 	route_write (p_masters(1)(0),
 		     p_slaves(1)(0),
 		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, p_clk);
+		     route,  skew_nodes(1)(0).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = N*N or endfile(schedule2);
       end loop;
 
       --DMA 0
       dma_write (p_masters(1)(0), p_slaves(1)(0),
-		 x"000004", x"00080008", p_clk);
+		 x"000004", x"00080008",  skew_nodes(1)(0).p_clock);
       --DMA 1
       dma_write (p_masters(1)(0), p_slaves(1)(0),
-		 x"00000c", x"00080008", p_clk);
+		 x"00000c", x"00080008",  skew_nodes(1)(0).p_clock);
       --DMA 3
       dma_write (p_masters(1)(0), p_slaves(1)(0),
-		 x"00001c", x"00080008", p_clk);
+		 x"00001c", x"00080008",  skew_nodes(1)(0).p_clock);
 
       --enable and start
       --DMA 0
       dma_write (p_masters(1)(0), p_slaves(1)(0),
-		 x"000000", x"00008004", p_clk);
+		 x"000000", x"00008004",  skew_nodes(1)(0).p_clock);
       --DMA 1
       dma_write (p_masters(1)(0), p_slaves(1)(0),
-		 x"000008", x"00008004", p_clk);
+		 x"000008", x"00008004",  skew_nodes(1)(0).p_clock);
       --DMA 3
       dma_write (p_masters(1)(0), p_slaves(1)(0),
-		 x"000018", x"00008004", p_clk);
+		 x"000018", x"00008004",  skew_nodes(1)(0).p_clock);
 
     end if;
     
@@ -723,7 +723,7 @@ begin
     p_masters(1)(1).MByteEn	<= (others => '0');
     p_masters(1)(1).MRespAccept <= '0';
 
-    wait until falling_edge(reset);
+    wait until falling_edge( skew_nodes(1)(1).reset);
     wait for 6*NA_HPERIOD;
     wait for 3 ns;
 
@@ -755,7 +755,7 @@ begin
 	st_write(p_masters(1)(1),
 		 p_slaves(1)(1),
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, p_clk);
+		 slt,  skew_nodes(1)(1).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = slt_num or endfile(schedule3);
       end loop;
@@ -775,31 +775,31 @@ begin
 	route_write (p_masters(1)(1),
 		     p_slaves(1)(1),
 		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, p_clk);
+		     route,  skew_nodes(1)(1).p_clock);
 	cnt := cnt + 1;
 	exit when cnt = N*N or endfile(schedule3);
       end loop;
 
       --DMA 0
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000004", x"000c000c", p_clk);
+		 x"000004", x"000c000c",  skew_nodes(1)(1).p_clock);
       --DMA 1
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"00000c", x"000c000c", p_clk);
+		 x"00000c", x"000c000c",  skew_nodes(1)(1).p_clock);
       --DMA 2
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000014", x"000c000c", p_clk);
+		 x"000014", x"000c000c",  skew_nodes(1)(1).p_clock);
 
       --enable and start
       --DMA 0
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000000", x"00008004", p_clk);
+		 x"000000", x"00008004",  skew_nodes(1)(1).p_clock);
       --DMA 1
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000008", x"00008004", p_clk);
+		 x"000008", x"00008004",  skew_nodes(1)(1).p_clock);
       --DMA 2
       dma_write (p_masters(1)(1), p_slaves(1)(1),
-		 x"000010", x"00008004", p_clk);
+		 x"000010", x"00008004",  skew_nodes(1)(1).p_clock);
 
     end if;
   end process;

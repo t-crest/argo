@@ -337,8 +337,8 @@ begin
 -- SPM interface ------------------------------------------------------------------------------
 --- construct SPM interface signals -->ocp???
 	spm_interface : process (na_reset, state_cnt, dma_entry, flit_buf) begin
-                if na_reset='1' then
-                        spm_out.MCmd <= "0";
+        if na_reset='1' then
+            spm_out.MCmd <= "0";
 			spm_out.MAddr <= (others=>'0');
 
 		elsif state_cnt = "00" and vld_buf = '1' then
@@ -347,7 +347,7 @@ begin
                                          flit_buf(2*DATA_WIDTH+SPM_ADDR_WIDTH-1 downto 2*DATA_WIDTH);--address(SPM_ADDR_WIDTH-1 downto 1);
 		else
 			spm_out.MCmd <= "0";
-			spm_out.MAddr <= dma_entry(47 downto 32);--x"0000" & '0' & dma_entry(47 downto 33);
+			spm_out.MAddr <= dma_entry(32+SPM_ADDR_WIDTH-1 downto 32);--x"0000" & '0' & dma_entry(47 downto 33);
 		end if;
 	end process;
 	spm_out.MData(2*DATA_WIDTH-1 downto 0) <= flit_buf(2*DATA_WIDTH-1 downto 0);--dIn_h;
@@ -397,15 +397,15 @@ begin
 -- build outgoing packet
 	--control bits
 	--phitOut(LINK_WIDTH-1) <= state_cnt(1) and dma_ctrl;	--hdr
-        phit_togo(LINK_WIDTH-1) <= (state_cnt(1) and dma_ctrl) or ((not state_cnt(1)) and dma_ctrl_reg);
+    phit_togo(LINK_WIDTH-1) <= (state_cnt(1) and dma_ctrl) or ((not state_cnt(1)) and dma_ctrl_reg);
 	--phitOut(LINK_WIDTH-2) <= not (state_cnt(0) or state_cnt(1)) and dma_ctrl_reg;	--md
-        phit_togo(LINK_WIDTH-2) <= state_cnt(1) and dma_ctrl;	--hdr
+    phit_togo(LINK_WIDTH-2) <= state_cnt(1) and dma_ctrl;	--hdr
 	phit_togo(LINK_WIDTH-3) <= state_cnt(0) and dma_ctrl_reg;	--eop
 	--hdr or payload
 	phit_togo(LINK_WIDTH-4 downto 0) <= mux_out;
 
 
-        phase_delay_slection: process (state_cnt)
+        phase_delay_slection: process (state_cnt,phase_prev,phase_next)
         begin
           case state_cnt is
 
@@ -458,16 +458,6 @@ begin
 
 -- DMA signals --------------------------------------------------------------------------------
 	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata, vld_slt) begin
-            --if na_reset='1' then
---                dma_waddr <= (others => '0');
---                dma_wdata <= (others => '0');
---                dma_wen <= (others => '0');
---                dma_raddr <= (others => '0');
---                dma_ren <= (others => '0');
---                proc_out.SCmdAccept <= '0';
---                dma_entry <= (others => '0');
-
-            --else
 		dma_waddr <= (others => '0');
 		dma_wdata <= (others => '0');
 		dma_wen <= (others => '0');
@@ -496,15 +486,7 @@ begin
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				elsif config=ST_ACCESS then
-					dma_waddr <= (others => '0');
-					dma_wdata <= (others => '0');
-					dma_wen <= (others => '0');
 					proc_out.SCmdAccept <= '1';
-				else
-					dma_waddr <= (others => '0');
-					dma_wdata <= (others => '0');
-					dma_wen <= (others => '0');
-					proc_out.SCmdAccept <= '0';
 				end if;
 
 			--configuration read or no read
@@ -519,20 +501,7 @@ begin
 					dma_ren <= config(2 downto 0);
 					--build ocp read data
 					proc_out.SCmdAccept <= '1';
-				else
-					dma_waddr <= (others => '0');
-					dma_wdata <= (others => '0');
-					dma_wen <= (others => '0');
-					--build ocp read data
-					proc_out.SCmdAccept <= '0';
 				end if;
-			else
-				dma_waddr <= (others => '0');
-				dma_wdata <= (others => '0');
-				dma_wen <= (others => '0');
-				dma_raddr <= (others => '0');
-				dma_ren <= (others => '0');
-				proc_out.SCmdAccept <= '0';
 			end if;
 			--dma_entry <= (others=>'0');
 
@@ -555,15 +524,7 @@ begin
 					dma_wen <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
 				elsif config=ST_ACCESS then
-					dma_waddr <= (others => '0');
-					dma_wdata <= (others => '0');
-					dma_wen <= (others => '0');
 					proc_out.SCmdAccept <= '1';
-				else
-					dma_waddr <= (others => '0');
-					dma_wdata <= (others => '0');
-					dma_wen <= (others => '0');
-					proc_out.SCmdAccept <= '0';
 				end if;
 			end if;
 			dma_raddr <= dma_index;
@@ -590,22 +551,9 @@ begin
 					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_ren <= config(2 downto 0);
 					proc_out.SCmdAccept <= '1';
-				else
-					dma_raddr <= (others => '0');
-					dma_ren <= (others => '0');
-					proc_out.SCmdAccept <= '0';
 				end if;
 			elsif ocp_cmd_write='1' and config=ST_ACCESS then
-				--dma_waddr <= (others => '0');
-				--dma_wdata <= (others => '0');
-				--dma_wen <= (others => '0');
 				proc_out.SCmdAccept <= '1';
-                        else
-
-
-				dma_raddr <= (others => '0');
-				dma_ren <= (others => '0');
-				proc_out.SCmdAccept <= '0';
 			end if;
 
 
@@ -670,25 +618,25 @@ begin
 	reg_control : process(state_cnt)
 	begin
 	dOutreg_ld <= '0';
-        vld_buf_ld <= '0';
+    vld_buf_ld <= '0';
 	ctrlOutreg_ld <= '0';
 	sc_en <= '0';
-        phase_ld <= '0';
+    phase_ld <= '0';
 
 	if state_cnt = "00" then
 		dOutreg_ld <= '1';
-                vld_buf_ld <= '1';
+        vld_buf_ld <= '1';
 	elsif state_cnt="10" then
 		ctrlOutreg_ld <='1';
-                phase_ld <= '1';
+        phase_ld <= '1';
 		--update slt_cnt
 		sc_en <= '1';
 	else
 		dOutreg_ld <= '0';
-                vld_buf_ld <= '0';
+        vld_buf_ld <= '0';
 		ctrlOutreg_ld <= '0';
 		sc_en <= '0';
-                phase_ld <= '0';
+        phase_ld <= '0';
 	end if;
 
 	end process;
@@ -700,17 +648,17 @@ begin
 			dma_ctrl_reg <= '0';
 			address <= (others=>'0');
 			vld_pkt <= '0';
-                        dIn_h <= (others=>'0');
+            dIn_h <= (others=>'0');
 			dOut_l <= (others=>'0');
 			phitIn <= (others=>'0');
-                        phitOut0 <= (others=>'0');
-                        phitOut1 <= (others=>'0');
-                        phitOut2 <= (others=>'0');
+            phitOut0 <= (others=>'0');
+            phitOut1 <= (others=>'0');
+            phitOut2 <= (others=>'0');
 			config_reg <= (others=>'0');
-                        flit_buf <= (others=>'0');
-                        vld_buf <= '0';
-                        phase_prev <= (others=>'0');
-                        phase_next <= (others=>'0');
+            flit_buf <= (others=>'0');
+            vld_buf <= '0';
+            phase_prev <= (others=>'0');
+            phase_next <= (others=>'0');
 			ocp_dataresp_reg <= (others=>'0') after PDELAY;
 			ocp_response_reg <= OCP_RESP_NULL after PDELAY;
 
@@ -718,38 +666,38 @@ begin
 			if ctrlOutreg_ld='1' then
 				dma_ctrl_reg <= dma_ctrl after PDELAY;
 			end if;
-              		if dOutreg_ld='1' then
+            if dOutreg_ld='1' then
 				dOut_l <= spm_in.SData(DATA_WIDTH-1 downto 0) after PDELAY;
 			end if;
 
 
-                        if sop='1' then
-				address <= phitIn(DATA_WIDTH-1 downto SPM_ADDR_WIDTH) after PDELAY;
+            if sop='1' then
+				address <= phitIn(DATA_WIDTH-SPM_ADDR_WIDTH_MAX+SPM_ADDR_WIDTH-1 downto DATA_WIDTH-SPM_ADDR_WIDTH_MAX) after PDELAY;
                                 vld_pkt <= phitIn(LINK_WIDTH-1) after PDELAY;
 			end if;
 			if mop='1' then
 				dIn_h <= phitIn(DATA_WIDTH-1 downto 0) after PDELAY;
 			end if;
-                        if eop='1' then
-                                flit_buf <= address & dIn_h & phitIn(DATA_WIDTH-1 downto 0) after PDELAY;
-                                vld_buf <= vld_pkt after PDELAY;
-                        end if;
-                        if vld_buf_ld='1' then
-                                vld_buf <= eop after PDELAY;
-                        end if;
+            if eop='1' then
+                flit_buf <= address & dIn_h & phitIn(DATA_WIDTH-1 downto 0) after PDELAY;
+                vld_buf <= vld_pkt after PDELAY;
+            end if;
+            if vld_buf_ld='1' then
+                vld_buf <= eop after PDELAY;
+            end if;
 
-                        if phase_ld='1' then
-                                phase_prev <= phase_next after PDELAY;
-                                phase_next <= slt_entry(1 downto 0) or not (vld_slt & vld_slt) or not (dma_ctrl & dma_ctrl) after PDELAY;
-                        end if;
+            if phase_ld='1' then
+                phase_prev <= phase_next after PDELAY;
+                phase_next <= slt_entry(1 downto 0) or not (vld_slt & vld_slt) or not (dma_ctrl & dma_ctrl) after PDELAY;
+            end if;
 
-                        if pkt_in(LINK_WIDTH-1)='1' then
-                          phitIn <= pkt_in after PDELAY;
-                        end if;
+            if pkt_in(LINK_WIDTH-1)='1' then
+                phitIn <= pkt_in after PDELAY;
+            end if;
 
-                        phitOut0 <= phit_togo after PDELAY;
-                        phitOut1 <= phitOut0 after PDELAY;
-                        phitOut2 <= phitOut1 after PDELAY;
+            phitOut0 <= phit_togo after PDELAY;
+            phitOut1 <= phitOut0 after PDELAY;
+            phitOut2 <= phitOut1 after PDELAY;
 			config_reg <= proc_in.MCmd(1) & config after PDELAY;
 			read_cmd_reg <= ocp_cmd_read after PDELAY;
 

@@ -83,48 +83,6 @@ end noc_node;
 
 architecture struct of noc_node is
 
-------------------------------component declarations----------------------------
-
---1 na
-component nAdapter is
-
-
-port (
--- General
-	na_clk		: in  std_logic;
-	na_reset	: in  std_logic;
-
--- Processor Ports
--- DMA Configuration Port - OCP
-	proc_in		: in ocp_io_m;
-	proc_out	: out ocp_io_s;
-
--- SPM Data Port - OCP?
-	spm_in		: in spm_slave;
-	spm_out		: out spm_master;
-
--- Network Ports
--- Incoming Port
-	pkt_in		: in  link_t;
-
--- Outgoing Port
-	pkt_out		: out link_t
-
-);
-end component;
-
---1 router
-component router is
-	port (
-		clk	: in std_logic;
-		reset	: in std_logic;
-		inPort_f	: in router_port_f;
-		inPort_b	: out router_port_b;
-		outPort_f	: out router_port_f;
-		outPort_b	: in router_port_b
-	);
-end component;
-
 ------------------------------signal declarations----------------------------
 
 signal ip_to_net	: link_t;
@@ -134,7 +92,7 @@ signal req, ack : std_logic;
 begin
 
 -- NA instance
-na : nAdapter
+na : entity work.nAdapter
 port map(
 	-- General
 	na_clk=>n_clk,
@@ -158,7 +116,7 @@ port map(
 );
 
 -- router instance
-r : router
+r : entity work.router
 port map (
 	clk => n_clk,
 	reset => reset,

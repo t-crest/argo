@@ -1,17 +1,17 @@
--- 
+--
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
--- 
+--
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
--- 
+--
 --    1. Redistributions of source code must retain the above copyright notice,
 --       this list of conditions and the following disclaimer.
--- 
+--
 --    2. Redistributions in binary form must reproduce the above copyright
 --       notice, this list of conditions and the following disclaimer in the
 --       documentation and/or other materials provided with the distribution.
--- 
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 -- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -22,11 +22,11 @@
 -- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 -- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 -- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--- 
+--
 -- The views and conclusions contained in the software and documentation are
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
--- 
+--
 
 
 --------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ entity latch_controller is
 
 		Rout : out std_logic;
 		Aout : in std_logic;
-		
+
 		lt_en   : out std_logic	-- Latch enable
 	);
 end latch_controller;
@@ -73,13 +73,13 @@ architecture mousetrap of latch_controller is
 begin
 
   Rout <= r_next;
-  enable <= transport r_next xnor Aout after delay;
   Ain   <= r_next;
+  enable <= transport r_next xnor Aout after delay;
   lt_en <= enable;
-  
+
   --r_prev <= (not Rin) when resolve_latch_state(init_token)='1' else Rin;
   --r_out <= (not r_next) when resolve_latch_state(init_token)='1' else r_next;
-    
+
   --set <= resolve_latch_state(init_token) and preset;
   --reset <= not(resolve_latch_state(init_token)) and preset;
 
@@ -101,7 +101,7 @@ begin
 
   --preset_del <= not preset;
   --preset_del2 <= not preset_del;
-  
+
   req_latch : process(Rin, enable, preset)
     begin
       --if set = '1' then
@@ -113,5 +113,5 @@ begin
       end if;
 
     end process req_latch;
-      
+
 end mousetrap;

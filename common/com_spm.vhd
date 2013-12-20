@@ -44,7 +44,7 @@ use work.noc_interface.all;
 
 entity com_spm is
   generic(
-    -- 2**SPM_IDX_SIZE is the number of words in the SPM
+    -- 2**SPM_IDX_SIZE is the number of bytes in the SPM
     SPM_IDX_SIZE : natural := 12
     );
   port (
@@ -59,27 +59,27 @@ entity com_spm is
 end entity ; -- com_spm
 
 architecture arch of com_spm is
-    component bram_tdp is
-        generic (
-            DATA    : integer := 32;
-            ADDR    : integer := 14
-        );
-        port (
-        -- Port A
-            a_clk   : in  std_logic;
-            a_wr    : in  std_logic;
-            a_addr  : in  std_logic_vector(ADDR-1 downto 0);
-            a_din   : in  std_logic_vector(DATA-1 downto 0);
-            a_dout  : out std_logic_vector(DATA-1 downto 0);
-
-        -- Port B
-            b_clk   : in  std_logic;
-            b_wr    : in  std_logic;
-            b_addr  : in  std_logic_vector(ADDR-1 downto 0);
-            b_din   : in  std_logic_vector(DATA-1 downto 0);
-            b_dout  : out std_logic_vector(DATA-1 downto 0)
-        );
-    end component;
+--    component bram_tdp is
+--        generic (
+--            DATA    : integer := 32;
+--            ADDR    : integer := SPM_IDX_SIZE
+--        );
+--        port (
+--        -- Port A
+--            a_clk   : in  std_logic;
+--            a_wr    : in  std_logic;
+--            a_addr  : in  std_logic_vector(ADDR-1 downto 0);
+--            a_din   : in  std_logic_vector(DATA-1 downto 0);
+--            a_dout  : out std_logic_vector(DATA-1 downto 0);
+--
+--        -- Port B
+--            b_clk   : in  std_logic;
+--            b_wr    : in  std_logic;
+--            b_addr  : in  std_logic_vector(ADDR-1 downto 0);
+--            b_din   : in  std_logic_vector(DATA-1 downto 0);
+--            b_dout  : out std_logic_vector(DATA-1 downto 0)
+--        );
+--    end component;
 
     signal wr_h, wr_l : std_logic;
     signal Sdata_h, Sdata_l : std_logic_vector(DATA_WIDTH-1 downto 0);
@@ -163,7 +163,7 @@ l_2_en <= ocp_core_m.MByteEn(2) and wr_l;
 l_3_en <= ocp_core_m.MByteEn(3) and wr_l;
 
 -- High SPM instance 0
-spm_h_0 : bram_tdp
+spm_h_0 : entity work.bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_0_en,
@@ -177,7 +177,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(39 downto 32));
 
 -- High SPM instance 1
-spm_h_1 : bram_tdp
+spm_h_1 : entity work.bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_1_en,
@@ -191,7 +191,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(47 downto 40));
 
 -- High SPM instance 2
-spm_h_2 : bram_tdp
+spm_h_2 : entity work.bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_2_en,
@@ -205,7 +205,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(55 downto 48));
 
 -- High SPM instance 3
-spm_h_3 : bram_tdp
+spm_h_3 : entity work.bram_tdp
 generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_3_en,
@@ -219,7 +219,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(63 downto 56));
 
 -- Low SPM instance 0
-spm_l_0 : bram_tdp
+spm_l_0 : entity work.bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_0_en,
@@ -233,7 +233,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(7 downto 0));
 
 -- Low SPM instance 1
-spm_l_1 : bram_tdp
+spm_l_1 : entity work.bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_1_en,
@@ -247,7 +247,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(15 downto 8));
 
 -- Low SPM instance 2
-spm_l_2 : bram_tdp
+spm_l_2 : entity work.bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_2_en,
@@ -261,7 +261,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.SData(23 downto 16));
 
 -- Low SPM instance 3
-spm_l_3 : bram_tdp
+spm_l_3 : entity work.bram_tdp
 generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_3_en,

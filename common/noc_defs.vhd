@@ -44,9 +44,9 @@ package noc_defs is
 	constant DATA_WIDTH	: integer := 32;
 	constant SPM_CMD_WIDTH	: integer := 1;		-- 8 possible cmds --> 2
 	constant SPM_DATA_WIDTH	: integer := 64;
-	constant SPM_ADDR_WIDTH	: integer := 16;	-- 14 --> 64 kB address space -16->256kb
+	constant SPM_ADDR_WIDTH	: integer := 9;	-- 14 --> 64 kB address space -16->256kb
 	constant BLK_CNT	: integer := 14;
-    constant SPM_ADDR_WIDTH_MAX : integer := 16;
+    constant SPM_ADDR_WIDTH_MAX : integer := 16; -- SPM addr width cannot be more than 16 bits -> 256kb
 
 	-- async network
 	--constant PHIT_WIDTH	: integer := 35;	-- see packet format -->32 + 3 control bits
@@ -79,11 +79,11 @@ package noc_defs is
 	--addressing
 	constant ADDR_MASK_W	: integer := 8;
 	--starting address of DMA table (0,1) -unprotected 00100000 xxxx...
-	constant DMA_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "11100000";
+	constant DMA_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := x"E0"; --"11100000";
 	--starting address of DMA route table (2) -protected 00010000 xxx.....
-	constant DMA_P_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "11100001";
+	constant DMA_P_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := x"E1"; --"11100001";
 	--starting address of slot-table -protected 00011000 xxx.....
-	constant ST_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := "11100010";
+	constant ST_MASK	: std_logic_vector(ADDR_MASK_W-1 downto 0) := x"E2"; --"11100010";
 
 	--configuration options
 	constant CNULL		: std_logic_vector(3 downto 0) := "0000";
@@ -117,10 +117,10 @@ package noc_defs is
 		ack : std_logic;
 	end record channel_backward;
 
-	type channel is record
-		forward : channel_forward;
-		backward : channel_backward;
-	end record channel;
+--	type channel is record
+--		forward : channel_forward;
+--		backward : channel_backward;
+--	end record channel;
 
   	-- Types to make design generic
 	type switch_sel_t is array (ARITY-1 downto 0) of onehot_sel;
@@ -136,7 +136,7 @@ package noc_defs is
 	constant VALID_BUBBLE : latch_state := transparent;
 	constant VALID_TOKEN  : latch_state := opaque;	-- Only valid-tokens are opaque latches
 
-	constant delay : time := 0.6 ns;
+	constant delay : time := 0.3 ns;
 
         -- Function prototype
 	function resolve_latch_state (arg : latch_state) return std_logic;

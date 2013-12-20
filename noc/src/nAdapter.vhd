@@ -113,8 +113,8 @@ signal dma_rdata	: std_logic_vector(DMA_WIDTH-1 downto 0);
 
 signal dma_cnt		: unsigned(BLK_CNT-1 downto 0);
 signal dma_cnt_new	: unsigned(BLK_CNT-1 downto 0);
-signal dma_rp_new	: unsigned(SPM_ADDR_WIDTH-1 downto 0);
-signal dma_wp_new	: unsigned(SPM_ADDR_WIDTH-1 downto 0);
+signal dma_rp_new	: unsigned(SPM_ADDR_WIDTH_MAX-1 downto 0);
+signal dma_wp_new	: unsigned(SPM_ADDR_WIDTH_MAX-1 downto 0);
 
 signal dma_ctrl		: std_logic;
 signal dma_ctrl_new	: std_logic_vector(1 downto 0);
@@ -324,7 +324,7 @@ begin
 			spm_out.MAddr <= address;
 		else
 			spm_out.MCmd <= "0"; --read
-			spm_out.MAddr <= dma_entry(47 downto 32);
+			spm_out.MAddr <= dma_entry(32+SPM_ADDR_WIDTH-1 downto 32);
 		end if;
 	end process;
 	spm_out.MData(SPM_DATA_WIDTH-1 downto DATA_WIDTH) <= dIn_h;
@@ -548,8 +548,8 @@ begin
 
 -- update dma entry fields
 	dma_cnt_new <= dma_cnt - 1;
-	dma_rp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+32 downto 32)) + 1;
-	dma_wp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH-1+16 downto 16)) + 1;
+	dma_rp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH_MAX-1+32 downto 32)) + 1;
+	dma_wp_new <= unsigned(dma_entry(SPM_ADDR_WIDTH_MAX-1+16 downto 16)) + 1;
 
 	done <= '1' when dma_cnt_new=0
 		else '0';

@@ -101,7 +101,7 @@ synth_base:
 
 all_to_all.sched: bitorus2x2.xml
 	../../../local/bin/Poseidon -p $< -m GREEDY -s sched.xml
-	../../../local/bin/poseidon_converter.sh sched.xml $@ Source-Phase-text
+	../../../local/bin/poseidon_converter.sh sched.xml $@ Source-Phase-text 2
 
 clean:
 	-rm -f transcript

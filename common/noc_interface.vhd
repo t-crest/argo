@@ -69,8 +69,11 @@ package noc_interface is
     type spm_slaves is array(0 to (N*M)-1) of spm_slave;
 
 
-    type link_n is array(0 to (N - 1)) of channel;
-    type link_m is array(0 to (M - 1)) of link_n;
+    type link_n_f is array(0 to (N - 1)) of channel_forward;
+    type link_m_f is array(0 to (M - 1)) of link_n_f;
+
+    type link_n_b is array(0 to (N - 1)) of channel_backward;
+    type link_m_b is array(0 to (M - 1)) of link_n_b;
 
     type    router_port_f is array(ARITY-1 downto 0) of channel_forward;
     type    router_port_b is array(ARITY-1 downto 0) of channel_backward;

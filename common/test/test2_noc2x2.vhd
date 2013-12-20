@@ -192,16 +192,16 @@ begin
                 wait for delay;
 
                 p_spm_masters(0).MCmd <="1";
-                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000000";
+                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000000";
                 p_spm_masters(0).MData <= x"0000000011111111";
                 p_spm_masters(1).MCmd <="1";
-                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count+SPM_INIT_SIZE,16));--x"00000002";
+                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count+SPM_INIT_SIZE,SPM_ADDR_WIDTH));--x"00000002";
                 p_spm_masters(1).MData <= x"2222222233333333";
                 p_spm_masters(2).MCmd <="1";
-                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count+2*SPM_INIT_SIZE,16));--x"00000004";
+                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count+2*SPM_INIT_SIZE,SPM_ADDR_WIDTH));--x"00000004";
                 p_spm_masters(2).MData <= x"4444444455555555";
                 p_spm_masters(3).MCmd <="1";
-                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count+3*SPM_INIT_SIZE,16));--x"00000006";
+                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count+3*SPM_INIT_SIZE,SPM_ADDR_WIDTH));--x"00000006";
                 p_spm_masters(3).MData <= x"6666666677777777";
 
                 count := count + 1;
@@ -226,7 +226,7 @@ begin
         p_spm_masters(3).MData <= (others=>'0');
 
 
-        wait for 1900 ns ;
+        wait for 3000 ns ;
 
         wait until rising_edge(n_clk);
 
@@ -237,13 +237,13 @@ begin
                 wait for delay;
 
                 p_spm_masters(0).MCmd <="0";
-                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000000";
+                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000000";
                 p_spm_masters(1).MCmd <="0";
-                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000002";
+                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000002";
                 p_spm_masters(2).MCmd <="0";
-                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000004";
+                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000004";
                 p_spm_masters(3).MCmd <="0";
-                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000006";
+                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000006";
 
                 count := count + 1;
                 report "Reading results";
@@ -315,16 +315,16 @@ begin
 
                 cnt := 0;
                 loop
-                        readline(schedule0, l);
-			read(l, route);
-                        --rt_write
-                        --report str(route);
-                        route_write (p_masters(0),
-                                     p_slaves(0),
-                                     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-                                     route, p_clk);
-                        cnt := cnt + 1;
-                        exit when cnt = NxN or endfile(schedule0);
+                    readline(schedule0, l);
+                    read(l, route);
+                    --rt_write
+                    --report str(route);
+                    route_write (p_masters(0),
+                                 p_slaves(0),
+                                 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                                 route, p_clk);
+                    cnt := cnt + 1;
+                    exit when cnt = NxN or endfile(schedule0);
                 end loop;
 
                 --DMA 1
@@ -657,8 +657,7 @@ begin
                            x"000008", p_clk);
 
         end if;
+
 end process;
-
-
 
 end behav;

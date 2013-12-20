@@ -46,15 +46,15 @@ use work.noc_interface.all;
 
 entity noc_node is
 port (
-	--p_clk		: std_logic;
+	p_clk		: std_logic;
 	n_clk		: std_logic;
 	reset		: std_logic;
 
-	proc_in		: in ocp_io_m;
-	proc_out	: out ocp_io_s;
+	proc_m		: in ocp_io_m;
+	proc_s		: out ocp_io_s;
 
-	spm_in		: in spm_slave;
-	spm_out		: out spm_master;
+	spm_m		: out spm_master;
+	spm_s		: in spm_slave;
 
     -- router ports
     north_in_f		 : in channel_forward;
@@ -87,14 +87,18 @@ architecture struct of noc_node is
 
 ------------------------------signal declarations----------------------------
 
-signal ip_to_net	: channel;
-signal net_to_ip	: channel;
+signal ip_to_net_f	: channel_forward;
+signal ip_to_net_b	: channel_backward;
+signal net_to_ip_f	: channel_forward;
+signal net_to_ip_b	: channel_backward;
 
 signal ip_to_net_link	: link_t;
 signal net_to_ip_link   : link_t;
 
-signal fifo_to_net      : channel;
-signal net_to_fifo      : channel;
+signal fifo_to_net_f      : channel_forward;
+signal fifo_to_net_b      : channel_backward;
+signal net_to_fifo_f      : channel_forward;
+signal net_to_fifo_b      : channel_backward;
 
 --signal spm_to_net	: ocp_slave_spm;
 --signal net_to_spm	: ocp_master_spm;
@@ -117,12 +121,12 @@ port map(
 
 	-- Processor Ports
 	-- DMA Configuration Port - OCP
-	proc_in=>proc_in,
-	proc_out=>proc_out,
+	proc_in=>proc_m,
+	proc_out=>proc_s,
 
 	-- SPM Data Port - OCP?
-	spm_in=>spm_in,
-	spm_out=>spm_out,
+	spm_in=>spm_s,
+	spm_out=>spm_m,
 
 	-- Network Ports
 	-- Incoming Port
@@ -146,14 +150,14 @@ end process half_clk_gen;
 
 del_half_clk0 <= not half_clk;
 --del_half_clk1 <= not del_half_clk0;
-ip_to_net.forward.req <= not del_half_clk0 after 2 ns;
-ip_to_net.forward.data <= ip_to_net_link;
+ip_to_net_f.req <= not del_half_clk0 after 2 ns;
+ip_to_net_f.data <= ip_to_net_link;
 
 
 -- <= ip_to_net_b.ack;
 -- <= net_to_ip_f.req;
-net_to_ip_link <= net_to_ip.forward.data;
-net_to_ip.backward.ack <= not del_half_clk0 after 2 ns;
+net_to_ip_link <= net_to_ip_f.data;
+net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
 
 -- NoC switch instance
    r : entity work.router
@@ -168,8 +172,8 @@ net_to_ip.backward.ack <= not del_half_clk0 after 2 ns;
 		south_in_b		 => south_in_b,
 		west_in_f	     => west_in_f,
 		west_in_b	     => west_in_b,
-		resource_in_f	 => ip_to_net.forward,
-		resource_in_b	 => ip_to_net.backward,
+		resource_in_f	 => ip_to_net_f,
+		resource_in_b	 => ip_to_net_b,
 
 		-- Output ports
 		north_out_f		 => north_out_f,
@@ -180,8 +184,8 @@ net_to_ip.backward.ack <= not del_half_clk0 after 2 ns;
 		south_out_b		 => south_out_b,
 		west_out_f		 => west_out_f,
 		west_out_b		 => west_out_b,
-		resource_out_f	 => net_to_ip.forward,
-		resource_out_b	 => net_to_ip.backward
+		resource_out_f	 => net_to_ip_f,
+		resource_out_b	 => net_to_ip_b
 
    );
 

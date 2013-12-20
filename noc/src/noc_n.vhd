@@ -66,17 +66,25 @@ architecture struct of noc is
 
 ------------------------------signal declarations----------------------------
 
-type link_n is array(0 to (N - 1)) of channel;
-type link_m is array(0 to (M - 1)) of link_n;
+--type link_n is array(0 to (N - 1)) of channel;
+--type link_m is array(0 to (M - 1)) of link_n;
 
-signal north_in  : link_m;
-signal east_in   : link_m;
-signal south_in  : link_m;
-signal west_in   : link_m;
-signal north_out : link_m;
-signal east_out  : link_m;
-signal south_out : link_m;
-signal west_out  : link_m;
+signal north_in_f  : link_m_f;
+signal north_in_b  : link_m_b;
+signal east_in_f   : link_m_f;
+signal east_in_b   : link_m_b;
+signal south_in_f  : link_m_f;
+signal south_in_b  : link_m_b;
+signal west_in_f   : link_m_f;
+signal west_in_b   : link_m_b;
+signal north_out_f : link_m_f;
+signal north_out_b : link_m_b;
+signal east_out_f  : link_m_f;
+signal east_out_b  : link_m_b;
+signal south_out_f : link_m_f;
+signal south_out_b : link_m_b;
+signal west_out_f  : link_m_f;
+signal west_out_b  : link_m_b;
 
 
 begin
@@ -95,23 +103,23 @@ begin
 				spm_m => spm_ports_m((i*N)+j),
 				spm_s => spm_ports_s((i*N)+j),
 
-				north_in_f => north_in(i)(j).forward,
-                north_in_b => north_in(i)(j).backward,
-                south_in_f => south_in(i)(j).forward,
-                south_in_b => south_in(i)(j).backward,
-                east_in_f => east_in(i)(j).forward,
-                east_in_b => east_in(i)(j).backward,
-                west_in_f => west_in(i)(j).forward,
-                west_in_b => west_in(i)(j).backward,
+				north_in_f => north_in_f(i)(j),
+                north_in_b => north_in_b(i)(j),
+                south_in_f => south_in_f(i)(j),
+                south_in_b => south_in_b(i)(j),
+                east_in_f => east_in_f(i)(j),
+                east_in_b => east_in_b(i)(j),
+                west_in_f => west_in_f(i)(j),
+                west_in_b => west_in_b(i)(j),
 
-                north_out_f => north_out(i)(j).forward,
-                north_out_b => north_out(i)(j).backward,
-                south_out_f => south_out(i)(j).forward,
-                south_out_b => south_out(i)(j).backward,
-                east_out_f => east_out(i)(j).forward,
-                east_out_b => east_out(i)(j).backward,
-                west_out_f   => west_out(i)(j).forward,
-                west_out_b   => west_out(i)(j).backward
+                north_out_f => north_out_f(i)(j),
+                north_out_b => north_out_b(i)(j),
+                south_out_f => south_out_f(i)(j),
+                south_out_b => south_out_b(i)(j),
+                east_out_f => east_out_f(i)(j),
+                east_out_b => east_out_b(i)(j),
+                west_out_f   => west_out_f(i)(j),
+                west_out_b   => west_out_b(i)(j)
 			);
 
 		end generate nodes_n;
@@ -120,26 +128,38 @@ begin
 	links_m : for i in 0 to M-1 generate
 		links_n : for j in 0 to N-1 generate
 			top : if (i = 0) generate
-				north_in(i)(j) <= south_out(M-1)(j);
-				south_in(M-1)(j) <= north_out(i)(j);
+				north_in_f(i)(j) <= south_out_f(M-1)(j);
+				south_out_b(M-1)(j) <= north_in_b(i)(j);
+				south_in_f(M-1)(j) <= north_out_f(i)(j);
+				north_out_b(i)(j) <= south_in_b(M-1)(j);
       			end generate top;
 			left : if (j = 0) generate
-			        west_in(i)(j) <= east_out(i)(N-1);
-			        east_in(i)(N-1) <= west_out(i)(j);
+			    west_in_f(i)(j) <= east_out_f(i)(N-1);
+			    east_out_b(i)(N-1) <= west_in_b(i)(j);
+			    east_in_f(i)(N-1) <= west_out_f(i)(j);
+			    west_out_b(i)(j) <= east_in_b(i)(N-1);
 			end generate left;
 			bottom : if (i = (M-1) and j < (N-1)) generate
-        			east_in(i)(j) <= west_out(i)(j+1);
-				west_in(i)(j+1) <= east_out(i)(j);
+	       		east_in_f(i)(j) <= west_out_f(i)(j+1);
+	       		west_out_b(i)(j+1) <= east_in_b(i)(j);
+				west_in_f(i)(j+1) <= east_out_f(i)(j);
+				east_out_b(i)(j) <= west_in_b(i)(j+1);
      			end generate bottom;
 			right : if (i < (M-1) and j = (N-1)) generate
-			        south_in(i)(j) <= north_out(i+1)(j);
-			        north_in(i+1)(j) <= south_out(i)(j);
+			        south_in_f(i)(j) <= north_out_f(i+1)(j);
+			        north_out_b(i+1)(j) <= south_in_b(i)(j);
+			        north_in_f(i+1)(j) <= south_out_f(i)(j);
+			        south_out_b(i)(j) <= north_in_b(i+1)(j);
       			end generate right;
 			center : if (i < (M-1) and j < (N-1)) generate
-				north_in(i+1)(j) <= south_out(i)(j);
-				south_in(i)(j) <= north_out(i+1)(j);
-				west_in(i)(j+1) <= east_out(i)(j);
-				east_in(i)(j) <= west_out(i)(j+1);
+				north_in_f(i+1)(j) <= south_out_f(i)(j);
+				south_out_b(i)(j) <= north_in_b(i+1)(j);
+				south_in_f(i)(j) <= north_out_f(i+1)(j);
+				north_out_b(i+1)(j) <= south_in_b(i)(j);
+				west_in_f(i)(j+1) <= east_out_f(i)(j);
+				east_out_b(i)(j) <= west_in_b(i)(j+1);
+				east_in_f(i)(j) <= west_out_f(i)(j+1);
+				west_out_b(i)(j+1) <= east_in_b(i)(j);
 			end generate center;
 		end generate links_n;
 	end generate links_m;

@@ -673,7 +673,7 @@ begin
 
             if sop='1' then
 				address <= phitIn(DATA_WIDTH-SPM_ADDR_WIDTH_MAX+SPM_ADDR_WIDTH-1 downto DATA_WIDTH-SPM_ADDR_WIDTH_MAX) after PDELAY;
-                                vld_pkt <= phitIn(LINK_WIDTH-1) after PDELAY;
+                vld_pkt <= phitIn(LINK_WIDTH-1) after PDELAY;
 			end if;
 			if mop='1' then
 				dIn_h <= phitIn(DATA_WIDTH-1 downto 0) after PDELAY;
@@ -685,6 +685,9 @@ begin
             if vld_buf_ld='1' then
                 vld_buf <= eop after PDELAY;
             end if;
+            if vld_buf_ld='1' and vld_buf='1' then
+                vld_buf <= '0';
+            end if;
 
             if phase_ld='1' then
                 phase_prev <= phase_next after PDELAY;
@@ -693,6 +696,8 @@ begin
 
             if pkt_in(LINK_WIDTH-1)='1' then
                 phitIn <= pkt_in after PDELAY;
+            else
+                phitIn <= (others => '0');
             end if;
 
             phitOut0 <= phit_togo after PDELAY;

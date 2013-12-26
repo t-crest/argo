@@ -373,9 +373,12 @@ begin
 
 -- build outgoing packet
 	--control bits
-	phitOut(LINK_WIDTH-1) <= state_cnt(1) and dma_ctrl;	--hdr
-	phitOut(LINK_WIDTH-2) <= not (state_cnt(0) or state_cnt(1)) and dma_ctrl_reg;	--md
+	phitOut(LINK_WIDTH-1) <= (state_cnt(1) and dma_ctrl) or (not (state_cnt(0) or state_cnt(1)) and dma_ctrl_reg) or (state_cnt(0) and dma_ctrl_reg);	--vld
+	phitOut(LINK_WIDTH-2) <= state_cnt(1) and dma_ctrl;	--sop
 	phitOut(LINK_WIDTH-3) <= state_cnt(0) and dma_ctrl_reg;	--eop
+	--phitOut(LINK_WIDTH-1) <= state_cnt(1) and dma_ctrl;	--hdr
+	--phitOut(LINK_WIDTH-2) <= not (state_cnt(0) or state_cnt(1)) and dma_ctrl_reg;	--md
+	--phitOut(LINK_WIDTH-3) <= state_cnt(0) and dma_ctrl_reg;	--eop
 	--hdr or payload
 	phitOut(LINK_WIDTH-4 downto 0) <= mux_out;
 

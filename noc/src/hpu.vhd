@@ -52,6 +52,7 @@ entity HPU is
 end HPU;
 
 architecture struct of HPU is
+	signal VLD  : std_logic;
 	signal SOP	: std_logic;
 	signal MOP	: std_logic;
 	signal EOP	: std_logic;
@@ -61,8 +62,9 @@ architecture struct of HPU is
 	signal decodedSel		: std_logic_vector(3 downto 0);
 	signal outInt			: link_t;
 begin
-	SOP <= inLine.data(LINK_WIDTH-1);
-	MOP <= inLine.data(LINK_WIDTH-2);
+	VLD <= inLine.data(LINK_WIDTH-1);
+	SOP <= inLine.data(LINK_WIDTH-2);
+	--MOP <= inLine.data(LINK_WIDTH-2);
 	EOP <= inLine.data(LINK_WIDTH-3);
 	dest <= inLine.data(1 downto 0);
 	outLine.data <= outInt;
@@ -73,9 +75,9 @@ begin
 	decodedSel(2) <= '1' when dest = "10" else '0';
 	decodedSel(3) <= '1' when dest = "11" else '0';
 
-	selIntNext <= decodedSel when SOP = '1' else (selInt and (selInt'range=>(MOP or EOP)));
-	sel <= selInt when (EOP='1' or MOP='1') else selIntNext;
-	outInt <= "100" & inLine.data(31 downto 16) & "00" & inLine.data(15 downto 2) when (SOP='1' and (MOP='0' and EOP='0')) else inLine.data;
+	selIntNext <= decodedSel when SOP = '1' else (selInt and (selInt'range=>(VLD or EOP)));
+	sel <= selInt when ((EOP='1' or VLD='1') and SOP='0') else selIntNext;
+	outInt <= "110" & inLine.data(31 downto 16) & "00" & inLine.data(15 downto 2) when (SOP='1') else inLine.data; -- and (MOP='0' and EOP='0')
 
 	process (reset,clk)
 	begin

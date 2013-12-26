@@ -66,9 +66,9 @@ begin
 
   -- VLD bit shows type of the phit (phit or void)
   -- SOP high on start of packet, EOP high on end of packet
-	VLD <= data_in(PHIT_WIDTH);
-	SOP <= data_in(PHIT_WIDTH-1);
-        EOP <= data_in(PHIT_WIDTH-2);
+	VLD <= data_in(LINK_WIDTH-1);
+	SOP <= data_in(LINK_WIDTH-2);
+        EOP <= data_in(LINK_WIDTH-3);
 
 
 	one_hot_decoder: block

@@ -68,6 +68,7 @@ sim_base: all_to_all.sched
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/c_gate_generic.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/latch_controller.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/channel_latch.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/fifo.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/hpu_comb.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/hpu.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/crossbar.vhd

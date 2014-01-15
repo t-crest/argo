@@ -172,8 +172,8 @@ net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
 		south_in_b		 => south_in_b,
 		west_in_f	     => west_in_f,
 		west_in_b	     => west_in_b,
-		resource_in_f	 => ip_to_net_f,
-		resource_in_b	 => ip_to_net_b,
+		resource_in_f	 => fifo_to_net_f,
+		resource_in_b	 => fifo_to_net_b,
 
 		-- Output ports
 		north_out_f		 => north_out_f,
@@ -184,11 +184,42 @@ net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
 		south_out_b		 => south_out_b,
 		west_out_f		 => west_out_f,
 		west_out_b		 => west_out_b,
-		resource_out_f	 => net_to_ip_f,
-		resource_out_b	 => net_to_ip_b
+		resource_out_f	 => net_to_fifo_f,
+		resource_out_b	 => net_to_fifo_b
 
    );
 
 
+input_fifo : entity work.fifo(rtl)
+  generic map (
+    N => 0,  				-- 1
+    TOKEN => EMPTY_BUBBLE,
+    GENERATE_REQUEST_DELAY => 1,  	-- 1
+    GENERATE_ACKNOWLEDGE_DELAY => 1,  	-- 1
+    GATING_ENABLED => 0    
+  )
+  port map (
+    preset    => reset,
+    left_in   => ip_to_net_f,
+    left_out  => ip_to_net_b,
+    right_out => fifo_to_net_f,
+    right_in  => fifo_to_net_b
+  );
+
+output_fifo : entity work.fifo(rtl)
+  generic map (
+    N => 0,  				-- 2
+    TOKEN => VALID_TOKEN,
+    GENERATE_REQUEST_DELAY => 1,  	-- 1
+    GENERATE_ACKNOWLEDGE_DELAY => 1,  	-- 1
+    GATING_ENABLED => 0
+  )
+  port map (
+    preset    => reset,
+    left_in   => net_to_fifo_f,
+    left_out  => net_to_fifo_b,
+    right_out => net_to_ip_f,
+    right_in  => net_to_ip_b
+  );
 
 end struct;

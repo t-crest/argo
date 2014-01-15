@@ -140,7 +140,7 @@ package noc_defs is
 
         -- Function prototype
 	function resolve_latch_state (arg : latch_state) return std_logic;
-
+	function inject_delay_line (delay_in : std_logic) return std_logic;
 
 end package noc_defs;
 
@@ -154,7 +154,17 @@ package body noc_defs is
 		end case;
 	end function resolve_latch_state;
 
-
+  -- injects two inverters
+  function inject_delay_line (
+    delay_in : std_logic)
+    return std_logic is
+    variable delay_intermediate, delay_out : std_logic;
+  begin
+    delay_intermediate := not delay_in;
+    delay_out	       := not delay_intermediate;
+    return delay_out;
+  end function inject_delay_line;
+  
 end package body noc_defs;
 
 

@@ -685,9 +685,6 @@ begin
             if vld_buf_ld='1' then
                 vld_buf <= eop after PDELAY;
             end if;
-            if vld_buf_ld='1' and vld_buf='1' then
-                vld_buf <= '0';
-            end if;
 
             if phase_ld='1' then
                 phase_prev <= phase_next after PDELAY;

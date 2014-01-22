@@ -37,7 +37,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 use work.noc_defs.all;
 
 
@@ -76,9 +76,9 @@ begin
     elsif rising_edge(clk) then
 
 	if wr_ena='1' then
-		mem(conv_integer(wr_addr)) <= wr_data;
+		mem(to_integer(unsigned(wr_addr))) <= wr_data;
         end if;
-        rd_data <= mem(conv_integer(rd_addr));
+        rd_data <= mem(to_integer(unsigned(rd_addr)));
     end if;
 
 end process;

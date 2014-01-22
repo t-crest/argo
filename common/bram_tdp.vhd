@@ -37,7 +37,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
 use work.noc_defs.all;
 
 
@@ -80,10 +80,10 @@ begin
     if( rising_edge(a_clk) ) then
 
         if(a_wr='1') then
-            mem(conv_integer(a_addr)) := a_din;
+            mem(to_integer(unsigned(a_addr))) := a_din;
         end if;
 
-        a_dout <= mem(conv_integer(a_addr)) after PDELAY;
+        a_dout <= mem(to_integer(unsigned(a_addr))) after PDELAY;
     end if;
 
 end process;
@@ -96,10 +96,10 @@ begin
     if( rising_edge(b_clk) ) then
 
         if(b_wr='1') then
-            mem(conv_integer(b_addr)) := b_din;
+            mem(to_integer(unsigned(b_addr))) := b_din;
         end if;
 
-        b_dout <= mem(conv_integer(b_addr)) after PDELAY;
+        b_dout <= mem(to_integer(unsigned(b_addr))) after PDELAY;
 
     end if;
 

@@ -45,6 +45,7 @@ base: all_to_all.sched
 	$(WINE) vlib work
 	$(WINE) vcom $(OPTIONS) $(COMMON)/config.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/math_util.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd

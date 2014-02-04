@@ -50,7 +50,7 @@ generic (
 
 port (
 	clk 	: in std_logic ;
-        reset   : in std_logic;
+	reset   : in std_logic;
 	rd_addr : in std_logic_vector(ADDR-1 downto 0);
 	wr_addr : in std_logic_vector(ADDR-1 downto 0);
 	wr_data : in std_logic_vector(DATA-1 downto 0);
@@ -67,20 +67,17 @@ architecture rtl of bram is
 
 begin
 
-process(clk)
+process(clk, reset)
 begin
     if reset='1' then
-        mem <= (others => (others => '0'));
-        rd_data <= (others => '0');
-    --end if;
+        -- mem <= (others => (others => '0'));
+        -- rd_data <= (others => '0');
     elsif rising_edge(clk) then
-
-	if wr_ena='1' then
-		mem(to_integer(unsigned(wr_addr))) <= wr_data;
+        if wr_ena='1' then
+            mem(to_integer(unsigned(wr_addr))) <= wr_data;
         end if;
         rd_data <= mem(to_integer(unsigned(rd_addr)));
     end if;
-
 end process;
  
 end rtl;

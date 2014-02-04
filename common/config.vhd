@@ -39,5 +39,7 @@ package config is
 
     constant N : integer := 2; -- Horizontal width
     constant M : integer := 2; -- Vertical Height
+    constant NODES : integer := 4;
+    constant PRD_LENGTH : integer := 8; -- The number of timeslots in one TDM period
 
 end package ; -- aegean_def

@@ -37,6 +37,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use work.config.all;
+use work.math_util.all;
 
 package noc_defs is
 
@@ -56,14 +58,14 @@ package noc_defs is
     constant ARITY :integer := 5;
 
 	-- scheduling
-	constant ADDR_SLT_WIDTH	: integer := 3;
-	constant PRD_LENGTH	: integer := 2**ADDR_SLT_WIDTH;	-- 2^6 = 64 -- 2^3 = 8
+	constant ADDR_SLT_WIDTH	: integer := log2up(PRD_LENGTH-1);
+	--constant PRD_LENGTH	: integer := 2**ADDR_SLT_WIDTH;	-- 2^6 = 64 -- 2^3 = 8
 
 	constant MAX_PERIOD	: integer :=128;
 
 	-- DMA
-	constant DMA_IND_WIDTH	: integer := 2;
-	constant NODES		: integer := 2**DMA_IND_WIDTH;	-- 2^2 = 4 nodes
+	constant DMA_IND_WIDTH	: integer := log2up(NODES-1);
+	--constant NODES		: integer := 2**DMA_IND_WIDTH;	-- 2^2 = 4 nodes
 	constant DMA_WIDTH	: integer := 64;
 	--DMA banks sizes
 	constant BANK0_W	: integer := 16;

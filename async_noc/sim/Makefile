@@ -29,22 +29,22 @@ endif
 all: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2.vhd
-	$(WINE) vsim -voptargs=+acc -do sim2.do test2_noc2x2
+	$(WINE) vsim -t 10ps -voptargs=+acc -do sim2.do test2_noc2x2
 
 test0: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_noc2x2.vhd
-	$(WINE) vsim -voptargs=+acc -do sim0.do test0_noc2x2
+	$(WINE) vsim -t 10ps -voptargs=+acc -do sim0.do test0_noc2x2
 
 test1: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test1_noc2x2.vhd
-	$(WINE) vsim -voptargs=+acc -do sim1.do test1_noc2x2
+	$(WINE) vsim -t 10ps -voptargs=+acc -do sim1.do test1_noc2x2
 
 test2: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(TEST)/test2_noc2x2.vhd
-	$(WINE) vsim -voptargs=+acc -gSLT_WIDTH=5 -do sim2.do test2_noc2x2
+	$(WINE) vsim -t 10ps -voptargs=+acc -gSLT_WIDTH=5 -do sim2.do test2_noc2x2
 
 test2_m: clean sim_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n_m.vhd
@@ -81,15 +81,15 @@ sim_base: all_to_all.sched
 
 netlist0: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_netlist.vhd
-	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test0_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim0netlist.do work.test0_noc2x2
+	$(WINE) vsim -t 10ps -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test0_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim0netlist.do work.test0_noc2x2
 
 netlist1: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test1_netlist.vhd
-	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test1_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim1netlist.do work.test1_noc2x2
+	$(WINE) vsim -t 10ps -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test1_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim1netlist.do work.test1_noc2x2
 
 netlist2: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_netlist.vhd
-	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
+	$(WINE) vsim -t 10ps -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test2_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim2netlist.do work.test2_noc2x2
 
 
 synth_base:
@@ -106,5 +106,4 @@ all_to_all.sched: bitorus2x2.xml
 
 clean:
 	-rm -f transcript
-	-rm -f *.wlf
 	-rm -rf work

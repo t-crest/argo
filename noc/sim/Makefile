@@ -63,8 +63,8 @@ base: all_to_all.sched
 
 
 all_to_all.sched: bitorus2x2.xml
-	../../../local/bin/Poseidon -p $< -m GREEDY -s sched.xml
-	../../../local/bin/poseidon_converter.sh sched.xml $@ Source-text 1
+	../../../local/bin/poseidon -p $< -m GREEDY -s sched.xml
+	../../../local/bin/poseidon-conv sched.xml $@ Source-text 1
 
 
 clean:

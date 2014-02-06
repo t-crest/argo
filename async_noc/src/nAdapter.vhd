@@ -336,7 +336,7 @@ begin
 
 -- SPM interface ------------------------------------------------------------------------------
 --- construct SPM interface signals -->ocp???
-	spm_interface : process (na_reset, state_cnt, dma_entry, flit_buf) begin
+	spm_interface : process (na_reset, state_cnt, dma_entry, flit_buf, vld_buf) begin
         if na_reset='1' then
             spm_out.MCmd <= "0";
 			spm_out.MAddr <= (others=>'0');

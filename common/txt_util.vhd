@@ -320,9 +320,13 @@ package body txt_util is
   -- converts a hex string to std_logic_vector
 
   function strh ( str : string) return std_logic_vector is
-    variable output : std_logic_vector(4*string'length - 1 downto 0);
+    variable output : std_logic_vector(4*str'length - 1 downto 0);
+    variable s : string(str'range);
   begin
-    for i in str'left - 1 downto 0 loop
+    -- support both upper & lower case letters
+    s := to_upper(str);
+    -- construct output vector
+    for i in s'left - 1 downto 0 loop
       case str(i) is
 	when '0' => output((4*i)+3 downto (4*i)) := "0000";
 	when '1' => output((4*i)+3 downto (4*i)) := "0001";

@@ -64,7 +64,8 @@ package txt_util is
   -- converts a string into std_logic_vector
   function to_std_logic_vector(s : string) return std_logic_vector;
 
-
+  -- converts a string of hex to std_logic_vector 
+  function strh ( str : string) return std_logic_vector;
 
   -- file I/O
   -----------

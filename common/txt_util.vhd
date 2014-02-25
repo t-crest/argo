@@ -321,34 +321,34 @@ package body txt_util is
   -- converts a hex string to std_logic_vector
 
   function strh ( str : string) return std_logic_vector is
-    variable output : std_logic_vector(4*str'length - 1 downto 0);
+    variable outp : std_logic_vector(4*str'length - 1 downto 0);
     variable s : string(str'range);
   begin
     -- support both upper & lower case letters
     s := to_upper(str);
     -- construct output vector
-    for i in s'left - 1 downto 0 loop
-      case str(i) is
-	when '0' => output((4*i)+3 downto (4*i)) := "0000";
-	when '1' => output((4*i)+3 downto (4*i)) := "0001";
-	when '2' => output((4*i)+3 downto (4*i)) := "0010";
-	when '3' => output((4*i)+3 downto (4*i)) := "0011";
-	when '4' => output((4*i)+3 downto (4*i)) := "0100";
-	when '5' => output((4*i)+3 downto (4*i)) := "0101";
-	when '6' => output((4*i)+3 downto (4*i)) := "0110";
-	when '7' => output((4*i)+3 downto (4*i)) := "0111";
-	when '8' => output((4*i)+3 downto (4*i)) := "1000";
-	when '9' => output((4*i)+3 downto (4*i)) := "1001";
-	when 'A' => output((4*i)+3 downto (4*i)) := "1010";
-	when 'B' => output((4*i)+3 downto (4*i)) := "1011";
-	when 'C' => output((4*i)+3 downto (4*i)) := "1100";
-	when 'D' => output((4*i)+3 downto (4*i)) := "1101";
-	when 'E' => output((4*i)+3 downto (4*i)) := "1110";
-	when 'F' => output((4*i)+3 downto (4*i)) := "1111";
-	when others => output((4*i)+3 downto (4*i)) := "0000";
+    for i in s'length - 1 downto 0 loop
+      case str(s'right + i) is
+	when '0' => outp((4*i)+3 downto (4*i)) := "0000";
+	when '1' => outp((4*i)+3 downto (4*i)) := "0001";
+	when '2' => outp((4*i)+3 downto (4*i)) := "0010";
+	when '3' => outp((4*i)+3 downto (4*i)) := "0011";
+	when '4' => outp((4*i)+3 downto (4*i)) := "0100";
+	when '5' => outp((4*i)+3 downto (4*i)) := "0101";
+	when '6' => outp((4*i)+3 downto (4*i)) := "0110";
+	when '7' => outp((4*i)+3 downto (4*i)) := "0111";
+	when '8' => outp((4*i)+3 downto (4*i)) := "1000";
+	when '9' => outp((4*i)+3 downto (4*i)) := "1001";
+	when 'A' => outp((4*i)+3 downto (4*i)) := "1010";
+	when 'B' => outp((4*i)+3 downto (4*i)) := "1011";
+	when 'C' => outp((4*i)+3 downto (4*i)) := "1100";
+	when 'D' => outp((4*i)+3 downto (4*i)) := "1101";
+	when 'E' => outp((4*i)+3 downto (4*i)) := "1110";
+	when 'F' => outp((4*i)+3 downto (4*i)) := "1111";
+	when others => outp((4*i)+3 downto (4*i)) := "0000";
       end case;
     end loop;  -- i
-    return output;
+    return outp;
   end strh;
 
 

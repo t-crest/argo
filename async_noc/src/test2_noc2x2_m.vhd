@@ -120,8 +120,8 @@ signal n_clk_sk		: std_logic := '1';
 signal p_clk_sk		: std_logic := '1';
 signal reset		: std_logic := '1';
 
-signal p_masters	: ocp_io_m_a;
-signal p_slaves		: ocp_io_s_a;
+signal p_masters	: ocp_io_m;
+signal p_slaves		: ocp_io_s;
 signal p_spm_masters	: spm_masters;
 signal P_spm_slaves	: spm_slaves;
 signal n_spm_masters	: spm_masters;

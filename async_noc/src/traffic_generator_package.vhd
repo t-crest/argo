@@ -38,17 +38,53 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.ocp.all;
+use work.noc_defs.all;
+
 
 package traffic_generator_package is
 
-  constant TG_SCHEDULE_FILE : string := "path/to/schedule/definition/file";
-  constant TG_SPM_INIT_FILE : string := "path/to/spm/init/file";
-  constant TG_DMA_INIT_FILE : string := "path/to/dma/init/file";
+  constant TG_SCHEDULE_FILE : string := "../async_noc/sim/bitorus4x4_all_to_all.sched";
+  constant TG_SPM_INIT_FILE : string := "../async_noc/sim/SPM_init_4x4.dat";
+  constant TG_DMA_INIT_FILE : string := "../async_noc/sim/DMA_init_4x4.dat";
 
-  constant TG_DMA_BASE_ADDRESS	: unsigned(23 downto 0) := x"000000";
-  constant TG_DMA_DISTANCE	: unsigned(23 downto 0) := x"000008";
-  constant TG_DMA_ENABLE	: unsigned(23 downto 0) := x"000000";
-  constant TG_DMA_ADDRESS_FIELD : unsigned(23 downto 0) := x"000004";
+  constant TG_DMA_WIDTH : integer := OCP_ADDR_WIDTH-ADDR_MASK_W;
+  
+  constant TG_DMA_BASE_ADDRESS	: unsigned(TG_DMA_WIDTH - 1 downto 0) := x"000000";
+  constant TG_DMA_DISTANCE	: unsigned(TG_DMA_WIDTH - 1 downto 0) := x"000008";
+  constant TG_DMA_ENABLE	: unsigned(TG_DMA_WIDTH - 1 downto 0) := x"000000";
+  constant TG_DMA_ADDRESS_FIELD : unsigned(TG_DMA_WIDTH - 1 downto 0) := x"000004";
 
+  
+
+   function tg_dma_setup_addr (
+    dma_id : integer)
+    return std_logic_vector;
+   function tg_dma_enable_addr (
+    dma_id : integer)
+    return std_logic_vector;
+  
 end traffic_generator_package;
 
+package body traffic_generator_package is
+
+  function tg_dma_setup_addr (
+    dma_id : integer)
+    return std_logic_vector is
+    variable outp : std_logic_vector(TG_DMA_WIDTH - 1 downto 0);
+  begin
+    outp := std_logic_vector(to_unsigned(to_integer(TG_DMA_BASE_ADDRESS + dma_id * TG_DMA_DISTANCE + TG_DMA_ADDRESS_FIELD),TG_DMA_WIDTH));
+    return outp;
+  end;
+
+    function tg_dma_enable_addr (
+    dma_id : integer)
+    return std_logic_vector is
+    variable outp : std_logic_vector(TG_DMA_WIDTH - 1 downto 0);
+  begin
+    outp := std_logic_vector(to_unsigned(to_integer(TG_DMA_BASE_ADDRESS + dma_id * TG_DMA_DISTANCE + TG_DMA_ENABLE),TG_DMA_WIDTH));
+    return outp;
+  end;
+  
+
+end package body traffic_generator_package;

@@ -1,4 +1,4 @@
---
+
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
 --
@@ -27,8 +27,6 @@
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
 --
-
--------------------------------------------------------------------------------
 -- traffic generator intended as sub-hierarchical test bench
 --
 -- this code provides stimuli to the network during simulation and is supposed
@@ -44,17 +42,18 @@ use ieee.std_logic_textio.all;
 use ieee.math_real.all;
 use std.textio.all;
 use work.txt_util.all;
-use work.command_util.all;
+use work.cmd_util.all;
 use work.config.all;
 use work.ocp.all;
 use work.noc_interface.all;
 use work.tile_package.all;
 use work.traffic_generator_package.all;
+use work.noc_defs.all;
 
 entity traffic_generator is
   
   port (
-    clk, reset : in  std_logic;	 -- clock & asynchronous low active reset
+    clk, reset : in  std_logic;	 -- clock & asynchronous high active reset
     spm_master : out spm_master;
     spm_slave  : in  spm_slave;
     p_master   : out ocp_io_m;
@@ -76,11 +75,12 @@ architecture behav of traffic_generator is
   signal SPM_INITIALIZED : std_logic := '0';
   signal NI_INITIALIZED	 : std_logic := '0';
   signal DMA_INITIALIZED : std_logic := '0';
+
   
 begin  -- behav
 
   -----------------------------------------------------------------------------
-  -- process to initialize the route & slot table
+  -- process to initialize the route & slot table as well as the DMA
   -----------------------------------------------------------------------------
   init_ni : process
 
@@ -93,33 +93,42 @@ begin  -- behav
 
     variable node_id : integer;
 
-  begin
+    variable addr_field : std_logic_vector(31 downto 0);
+    variable dma_id	: integer;
 
+
+  begin
+    
     p_master.MCmd	 <= (others => '0');
     p_master.MAddr	 <= (others => '0');
     p_master.MData	 <= (others => '0');
     p_master.MByteEn	 <= (others => '0');
     p_master.MRespAccept <= '0';
 
-
     wait until falling_edge(reset);
+
+    node_id := to_integer(settings.tile_id);
+
     wait for 6*NA_HPERIOD;
 
+    ---------------------------------------------------------------------------
+    -- Program the schedule
+    ---------------------------------------------------------------------------
     if not endfile(schedule) then
-
       loop
 	str_read(schedule, word);
-	exit when word(100 downto 96 - floor(log10(real(node_id)))) = ("# NI" & node_id'image) or endfile(schedule);
+	exit when word(100 downto (96 - integer(floor(log10(real(node_id)))))) = ("# NI" & integer'image(node_id)) or endfile(schedule);
       end loop;
 
-      report "NI" & word(100 downto 96) & " (" & traffic_generator'instance_name & ") " severity note;
+      report "NI[" & integer'image(node_id) & "]: Hello, your friendly traffic generator is here. " &
+	"(" & traffic_generator'instance_name & ") " severity note;
 
       loop
 	str_read(schedule, word);
 	exit when word(100 downto 89) = "# SLOT_TABLE" or endfile(schedule);
       end loop;
 
-      report "ST" & word(100 downto 89) severity note;
+      report "NI[" & integer'image(node_id) & "]: ST" & word(100 downto 89) severity note;
 
       readline(schedule, l);
       read(l, slt_num);
@@ -141,7 +150,7 @@ begin  -- behav
 	str_read(schedule, word);
 	exit when word(100 downto 88) = "# ROUTE_TABLE" or endfile(schedule);
       end loop;
-      report "RT==========>" & word(100 downto 88) severity note;
+      report "NI[" & integer'image(node_id) &"]: RT" & word(100 downto 88) severity note;
 
       cnt := 0;
       loop
@@ -157,9 +166,46 @@ begin  -- behav
 	exit when cnt = N*N or endfile(schedule);
       end loop;
 
-      NI_INITIALIZED <= '1';
-
+      
     end if;
+    NI_INITIALIZED <= '1';
+    -- make sure all data is copied to the SPM and that the NI is initialized
+    wait until (SPM_INITIALIZED = '1');
+
+    ---------------------------------------------------------------------------
+    -- Initialize the DMA
+    ---------------------------------------------------------------------------
+    -- find section in dma file
+    if not endfile(dma) then
+      loop
+	str_read(dma, word);
+	exit when word(100 downto (96 - integer(floor(log10(real(node_id)))))) = ("# NI" & integer'image(node_id)) or endfile(dma);
+      end loop;
+
+
+      -- iterate over dma setting entries and program dma as needed
+      while not endfile(dma) loop
+	
+	wait until rising_edge(clk);
+	wait for delay;
+	str_read(dma, word);
+	exit when not (word(100) = '@') or endfile(dma);
+
+	dma_id	   := to_integer(unsigned(strh(word(99 downto 99))));
+	addr_field := strh(word(97 downto 94)) & strh(word(92 downto 89));
+
+	report "NI[" & integer'image(node_id) & "]: DMA" & word(99) & "# " & word(97 downto 94) & " -> " & word(92 downto 89) & " " severity note;
+
+	-- program address
+	dma_write (p_master, p_slave, tg_dma_setup_addr(dma_id), addr_field, clk);
+	-- enable & start dma
+	dma_write (p_master, p_slave, tg_dma_enable_addr(dma_id), x"00008004", clk);
+
+      end loop;
+    end if;
+    -- everything done
+    report "NI[" & integer'image(node_id) & "]: all set up!" severity note;
+    DMA_INITIALIZED <= '1';
 
     -- lock
     wait;
@@ -171,9 +217,12 @@ begin  -- behav
   -----------------------------------------------------------------------------
   spm_initilize : process
 
-    variable count : natural := 0;
-    variable word  : string (100 downto 1);  --std_logic_vector(15 downto 0) := (others => '0');
-    variable addr  : integer;
+    variable count	   : natural := 0;
+    variable word	   : string (100 downto 1);  --std_logic_vector(15 downto 0) := (others => '0');
+    variable addr	   : integer;
+    variable node_id	   : integer;
+    variable SPM_INIT_SIZE : integer := 4;
+
   begin
 
     spm_master.MCmd  <= (others => '0');
@@ -182,30 +231,35 @@ begin  -- behav
 
     wait until falling_edge(reset);
 
+    node_id := to_integer(settings.tile_id);
+
+    wait until (NI_INITIALIZED = '1');
+
     -- search for data section
     if not endfile(data) then
       loop
 	str_read(data, word);
-	exit when word(100 downto 96 - floor(log10(real(node_id)))) = ("# NI" & node_id'image) or endfile(data);
+	exit when word(100 downto (96 - integer(floor(log10(real(node_id)))))) = ("# NI" & integer'image(node_id)) or endfile(data);
+      end loop;
+
+      -- program the memory
+      while not endfile(data) loop
+	wait until rising_edge(clk);
+	wait for delay;
+	str_read(data, word);
+	-- only lines starting with an @ are considered
+	exit when not (word(100) = '@') or endfile(data);
+
+	addr := to_integer(unsigned(strh(word(99 downto 96))));
+
+	-- write data
+	spm_master.MCmd	 <= "1";
+	spm_master.MAddr <= std_logic_vector(to_unsigned(addr, spm_master.MAddr'length));
+	spm_master.MData <= strh(word(94 downto 79));
+
+	report "NI[" & integer'image(node_id) & "]: SPM# @" & word(99 downto 96) & ": " & word(94 downto 79) severity note;
       end loop;
     end if;
-
-    -- program the memory
-    while not endfile(data) loop      
-      wait until rising_edge(clk);
-      wait for delay;
-      str_read(data, word);
-      -- only lines starting with an @ are considered
-      exit when word(100) \ = '@' or endfile(data);
-
-      addr := to_integer(unsigned(strh(word(99 downto 96))));
-      
-      -- write data
-      spm_master.MCmd <= "1";
-      spm_master.MAddr <= std_logic_vector(to_unsigned(addr, spm_master.MAddr'length));
-      spm_master.MData <= strh(word(94 downto 79));
-    end loop;
-
     wait until rising_edge(clk);
     --wait until rising_edge(clk);
     wait for delay;
@@ -226,20 +280,17 @@ begin  -- behav
     wait until rising_edge(clk);
 
     count := 0;
+    wait until rising_edge(clk);
     while(count < 16 * SPM_INIT_SIZE) loop
 
-      wait until rising_edge(clk);
+      
       wait for delay;
 
       spm_master.MCmd  <= "0";
-      spm_master.MAddr <= std_logic_vector(to_unsigned(count, 16));  --x"00000000";
-      spm_master.MCmd  <= "0";
-      spm_master.MAddr <= std_logic_vector(to_unsigned(count, 16));  --x"00000002";
-      spm_master.MCmd  <= "0";
-      spm_master.MAddr <= std_logic_vector(to_unsigned(count, 16));  --x"00000004";
-      spm_master.MCmd  <= "0";
-      spm_master.MAddr <= std_logic_vector(to_unsigned(count, 16));  --x"00000006";
+      spm_master.MAddr <= std_logic_vector(to_unsigned(count, spm_master.MAddr'length));  --x"00000000";
+      wait until rising_edge(clk);
 
+      report "NI[" & integer'image(node_id) & "]: SPM# @" & hstr(std_logic_vector(to_unsigned(count, spm_master.MAddr'length))) & ": " & to_upper(hstr(spm_slave.SData)) severity note;
       count := count + 1;
 
     end loop;
@@ -248,52 +299,4 @@ begin  -- behav
   end process;
 
 
-  -----------------------------------------------------------------------------
-  -- proces to initialize the DMA as specified in the dma init file
-  -----------------------------------------------------------------------------
-  init_DMA : process
-    variable addr_field : std_logic_vector(31 downto 0);
-    variable dma_id	: integer;
-    
-  begin	 -- process init_DMA
-
-    -- find section
-    if not endfile(dma) then
-      loop
-	str_read(dma, word);
-	exit when word(100 downto 96 - floor(log10(real(node_id)))) = ("# NI" & node_id'image) or endfile(dma);
-      end loop;
-    end if;
-
-    -- make sure all data is copied to the SPM and that the NI is initialized
-    wait until (SPM_INITIALIZED = '1') and (NI_INITIALIZED = '1');
-
-    -- iterate ofer dema setting entrys and program dma as needed
-    while not endfile(dma) loop
-      
-      wait until rising_edge(clk);
-      wait for delay;
-      str_read(dma, word);
-      exit when word(100) \ = '@' or endfile(dma);
-
-      dma_id	 := to_integer(unsigned(strh(word(99 downto 99))));
-      addr_field := strh(word(97 downto 94)) & strh(word(92 downto 89));
-
-      report "DMA(" & word(99) & "): " & word(97 downto 94) & " -> " & word(92 downto 89) & " (" & traffic_generator'instance_name & ") " severity note;
-
-      -- program address
-      dma_write (p_master, p_slave,
-		 std_logic_vector(TG_DMA_BASE_ADDRESS + dma_id * TG_DMA_DISTANCE + TG_DMA_ADDRESS_FIELD), addr_field, clk);
-      -- enable & start dma
-      dma_write (p_master, p_slave,
-		 std_logic_vector(TG_DMA_BASE_ADDRESS + dma_id * TG_DMA_DISTANCE + TG_DMA_ENABLE), x"00008004", clk);
-
-    end loop;
-
-    -- everything done
-    DMA_INITIALIZED <= '1';
-
-    -- lock
-    wait;
-  end process init_DMA;
 end behav;

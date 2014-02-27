@@ -74,7 +74,7 @@ begin  -- architecture dut
 
   reset <= '0' after 100 ns;
 
-  settings.tile_id <= to_unsigned(2, settings.tile_id'length);
+  settings.tile_id <= to_unsigned(15, settings.tile_id'length);
   -- waveform generation
   WaveGen_Proc: process
   begin

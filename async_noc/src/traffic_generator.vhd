@@ -76,6 +76,9 @@ architecture behav of traffic_generator is
   signal NI_INITIALIZED	 : std_logic := '0';
   signal DMA_INITIALIZED : std_logic := '0';
 
+  signal slt_length    : integer;
+  signal SPM_INIT_SIZE : integer;
+
   
 begin  -- behav
 
@@ -96,7 +99,9 @@ begin  -- behav
     variable addr_field : std_logic_vector(31 downto 0);
     variable dma_id	: integer;
 
+    variable node_width : integer := 1;
 
+    variable dma_array : std_logic_vector(0 to 15) := (others => '0');
   begin
     
     p_master.MCmd	 <= (others => '0');
@@ -114,10 +119,13 @@ begin  -- behav
     ---------------------------------------------------------------------------
     -- Program the schedule
     ---------------------------------------------------------------------------
+    --report "NI[" & integer'image(node_id) & "]: Hello, your friendly traffic generator is here. " severity note;
+
     if not endfile(schedule) then
       loop
 	str_read(schedule, word);
-	exit when word(100 downto (96 - integer(floor(log10(real(node_id)))))) = ("# NI" & integer'image(node_id)) or endfile(schedule);
+
+	exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(schedule);
       end loop;
 
       report "NI[" & integer'image(node_id) & "]: Hello, your friendly traffic generator is here. " &
@@ -125,14 +133,15 @@ begin  -- behav
 
       loop
 	str_read(schedule, word);
-	exit when word(100 downto 89) = "# SLOT_TABLE" or endfile(schedule);
+	exit when str_comp(word, "# SLOT_TABLE") or endfile(schedule);
       end loop;
 
       report "NI[" & integer'image(node_id) & "]: ST" & word(100 downto 89) severity note;
 
       readline(schedule, l);
       read(l, slt_num);
-      cnt := 0;
+      cnt	 := 0;
+      slt_length <= slt_num;
       loop
 	readline(schedule, l);
 	read(l, slt);
@@ -148,7 +157,7 @@ begin  -- behav
 
       loop
 	str_read(schedule, word);
-	exit when word(100 downto 88) = "# ROUTE_TABLE" or endfile(schedule);
+	exit when str_comp(word, "# ROUTE_TABLE") or endfile(schedule);
       end loop;
       report "NI[" & integer'image(node_id) &"]: RT" & word(100 downto 88) severity note;
 
@@ -179,7 +188,7 @@ begin  -- behav
     if not endfile(dma) then
       loop
 	str_read(dma, word);
-	exit when word(100 downto (96 - integer(floor(log10(real(node_id)))))) = ("# NI" & integer'image(node_id)) or endfile(dma);
+	exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(dma);
       end loop;
 
 
@@ -191,18 +200,34 @@ begin  -- behav
 	str_read(dma, word);
 	exit when not (word(100) = '@') or endfile(dma);
 
-	dma_id	   := to_integer(unsigned(strh(word(99 downto 99))));
+	dma_id := to_integer(unsigned(strh(word(99 downto 99))));
+
+	-- mark dma as used
+	dma_array(dma_id) := '1';
+
 	addr_field := strh(word(97 downto 94)) & strh(word(92 downto 89));
 
-	report "NI[" & integer'image(node_id) & "]: DMA" & word(99) & "# " & word(97 downto 94) & " -> " & word(92 downto 89) & " " severity note;
+	report "NI[" & integer'image(node_id) & "]: DMA" & word(99) & "# " &
+	  word(97 downto 94) & " -> " & word(92 downto 89) &
+	  " [0x" & hstr(tg_dma_setup_addr(dma_id)) & ", 0x" & hstr(addr_field) & "]"
+	  severity note;
 
 	-- program address
 	dma_write (p_master, p_slave, tg_dma_setup_addr(dma_id), addr_field, clk);
-	-- enable & start dma
-	dma_write (p_master, p_slave, tg_dma_enable_addr(dma_id), x"00008004", clk);
 
       end loop;
     end if;
+
+    for i in dma_array'range loop
+      if dma_array(i) = '1' then
+	-- enable & start dma
+	dma_write (p_master, p_slave, tg_dma_enable_addr(i), x"00008004", clk);
+	report "NI[" & integer'image(node_id) & "]: DMA" & integer'image(i) & "# enable " & " [0x" & hstr(tg_dma_enable_addr(i)) & ", 0x00008004]" severity note;
+      end if;
+    end loop;  -- i
+
+
+
     -- everything done
     report "NI[" & integer'image(node_id) & "]: all set up!" severity note;
     DMA_INITIALIZED <= '1';
@@ -212,16 +237,17 @@ begin  -- behav
   end process;
 
 
-  -----------------------------------------------------------------------------
-  -- process to initialize the SPM
-  -----------------------------------------------------------------------------
-  spm_initilize : process
+-----------------------------------------------------------------------------
+-- process to initialize the SPM
+-----------------------------------------------------------------------------
+  init_spm : process
 
-    variable count	   : natural := 0;
-    variable word	   : string (100 downto 1);  --std_logic_vector(15 downto 0) := (others => '0');
-    variable addr	   : integer;
-    variable node_id	   : integer;
-    variable SPM_INIT_SIZE : integer := 4;
+    variable count   : natural := 0;
+    variable word    : string (100 downto 1);  --std_logic_vector(15 downto 0) := (others => '0');
+    variable addr    : integer;
+    variable node_id : integer;
+    --variable SPM_INIT_SIZE : integer := 0;
+
 
   begin
 
@@ -239,9 +265,10 @@ begin  -- behav
     if not endfile(data) then
       loop
 	str_read(data, word);
-	exit when word(100 downto (96 - integer(floor(log10(real(node_id)))))) = ("# NI" & integer'image(node_id)) or endfile(data);
+	exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(data);
       end loop;
 
+      count := 0;
       -- program the memory
       while not endfile(data) loop
 	wait until rising_edge(clk);
@@ -257,8 +284,11 @@ begin  -- behav
 	spm_master.MAddr <= std_logic_vector(to_unsigned(addr, spm_master.MAddr'length));
 	spm_master.MData <= strh(word(94 downto 79));
 
-	report "NI[" & integer'image(node_id) & "]: SPM# @" & word(99 downto 96) & ": " & word(94 downto 79) severity note;
+	report "NI[" & integer'image(node_id) & "]: SPM# write @" & hstr(std_logic_vector(to_unsigned(addr, spm_master.MAddr'length))) & ": " & word(94 downto 79) severity note;
+	count := count + 1;
       end loop;
+
+      SPM_INIT_SIZE <= count;
     end if;
     wait until rising_edge(clk);
     --wait until rising_edge(clk);
@@ -274,24 +304,30 @@ begin  -- behav
     wait until (DMA_INITIALIZED = '1');
 
     -- simulate for some time
-    wait for 3 us;
+    count := 0;
+
+    loop
+      count := count + 1;
+      wait until rising_edge(clk);
+      exit when count >= slt_length * 100;  -- was slt_length * 3 + 10
+    end loop;
 
     -- read the data from the spm
     wait until rising_edge(clk);
 
     count := 0;
     wait until rising_edge(clk);
-    while(count < 16 * SPM_INIT_SIZE) loop
+    while(count < (N*M) * SPM_INIT_SIZE) loop
 
       
       wait for delay;
 
       spm_master.MCmd  <= "0";
       spm_master.MAddr <= std_logic_vector(to_unsigned(count, spm_master.MAddr'length));  --x"00000000";
-      wait until rising_edge(clk);
-
-      report "NI[" & integer'image(node_id) & "]: SPM# @" & hstr(std_logic_vector(to_unsigned(count, spm_master.MAddr'length))) & ": " & to_upper(hstr(spm_slave.SData)) severity note;
-      count := count + 1;
+      wait until falling_edge(clk);
+      wait for delay;
+      report "NI[" & integer'image(node_id) & "]: SPM# read @" & hstr(std_logic_vector(to_unsigned(count, spm_master.MAddr'length))) & ": " & to_upper(hstr(spm_slave.SData)) severity note;
+      count	       := count + 1;
 
     end loop;
 

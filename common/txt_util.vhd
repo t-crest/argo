@@ -65,7 +65,7 @@ package txt_util is
   function to_std_logic_vector(s : string) return std_logic_vector;
 
   -- converts a string of hex to std_logic_vector 
-  function strh ( str : string) return std_logic_vector;
+  function strh (str : string) return std_logic_vector;
 
   -- file I/O
   -----------
@@ -81,6 +81,12 @@ package txt_util is
   -- print character to a file and start new line
   procedure print(file out_file :    text;
 		  char		: in character);
+
+  -- string comparison
+  --------------------
+  
+  -- compares the beginning of the longer string with the shorter string
+  function str_comp (A : string; B : string) return boolean;
 
 end txt_util;
 
@@ -320,31 +326,31 @@ package body txt_util is
 
   -- converts a hex string to std_logic_vector
 
-  function strh ( str : string) return std_logic_vector is
+  function strh (str : string) return std_logic_vector is
     variable outp : std_logic_vector(4*str'length - 1 downto 0);
-    variable s : string(str'range);
+    variable s	  : string(str'range);
   begin
     -- support both upper & lower case letters
     s := to_upper(str);
     -- construct output vector
     for i in s'length - 1 downto 0 loop
       case str(s'right + i) is
-	when '0' => outp((4*i)+3 downto (4*i)) := "0000";
-	when '1' => outp((4*i)+3 downto (4*i)) := "0001";
-	when '2' => outp((4*i)+3 downto (4*i)) := "0010";
-	when '3' => outp((4*i)+3 downto (4*i)) := "0011";
-	when '4' => outp((4*i)+3 downto (4*i)) := "0100";
-	when '5' => outp((4*i)+3 downto (4*i)) := "0101";
-	when '6' => outp((4*i)+3 downto (4*i)) := "0110";
-	when '7' => outp((4*i)+3 downto (4*i)) := "0111";
-	when '8' => outp((4*i)+3 downto (4*i)) := "1000";
-	when '9' => outp((4*i)+3 downto (4*i)) := "1001";
-	when 'A' => outp((4*i)+3 downto (4*i)) := "1010";
-	when 'B' => outp((4*i)+3 downto (4*i)) := "1011";
-	when 'C' => outp((4*i)+3 downto (4*i)) := "1100";
-	when 'D' => outp((4*i)+3 downto (4*i)) := "1101";
-	when 'E' => outp((4*i)+3 downto (4*i)) := "1110";
-	when 'F' => outp((4*i)+3 downto (4*i)) := "1111";
+	when '0'    => outp((4*i)+3 downto (4*i)) := "0000";
+	when '1'    => outp((4*i)+3 downto (4*i)) := "0001";
+	when '2'    => outp((4*i)+3 downto (4*i)) := "0010";
+	when '3'    => outp((4*i)+3 downto (4*i)) := "0011";
+	when '4'    => outp((4*i)+3 downto (4*i)) := "0100";
+	when '5'    => outp((4*i)+3 downto (4*i)) := "0101";
+	when '6'    => outp((4*i)+3 downto (4*i)) := "0110";
+	when '7'    => outp((4*i)+3 downto (4*i)) := "0111";
+	when '8'    => outp((4*i)+3 downto (4*i)) := "1000";
+	when '9'    => outp((4*i)+3 downto (4*i)) := "1001";
+	when 'A'    => outp((4*i)+3 downto (4*i)) := "1010";
+	when 'B'    => outp((4*i)+3 downto (4*i)) := "1011";
+	when 'C'    => outp((4*i)+3 downto (4*i)) := "1100";
+	when 'D'    => outp((4*i)+3 downto (4*i)) := "1101";
+	when 'E'    => outp((4*i)+3 downto (4*i)) := "1110";
+	when 'F'    => outp((4*i)+3 downto (4*i)) := "1111";
 	when others => outp((4*i)+3 downto (4*i)) := "0000";
       end case;
     end loop;  -- i
@@ -527,6 +533,17 @@ package body txt_util is
 
 
 
+-- compares the beginning of the longer string with the shorter string
+  function str_comp (A : string; B : string) return boolean is
+    variable result : boolean;
+  begin
+    if A'length >= B'length then
+      result := (A(A'left downto (A'left - B'length + 1)) = B);
+    else
+      result := (B(B'left downto (B'left - A'length + 1)) = A);
+    end if;   
+    return result;
+  end str_comp;
 
 
 
@@ -537,9 +554,9 @@ package body txt_util is
 
 
 -- read variable length string from input file
-  
-  procedure str_read(file in_file :	text;
-		     res_string	  : out string) is
+    
+    procedure str_read(file in_file :	  text;
+		       res_string   : out string) is
 
     variable l	       : line;
     variable c	       : character;

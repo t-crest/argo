@@ -573,10 +573,10 @@ package body txt_util is
     -- of the results string
     for i in res_string'range loop
       read(l, c, is_string);
-      res_string(i) := c;
       if not is_string then		-- found end of line
 	exit;
       end if;
+      res_string(i) := c;
     end loop;
     
   end str_read;

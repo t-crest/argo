@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <eit-cpm@cas-07.eit.lth.se>
 -- Company    : 
 -- Created    : 2014-02-25
--- Last update: 2014-02-25
+-- Last update: 2014-03-03
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -21,6 +21,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use work.noc_defs.all;
+use work.noc_interface.all;
 
 -------------------------------------------------------------------------------
 
@@ -47,8 +49,8 @@ begin  -- architecture foo
       reset => reset);
 
   -- clock generation
-  clk	<= not clk after 10 ns;
-  reset <= '0'	   after 100 ns;
+  clk	<= not clk after NA_HPERIOD;
+  reset <= '0'	   after 4 * NA_HPERIOD + delay;
 
   -- waveform generation
   WaveGen_Proc : process

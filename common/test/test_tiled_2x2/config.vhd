@@ -39,12 +39,11 @@ package config is
 
     constant N : integer := 2; -- Horizontal width
     constant M : integer := 2; -- Vertical Height
-    constant NODES : integer := 4;
-    constant PRD_LENGTH : integer := 8; -- The number of timeslots in one TDM period
 
-    constant TG_SCHEDULE_FILE : string := "all_to_all.sched";
-    constant TG_SPM_INIT_FILE : string := "SPM_init_2x2.dat";
-    constant TG_DMA_INIT_FILE : string := "DMA_init_4x4.dat";
+    constant TEST_TILED_2x2_DIR : string := "../../common/test/test_tiled_2x2/";
+    constant TG_SCHEDULE_FILE : string := TEST_TILED_2x2_DIR & "all_to_all.sched";
+    constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";
+    constant TG_DMA_INIT_FILE : string := TEST_TILED_2x2_DIR & "DMA_init.dat";
     
 end package ; -- aegean_def
 

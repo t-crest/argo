@@ -37,8 +37,6 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
-use work.config.all;
-use work.math_util.all;
 
 package noc_defs is
 

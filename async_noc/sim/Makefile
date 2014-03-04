@@ -31,7 +31,7 @@ endif
 all: test2 
 
 ####################################################################
-# Test case setup
+# Test cases
 
 test0: clean sim_base_full
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
@@ -100,8 +100,9 @@ sim_base_full: sim_base_setup sim_base
 
 # basic rtl compilation
 sim_base: 
-	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/math_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp_config.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd

@@ -40,7 +40,6 @@ use ieee.std_logic_1164.all;
 
 package math_util is
 
-	
 	function log2up (N : natural) return integer;
 	function sqrt (N : positive) return integer;
 

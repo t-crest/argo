@@ -317,8 +317,8 @@ begin  -- behav
 
     count := 0;
     wait until rising_edge(clk);
---    while(count < (N*M) * SPM_INIT_SIZE) loop
-    while(count < SPM_INIT_SIZE) loop
+    while(count < (N*M) * SPM_INIT_SIZE) loop
+--    while(count < SPM_INIT_SIZE) loop
 
       
       wait for delay;

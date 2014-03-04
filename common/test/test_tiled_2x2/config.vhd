@@ -40,6 +40,9 @@ package config is
     constant N : integer := 2; -- Horizontal width
     constant M : integer := 2; -- Vertical Height
 
+    constant NODES : integer := N*M;
+    constant PRD_LENGTH : integer := 5;
+    
     constant TEST_TILED_2x2_DIR : string := "../../common/test/test_tiled_2x2/";
     constant TG_SCHEDULE_FILE : string := TEST_TILED_2x2_DIR & "all_to_all.sched";
     constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";

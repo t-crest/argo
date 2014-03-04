@@ -56,7 +56,7 @@ package noc_defs is
   constant ARITY      : integer := 5;
 
   -- scheduling
-  constant ADDR_SLT_WIDTH : integer := 3;
+  constant ADDR_SLT_WIDTH : integer := 5;
   constant PRD_LENGTH	  : integer := 2**ADDR_SLT_WIDTH;  -- 2^6 = 64 -- 2^3 = 8
 
   constant MAX_PERIOD : integer := 128;

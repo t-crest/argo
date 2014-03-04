@@ -136,15 +136,15 @@ architecture struct_noswap of tiled_noc is
 
 begin
   
-  nodes_m : for i in N-1 downto 0 generate
-    nodes_n : for j in N-1 downto 0 generate
+  nodes_m : for i in 0 to M-1 generate
+    nodes_n : for j in 0 to N-1 generate
     begin      
       noc_tile : tile
 	port map (
 	  --p_clk => p_clk,
 	  clk	      => n_clk,
 	  reset	      => reset,
-	  settings    => generate_tile_settings(j, i),
+	  settings    => generate_tile_settings(i, j),
 	  north_in_f  => north_in_f(i)(j),
 	  north_in_b  => north_in_b(i)(j),
 	  east_in_f   => east_in_f(i)(j),
@@ -165,7 +165,7 @@ begin
     end generate nodes_n;
   end generate nodes_m;
 
-  delayed_reqs_m : for i in N-1 downto 0 generate
+  delayed_reqs_m : for i in M-1 downto 0 generate
     delayed_reqs_n : for j in N-1 downto 0 generate
       north_out_req0(i)(j) <= not north_out_f(i)(j).req;
       north_out_req1(i)(j) <= not north_out_req0(i)(j);

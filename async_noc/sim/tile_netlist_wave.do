@@ -85,9 +85,12 @@ foreach node $nodes {
 
     foreach port {north east south west resource} {
 	foreach direction { in out } {
-	    foreach elem {.req .data(34) .data(33) .data(32) .data(0) } {
-		add wave -group $node -expand -group "r" -expand -group $port -expand "$pf$node/r/$port\_$direction\_f$elem "
-	    }
+	    add wave -group $node -expand -group "r" -expand -group $port -expand "$pf$node/r/$port\_$direction\_f.req"
+	    add wave -group $node -expand -group "r" -expand -group $port -expand "$pf$node/r/$port\_$direction\_b.ack"
+    	    add wave -group $node -expand -group "r" -expand -group $port -expand -label type "$pf$node/r/$port\_$direction\_f.data(34)"
+	    add wave -group $node -expand -group "r" -expand -group $port -expand -label sop "$pf$node/r/$port\_$direction\_f.data(33)"
+	    add wave -group $node -expand -group "r" -expand -group $port -expand -label eop "$pf$node/r/$port\_$direction\_f.data(32)"
+	    add wave -group $node -expand -group "r" -expand -group $port -expand "$pf$node/r/$port\_$direction\_f.data"
 	}
     }
     

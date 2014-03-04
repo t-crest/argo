@@ -40,6 +40,10 @@ package config is
     constant N : integer := 2; -- Horizontal width
     constant M : integer := 2; -- Vertical Height
 
+    constant TG_SCHEDULE_FILE : string := "all_to_all.sched";
+    constant TG_SPM_INIT_FILE : string := "SPM_init_2x2.dat";
+    constant TG_DMA_INIT_FILE : string := "DMA_init_4x4.dat";
+    
 end package ; -- aegean_def
 
 

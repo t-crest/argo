@@ -98,10 +98,8 @@ begin  -- behav
 
     variable addr_field : std_logic_vector(31 downto 0);
     variable dma_id	: integer;
-
-    variable node_width : integer := 1;
-
     variable dma_array : std_logic_vector(0 to 15) := (others => '0');
+    
   begin
     
     p_master.MCmd	 <= (others => '0');
@@ -122,6 +120,7 @@ begin  -- behav
     --report "NI[" & integer'image(node_id) & "]: Hello, your friendly traffic generator is here. " severity note;
 
     if not endfile(schedule) then
+      
       loop
 	str_read(schedule, word);
 
@@ -147,6 +146,7 @@ begin  -- behav
 	read(l, slt);
 	--st_write
 	--print str(slt);
+	report "ST write " & integer'image(node_id) & " " & integer'image(cnt) & "/" & integer'image(slt_num) severity note;
 	st_write(p_master,
 		 p_slave,
 		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
@@ -309,7 +309,7 @@ begin  -- behav
     loop
       count := count + 1;
       wait until rising_edge(clk);
-      exit when count >= slt_length * 100;  -- was slt_length * 3 + 10
+      exit when count >= slt_length * 100;  -- slt_length * 3 + 10
     end loop;
 
     -- read the data from the spm
@@ -317,7 +317,8 @@ begin  -- behav
 
     count := 0;
     wait until rising_edge(clk);
-    while(count < (N*M) * SPM_INIT_SIZE) loop
+--    while(count < (N*M) * SPM_INIT_SIZE) loop
+    while(count < SPM_INIT_SIZE) loop
 
       
       wait for delay;

@@ -44,10 +44,6 @@ use work.noc_defs.all;
 
 package traffic_generator_package is
 
-  constant TG_SCHEDULE_FILE : string := "all_to_all.sched";
-  constant TG_SPM_INIT_FILE : string := "SPM_init_4x4.dat";
-  constant TG_DMA_INIT_FILE : string := "DMA_init_4x4.dat";
-
   constant TG_DMA_WIDTH : integer := OCP_ADDR_WIDTH-ADDR_MASK_W;
   
   constant TG_DMA_BASE_ADDRESS	: unsigned(TG_DMA_WIDTH - 1 downto 0) := x"000000";

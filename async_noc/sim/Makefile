@@ -43,7 +43,7 @@ test1: clean sim_base_full all_to_all.sched
 
 test2: clean sim_base_full all_to_all.sched
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
-	$(WINE) vcom $(OPTIONS) $(TEST)/test2_noc2x2.vhd
+	$(WINE) vcom $(OPTIONS) $(TEST)/test2/test2_noc2x2.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -gSLT_WIDTH=5 -do sim2.do test2_noc2x2
 
 test2_m: clean sim_base_full all_to_all.sched

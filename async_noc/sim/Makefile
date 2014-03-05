@@ -54,8 +54,11 @@ test2_m: clean sim_base_full all_to_all.sched
 # test case of the asynchronous noc set up as a 2x2 configuration
 test_tiled_2x2: clean test_tiled_2x2_setup sim_base test_tiled_noswap
 
-# test case of the asynchronous noc set up as a 2x2 configuration
+# test case of the asynchronous noc set up as a 4x4 configuration
 test_tiled_4x4: clean test_tiled_4x4_setup sim_base test_tiled_noswap
+
+# test case of the asynchronous noc set up as a 4x4 configuration with port swapping
+test_tiled_4x4_swap: clean test_tiled_4x4_swap_setup sim_base test_tiled_swap
 
 # netlist test cases
 netlist0: clean synth_base
@@ -88,6 +91,10 @@ test_tiled_4x4_setup:
 	$(WINE) vlib work
 	$(WINE) vcom $(OPTIONS) $(TEST)/test_tiled_4x4/config.vhd 
 
+# config for the tiled 4x4 test case with port swapping
+test_tiled_4x4_swap_setup:
+	$(WINE) vlib work
+	$(WINE) vcom $(OPTIONS) $(TEST)/test_tiled_4x4_swap/config.vhd 
 
 
 ####################################################################
@@ -132,6 +139,16 @@ test_tiled_noswap:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_noswap.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -do tile_netlist_rtl.do tiled_noc_tb
+
+# generic compilation for the tiled noc with port swapping
+test_tiled_swap: 
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator_package.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_package.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_traffic_gen.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_swap.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
+	$(WINE) vsim -t 10ps -voptargs=+acc -do tile_netlist_rtl_swap.do tiled_noc_tb
 
 synth_base:
 	$(WINE) vlib work

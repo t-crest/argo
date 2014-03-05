@@ -15,10 +15,9 @@ else
 	S=\;
 endif
 
-# Use Wine on OSX
-# I would like to use a better way, but some shell variables
-# are not set within make.... Don't know why...
-ifeq ($(TERM_PROGRAM),Apple_Terminal)
+# mainly for OS X: try to use wine if modelsim is not in path...
+VCOM_AVAILABLE := $(shell which vcom 2> /dev/null; echo $$?)
+ifeq ($(VCOM_AVAILABLE), 1)
 	WINE=wine
 else
 	WINE=

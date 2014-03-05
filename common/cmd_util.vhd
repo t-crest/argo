@@ -41,7 +41,7 @@ use std.textio.all;
 use work.noc_defs.all;
 use work.ocp.all;
 use work.noc_interface.all;
-
+use work.txt_util.all;
 
 package cmd_util is
 
@@ -157,6 +157,7 @@ package body cmd_util is
   --write a DMA route
   procedure route_write (signal core: out ocp_io_m; signal slave : in ocp_io_s; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic) is
   begin
+    report "ST_init " & str(data) severity note;
     wait until rising_edge(clk);
     wait for SIMDELAY;
     core.MCmd <= OCP_CMD_WR;

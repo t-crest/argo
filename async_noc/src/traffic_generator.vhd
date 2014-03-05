@@ -42,6 +42,7 @@ use ieee.std_logic_textio.all;
 use ieee.math_real.all;
 use std.textio.all;
 use work.txt_util.all;
+use work.math_util.all;
 use work.cmd_util.all;
 use work.config.all;
 use work.ocp.all;
@@ -91,7 +92,7 @@ begin  -- behav
     variable cnt     : integer := 0;
     variable slt_num : integer;
     variable l	     : line;
-    variable slt     : std_logic_vector(4 downto 0);
+    variable slt     : std_logic_vector(DMA_IND_WIDTH + 2 downto 0);
     variable route   : std_logic_vector(15 downto 0);
 
     variable node_id : integer;

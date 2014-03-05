@@ -2,7 +2,6 @@
 #	Makefile for ModelSim simulation
 #
 
-
 NOCDIR=../src
 COMMON=../../common
 TEST=$(COMMON)/test
@@ -33,22 +32,22 @@ all: test2
 ####################################################################
 # Test cases
 
-test0: clean sim_base_full
+test0: clean sim_base_full all_to_all.sched
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_noc2x2.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -do sim0.do test0_noc2x2
 
-test1: clean sim_base_full
+test1: clean sim_base_full all_to_all.sched
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test1_noc2x2.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -do sim1.do test1_noc2x2
 
-test2: clean sim_base_full
+test2: clean sim_base_full all_to_all.sched
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n.vhd
 	$(WINE) vcom $(OPTIONS) $(TEST)/test2_noc2x2.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -gSLT_WIDTH=5 -do sim2.do test2_noc2x2
 
-test2_m: clean sim_base_full
+test2_m: clean sim_base_full all_to_all.sched
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/noc_n_m.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test2_noc2x2_m.vhd
 	$(WINE) vsim -voptargs=+acc -do sim2_m.do test2_noc2x2
@@ -60,7 +59,8 @@ test_tiled_2x2: clean test_tiled_2x2_setup sim_base test_tiled_noswap
 test_tiled_4x4: clean test_tiled_4x4_setup sim_base test_tiled_noswap
 
 # netlist test cases
-netlist0: clean synth_bas	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_netlist.vhd
+netlist0: clean synth_base
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_netlist.vhd
 	$(WINE) vsim -t 10ps -L CORE65LPHVT -L CORE65LPSVT -sdftyp /test0_noc2x2/noc2x2=/home/piraten/eit-eik/noc/netlists/noc_netlist.sdf -voptargs=+acc -do sim0netlist.do work.test0_noc2x2
 
 netlist1: clean synth_base
@@ -75,7 +75,6 @@ netlist2: clean synth_base
 # Test case setup
 
 # default setup 
-# removed all_to_all.sched as dependency
 sim_base_setup:
 	$(WINE) vlib work
 	$(WINE) vcom $(OPTIONS) $(COMMON)/config.vhd
@@ -155,3 +154,5 @@ all_to_all.sched: bitorus2x2.xml
 clean:
 	-rm -f transcript
 	-rm -rf work
+
+-include config.mk

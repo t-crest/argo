@@ -193,7 +193,19 @@ component dma_sdp
 	);
 end component;
 
-
+component bram is
+  generic (
+    DATA : integer;
+    ADDR : integer);
+  port (
+    clk	    : in  std_logic;
+    reset   : in  std_logic;
+    rd_addr : in  std_logic_vector(ADDR-1 downto 0);
+    wr_addr : in  std_logic_vector(ADDR-1 downto 0);
+    wr_data : in  std_logic_vector(DATA-1 downto 0);
+    wr_ena  : in  std_logic;
+    rd_data : out std_logic_vector(DATA-1 downto 0));
+end component bram;
 
 begin
 
@@ -219,7 +231,7 @@ begin
 	slt_en <= '1' when config=ST_ACCESS and ocp_cmd_write='1'--proc_in.MCmd(0)='1'
 			else '0';
 -- Slot Table
-	slt_table : entity work.bram
+	slt_table : bram
 		generic map ( DATA=>DMA_IND_WIDTH+3, ADDR=>ADDR_SLT_WIDTH )
 		port map (clk => na_clk,
                         reset => na_reset,

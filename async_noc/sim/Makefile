@@ -6,6 +6,7 @@ NOCDIR=../src
 COMMON=../../common
 TEST=$(COMMON)/test
 NETLISTDIR=../netlists
+MEM_BEHAVIOR_MODEL=/usr/local-eit/cad2/cmpstm/mem2011/DPHD110420-48160@1.0/behaviour/vhdl/DPHD110420_FUNCT.vhd
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -112,6 +113,7 @@ sim_base:
 	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/single_spm.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/counter.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/dma.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd

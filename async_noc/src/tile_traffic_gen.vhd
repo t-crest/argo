@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <eit-cpm@zeffa.eit.lth.se>
 -- Company    : 
 -- Created    : 2014-01-16
--- Last update: 2014-02-27
+-- Last update: 2014-03-06
 -- Platform   : 
 -- Standard   : VHDL'87
 -------------------------------------------------------------------------------
@@ -137,6 +137,20 @@ architecture traffic_generator_tile of tile is
       settings	 : in  tile_settings);
   end component traffic_generator;
 
+  component spm is
+    generic (
+      DATA : integer;
+      ADDR : integer);
+    port (
+      a_spm_slave  : out spm_slave;
+      a_spm_master : in	 spm_master;
+      b_spm_slave  : out spm_slave;
+      b_spm_master : in	 spm_master;
+      a_clk	   : in	 std_logic;
+      b_clk	   : in	 std_logic;
+      reset	   : in	 std_logic);
+  end component spm;
+  
   -----------------------------------------------------------------------------
   -- Signal declarations
   -----------------------------------------------------------------------------
@@ -240,35 +254,20 @@ begin  -- fake_tile
       right_in	=> net_to_ip_b
       );
 
-  -- High SPM instance
-  spm_h : bram_tdp
-    generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-    port map (a_clk  => clk,
-	      a_wr   => p_spm_master.MCmd(0),
-	      a_addr => p_spm_master.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	      a_din  => p_spm_master.MData(63 downto 32),
-	      a_dout => p_spm_slave.SData(63 downto 32),
-	      b_clk  => clk,
-	      b_wr   => n_spm_master.MCmd(0),
-	      b_addr => n_spm_master.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	      b_din  => n_spm_master.MData(63 downto 32),
-	      b_dout => n_spm_slave.SData(63 downto 32));
-
-  -- Low SPM instance
-  spm_l : bram_tdp
-    generic map (DATA => DATA_WIDTH, ADDR => SPM_ADDR_WIDTH)
-    port map (a_clk  => clk,
-	      a_wr   => p_spm_master.MCmd(0),
-	      a_addr => p_spm_master.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	      a_din  => p_spm_master.MData(31 downto 0),
-	      a_dout => p_spm_slave.SData(31 downto 0),
-	      b_clk  => clk,
-	      b_wr   => n_spm_master.MCmd(0),
-	      b_addr => n_spm_master.MAddr(SPM_ADDR_WIDTH-1 downto 0),
-	      b_din  => n_spm_master.MData(31 downto 0),
-	      b_dout => n_spm_slave.SData(31 downto 0));
-
-  traffic_generator_1 : entity work.traffic_generator
+  spm_1: spm
+    generic map (
+      DATA => SPM_DATA_WIDTH,
+      ADDR => SPM_ADDR_WIDTH)
+    port map (
+      a_spm_slave  => p_spm_slave,
+      a_spm_master => p_spm_master,
+      b_spm_slave  => n_spm_slave,
+      b_spm_master => n_spm_master,
+      a_clk	   => clk,
+      b_clk	   => clk,
+      reset	   => reset);
+  
+  traffic_generator_1 : traffic_generator
     port map (
       clk	 => clk,
       reset	 => reset,

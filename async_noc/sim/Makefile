@@ -137,7 +137,8 @@ test_tiled_noswap:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator_package.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_package.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_traffic_gen.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/processor_traffic_generator.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_noswap.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -do tile_netlist_rtl.do tiled_noc_tb
@@ -147,7 +148,8 @@ test_tiled_swap:
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator_package.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_package.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator.vhd
-	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_traffic_gen.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/processor_traffic_generator.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_swap.vhd
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
 	$(WINE) vsim -t 10ps -voptargs=+acc -do tile_netlist_rtl_swap.do tiled_noc_tb

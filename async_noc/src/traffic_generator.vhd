@@ -1,4 +1,3 @@
-
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
 --
@@ -27,10 +26,12 @@
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
 --
+-------------------------------------------------------------------------------
 -- traffic generator intended as sub-hierarchical test bench
 --
 -- this code provides stimuli to the network during simulation and is supposed
 -- to be instanciated from within the tile to be tested.
+--
 -- Author: Christoph Mueller
 -- (partially copied from the old testbenches by Evangelia)
 -------------------------------------------------------------------------------

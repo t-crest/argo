@@ -120,8 +120,8 @@ signal n_clk_sk		: std_logic := '1';
 signal p_clk_sk		: std_logic := '1';
 signal reset		: std_logic := '1';
 
-signal p_masters	: ocp_io_m;
-signal p_slaves		: ocp_io_s;
+signal p_masters	: ocp_io_m_a;
+signal p_slaves		: ocp_io_s_a;
 signal p_spm_masters	: spm_masters;
 signal P_spm_slaves	: spm_slaves;
 signal n_spm_masters	: spm_masters;
@@ -275,16 +275,16 @@ begin
                 wait for delay;
 
                 p_spm_masters(0).MCmd <="1";
-                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000000";
+                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000000";
                 p_spm_masters(0).MData <= x"0000000011111111";
                 p_spm_masters(1).MCmd <="1";
-                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count+SPM_INIT_SIZE,16));--x"00000002";
+                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count+SPM_INIT_SIZE,SPM_ADDR_WIDTH));--x"00000002";
                 p_spm_masters(1).MData <= x"2222222233333333";
                 p_spm_masters(2).MCmd <="1";
-                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count+2*SPM_INIT_SIZE,16));--x"00000004";
+                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count+2*SPM_INIT_SIZE,SPM_ADDR_WIDTH));--x"00000004";
                 p_spm_masters(2).MData <= x"4444444455555555";
                 p_spm_masters(3).MCmd <="1";
-                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count+3*SPM_INIT_SIZE,16));--x"00000006";
+                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count+3*SPM_INIT_SIZE,SPM_ADDR_WIDTH));--x"00000006";
                 p_spm_masters(3).MData <= x"6666666677777777";
 
                 count := count + 1;
@@ -320,13 +320,13 @@ begin
                 wait for delay;
 
                 p_spm_masters(0).MCmd <="0";
-                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000000";
+                p_spm_masters(0).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000000";
                 p_spm_masters(1).MCmd <="0";
-                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000002";
+                p_spm_masters(1).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000002";
                 p_spm_masters(2).MCmd <="0";
-                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000004";
+                p_spm_masters(2).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000004";
                 p_spm_masters(3).MCmd <="0";
-                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count,16));--x"00000006";
+                p_spm_masters(3).MAddr <= std_logic_vector(to_unsigned(count,SPM_ADDR_WIDTH));--x"00000006";
 
                 count := count + 1;
 

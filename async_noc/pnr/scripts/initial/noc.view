@@ -1,0 +1,12 @@
+# Version:1.0 MMMC View Definition File
+# Do Not Remove Above Line
+source $env(ARGO_PNR_DIR)/scripts/pnr_settings.tcl
+
+create_rc_corner -name TT -cap_table $ARGO_PNR_CAPTABLE_TT -T {25} -preRoute_res {1.0} -preRoute_cap {1.0} -preRoute_clkres {0.0} -preRoute_clkcap {0.0} -postRoute_res {1.0} -postRoute_cap {1.0} -postRoute_xcap {1.0} -postRoute_clkres {0.0} -postRoute_clkcap {0.0} -qx_tech_file $ARGO_PNR_QRCTECH_TT
+
+create_library_set -name TT -timing $ARGO_PNR_LIBS_TT
+
+create_constraint_mode -name TT -sdc_files "$env(NETLIST_DIR)/tiled_noc_netlist.sdc"
+create_delay_corner -name TT -library_set {TT} -rc_corner {TT}
+create_analysis_view -name TT -constraint_mode {TT} -delay_corner {TT}
+set_analysis_view -setup {TT} -hold {TT}

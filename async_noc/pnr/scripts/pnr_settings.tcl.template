@@ -1,0 +1,26 @@
+# This file is supposed to simplify the setup by providing a way to define setting 
+# globaly instead multiple times spread over a set of scripts.
+
+# Timing Libs for PNR (Typical)
+set ARGO_PNR_LIBS_TT 
+
+# Technology cap table
+set ARGO_PNR_CAPTABLE_TT
+
+# Technology QRC file
+set ARGO_PNR_QRCTECH_TT 
+
+# LEF shape files for the supplied libs
+set ARGO_PNR_LEFS 
+
+# Clock Buffers for CTS
+set ARGO_PNR_CTS_BUF 
+
+# Enable placement of the Dual port SRAM if used for synthesis
+set ARGO_PNR_USE_SPM_SRAM 0
+
+# Drive buffer for the long noc wires
+set ARGO_PNR_NOC_WIRE_BUF 
+
+# Cell to use as well tap
+set ARGO_PNR_WELLTAP_CELL 

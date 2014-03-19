@@ -1,6 +1,6 @@
 vlib work
 vmap work work
-vmap simprim /home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/vhdl/mti_se/10.1b/lin64/simprim
+vmap simprim $Path_to_compiled_library/simprim
 
 vcom -work work -2002 -explicit -vopt ../../common/config.vhd
 vcom -work work -2002 -explicit -vopt ../../common/math_util.vhd

@@ -1,8 +1,8 @@
 vlib work
 
 vmap work work
-vmap secureip /home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/verilog/mti_se/10.1b/lin64/secureip
-vmap unisim /home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/vhdl/mti_se/10.1b/lin64/unisim
+vmap secureip $Path_to_compiled_library/secureip
+vmap unisim $Path_to_compiled_library/unisim
 
 
 vcom -work work -2002 -explicit -vopt ../../common/config.vhd

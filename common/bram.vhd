@@ -39,6 +39,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.noc_defs.all;
+use work.config.all;
 
 
 entity bram is
@@ -70,8 +71,11 @@ begin
 process(clk, reset)
 begin
     if reset='1' then
-        -- mem <= (others => (others => '0'));
-        -- rd_data <= (others => '0');
+      -- No reset for FPGA implementation
+      if CONFIG_FPGA=0 then
+	mem <= (others => (others => '0'));
+        rd_data <= (others => '0');
+      end if;
     elsif rising_edge(clk) then
         if wr_ena='1' then
             mem(to_integer(unsigned(wr_addr))) <= wr_data;

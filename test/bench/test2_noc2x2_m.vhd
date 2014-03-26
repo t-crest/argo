@@ -309,7 +309,7 @@ begin
         p_spm_masters(3).MData <= (others=>'0');
 
 
-        wait for 1900 ns ;
+        wait for 380*NA_HPERIOD;
 
         wait until rising_edge(n_clk);
 

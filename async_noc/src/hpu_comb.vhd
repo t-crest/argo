@@ -43,9 +43,10 @@ use work.noc_defs.all;
 
 entity hpu_comb is
   generic (
-    constant is_ni		  : boolean			 := false;
-    constant this_port		  : std_logic_vector(1 downto 0) := "01";
-    constant USE_REGISTER_FOR_SEL : boolean			 := true;
+    constant is_ni		      : boolean			     := false;
+    constant this_port		      : std_logic_vector(1 downto 0) := "01";
+    constant USE_REGISTER_FOR_SEL     : boolean			     :=true;
+    constant USE_CLK_GATING_SEL_LATCH : boolean			     :=false
     );
   port (
     data_valid : in std_logic;
@@ -60,9 +61,9 @@ end hpu_comb;
 
 architecture struct of hpu_comb is
   signal sel_internal, sel_current, sel_next : onehot_sel;
-  signal SOP	      : std_logic;
-  signal EOP	      : std_logic;
-  signal VLD	      : std_logic;
+  signal SOP				     : std_logic;
+  signal EOP				     : std_logic;
+  signal VLD				     : std_logic;
 begin
 
   -- VLD bit shows type of the phit (phit or void)
@@ -94,23 +95,61 @@ begin
   end block one_hot_decoder;
 
   SEL_AS_LATCH : if not USE_REGISTER_FOR_SEL generate
-    sel_latch : process (data_valid, VLD, sel_internal, SOP) is
-    begin
-      if preset = '1' then
-	sel <= (others => '0');
-	-- We must only open the latch when data are valid.
-      elsif (data_valid = '1') then
-	if (VLD = '1' and SOP = '1') then
-	  sel <= sel_internal;
-	elsif (VLD = '0') then		--  and EOP = '0'
-	  -- This is an empty space, but other incoming phits may not be.
+    NO_CLK_GATING_CELL : if not USE_CLK_GATING_SEL_LATCH generate
+      sel_latch : process (data_valid, VLD, sel_internal, SOP) is
+      begin
+	if preset = '1' then
 	  sel <= (others => '0');
+	  -- We must only open the latch when data are valid.
+	elsif (data_valid = '1') then
+	  if (VLD = '1' and SOP = '1') then
+	    sel <= sel_internal;
+	  elsif (VLD = '0') then	--  and EOP = '0'
+	    -- This is an empty space, but other incoming phits may not be.
+	    sel <= (others => '0');
+	  end if;
 	end if;
-      end if;
-    end process sel_latch;
+      end process sel_latch;
+    end generate NO_CLK_GATING_CELL;
+
+    CLK_GATING_CELL : if USE_CLK_GATING_SEL_LATCH generate
+      c_gated_implementation : block is
+	signal lt_en_gate, lt_en_gated : std_logic;
+	signal sel_valid	       : onehot_sel;
+      begin  -- block c_gated_implementation
+	-- clock gate latch
+	ck_gate_latch : process(data_valid, SOP, VLD, EOP) is
+	begin
+	  if (data_valid = '0') then
+	    
+	    if (EOP = '1') or (VLD = '0') then	    
+	      lt_en_gate <= '1';
+	    else
+	      lt_en_gate <= '0';
+	    end if;
+	  end if;
+	end process ck_gate_latch;
+	lt_en_gated <= lt_en_gate and data_valid;
+
+	-- Only set for valid
+	valid_sel : for i in sel_internal'range generate
+	  sel_valid(i) <= sel_internal(i) and VLD;
+	end generate valid_sel;
+
+	-- Latch 
+	sel_latch : process (lt_en_gated, sel_valid, preset) is
+	begin  -- process sel_latch
+	  if preset = '1' then
+	    sel <= (others => '0');
+	  elsif (lt_en_gated = '1') then
+	    sel <= sel_valid;
+	  end if;
+	end process sel_latch;
+      end block c_gated_implementation;
+    end generate CLK_GATING_CELL;
   end generate SEL_AS_LATCH;
 
-  SEL_AS_REG: if USE_REGISTER_FOR_SEL generate
+  SEL_AS_REG : if USE_REGISTER_FOR_SEL generate
     sel_reg : process (data_valid, sel_next) is
     begin
       if preset = '1' then
@@ -121,18 +160,18 @@ begin
       end if;
     end process sel_reg;
 
-    sel_comb: process (VLD, sel_internal, SOP) is
+    sel_comb : process (VLD, sel_internal, SOP) is
     begin  -- process sel_transition
       -- default value
       sel_next <= sel_current;
       if (VLD = '1' and SOP = '1') then
-	  sel_next <= sel_internal;
-	elsif (VLD = '0') then		--  and EOP = '0'
-	  -- This is an empty space, but other incoming phits may not be.
-	  sel_next <= (others => '0');
-	end if;
+	sel_next <= sel_internal;
+      elsif (VLD = '0') then		--  and EOP = '0'
+	-- This is an empty space, but other incoming phits may not be.
+	sel_next <= (others => '0');
+      end if;
     end process sel_comb;
-    
+
     sel <= sel_current;
   end generate SEL_AS_REG;
 

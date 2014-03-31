@@ -34,6 +34,7 @@
 --
 -- Author: Evangelia Kasapaki
 --	   Rasmus Bo Sorensen
+--	   Christoph Mueller
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -43,154 +44,112 @@ use work.noc_defs.all;
 
 entity hpu_comb is
   generic (
-    constant is_ni		      : boolean			     := false;
-    constant this_port		      : std_logic_vector(1 downto 0) := "01";
-    constant USE_REGISTER_FOR_SEL     : boolean			     :=true;
-    constant USE_CLK_GATING_SEL_LATCH : boolean			     :=false
+    constant is_ni     : boolean		      := false;
+    constant this_port : std_logic_vector(1 downto 0) := "01"
     );
   port (
-    data_valid : in std_logic;
-    data_in    : in link_t;
-    preset     : in std_logic;
+    preset : in std_logic;
 
-    data_out : out link_t;
-    sel	     : out onehot_sel
+    chan_in_f : in  channel_forward;
+    chan_in_b : out channel_backward;
+
+    chan_out_f : out channel_forward;
+    chan_out_b : in  channel_backward;
+
+    sel : out onehot_sel
     );
 end hpu_comb;
 
 
 architecture struct of hpu_comb is
   signal sel_internal, sel_current, sel_next : onehot_sel;
-  signal SOP				     : std_logic;
-  signal EOP				     : std_logic;
-  signal VLD				     : std_logic;
+
+  -- VLD_TYPE bit shows type of the phit (phit or void)
+  -- SOP high on start of packet, EOP high on end of packet
+  alias VLD_TYPE : std_logic is chan_in_f.data(LINK_WIDTH-1);
+  alias SOP : std_logic is chan_in_f.data(LINK_WIDTH-2);
+  alias EOP : std_logic is chan_in_f.data(LINK_WIDTH-3);
+
+  -- route for this router
+  alias DEST_PORT : std_logic_vector(1 downto 0) is chan_in_f.data(1 downto 0);
+
+  -- route to forward to the next router
+  alias ROUTE_NEXT : std_logic_vector(13 downto 0) is chan_in_f.data(15 downto 2);
+
+  -- where the shifted route goes to...
+  alias ROUTE_OUT : std_logic_vector(15 downto 0) is chan_out_f.data(15 downto 0);
+
+  -- handshake signals
+  alias IN_REQ	: std_logic is chan_in_f.req;
+  alias IN_ACK	: std_logic is chan_in_b.ack;
+  alias OUT_REQ : std_logic is chan_out_f.req;
+  alias OUT_ACK : std_logic is chan_out_b.ack;
+
+  signal REQ_INT : std_logic;
+
+  signal sel_latch_en : std_logic;
+
 begin
 
-  -- VLD bit shows type of the phit (phit or void)
-  -- SOP high on start of packet, EOP high on end of packet
-  VLD <= data_in(LINK_WIDTH-1);
-  SOP <= data_in(LINK_WIDTH-2);
-  EOP <= data_in(LINK_WIDTH-3);
-
-
   one_hot_decoder : block
-    signal dest_port : std_logic_vector(1 downto 0);
+    signal sel_onehot : onehot_sel;
   begin
-    dest_port <= data_in(1 downto 0);
-
     gen_not_ni : if is_ni = false generate
-      sel_internal <= "10000" when dest_port = this_port else  -- 4: NI
-		      "00001" when dest_port = "00" else       -- 0: North
-		      "00010" when dest_port = "01" else       -- 1: East
-		      "00100" when dest_port = "10" else       -- 2: South
-		      "01000";	-- when dest_port = "11" else		 -- 3: West
+      sel_onehot <= "10000" when DEST_PORT = this_port else  -- 4: NI
+		    "00001" when DEST_PORT = "00" else	     -- 0: North
+		    "00010" when DEST_PORT = "01" else	     -- 1: East
+		    "00100" when DEST_PORT = "10" else	     -- 2: South
+		    "01000";  -- when DEST_PORT = "11" else	       -- 3: West
     end generate gen_not_ni;
 
     gen_is_ni : if is_ni = true generate
-      sel_internal <= "00001" when dest_port = "00" else  -- 0: North
-		      "00010" when dest_port = "01" else  -- 1: East
-		      "00100" when dest_port = "10" else  -- 2: South
-		      "01000";	-- when dest_port = "11" else		 -- 3: West
+      sel_onehot <= "00001" when DEST_PORT = "00" else	-- 0: North
+		    "00010" when DEST_PORT = "01" else	-- 1: East
+		    "00100" when DEST_PORT = "10" else	-- 2: South
+		    "01000";  -- when DEST_PORT = "11" else	       -- 3: West
     end generate gen_is_ni;
+
+    -- for empty phits and reset case: zero all select
+    and_zero : for i in sel_onehot'range generate
+      sel_internal(i) <= VLD_TYPE and sel_onehot(i);
+    end generate and_zero;
   end block one_hot_decoder;
 
-  SEL_AS_LATCH : if not USE_REGISTER_FOR_SEL generate
-    NO_CLK_GATING_CELL : if not USE_CLK_GATING_SEL_LATCH generate
-      sel_latch : process (data_valid, VLD, sel_internal, SOP) is
-      begin
-	if preset = '1' then
-	  sel <= (others => '0');
-	  -- We must only open the latch when data are valid.
-	elsif (data_valid = '1') then
-	  if (VLD = '1' and SOP = '1') then
-	    sel <= sel_internal;
-	  elsif (VLD = '0') then	--  and EOP = '0'
-	    -- This is an empty space, but other incoming phits may not be.
-	    sel <= (others => '0');
-	  end if;
-	end if;
-      end process sel_latch;
-    end generate NO_CLK_GATING_CELL;
+  sel_latch_en_generate: block is
+    signal A, B, C: std_logic;
+  begin  -- block sel_latch_en_generate
+    A <= VLD_TYPE and SOP;
+    B <= A or not VLD_TYPE;
+    C <= REQ_INT xor OUT_ACK;
+    sel_latch_en <= B and C;
+  end block sel_latch_en_generate;
 
-    CLK_GATING_CELL : if USE_CLK_GATING_SEL_LATCH generate
-      c_gated_implementation : block is
-	signal lt_en_gate, lt_en_gated : std_logic;
-	signal sel_valid	       : onehot_sel;
-      begin  -- block c_gated_implementation
-	-- clock gate latch
-	ck_gate_latch : process(data_valid, SOP, VLD, EOP) is
-	begin
-	  if (data_valid = '0') then
-	    
-	    if (EOP = '1') or (VLD = '0') then	    
-	      lt_en_gate <= '1';
-	    else
-	      lt_en_gate <= '0';
-	    end if;
-	  end if;
-	end process ck_gate_latch;
-	lt_en_gated <= lt_en_gate and data_valid;
-
-	-- Only set for valid
-	valid_sel : for i in sel_internal'range generate
-	  sel_valid(i) <= sel_internal(i) and VLD;
-	end generate valid_sel;
-
-	-- Latch 
-	sel_latch : process (lt_en_gated, sel_valid, preset) is
-	begin  -- process sel_latch
-	  if preset = '1' then
-	    sel <= (others => '0');
-	  elsif (lt_en_gated = '1') then
-	    sel <= sel_valid;
-	  end if;
-	end process sel_latch;
-      end block c_gated_implementation;
-    end generate CLK_GATING_CELL;
-  end generate SEL_AS_LATCH;
-
-  SEL_AS_REG : if USE_REGISTER_FOR_SEL generate
-    sel_reg : process (data_valid, sel_next) is
-    begin
-      if preset = '1' then
-	sel_current <= (others => '0');
-	-- We must only open the latch when data are valid.
-      elsif (data_valid'event and data_valid = '0') then
-	sel_current <= sel_next;
-      end if;
-    end process sel_reg;
-
-    sel_comb : process (VLD, sel_internal, SOP) is
-    begin  -- process sel_transition
-      -- default value
-      sel_next <= sel_current;
-      if (VLD = '1' and SOP = '1') then
-	sel_next <= sel_internal;
-      elsif (VLD = '0') then		--  and EOP = '0'
-	-- This is an empty space, but other incoming phits may not be.
-	sel_next <= (others => '0');
-      end if;
-    end process sel_comb;
-
-    sel <= sel_current;
-  end generate SEL_AS_REG;
-
-  shift : process (data_in, VLD, SOP) is
+  sel_latch : process (sel_latch_en, preset, sel_internal) is
   begin
-    if (VLD = '1' and SOP = '1') then
-      -- This is the header phit, so we shift the addr so the next switch knows where to route the packet.
-      -- This allows one-hot decoding logic to always be driven by bottom 2 LSb's.
-      data_out		     <= (others => '0');
-      data_out(31 downto 16) <= data_in(31 downto 16);
-      data_out(13 downto 0)  <= data_in(15 downto 2);  -- right shift by 2 bits
-      data_out(PHIT_WIDTH)   <= VLD;
-      data_out(PHIT_WIDTH-1) <= SOP;
-      data_out(PHIT_WIDTH-2) <= EOP;
-    else
-      -- Not header. Must be one of {body, end-body, empty space}
-      data_out <= data_in;		-- Pass through unaltered
+    if preset = '1' then
+      sel <= (others => '0');
+    elsif sel_latch_en = '1' then
+      sel <= sel_internal;
     end if;
-  end process shift;
+  end process sel_latch;
+
+  comb : process (chan_in_f, chan_out_b, VLD_TYPE, SOP, REQ_INT) is
+  begin
+    -- default case: forward everything
+    chan_in_b  <= chan_out_b;
+    chan_out_f <= chan_in_f;
+
+    -- implement delays (overrides req in assotiation above!)
+    REQ_INT <= inject_delay_line(IN_REQ);
+    OUT_REQ <= inject_delay_line(REQ_INT);
+
+    -- This is the header phit, so we shift the addr so the next switch knows where to route the packet.
+    -- This allows one-hot decoding logic to always be driven by bottom 2 LSb's.
+    -- override default: shift route
+    if (VLD_TYPE = '1' and SOP = '1') then
+      ROUTE_OUT <= "00" & ROUTE_NEXT;
+    end if;
+  end process comb;
 
 
 end architecture struct;

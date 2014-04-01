@@ -43,7 +43,7 @@ package config is
     constant NODES : integer := N*M;
     constant PRD_LENGTH : integer := 5;
     
-    constant TEST_TILED_2x2_DIR : string := "../../common/test/test_tiled_2x2/";
+    constant TEST_TILED_2x2_DIR : string := "../test/testcases/test_tiled_2x2/";
     constant TG_SCHEDULE_FILE : string := TEST_TILED_2x2_DIR & "all_to_all.sched";
     constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";
     constant TG_DMA_INIT_FILE : string := TEST_TILED_2x2_DIR & "DMA_init.dat";

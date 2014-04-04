@@ -7,3 +7,11 @@ test_tiled_2x2: clean test_tiled_2x2_setup noc_tiled
 
 test_tiled_2x2_setup: work
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/testcases/test_tiled_2x2/config.vhd 
+
+test_tiled_2x2_description:
+	@echo "test_tiled_2x2"
+	@echo "     testcase for a tiled 2x2 noc"
+
+# append this testcase to the list of active testcases
+TESTCASE_LIST += test_tiled_2x2
+TESTCASE_DESCRIPTIONS += test_tiled_2x2_description

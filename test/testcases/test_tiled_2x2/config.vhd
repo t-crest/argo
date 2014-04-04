@@ -36,7 +36,13 @@
 --------------------------------------------------------------------------------
 
 package config is
-
+  
+    type ARCHITECTURES is (RTL, FPGA, ASIC);
+    type IMPLEMENTATIONS is (SYNC, ASYNC);
+    
+    constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
+    constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
+  
     constant N : integer := 2; -- Horizontal width
     constant M : integer := 2; -- Vertical Height
 

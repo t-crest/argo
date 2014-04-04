@@ -36,23 +36,23 @@
 --------------------------------------------------------------------------------
 
 package config is
-
+  
     type ARCHITECTURES is (RTL, FPGA, ASIC);
     type IMPLEMENTATIONS is (SYNC, ASYNC);
     
     constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
     constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
-    
-    constant N : integer := 4; -- Horizontal width
-    constant M : integer := 4; -- Vertical Height
-    
-    constant NODES : integer := N*M;
-    constant PRD_LENGTH : integer := 23;
-    
-    constant TEST_DIR : string := "../test/testcases/test_tiled_4x4_swap/";
-    constant TG_SCHEDULE_FILE : string := TEST_DIR & "all_to_all.sched";
+
+    constant N : integer := 2; -- Horizontal width
+    constant M : integer := 2; -- Vertical Height
+    constant NODES : integer := 4;
+    constant PRD_LENGTH : integer := 8; -- The number of timeslots in one TDM period
+
+    constant TEST_DIR : string := "../test/testcases/async_test0/";
+    constant TG_SCHEDULE_FILE : string := TEST_DIR & "test0.sched";
     constant TG_SPM_INIT_FILE : string := TEST_DIR & "SPM_init.dat";
     constant TG_DMA_INIT_FILE : string := TEST_DIR & "DMA_init.dat";
+    
     
 end package ; -- aegean_def
 

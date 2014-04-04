@@ -48,7 +48,7 @@ use work.ocp.all;
 entity noc is
 
 port (
-	--p_clk		: in std_logic;
+	p_clk		: in std_logic;
 	n_clk		: in std_logic;
        	n_clk_skd	: in std_logic;
 

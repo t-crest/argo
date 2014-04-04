@@ -11,6 +11,8 @@ SRCDIR=$(ARGO_PROJECT_DIR)/src
 # Test cases & test bench
 TESTDIR=$(ARGO_PROJECT_DIR)/test
 
+export TESTDIR
+
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -29,7 +31,7 @@ else
 endif
 
 ####################################################################
-# default rule: test 2
+# default rule:
 
 all: help
 
@@ -117,7 +119,7 @@ noc_sync: router_sync
 
 noc_async: router_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_node.vhd
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_n_m.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_n.vhd
 
 
 tile: router_async traffic_generators

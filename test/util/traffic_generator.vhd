@@ -5,11 +5,11 @@
 -- modification, are permitted provided that the following conditions are met:
 --
 --    1. Redistributions of source code must retain the above copyright notice,
---	 this list of conditions and the following disclaimer.
+--       this list of conditions and the following disclaimer.
 --
 --    2. Redistributions in binary form must reproduce the above copyright
---	 notice, this list of conditions and the following disclaimer in the
---	 documentation and/or other materials provided with the distribution.
+--       notice, this list of conditions and the following disclaimer in the
+--       documentation and/or other materials provided with the distribution.
 --
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -53,9 +53,12 @@ use work.traffic_generator_package.all;
 use work.noc_defs.all;
 
 entity traffic_generator is
-  
+  generic (
+    SLT_WIDTH : natural := DMA_IND_WIDTH + 3
+    );
   port (
-    clk, reset : in  std_logic;	 -- clock & asynchronous high active reset
+    clk        : in  std_logic;  -- clock & asynchronous high active reset
+    reset      : in  std_logic;
     spm_master : out spm_master;
     spm_slave  : in  spm_slave;
     p_master   : out ocp_io_m;
@@ -70,19 +73,29 @@ architecture behav of traffic_generator is
 
   -- configuration files
   file schedule : text open read_mode is TG_SCHEDULE_FILE;
-  file data	: text open read_mode is TG_SPM_INIT_FILE;
-  file dma	: text open read_mode is TG_DMA_INIT_FILE;
+  file data     : text open read_mode is TG_SPM_INIT_FILE;
+  file dma      : text open read_mode is TG_DMA_INIT_FILE;
 
   -- signals to synchronize the init processes
   signal SPM_INITIALIZED : std_logic := '0';
-  signal NI_INITIALIZED	 : std_logic := '0';
+  signal NI_INITIALIZED  : std_logic := '0';
   signal DMA_INITIALIZED : std_logic := '0';
+  signal TRANSFER_DONE   : std_logic := '0';
+  signal SIMULATION_DONE : std_logic := '0';
 
   signal slt_length    : integer;
   signal SPM_INIT_SIZE : integer;
 
-  
+  signal dma_data : std_logic_vector(p_slave.SData'range);
 begin  -- behav
+
+  -- synchronisation between all traffic generators: the global
+  -- signal will go weak high as soon as all are done.
+  TG_SYNC_DMA        <= 'H' when DMA_INITIALIZED = '1' else '0';
+  TG_SYNC_NI         <= 'H' when NI_INITIALIZED = '1'  else '0';
+  TG_SYNC_SPM        <= 'H' when SPM_INITIALIZED = '1' else '0';
+  TG_TRANSFER_DONE   <= 'H' when TRANSFER_DONE = '1'   else '0';
+  TG_SIMULATION_DONE <= 'H' when SIMULATION_DONE = '1' else '0';
 
   -----------------------------------------------------------------------------
   -- process to initialize the route & slot table as well as the DMA
@@ -92,22 +105,22 @@ begin  -- behav
     variable word    : string (100 downto 1);  --std_logic_vector(15 downto 0) := (others => '0');
     variable cnt     : integer := 0;
     variable slt_num : integer;
-    variable l	     : line;
-    variable slt     : std_logic_vector(DMA_IND_WIDTH + 2 downto 0);
+    variable l       : line;
+    variable slt     : std_logic_vector(SLT_WIDTH - 1 downto 0);
     variable route   : std_logic_vector(15 downto 0);
 
     variable node_id : integer;
 
     variable addr_field : std_logic_vector(31 downto 0);
-    variable dma_id	: integer;
-    variable dma_array : std_logic_vector(0 to 15) := (others => '0');
+    variable dma_id     : integer;
+    variable dma_array  : std_logic_vector(0 to N*M-1) := (others => '0');
     
   begin
     
-    p_master.MCmd	 <= (others => '0');
-    p_master.MAddr	 <= (others => '0');
-    p_master.MData	 <= (others => '0');
-    p_master.MByteEn	 <= (others => '0');
+    p_master.MCmd        <= (others => '0');
+    p_master.MAddr       <= (others => '0');
+    p_master.MData       <= (others => '0');
+    p_master.MByteEn     <= (others => '0');
     p_master.MRespAccept <= '0';
 
     wait until falling_edge(reset);
@@ -121,67 +134,81 @@ begin  -- behav
     ---------------------------------------------------------------------------
     --report "NI[" & integer'image(node_id) & "]: Hello, your friendly traffic generator is here. " severity note;
 
+
     if not endfile(schedule) then
-      
-      loop
-	str_read(schedule, word);
-
-	exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(schedule);
-      end loop;
-
       report "NI[" & integer'image(node_id) & "]: Hello, your friendly traffic generator is here. " &
-	"(" & traffic_generator'instance_name & ") " severity note;
+        "(" & traffic_generator'instance_name & ") " severity note;
+    end if;
 
+    -- get the number of timeslots in case we do not have a slot table for
+    -- this node
+    loop                                -- search for marker
+      exit when endfile(schedule);
+      str_read(schedule, word);
+      exit when str_comp(word, ("# Number of timeslots is:"));
+    end loop;
+
+    readline(schedule, l);
+    read(l, slt_num);
+    slt_length <= slt_num;
+
+    loop
+      exit when endfile(schedule);
+      str_read(schedule, word);
+      exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(schedule);
+    end loop;
+
+    if not endfile(schedule) then
       loop
-	str_read(schedule, word);
-	exit when str_comp(word, "# SLOT_TABLE") or endfile(schedule);
+        str_read(schedule, word);
+        exit when str_comp(word, "# SLOT_TABLE") or endfile(schedule);
       end loop;
 
       report "NI[" & integer'image(node_id) & "]: ST" & word(100 downto 89) severity note;
 
       readline(schedule, l);
       read(l, slt_num);
-      cnt	 := 0;
+      cnt        := 0;
       slt_length <= slt_num;
       loop
-	readline(schedule, l);
-	read(l, slt);
-	--st_write
-	--print str(slt);
-	report "ST write " & integer'image(node_id) & " " & integer'image(cnt) & "/" & integer'image(slt_num) severity note;
-	st_write(p_master,
-		 p_slave,
-		 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		 slt, clk);
-	cnt := cnt + 1;
-	exit when cnt = slt_num or endfile(schedule);
+        readline(schedule, l);
+        read(l, slt);
+        --st_write
+        --print str(slt);
+        report "ST write " & integer'image(node_id) & " " & integer'image(cnt) & "/" & integer'image(slt_num) severity note;
+        st_write(p_master,
+                 p_slave,
+                 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                 slt, clk);
+        cnt := cnt + 1;
+        exit when cnt = slt_num or endfile(schedule);
       end loop;
 
       loop
-	str_read(schedule, word);
-	exit when str_comp(word, "# ROUTE_TABLE") or endfile(schedule);
+        str_read(schedule, word);
+        exit when str_comp(word, "# ROUTE_TABLE") or endfile(schedule);
       end loop;
       report "NI[" & integer'image(node_id) &"]: RT" & word(100 downto 88) severity note;
 
       cnt := 0;
       loop
-	readline(schedule, l);
-	read(l, route);
-	--rt_write
-	--report str(route);
-	route_write (p_master,
-		     p_slave,
-		     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
-		     route, clk);
-	cnt := cnt + 1;
-	exit when cnt = N*N or endfile(schedule);
+        readline(schedule, l);
+        read(l, route);
+        --rt_write
+        --report str(route);
+        route_write (p_master,
+                     p_slave,
+                     std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                     route, clk);
+        cnt := cnt + 1;
+        exit when cnt = N*N or endfile(schedule);
       end loop;
 
       
     end if;
     NI_INITIALIZED <= '1';
     -- make sure all data is copied to the SPM and that the NI is initialized
-    wait until (SPM_INITIALIZED = '1');
+    wait until (TG_SYNC_SPM = 'H');
 
     ---------------------------------------------------------------------------
     -- Initialize the DMA
@@ -189,54 +216,71 @@ begin  -- behav
     -- find section in dma file
     if not endfile(dma) then
       loop
-	str_read(dma, word);
-	exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(dma);
+        str_read(dma, word);
+        exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(dma);
       end loop;
 
 
       -- iterate over dma setting entries and program dma as needed
       while not endfile(dma) loop
-	
-	wait until rising_edge(clk);
-	wait for delay;
-	str_read(dma, word);
-	exit when not (word(100) = '@') or endfile(dma);
+        
+        wait until rising_edge(clk);
+        wait for delay;
+        str_read(dma, word);
+        exit when not (word(100) = '@') or endfile(dma);
 
-	dma_id := to_integer(unsigned(strh(word(99 downto 99))));
+        dma_id := to_integer(unsigned(strh(word(99 downto 99))));
 
-	-- mark dma as used
-	dma_array(dma_id) := '1';
+        -- mark dma as used
+        dma_array(dma_id) := '1';
 
-	addr_field := strh(word(97 downto 94)) & strh(word(92 downto 89));
+        addr_field := strh(word(97 downto 94)) & strh(word(92 downto 89));
 
-	report "NI[" & integer'image(node_id) & "]: DMA" & word(99) & "# " &
-	  word(97 downto 94) & " -> " & word(92 downto 89) &
-	  " [0x" & hstr(tg_dma_setup_addr(dma_id)) & ", 0x" & hstr(addr_field) & "]"
-	  severity note;
+        report "NI[" & integer'image(node_id) & "]: DMA" & word(99) & "# " &
+          word(97 downto 94) & " -> " & word(92 downto 89) &
+          " [0x" & hstr(tg_dma_setup_addr(dma_id)) & ", 0x" & hstr(addr_field) & "]"
+          severity note;
 
-	-- program address
-	dma_write (p_master, p_slave, tg_dma_setup_addr(dma_id), addr_field, clk);
+        -- program address
+        dma_write (p_master, p_slave, tg_dma_setup_addr(dma_id), addr_field, clk);
 
       end loop;
     end if;
 
+    -- enable all used DMAs 
     for i in dma_array'range loop
       if dma_array(i) = '1' then
-	-- enable & start dma
-	dma_write (p_master, p_slave, tg_dma_enable_addr(i), x"00008004", clk);
-	report "NI[" & integer'image(node_id) & "]: DMA" & integer'image(i) & "# enable " & " [0x" & hstr(tg_dma_enable_addr(i)) & ", 0x00008004]" severity note;
+        -- enable & start dma
+        dma_write (p_master, p_slave, tg_dma_enable_addr(i), x"00008004", clk);
+        report "NI[" & integer'image(node_id) & "]: DMA" & integer'image(i) & "# enable " & " [0x" & hstr(tg_dma_enable_addr(i)) & ", 0x00008004]" severity note;
       end if;
     end loop;  -- i
-
-
 
     -- everything done
     report "NI[" & integer'image(node_id) & "]: all set up!" severity note;
     DMA_INITIALIZED <= '1';
 
+    -- 
+    loop
+      exit when dma_array = (dma_array'range => '0');
+      for i in dma_array'range loop
+        -- only read the enabled dmas
+        if dma_array(i) = '1' then
+          -- poll dma to check for finished data transmission on the senders side
+          dma_data <= (others => '0');
+          dma_read(p_master, p_slave, tg_dma_enable_addr(i), dma_data, clk);
+          if (dma_data(14) = '1') then
+            dma_array(i) := '0';
+          end if;
+        end if;
+      end loop;  -- i
+    end loop;
+
+    TRANSFER_DONE <= '1';
     -- lock
     wait;
   end process;
+
 
 
 -----------------------------------------------------------------------------
@@ -261,33 +305,33 @@ begin  -- behav
 
     node_id := to_integer(settings.tile_id);
 
-    wait until (NI_INITIALIZED = '1');
+    wait until (TG_SYNC_NI = 'H');
 
     -- search for data section
     if not endfile(data) then
       loop
-	str_read(data, word);
-	exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(data);
+        str_read(data, word);
+        exit when str_comp(word, ("# NI" & integer'image(node_id))) or endfile(data);
       end loop;
 
       count := 0;
       -- program the memory
       while not endfile(data) loop
-	wait until rising_edge(clk);
-	wait for delay;
-	str_read(data, word);
-	-- only lines starting with an @ are considered
-	exit when not (word(100) = '@') or endfile(data);
+        wait until rising_edge(clk);
+        wait for delay;
+        str_read(data, word);
+        -- only lines starting with an @ are considered
+        exit when not (word(100) = '@') or endfile(data);
 
-	addr := to_integer(unsigned(strh(word(99 downto 96))));
+        addr := to_integer(unsigned(strh(word(99 downto 96))));
 
-	-- write data
-	spm_master.MCmd	 <= "1";
-	spm_master.MAddr <= std_logic_vector(to_unsigned(addr, spm_master.MAddr'length));
-	spm_master.MData <= strh(word(94 downto 79));
+        -- write data
+        spm_master.MCmd  <= "1";
+        spm_master.MAddr <= std_logic_vector(to_unsigned(addr, spm_master.MAddr'length));
+        spm_master.MData <= strh(word(94 downto 79));
 
-	report "NI[" & integer'image(node_id) & "]: SPM# write @" & hstr(std_logic_vector(to_unsigned(addr, spm_master.MAddr'length))) & ": " & word(94 downto 79) severity note;
-	count := count + 1;
+        report "NI[" & integer'image(node_id) & "]: SPM# write @" & hstr(std_logic_vector(to_unsigned(addr, spm_master.MAddr'length))) & ": " & word(94 downto 79) severity note;
+        count := count + 1;
       end loop;
 
       SPM_INIT_SIZE <= count;
@@ -303,15 +347,19 @@ begin  -- behav
 
     -- all done, hand over to the DMA setup...
     SPM_INITIALIZED <= '1';
-    wait until (DMA_INITIALIZED = '1');
+    wait until (TG_SYNC_DMA = 'H');
 
-    -- simulate for some time
+    -- make sure all traffic generators are done
+
+    wait until TG_TRANSFER_DONE = 'H';
+    
+    -- simulate for some more time to let the packets in the noch arrive
     count := 0;
-
     loop
       count := count + 1;
       wait until rising_edge(clk);
-      exit when count >= slt_length * 100;  -- slt_length * 3 + 10
+      --exit when NOW >= TG_READ_DATA_TIME;
+      exit when count >= 16 * 3;  -- slt_length * 3 + 10
     end loop;
 
     -- read the data from the spm
@@ -320,22 +368,17 @@ begin  -- behav
     count := 0;
     wait until rising_edge(clk);
     while(count < (N*M) * SPM_INIT_SIZE) loop
---    while(count < SPM_INIT_SIZE) loop
-
-      
       wait for delay;
-
       spm_master.MCmd  <= "0";
       spm_master.MAddr <= std_logic_vector(to_unsigned(count, spm_master.MAddr'length));  --x"00000000";
       wait until falling_edge(clk);
       wait for delay;
       report "NI[" & integer'image(node_id) & "]: SPM# read @" & hstr(std_logic_vector(to_unsigned(count, spm_master.MAddr'length))) & ": " & to_upper(hstr(spm_slave.SData)) severity note;
-      count	       := count + 1;
-
+      count            := count + 1;
     end loop;
 
+    SIMULATION_DONE <= '1';
     wait;
   end process;
-
 
 end behav;

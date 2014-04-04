@@ -36,6 +36,12 @@
 --------------------------------------------------------------------------------
 
 package config is
+  
+    type ARCHITECTURES is (RTL, FPGA, ASIC);
+    type IMPLEMENTATIONS is (SYNC, ASYNC);
+    
+    constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
+    constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
 
     constant N : integer := 4; -- Horizontal width
     constant M : integer := 4; -- Vertical Height
@@ -43,7 +49,7 @@ package config is
     constant NODES : integer := N*M;
     constant PRD_LENGTH : integer := 23;
     
-    constant TEST_TILED_4x4_DIR : string := "../../common/test/test_tiled_4x4/";
+    constant TEST_TILED_4x4_DIR : string := "../test/testcases/test_tiled_4x4/";
     constant TG_SCHEDULE_FILE : string := TEST_TILED_4x4_DIR & "all_to_all.sched";
     constant TG_SPM_INIT_FILE : string := TEST_TILED_4x4_DIR & "SPM_init.dat";
     constant TG_DMA_INIT_FILE : string := TEST_TILED_4x4_DIR & "DMA_init.dat";

@@ -67,7 +67,7 @@ package cmd_util is
     procedure dma_write (signal core: out ocp_io_m; signal slave: in ocp_io_s; addr: std_logic_vector; data: std_logic_vector; signal clk: in std_logic);
 
     --read a DMA controller
-    procedure dma_read (signal core: out ocp_io_m; signal slave : in ocp_io_s; addr: std_logic_vector; signal clk: in std_logic);
+    procedure dma_read (signal core: out ocp_io_m; signal slave : in ocp_io_s; addr: std_logic_vector; signal data : out std_logic_vector; signal clk: in std_logic);
 
 
     --generic processor write
@@ -196,7 +196,7 @@ package body cmd_util is
   end dma_write;
 
    -- read a DMA controller
-  procedure dma_read (signal core: out ocp_io_m; signal slave : in ocp_io_s; addr: std_logic_vector; signal clk: in std_logic) is
+  procedure dma_read (signal core: out ocp_io_m; signal slave : in ocp_io_s; addr: std_logic_vector; signal data : out std_logic_vector; signal clk: in std_logic) is
   begin
     wait until rising_edge(clk);
     wait for SIMDELAY;
@@ -207,6 +207,7 @@ package body cmd_util is
     core.MCmd <= (others=>'0');
     core.MAddr <= (others=>'0');
     core.MRespAccept <= '1';
+    data <= slave.SData;
     wait until rising_edge(clk);
     wait for SIMDELAY;
     core.MRespAccept <= '0';

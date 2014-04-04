@@ -1,0 +1,19 @@
+# File to program the DMA of the traffic generators. Each generator 
+# instance searches for its own entry in this file and sets up the 
+# copy commands as described here.
+#
+# format: 
+# # NI<id>
+# @<4 bit hexadecimal dma number> <16 bit hexadecimal from address> <16 bit hexadecimal to address> 
+# <empty line to mark end of block>
+
+# NI0
+@2 0000 0000
+@3 0000 0000
+
+# NI1
+
+# NI2
+
+# NI3
+

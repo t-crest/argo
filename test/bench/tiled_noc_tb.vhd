@@ -2,11 +2,11 @@
 -- Title      : Testbench for design "tiled_noc"
 -- Project    : Async noc
 -------------------------------------------------------------------------------
--- File	      : tiled_noc_tb.vhd
+-- File       : tiled_noc_tb.vhd
 -- Author     : Christoph Müller  <eit-cpm@cas-07.eit.lth.se>
 -- Company    : 
 -- Created    : 2014-02-25
--- Last update: 2014-03-03
+-- Last update: 2014-04-03
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -15,14 +15,15 @@
 -- Copyright (c) 2014 
 -------------------------------------------------------------------------------
 -- Revisions  :
--- Date	       Version	Author	Description
--- 2014-02-25  1.0	eit-cpm Created
+-- Date        Version  Author  Description
+-- 2014-02-25  1.0      eit-cpm Created
 -------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
+use work.traffic_generator_package.all;
 
 -------------------------------------------------------------------------------
 
@@ -49,16 +50,21 @@ begin  -- architecture foo
       reset => reset);
 
   -- clock generation
-  clk	<= not clk after NA_HPERIOD;
-  reset <= '0'	   after 4 * NA_HPERIOD + delay;
 
-  -- waveform generation
-  WaveGen_Proc : process
+  reset <= '0'     after 4 * NA_HPERIOD + delay;
+  --proc clock
+  clk_generate : process
   begin
-    -- insert signal assignments here
+    wait for NA_HPERIOD;
+    clk <= not clk;
 
-    wait until clk = '1';
-  end process WaveGen_Proc;
+    -- stop clock at the end of the simulation
+    if TG_SIMULATION_DONE = 'H' then
+      wait;
+    end if;
+  end process;
+  
+
 
   
 

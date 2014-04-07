@@ -1,7 +1,6 @@
 *~
 *.wlf
 transcript
-*.sched
 work/
 sched.xml
 .prj

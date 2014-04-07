@@ -1,0 +1,68 @@
+# AUTO-Generated file DO NOT EDIT!!!
+# This file contains configuration data for the T-CREST NoC
+# with DMA controllers in network interfaces and source routing
+
+# Number of CPUs is: 4
+4
+# Number of timeslots is: 5
+5
+# Configuration of network interface: 0
+# NI0
+# SLOT_TABLE
+5
+111
+000
+101
+110
+000
+# ROUTE_TABLE
+0000000000000000
+0000000000001101
+0000000000001000
+0000000000110100
+
+# Configuration of network interface: 1
+# NI1
+# SLOT_TABLE
+5
+110
+001
+100
+111
+001
+# ROUTE_TABLE
+0000000000001101
+0000000000000000
+0000000000110100
+0000000000001000
+
+# Configuration of network interface: 2
+# NI2
+# SLOT_TABLE
+5
+101
+010
+111
+100
+010
+# ROUTE_TABLE
+0000000000001000
+0000000000110100
+0000000000000000
+0000000000001101
+
+# Configuration of network interface: 3
+# NI3
+# SLOT_TABLE
+5
+100
+011
+110
+101
+011
+# ROUTE_TABLE
+0000000000110100
+0000000000001000
+0000000000001101
+0000000000000000
+

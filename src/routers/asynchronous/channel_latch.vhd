@@ -164,7 +164,7 @@ begin
     lt_gated <= lt_en after delay;
     
     -- Normal transparent latch, cf. figure 6.21 in S&F
-    type_latch : process(type_in, lt_en, preset)
+    type_latch : process(type_in, lt_en, left_in, preset)
     begin
       if (lt_en = '1') then
 	type_out <= transport type_in			after delay;

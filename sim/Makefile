@@ -63,7 +63,7 @@ help_prefix:
 ####################################################################
 # VHDL Compilation
 
-
+.PHONY: ocp noc_defs utils mem ni_common ni_sync ni_async router_sync router_async noc_sync noc_async tile noc_tiled noc_tiled_swap traffic_generators work autotest clean
 
 # structured groups, ordered to fulfil the dependencies in the vhdl code base 
 
@@ -72,14 +72,13 @@ ocp:
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ocp/ocp_config.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ocp/ocp.vhd
 
-noc_defs: utils ocp
+noc_defs: utils ocp work/config/_primary.dat
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc_defs.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc_interface.vhd
 
 utils:
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/util/txt_util.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/util/math_util.vhd
-
 
 mem: noc_defs
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/mem/bram.vhd
@@ -142,6 +141,10 @@ work:
 	rm -rf work
 	$(PREFIX) vlib work
 
+####################################################################
+$(AUTO_TEST): clean
+
+autotest: $(AUTO_TEST)
 
 ####################################################################
 # generate schedule from xml

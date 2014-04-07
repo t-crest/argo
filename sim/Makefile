@@ -107,6 +107,7 @@ router_async: ni_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/latch_controller.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/channel_latch.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/fifo.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/hpu_latch.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/hpu_comb.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/hpu.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/crossbar.vhd

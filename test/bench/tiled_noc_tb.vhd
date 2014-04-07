@@ -6,11 +6,7 @@
 -- Author     : Christoph Müller  <eit-cpm@cas-07.eit.lth.se>
 -- Company    : 
 -- Created    : 2014-02-25
-<<<<<<< HEAD:async_noc/src/tiled_noc_tb.vhd
--- Last update: 2014-03-20
-=======
 -- Last update: 2014-04-03
->>>>>>> origin/restructure:test/bench/tiled_noc_tb.vhd
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -54,11 +50,6 @@ begin  -- architecture foo
       reset => reset);
 
   -- clock generation
-<<<<<<< HEAD:async_noc/src/tiled_noc_tb.vhd
-  clk	<= not clk after NA_HPERIOD;
-  reset <= '0'	   after 4 * NA_HPERIOD + 2*delay;
-=======
->>>>>>> origin/restructure:test/bench/tiled_noc_tb.vhd
 
   reset <= '0'     after 4 * NA_HPERIOD + delay;
   --proc clock

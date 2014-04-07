@@ -1,0 +1,33 @@
+# This file is used to program the SPM of the traffic generators. 
+# Each generator searches for its own entry. Data is written to the
+# address prefixed with @ followed by four hexadecimal digits. Finally
+# 64 bits of data are written.
+#
+# format:
+# # NI<id>
+# @<16 bit hexadecimal address> <64 bit hexadecimal data>
+
+# NI0
+@0000 0DDDDDD00FFFFFF0
+@0001 0DDDDDD10FFFFFF1
+@0002 0DDDDDD20FFFFFF2
+@0003 0DDDDDD30FFFFFF3
+
+# NI1
+@0004 1DDDDDD41FFFFFF4
+@0005 1DDDDDD51FFFFFF5
+@0006 1DDDDDD61FFFFFF6
+@0007 1DDDDDD71FFFFFF7
+
+# NI2
+@0008 2DDDDDD82FFFFFF8
+@0009 2DDDDDD92FFFFFF9
+@000A 2DDDDDDA2FFFFFFA
+@000B 2DDDDDDB2FFFFFFB
+
+# NI3
+@000C 3DDDDDDC3FFFFFFC
+@000D 3DDDDDDD3FFFFFFD
+@000E 3DDDDDDE3FFFFFFE
+@000F 3DDDDDDF3FFFFFFF
+

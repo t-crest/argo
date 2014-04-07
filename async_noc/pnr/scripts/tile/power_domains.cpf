@@ -5,8 +5,7 @@ source $env(ARGO_PNR_DIR)/scripts/pnr_settings.tcl
 
 # first element of list is the name of the power domain, all other  
 # define the instances to be attetched to this power domain
-set domain_members {{noc_switch na/* r/* spm1/* input_fifo/* output_fifo/*}}
-
+set domain_members {{noc_switch na/* r/* input_fifo/* output_fifo/* half_clk_reg U* I_*}}
 set domains {}
 foreach d $domain_members {
     lappend domains [lindex $d 0]

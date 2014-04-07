@@ -47,26 +47,26 @@ use work.noc_defs.all;
 
 entity processor is
   port (
-    clk, reset : in  std_logic;
-    spm_master : out spm_master;
-    spm_slave  : in  spm_slave;
-    p_master   : out ocp_io_m;
-    p_slave    : in  ocp_io_s;
-    settings   : in  tile_settings);
+    clk, reset	 : in  std_logic;
+    p_spm_master : out spm_master;
+    p_spm_slave	 : in  spm_slave;
+    p_ocp_master : out ocp_io_m;
+    p_ocp_slave	 : in  ocp_io_s;
+    p_settings	 : in  tile_settings);
 end entity processor;
 
 architecture traffic_gnerator of processor is
 
 begin  -- architecture traffic_gnerator
 
-  traffic_generator_1: entity work.traffic_generator
+  traffic_generator_1 : entity work.traffic_generator
     port map (
       clk	 => clk,
       reset	 => reset,
-      spm_master => spm_master,
-      spm_slave	 => spm_slave,
-      p_master	 => p_master,
-      p_slave	 => p_slave,
-      settings	 => settings);
+      spm_master => p_spm_master,
+      spm_slave	 => p_spm_slave,
+      p_master	 => p_ocp_master,
+      p_slave	 => p_ocp_slave,
+      settings	 => p_settings);
 
 end architecture traffic_gnerator;

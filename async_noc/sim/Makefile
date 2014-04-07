@@ -6,7 +6,7 @@ NOCDIR=../src
 COMMON=../../common
 TEST=$(COMMON)/test
 NETLISTDIR=../netlists
-MEM_BEHAVIOR_MODEL=/usr/local-eit/cad2/cmpstm/mem2011/DPHD110420-48160@1.0/behaviour/vhdl/DPHD110420_FUNCT.vhd
+MEM_BEHAVIOR_MODEL=
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -61,6 +61,30 @@ test_tiled_4x4: clean test_tiled_4x4_setup sim_base test_tiled_noswap
 # test case of the asynchronous noc set up as a 4x4 configuration with port swapping
 test_tiled_4x4_swap: clean test_tiled_4x4_swap_setup sim_base test_tiled_swap
 
+# netlist test case of the asynchronous noc in 4x4 configuration with port swapping
+synthesis_tiled_4x4_swap: clean test_tiled_4x4_swap_setup netlist_base
+	$(WINE) vlog $(OPTIONS) $(NETLISTDIR)/tiled_noc_netlist.v
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
+	$(WINE) vlog $(OPTIONS) $(MEM_BEHAVIOR_MODEL)/verilog/DPHD110420.v
+	$(WINE) vsim -L CORE65LPHVT -L CORE65LPSVT -sdfmin /tiled_noc_tb/DUT=$(NETLISTDIR)/tiled_noc_netlist_mapped.sdf -voptargs=+acc -do sim_netlist_synth.do work.tiled_noc_tb
+
+synthesis_tiled_4x4_rtl_sram: clean test_tiled_4x4_swap_setup netlist_base
+	$(WINE) vlog $(OPTIONS) $(NETLISTDIR)/tiled_noc_netlist.v
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/single_spm_flat.vhd
+	vsim -L CORE65LPHVT -L CORE65LPSVT -sdftyp /tiled_noc_tb/DUT=/net/cas-07/export/space/eit-cpm/dtu/argo/async_noc/netlists/tiled_noc_netlistFixed.sdf work.tiled_noc_tb -do foo.do
+
+pnr_tiled_4x4_rtl_sram: clean test_tiled_4x4_swap_setup netlist_base
+	$(WINE) vlog $(OPTIONS) $(NETLISTDIR)/tiled_noc_pnr.v
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tiled_noc_tb.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/single_spm_flat.vhd
+	vsim -L CORE65LPHVT -L CORE65LPSVT -L CLOCK65LPHVT -L CLOCK65LPSVT -sdfmax /tiled_noc_tb/DUT=/net/cas-07/export/space/eit-cpm/dtu/argo/async_noc/netlists/tiled_noc_pnr.sdf work.tiled_noc_tb
+
+#$(WINE) vsim -t 10ps -L CORE65LPHVT -L CORE65LPSVT -sdftyp /tiled_noc_tb/DUT=$(NETLISTDIR)/tiled_noc_netlistFixed.sdf -voptargs=+acc -do sim_netlist_synth.do work.tiled_noc_tb
 # netlist test cases
 netlist0: clean synth_base
 	$(WINE) vcom $(OPTIONS) $(NOCDIR)/test0_netlist.vhd
@@ -162,6 +186,20 @@ synth_base:
 	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
 	$(WINE) vcom $(OPTIONS) $(COMMON)/bram_tdp.vhd
 	$(WINE) vlog $(OPTIONS) $(NETLISTDIR)/noc_netlist.v
+
+netlist_base:
+	$(WINE) vcom $(OPTIONS) $(COMMON)/math_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp_config.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/ocp.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_defs.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/noc_interface.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/txt_util.vhd
+	$(WINE) vcom $(OPTIONS) $(COMMON)/cmd_util.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator_package.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/tile_package.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/traffic_generator.vhd
+	$(WINE) vcom $(OPTIONS) $(NOCDIR)/processor_traffic_generator_flat.vhd
+
 
 ####################################################################
 # generate schedule from xml

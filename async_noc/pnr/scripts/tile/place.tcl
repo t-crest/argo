@@ -1,5 +1,4 @@
 # add well taps to prevent latchups
-#addWellTap -cell HS65_LS_FILLERNPWPFP3 -cellInterval 25 -inRowOffset 10.0 -startRowNum 1 -skipRow 0 -prefix WELLTAP -powerDomain PD_DEFAULT
 set domains {noc_switch}
 
 # Place the power domains

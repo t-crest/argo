@@ -131,7 +131,8 @@ package noc_defs is
 	type bars_t is array (ARITY-1 downto 0, ARITY-1 downto 0) of link_t;
 
 	type latch_state is (opaque, transparent);
-
+	type latch_state_vector is array (integer range <>) of latch_state;
+	
  	-- Convenience constants, that add some semantics. Not type-safe!
 	constant EMPTY_TOKEN  : latch_state := transparent;
 	constant EMPTY_BUBBLE : latch_state := transparent;

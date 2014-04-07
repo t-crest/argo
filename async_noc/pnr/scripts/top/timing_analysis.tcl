@@ -1,45 +1,6 @@
-set_interactive_constraint_modes TT
-
-# break timing loops
-#foreach controller_reg [dbGet -p top.insts.name */controller/r_next_reg] {
-#    set controller_reg_name [dbGet $controller_reg.name]
-    # set controller_from_db [dbGet $controller_reg.instTerms.name */Q -p]
-    # set controller_from [dbGet $controller_from_db.name]
-    # set from_prefix [join [lrange [split [dbGet $controller_from_db.inst.name] /] 0 end-1] /]
-    # set driven_cells [dbGet [dbGet $controller_from_db.net.instTerms .isInput].name]
-    # foreach cell $driven_cells {
-    # 	set to_prefix [join [lrange [split $cell /] 0 end-2] /]
-    # 	if {$to_prefix eq $from_prefix} {
-    # 	    set controller_to $cell
-    # 	    break
-    # 	}
-    # }
-    #set controller_to [dbGet $controller_reg.instTerms.name */G]
-    #set_disable_timing -from Q -to D $controller_reg_name
-#}
-
-set_disable_timing -from Z -to B [dbGet top.insts.name *c_sync_ack/latch/U3]
-set_disable_timing -from A -to Z [dbGet top.insts.name */controller/U4]
-
-
-set output_latches [concat [dbGet -p top.insts.name noc_tile_*/noc_switch_1/xbar_with_latches/ch_latch_*/data_reg*] \
-  			[dbGet -p top.insts.name noc_tile_*/noc_switch_1/xbar_with_latches/ch_latch_*/type_out_reg] \
- 			[dbGet -p top.insts.name noc_tile_*/noc_switch_1/xbar_with_latches/ch_latch_*/controller/r_next_reg]]
-
-#set output_latches [dbGet -p top.insts.name noc_tile_*/noc_switch_1/xbar_with_latches/ch_latch_*/controller/r_next_reg]
-set output_latch_enables [dbGet $output_latches.instTerms.name *G]
-set input_latches [concat [dbGet -p top.insts.name noc_tile_*/noc_switch_1/*_in_latch/data_reg*] [dbGet -p top.insts.name noc_tile_*/noc_switch_1/*_in_latch/type_out_reg] [dbGet -p top.insts.name noc_tile_*/noc_switch_1/*_in_latch/controller/r_next_reg]]
-#set input_latches [dbGet -p top.insts.name noc_tile_*/noc_switch_1/*_in_latch/controller/r_next_reg]
-set input_latch_enables [dbGet $input_latches.instTerms.name *G]
-
-
-#create_clock -name clk1 -period 20 -waveform {0 9.8} $output_latch_enables
-#create_clock -name clk2 -period 20 -waveform {10 19.8} $input_latch_enables
-
-
 
 set f [open wire_delays.report.csv w]
-puts $f "cell ; direction ; start_pin ; stop_pin ; net ; arrival ; net cap ; total length ; M1 ; M2 ; M3 ; M4 ; M5 ; M6 ; M7 ; M8 ; via ; PATH"
+puts $f "cell ; direction ; start_pin ; stop_pin ; net ; start; arrival ; net cap ; total length ; M1 ; M2 ; M3 ; M4 ; M5 ; M6 ; M7 ; M8 ; via ; PATH"
 #puts $f "|------+----+-----+-------+---------+--------------+----+----+----+----+----+----+----+----+-----|"
 foreach_in_collection cell [get_cells noc_tile*] {
     set cell_ [get_object_name $cell]
@@ -84,19 +45,27 @@ foreach_in_collection cell [get_cells noc_tile*] {
 	    
 	    set path ""
 	    #report_timing -from $start_pin_ -to $end_pin_ 
-	    set delay [lindex [report_timing -from $start_pin_ -to $end_pin_ -format {arrival} -tcl_list] { 1 1 8}]
+	    set timing_list [report_timing -to $end_pin_ -tcl_list]
+	    # -format {arrival} 
+	    #set delay [lindex $timing_list { 1 1 8}]
+	    set delay [lindex $timing_list {1 1 5 1 0 end } ]
+	    set st [lindex $foo 1 1 6 1 0 end ]
 	    if {$delay eq ""} {
 		set timing_list [report_timing -from $start_pin_ -to $end_pin -unconstrained -tcl_list]
 		set delay [lindex $timing_list {1 1 0 1 1 1 3 } ]
-		# was: {1 1 5 1 3 1 4}
 		set rows [lrange [lindex $timing_list {1 1 5 1}] 1 end]
-		set p {}
-		foreach row $rows {
-		    lappend p [join [lindex $row 1] ","]
-		}
-		set path [join $p ","]
+	    } else {
+		set rows [lrange [lindex $timing_list {1 1 7 1}] 1 end]
 	    }
-	    puts $f "$cell_ ; $direction; $start_pin_ ; $end_pin_ ; $net_ ; $delay ; $cap ; $t_length ; $M1 ; $M2 ; $M3 ; $M4 ; $M5 ; $M6 ; $M7 ; $M8 ; $via ; $path" 
+	    # was: {1 1 5 1 3 1 4}
+	    
+	    set p {}
+	    foreach row $rows {
+		lappend p [join [lindex $row 1] ","]
+	    }
+	    set path [join $p ","]
+	    
+	    puts $f "$cell_ ; $direction; $start_pin_ ; $end_pin_ ; $net_ ; $st; $delay ; $cap ; $t_length ; $M1 ; $M2 ; $M3 ; $M4 ; $M5 ; $M6 ; $M7 ; $M8 ; $via ; $path" 
 	}
     }
 }

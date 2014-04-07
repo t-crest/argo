@@ -178,21 +178,5 @@ begin
       end if;
     end process type_latch;
   end generate NO_GATING;
-
-
-
-
-  --data_latch: process(left_in, lt_gated, preset)
-  --begin
-  --  if (lt_gated = '1') then
-  --	data <= transport left_in.data(PHIT_WIDTH-1 downto 0) after delay; -- Transparent
-  --  end if;
-
-  --  if (preset = '1') then
-  --	data <= init_data;	-- Preset overrides the above
-  --  end if;
-
-  --end process data_latch;
-
 end struct;
 

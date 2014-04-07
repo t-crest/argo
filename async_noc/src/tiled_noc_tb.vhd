@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <eit-cpm@cas-07.eit.lth.se>
 -- Company    : 
 -- Created    : 2014-02-25
--- Last update: 2014-03-03
+-- Last update: 2014-03-20
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ begin  -- architecture foo
 
   -- clock generation
   clk	<= not clk after NA_HPERIOD;
-  reset <= '0'	   after 4 * NA_HPERIOD + delay;
+  reset <= '0'	   after 4 * NA_HPERIOD + 2*delay;
 
   -- waveform generation
   WaveGen_Proc : process

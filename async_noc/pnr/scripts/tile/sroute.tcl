@@ -1,3 +1,8 @@
+cutRow -area 0 0 $fp_left [expr $tile_height + $fp_bottom + $fp_top]
+cutRow -area 0 0 [expr $tile_width + $fp_right + $fp_left] $fp_bottom
+cutRow -area [expr $tile_width + $fp_right] 0 [expr $tile_width + $fp_right + $fp_left] [expr $tile_height + $fp_bottom + $fp_top]
+cutRow -area  0 [expr $tile_height + $fp_bottom] [expr $tile_width + $fp_right + $fp_left] [expr $tile_height + $fp_bottom + $fp_top]
+
 sroute -connect { corePin } -powerDomains PD_DEFAULT -nets VDD_DEFAULT
 sroute -connect { corePin } -nets GND
 

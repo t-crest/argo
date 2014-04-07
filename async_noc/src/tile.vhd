@@ -141,12 +141,12 @@ architecture behav of tile is
 
   component processor is
     port (
-      clk, reset : in  std_logic;
-      spm_master : out spm_master;
-      spm_slave	 : in  spm_slave;
-      p_master	 : out ocp_io_m;
-      p_slave	 : in  ocp_io_s;
-      settings	 : in  tile_settings);
+      clk, reset   : in	 std_logic;
+      p_spm_master : out spm_master;
+      p_spm_slave  : in	 spm_slave;
+      p_ocp_master : out ocp_io_m;
+      p_ocp_slave  : in	 ocp_io_s;
+      p_settings   : in	 tile_settings);
   end component processor;
 
   component spm is
@@ -162,7 +162,7 @@ architecture behav of tile is
       b_clk	   : in	 std_logic;
       reset	   : in	 std_logic);
   end component spm;
-  
+
   -----------------------------------------------------------------------------
   -- Signal declarations
   -----------------------------------------------------------------------------
@@ -236,7 +236,7 @@ begin  -- fake_tile
 
   input_fifo : entity work.fifo(rtl)
     generic map (
-      N				 => 0,	-- 1
+      N				 => 1,	-- 1
       TOKEN			 => EMPTY_BUBBLE,
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
       GENERATE_ACKNOWLEDGE_DELAY => 1,	-- 1
@@ -252,7 +252,7 @@ begin  -- fake_tile
 
   output_fifo : entity work.fifo(rtl)
     generic map (
-      N				 => 0,	-- 2
+      N				 => 2,	-- 2
       TOKEN			 => VALID_TOKEN,
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
       GENERATE_ACKNOWLEDGE_DELAY => 1,	-- 1
@@ -266,7 +266,7 @@ begin  -- fake_tile
       right_in	=> net_to_ip_b
       );
 
-  spm_1: spm
+  spm_1 : spm
     generic map (
       DATA => SPM_DATA_WIDTH,
       ADDR => SPM_ADDR_WIDTH)
@@ -278,16 +278,16 @@ begin  -- fake_tile
       a_clk	   => clk,
       b_clk	   => clk,
       reset	   => reset);
-  
+
   processor_1 : processor
     port map (
-      clk	 => clk,
-      reset	 => reset,
-      spm_master => p_spm_master,
-      spm_slave	 => p_spm_slave,
-      p_master	 => p_master,
-      p_slave	 => p_slave,
-      settings	 => settings);
+      clk	   => clk,
+      reset	   => reset,
+      p_spm_master => p_spm_master,
+      p_spm_slave  => p_spm_slave,
+      p_ocp_master => p_master,
+      p_ocp_slave  => p_slave,
+      p_settings   => settings);
 
   -- generate
   half_clk_gen : process (clk, reset)

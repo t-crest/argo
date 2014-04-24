@@ -140,6 +140,7 @@ traffic_generators:
 work:
 	rm -rf work
 	$(PREFIX) vlib work
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/config_types.vhd
 
 ####################################################################
 $(AUTO_TEST): clean

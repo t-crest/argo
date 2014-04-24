@@ -43,6 +43,7 @@ use ieee.numeric_std.all;
 use std.textio.all;
 use work.txt_util.all;
 use work.cmd_util.all;
+use work.config_types.all;
 use work.config.all;
 use work.noc_defs.all;
 use work.ocp.all;

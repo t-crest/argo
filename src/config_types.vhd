@@ -5,11 +5,11 @@
 -- modification, are permitted provided that the following conditions are met:
 --
 --    1. Redistributions of source code must retain the above copyright notice,
---       this list of conditions and the following disclaimer.
+--	 this list of conditions and the following disclaimer.
 --
 --    2. Redistributions in binary form must reproduce the above copyright
---       notice, this list of conditions and the following disclaimer in the
---       documentation and/or other materials provided with the distribution.
+--	 notice, this list of conditions and the following disclaimer in the
+--	 documentation and/or other materials provided with the distribution.
 --
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -29,35 +29,26 @@
 
 
 --------------------------------------------------------------------------------
--- Definitions package
+-- package defining types to be used for configuration
+-- we can't use noc_defs for this since noc_defs depends
+-- on the configuration package 
 --
 -- Author: Evangelia Kasapaki
 -- Author: Rasmus Bo Soerensen
+-- Author: Christoph Mueller
 --------------------------------------------------------------------------------
 
-library ieee;
-use ieee.std_logic_1164.all;
-use work.config_types.all;
+package config_types is
+  -- Architectures & Implementations to choose from 
+  type ARCHITECTURES is (RTL, FPGA, ASIC);
+  type IMPLEMENTATIONS is (SYNC, ASYNC);
 
-package config is
-  
-    
-    
-    
-    constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
-    constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
-  
-    constant N : integer := 2; -- Horizontal width
-    constant M : integer := 2; -- Vertical Height
-
-    constant NODES : integer := N*M;
-    constant PRD_LENGTH : integer := 5;
-    
-    constant TEST_TILED_2x2_DIR : string := "../test/testcases/test_tiled_2x2/";
-    constant TG_SCHEDULE_FILE : string := TEST_TILED_2x2_DIR & "all_to_all.sched";
-    constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";
-    constant TG_DMA_INIT_FILE : string := TEST_TILED_2x2_DIR & "DMA_init.dat";
-    
-end package ; -- aegean_def
-
-
+  type latch_state is (opaque, transparent);
+  type latch_state_vector is array (integer range <>) of latch_state;
+	
+  -- Convenience constants, that add some semantics. Not type-safe!
+  constant EMPTY_TOKEN  : latch_state := transparent;
+  constant EMPTY_BUBBLE : latch_state := transparent;
+  constant VALID_BUBBLE : latch_state := transparent;
+  constant VALID_TOKEN  : latch_state := opaque;	-- Only valid-tokens are opaque latches
+end package config_types;

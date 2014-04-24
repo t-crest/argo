@@ -38,6 +38,7 @@ use std.textio.all;
 use work.txt_util.all;
 use work.math_util.all;
 use work.cmd_util.all;
+use work.config_types.all;
 use work.config.all;
 use work.ocp.all;
 use work.noc_interface.all;

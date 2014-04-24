@@ -35,10 +35,14 @@
 -- Author: Rasmus Bo Soerensen
 --------------------------------------------------------------------------------
 
+library ieee;
+use ieee.std_logic_1164.all;
+use work.config_types.all;
+
 package config is
   
-  type ARCHITECTURES is (RTL, FPGA, ASIC);
-  type IMPLEMENTATIONS is (SYNC, ASYNC);
+  
+  
 
   constant TARGET_ARCHITECTURE   : ARCHITECTURES   := RTL;
   constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := SYNC;

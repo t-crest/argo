@@ -38,6 +38,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use work.math_util.all;
+use work.config_types.all;
 use work.config.all;
 
 package noc_defs is
@@ -76,7 +77,7 @@ package noc_defs is
 	constant PDELAY		: time := 500 ps;
 	constant NA_HPERIOD	: time := 5 ns;
 	constant P_HPERIOD	: time := 5 ns;
-    constant SKEW           : time := 0 ns;
+	constant SKEW           : time := 0 ns;
 
 	--addressing
 	constant ADDR_MASK_W	: integer := 8;
@@ -129,15 +130,6 @@ package noc_defs is
 	type chs_f is array (ARITY-1 downto 0) of channel_forward;
 	type chs_b is array (ARITY-1 downto 0) of channel_backward;
 	type bars_t is array (ARITY-1 downto 0, ARITY-1 downto 0) of link_t;
-
-	type latch_state is (opaque, transparent);
-	type latch_state_vector is array (integer range <>) of latch_state;
-	
- 	-- Convenience constants, that add some semantics. Not type-safe!
-	constant EMPTY_TOKEN  : latch_state := transparent;
-	constant EMPTY_BUBBLE : latch_state := transparent;
-	constant VALID_BUBBLE : latch_state := transparent;
-	constant VALID_TOKEN  : latch_state := opaque;	-- Only valid-tokens are opaque latches
 
 	constant delay : time := 0.3 ns;
 

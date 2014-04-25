@@ -33,6 +33,7 @@
 -- NxN bi-torus NoC.
 --
 -- Author: Evangelia Kasapaki
+-- 	   Christoph Mueller
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -43,6 +44,7 @@ use ieee.numeric_std.all;
 use std.textio.all;
 use work.txt_util.all;
 use work.cmd_util.all;
+use work.config_types.all;
 use work.config.all;
 use work.noc_defs.all;
 use work.ocp.all;
@@ -52,10 +54,6 @@ use work.tile_package.all;
 
 entity tiled_noc is
 
-  generic (
-    LINK_PIPELINE_STAGES : natural := 0;
-    LINK_PIPELINE_INIT	 : latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
-    SWAP_PORTS		 : boolean := true);
   port (
     --p_clk		: in std_logic;
     n_clk : in std_logic;

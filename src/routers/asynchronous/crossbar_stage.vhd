@@ -39,6 +39,7 @@
 library ieee;
 use ieee.NUMERIC_STD.all;
 use ieee.std_logic_1164.all;
+use work.config_types.all;
 use work.noc_defs.all;
 
 entity crossbar_stage is

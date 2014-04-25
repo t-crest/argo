@@ -39,6 +39,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.NUMERIC_STD.all;
+use work.config_types.all;
 use work.noc_defs.all;
 use work.AS_FPGA.all;
 use work.delays.all;

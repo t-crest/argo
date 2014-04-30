@@ -58,6 +58,13 @@ package config is
     constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";
     constant TG_DMA_INIT_FILE : string := TEST_TILED_2x2_DIR & "DMA_init.dat";
     
+    -- simulation delays
+    constant PDELAY		: time := 500 ps;
+    constant NA_HPERIOD	: time := 5 ns;
+    constant P_HPERIOD	: time := 5 ns;
+    constant SKEW           : time := 0 ns;
+    constant delay : time := 0.3 ns;
+    
 end package ; -- aegean_def
 
 

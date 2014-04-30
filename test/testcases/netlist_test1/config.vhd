@@ -59,6 +59,13 @@ package config is
 
     constant TG_READ_DATA_TIME : time := 5 us;  -- Read data after...
     
+    -- simulation delays
+    constant PDELAY		: time := 500 ps;
+    constant NA_HPERIOD	: time := 5 ns;
+    constant P_HPERIOD	: time := 5 ns;
+    constant SKEW           : time := 0 ns;
+    constant delay : time := 0.3 ns;
+    
 
     
 end package ; -- aegean_def

@@ -1,6 +1,6 @@
 # test case of the asynchronous noc set up as a 2x2 configuration
 
-netlist_test1: clean netlist_test1_setup noc_async traffic_generators
+netlist_test1: clean netlist_test1_setup async_rtl_asic noc_async traffic_generators
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/bench/noc_tb.vhd
 	$(PREFIX) vsim -t 10ps -voptargs=+acc -do $(TESTDIR)/testcases/netlist_test1/sim1.do noc_tb
 

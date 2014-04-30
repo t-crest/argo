@@ -7,9 +7,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use work.noc_defs.all;
+use work.config.all;
 
-entity AS_C_Generic is
+entity c_gate_generic is
 	generic(
 		constant C_INIT : std_logic;
 		constant WIDTH  : integer := 3
@@ -23,7 +23,7 @@ end entity;
 
 -- ----------------------------------------------------------------------------
 
-architecture LUTs of AS_C_Generic is
+architecture LUTs of c_gate_generic is
 	constant reset_value: std.STANDARD.BIT := to_bit(C_INIT);
 	signal reset : std_logic;
 	

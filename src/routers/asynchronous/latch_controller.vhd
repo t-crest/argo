@@ -37,8 +37,10 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use work.config.all;
 use work.config_types.all;
-use work.noc_defs.all;
+
+--use work.noc_defs.all;
 
 --		  ____________
 --      Rin ---> | Latch      | ---> Rout

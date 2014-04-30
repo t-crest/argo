@@ -38,6 +38,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
+use work.config.all;
 use work.config_types.all;
 use work.noc_defs.all;
 
@@ -109,7 +110,7 @@ begin
 
 
   -- Delay line at the output request
-  REQUEST_DELAY : if GENERATE_REQUEST_DELAY = 1 generate
+  REQUEST_DELAY: if GENERATE_REQUEST_DELAY > 0 generate
     -- synthesis generates two inverters, ensure the
     -- generation of an actually reasonable delay by the
     -- definition of a synthesis constraint at synthesis
@@ -117,7 +118,10 @@ begin
     -- definition
     -- out_req_2 <= not out_req_1 after 1 ns;
     -- out_req_1 <= not out_req_0 after 1 ns;
-    out_req_2 <= inject_delay_line(out_req_0) after 1 ns;
+    req_delay : entity work.matched_delay
+	generic map(size => GENERATE_REQUEST_DELAY)
+	port map(d => out_req_0,
+		z => out_req_2);
   end generate REQUEST_DELAY;
 
   -- No delay line
@@ -125,8 +129,11 @@ begin
     out_req_2 <= out_req_0;
   end generate NO_REQUEST_DELAY;
 
-  ACKNOWLEDGE_DELAY : if GENERATE_ACKNOWLEDGE_DELAY = 1 generate
-    left_out.ack <= inject_delay_line(out_ack);
+  ACKNOWLEDGE_DELAY: if GENERATE_ACKNOWLEDGE_DELAY >0 generate
+    ack_delay : entity work.matched_delay
+	generic map(size => GENERATE_ACKNOWLEDGE_DELAY)
+	port map(d => out_ack,
+		z => left_out.ack);
   end generate ACKNOWLEDGE_DELAY;
   right_out.req <= out_req_2;
 

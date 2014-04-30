@@ -30,6 +30,12 @@ else
 	PREFIX=
 endif
 
+#FPGA simulation libraries paths
+SECUREIPPATH=/home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/verilog/mti_se/10.1b/lin64
+UNISIMPATH=/home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/vhdl/mti_se/10.1b/lin64
+SIMPRIMPATH=/home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/vhdl/mti_se/10.1b/lin64
+
+
 ####################################################################
 # default rule:
 
@@ -101,8 +107,7 @@ router_sync: ni_sync
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/synchronous/router.vhd
 
 router_async: ni_async
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/sr_latch.vhd
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/c_gate_generic.vhd
+	
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/latch_controller.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/channel_latch.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/fifo.vhd
@@ -120,6 +125,10 @@ noc_sync: router_sync
 noc_async: router_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_node.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_n.vhd
+	
+noc_async_selftimed: router_async
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/fpga/self_timed_noc_2x2.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/fpga/noc_n.vhd
 
 
 tile: router_async traffic_generators
@@ -136,6 +145,20 @@ traffic_generators:
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/cmd_util.vhd
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/traffic_generator_package.vhd
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/traffic_generator.vhd
+	
+async_rtl_asic:
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/delays.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/rtl/matched_delay.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/rtl/sr_latch.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/rtl/c_gate_generic.vhd
+async_fpga:
+	$(PREFIX) vmap secureip $(SECUREIPPATH)/secureip
+	$(PREFIX) vmap unisim $(UNISIMPATH)/unisim
+	$(PREFIX) vmap simprim $(SIMPRIMPATH)/simprim
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/delays.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/fpga/matched_delay.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/fpga/AS_C2.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/fpga/c_gate_generic.vhd
 
 work:
 	rm -rf work

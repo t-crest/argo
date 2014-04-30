@@ -73,11 +73,7 @@ package noc_defs is
 	constant BANK1_W	: integer := 32;
 	constant BANK2_W	: integer := 16;
 
-	-- simulation delays
-	constant PDELAY		: time := 500 ps;
-	constant NA_HPERIOD	: time := 5 ns;
-	constant P_HPERIOD	: time := 5 ns;
-	constant SKEW           : time := 0 ns;
+	
 
 	--addressing
 	constant ADDR_MASK_W	: integer := 8;
@@ -131,36 +127,13 @@ package noc_defs is
 	type chs_b is array (ARITY-1 downto 0) of channel_backward;
 	type bars_t is array (ARITY-1 downto 0, ARITY-1 downto 0) of link_t;
 
-	constant delay : time := 0.3 ns;
+	--constant delay : time := 0.3 ns; -- Migrated to delays.vhd
 
-        -- Function prototype
-	function resolve_latch_state (arg : latch_state) return std_logic;
-	function inject_delay_line (delay_in : std_logic) return std_logic;
+        
 
 end package noc_defs;
 
-package body noc_defs is
 
-	function resolve_latch_state (arg : latch_state) return std_logic is
-	begin
-		case arg is
-			when transparent => return '0';	-- valid-bubbles (and all empties - also empty tokens) are transparent latches
-			when others =>		return '1';	-- Only valid-tokens are opaque latches
-		end case;
-	end function resolve_latch_state;
-
-  -- injects two inverters
-  function inject_delay_line (
-    delay_in : std_logic)
-    return std_logic is
-    variable delay_intermediate, delay_out : std_logic;
-  begin
-    delay_intermediate := not delay_in;
-    delay_out	       := not delay_intermediate;
-    return delay_out;
-  end function inject_delay_line;
-  
-end package body noc_defs;
 
 
 

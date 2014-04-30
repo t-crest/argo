@@ -21,6 +21,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use work.config.all;
+use work.delays.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
 use work.traffic_generator_package.all;

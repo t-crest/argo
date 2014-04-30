@@ -30,9 +30,7 @@
 
 
 --------------------------------------------------------------------------------
--- NoC node for the TDM NoC, including SPMs, NI, router.
---
--- Author: Evangelia Kasapaki
+-- Self-timed NoC - Only routers
 --------------------------------------------------------------------------------
 
 library ieee;

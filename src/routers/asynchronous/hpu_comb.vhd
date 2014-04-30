@@ -41,6 +41,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.config_types.all;
 use work.noc_defs.all;
+use work.delays.all;
 
 
 entity hpu_comb is
@@ -86,7 +87,7 @@ architecture struct of hpu_comb is
   alias OUT_REQ : std_logic is chan_out_f.req;
   alias OUT_ACK : std_logic is chan_out_b.ack;
 
-  signal REQ_INT : std_logic;
+  signal REQ_INT, OUT_REQ_INT : std_logic;
 
   signal sel_latch_en : std_logic;
 
@@ -133,16 +134,24 @@ begin
       sel <= sel_internal;
     end if;
   end process sel_latch;
+  
+   in_req_delay : entity work.matched_delay
+	generic map(size => hpu_first_req_delay)
+	port map(d => IN_REQ,
+		z => REQ_INT);
+    out_req_delay : entity work.matched_delay
+	generic map(size => hpu_second_req_delay)
+	port map(d => REQ_INT,
+		z => OUT_REQ_INT);
 
-  comb : process (chan_in_f, chan_out_b, VLD_TYPE, SOP, REQ_INT) is
+  comb : process (chan_in_f, chan_out_b, VLD_TYPE, SOP, OUT_REQ_INT) is
   begin
     -- default case: forward everything
     chan_in_b  <= chan_out_b;
     chan_out_f <= chan_in_f;
 
     -- implement delays (overrides req in assotiation above!)
-    REQ_INT <= inject_delay_line(IN_REQ);
-    OUT_REQ <= inject_delay_line(REQ_INT);
+    OUT_REQ <= OUT_REQ_INT;
 
     -- This is the header phit, so we shift the addr so the next switch knows where to route the packet.
     -- This allows one-hot decoding logic to always be driven by bottom 2 LSb's.

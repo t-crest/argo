@@ -40,6 +40,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.config_types.all;
 use work.noc_defs.all;
+use work.delays.all;
 
 -- A switch has a total pin-count of 5*(34+1)*2 + 5*1*2 + 1 = 361
 
@@ -102,6 +103,8 @@ begin
 	begin
 		north_in_latch : entity work.channel_latch(struct)
 		generic map (
+			GENERATE_REQUEST_DELAY => link_req_delay,
+			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
 		port map (
@@ -115,6 +118,8 @@ begin
 
 		south_in_latch : entity work.channel_latch(struct)
 		generic map (
+			GENERATE_REQUEST_DELAY => link_req_delay,
+			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
 		port map (
@@ -128,6 +133,8 @@ begin
 
 		east_in_latch : entity work.channel_latch(struct)
 		generic map (
+			GENERATE_REQUEST_DELAY => link_req_delay,
+			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
 		port map (
@@ -141,6 +148,8 @@ begin
 
 		west_in_latch : entity work.channel_latch(struct)
 		generic map (
+			GENERATE_REQUEST_DELAY => link_req_delay,
+			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
 		port map (
@@ -154,6 +163,8 @@ begin
 
 		resource_in_latch : entity work.channel_latch(struct)
 		generic map (
+			GENERATE_REQUEST_DELAY => inp_req_delay,
+			GENERATE_ACKNOWLEDGE_DELAY => inp_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
 		port map (

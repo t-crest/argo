@@ -1,6 +1,6 @@
 # test case of the asynchronous noc set up as a 4x4 configuration
 
-test_tiled_4x4: clean test_tiled_4x4_setup noc_tiled
+test_tiled_4x4: clean test_tiled_4x4_setup async_rtl_asic noc_tiled
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/bench/tiled_noc_tb.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/fake_entities/processor_traffic_generator.vhd
 	$(PREFIX) vsim -t 10ps -voptargs=+acc -do rtl/tile_netlist_rtl.do tiled_noc_tb

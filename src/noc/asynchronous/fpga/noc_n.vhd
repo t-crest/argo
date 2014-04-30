@@ -42,30 +42,28 @@ use ieee.numeric_std.all;
 use work.config_types.all;
 use work.config.all;
 use work.noc_defs.all;
-use work.noc_interface.all;
 use work.ocp.all;
+use work.noc_interface.all;
 
 
 entity noc is
 
-port (
-	--p_clk		: in std_logic;
-	n_clk		: in std_logic;
-       	n_clk_skd	: in std_logic;
+  port (
+    p_clk : in std_logic;
+    n_clk : in std_logic;
+    reset : in std_logic;
 
-	reset		: in std_logic;
+    ocp_io_ms : in  ocp_io_m_a;
+    ocp_io_ss : out ocp_io_s_a;
 
-	p_ports_in	: in ocp_io_m_a;
-	p_ports_out	: out ocp_io_s_a;
-
-	spm_ports_in	: in spm_slaves;
-	spm_ports_out	: out spm_masters
-
-);
+    spm_ports_m : out spm_masters;
+    spm_ports_s : in  spm_slaves
+    );
 
 end noc;
 
 architecture struct of noc is
+
 
 ------------------------------component declarations----------------------------
 
@@ -98,6 +96,7 @@ port (
 end component;
 
 ------------------------------signal declarations----------------------------
+
 type clk_n is array (0 to (N-1)) of std_logic;
 type clk_m is array (0 to (M-1)) of clk_n;
 
@@ -122,7 +121,8 @@ signal net_to_ip_b : link_m_b;
 
 
 begin
-	routers: self_timed_noc_2x2 port map(
+
+  routers: self_timed_noc_2x2 port map(
 		reset => reset,
 	   	n00_in_f => ip_to_net_f(0)(0),
 		n00_in_b => ip_to_net_b(0)(0),
@@ -142,94 +142,46 @@ begin
 		n11_out_b => net_to_ip_b(1)(1)
 	);
 
-	nodes_m : for i in 0 to M-1 generate
-		nodes_n : for j in 0 to N-1 generate
-                        skewed: if i=0 and j=0 generate
-                        	half_clk_gen: process (n_clk_skd, reset)
-				begin
-					if reset='1' then
-					  half_clk(i)(j) <= '0';
-					elsif falling_edge(n_clk_skd) then
-					      half_clk(i)(j) <= not half_clk(i)(j);
-					end if;
-				end process half_clk_gen;
-				del_half_clk0(i)(j) <= not half_clk(i)(j);
-				ip_to_net_f(i)(j).req <= not del_half_clk0(i)(j) after 2 ns;
-				ip_to_net_f(i)(j).data <= ip_to_net_link(i)(j);
-				net_to_ip_link(i)(j) <= net_to_ip_f(i)(j).data;
-				net_to_ip_b(i)(j).ack <= not del_half_clk0(i)(j) after 2 ns;
-                        
-		                -- NA instance
-				na : entity work.nAdapter
-				port map(
-					-- General
-					na_clk=>n_clk_skd,
-					na_reset=>reset,
+  nodes_m : for i in 0 to M-1 generate
+    nodes_n : for j in 0 to N-1 generate
+      half_clk_gen: process (n_clk, reset)
+		begin
+		if reset='1' then
+			half_clk(i)(j) <= '0';
+		elsif falling_edge(n_clk) then
+			half_clk(i)(j) <= not half_clk(i)(j);
+		end if;
+	end process half_clk_gen;
+	del_half_clk0(i)(j) <= not half_clk(i)(j);
+	ip_to_net_f(i)(j).req <= not del_half_clk0(i)(j) after 2 ns;
+	ip_to_net_f(i)(j).data <= ip_to_net_link(i)(j);
+	net_to_ip_link(i)(j) <= net_to_ip_f(i)(j).data;
+	net_to_ip_b(i)(j).ack <= not del_half_clk0(i)(j) after 2 ns;
 
-					-- Processor Ports
-					-- DMA Configuration Port - OCP
-					proc_in=>p_ports_in((i*N)+j),
-					proc_out=>p_ports_out((i*N)+j),
+	-- NA instance
+	na : entity work.nAdapter
+		port map(
+			-- General
+			na_clk=>n_clk,
+			na_reset=>reset,
 
-					-- SPM Data Port - OCP?
-					spm_in=>spm_ports_in((i*N)+j),
-					spm_out=>spm_ports_out((i*N)+j),
+			-- Processor Ports
+			-- DMA Configuration Port - OCP
+			proc_in=>ocp_io_ms((i*N)+j),
+			proc_out=>ocp_io_ss((i*N)+j),
 
-					-- Network Ports
-					-- Incoming Port
-					pkt_in=>net_to_ip_link(i)(j),
+			-- SPM Data Port - OCP?
+			spm_in=>spm_ports_s((i*N)+j),
+			spm_out=>spm_ports_m((i*N)+j),
 
-					-- Outgoing Port
-					pkt_out=>ip_to_net_link(i)(j)
-				);
-				
-			end generate skewed;			
+			-- Network Ports
+			-- Incoming Port
+			pkt_in=>net_to_ip_link(i)(j),
 
-		    	not_skewed: if not(i=0) or not(j=0) generate
-		    	
-		    		half_clk_gen: process (n_clk, reset)
-				begin
-					if reset='1' then
-					  half_clk(i)(j) <= '0';
-					elsif falling_edge(n_clk) then
-					      half_clk(i)(j) <= not half_clk(i)(j);
-					end if;
-				end process half_clk_gen;
-				del_half_clk0(i)(j) <= not half_clk(i)(j);
-				ip_to_net_f(i)(j).req <= not del_half_clk0(i)(j) after 2 ns;
-				ip_to_net_f(i)(j).data <= ip_to_net_link(i)(j);
-				net_to_ip_link(i)(j) <= net_to_ip_f(i)(j).data;
-				net_to_ip_b(i)(j).ack <= not del_half_clk0(i)(j) after 2 ns;
+			-- Outgoing Port
+			pkt_out=>ip_to_net_link(i)(j)
+		);
+    end generate nodes_n;
+  end generate nodes_m;
 
-				-- NA instance
-				na : entity work.nAdapter
-				port map(
-					-- General
-					na_clk=>n_clk,
-					na_reset=>reset,
-
-					-- Processor Ports
-					-- DMA Configuration Port - OCP
-					proc_in=>p_ports_in((i*N)+j),
-					proc_out=>p_ports_out((i*N)+j),
-
-					-- SPM Data Port - OCP?
-					spm_in=>spm_ports_in((i*N)+j),
-					spm_out=>spm_ports_out((i*N)+j),
-
-					-- Network Ports
-					-- Incoming Port
-					pkt_in=>net_to_ip_link(i)(j),
-
-					-- Outgoing Port
-					pkt_out=>ip_to_net_link(i)(j)
-				);
-
-
-                        end generate not_skewed;
-
-
-		end generate nodes_n;
-	end generate nodes_m;
-	
 end struct;

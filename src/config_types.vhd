@@ -38,6 +38,9 @@
 -- Author: Christoph Mueller
 --------------------------------------------------------------------------------
 
+library ieee;
+use ieee.std_logic_1164.all;
+
 package config_types is
   -- Architectures & Implementations to choose from 
   type ARCHITECTURES is (RTL, FPGA, ASIC);
@@ -51,4 +54,30 @@ package config_types is
   constant EMPTY_BUBBLE : latch_state := transparent;
   constant VALID_BUBBLE : latch_state := transparent;
   constant VALID_TOKEN  : latch_state := opaque;	-- Only valid-tokens are opaque latches
+  -- Function prototype
+  function resolve_latch_state (arg : latch_state) return std_logic;
+  --function inject_delay_line (delay_in : std_logic) return std_logic;
 end package config_types;
+
+package body config_types is
+
+	function resolve_latch_state (arg : latch_state) return std_logic is
+	begin
+		case arg is
+			when transparent => return '0';	-- valid-bubbles (and all empties - also empty tokens) are transparent latches
+			when others =>		return '1';	-- Only valid-tokens are opaque latches
+		end case;
+	end function resolve_latch_state;
+
+  -- injects two inverters
+  --function inject_delay_line (
+  --  delay_in : std_logic)
+  --  return std_logic is
+  --  variable delay_intermediate, delay_out : std_logic;
+  --begin
+  --  delay_intermediate := not delay_in;
+  --  delay_out	       := not delay_intermediate;
+  --  return delay_out;
+  --end function inject_delay_line;
+  
+end package body config_types;

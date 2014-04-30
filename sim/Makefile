@@ -31,9 +31,13 @@ else
 endif
 
 #FPGA simulation libraries paths
-SECUREIPPATH=/home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/verilog/mti_se/10.1b/lin64
-UNISIMPATH=/home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/vhdl/mti_se/10.1b/lin64
-SIMPRIMPATH=/home/lestat/Programs/Xilinx/14.7/ISE_DS/ISE/vhdl/mti_se/10.1b/lin64
+# The xilinx environment variable is set after the xilinx tools
+# have been initialized, so run 
+# 	source <path to installation>/ISE_DS/settings64.sh
+# before trying to simulate.
+SECUREIPPATH=$(XILINX)/verilog/mti_se/10.1b/lin64
+UNISIMPATH=$(XILINX)/vhdl/mti_se/10.1b/lin64
+SIMPRIMPATH=$(XILINX)/vhdl/mti_se/10.1b/lin64
 
 
 ####################################################################
@@ -107,7 +111,6 @@ router_sync: ni_sync
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/synchronous/router.vhd
 
 router_async: ni_async
-	
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/latch_controller.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/channel_latch.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/fifo.vhd
@@ -125,7 +128,7 @@ noc_sync: router_sync
 noc_async: router_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_node.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/noc_n.vhd
-	
+
 noc_async_selftimed: router_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/fpga/self_timed_noc_2x2.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/fpga/noc_n.vhd
@@ -135,17 +138,15 @@ tile: router_async traffic_generators
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tile.vhd
 
 noc_tiled: tile
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc_noswap.vhd
-
-noc_tiled_swap: tile
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc_swap.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/link_pipeline.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc.vhd
 
 traffic_generators:
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tile_package.vhd
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/cmd_util.vhd
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/traffic_generator_package.vhd
 	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/traffic_generator.vhd
-	
+
 async_rtl_asic:
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/delays.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/rtl/matched_delay.vhd

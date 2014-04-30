@@ -52,6 +52,11 @@ package config is
     
     constant NODES : integer := N*M;
     constant PRD_LENGTH : integer := 23;
+
+    constant SWAP_PORTS : boolean := true;
+    
+    constant LINK_PIPELINE_STAGES : integer := 0;
+    constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
     
     constant TEST_DIR : string := "../test/testcases/test_tiled_4x4_swap/";
     constant TG_SCHEDULE_FILE : string := TEST_DIR & "all_to_all.sched";

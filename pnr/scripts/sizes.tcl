@@ -69,7 +69,11 @@ set grid_top 124
 set grid_width [expr $tile_width + $fp_left + $fp_right]
 set grid_height [expr $tile_height + $fp_top + $fp_bottom]
 
-
 set w [expr $grid_left + $gridN * ($grid_width + $distance) - $distance + $grid_right]
 set h [expr $grid_bottom + $gridM * ($grid_height + $distance) - $distance + $grid_top]
  
+# link pipeline stages
+
+set pl_height [expr 12 * $cell_height]
+set pl_width $pl_height
+#10

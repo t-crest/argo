@@ -12,6 +12,7 @@ initial/partitions/tiled_noc/tiled_noc.globals: $(NETLIST_DIR)/tiled_noc_netlist
 	pushd initial; encounter -init scripts/make.tcl; popd
 
 initial: $(NETLIST_DIR)/tiled_noc_netlist.v
+	mkdir initial
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/initial initial/scripts
 	pushd initial; encounter -win -init scripts/all.tcl; popd
 

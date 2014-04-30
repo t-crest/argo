@@ -25,7 +25,7 @@ asic_tiled_4x4: ../src/config_types.vhd \
  ../src/noc/asynchronous/noc_node.vhd \
  ../src/noc/tiled/tile_package.vhd \
  ../src/noc/tiled/tile.vhd \
- ../src/noc/tiled/tiled_noc.vhd
+ ../src/noc/tiled/tiled_noc.vhd clean
 	dc_shell -f targets/asic_tiled_4x4/synthesis.tcl
 
 

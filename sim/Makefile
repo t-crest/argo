@@ -100,10 +100,10 @@ ni_common: noc_defs mem
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/dma.vhd
 
 ni_sync: ni_common mem
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/synchronous/nAdapter.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/nAdapter.vhd
 
 ni_async: ni_common mem
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/asynchronous/nAdapter.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/nAdapter.vhd
 
 router_sync: ni_sync
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/synchronous/hpu.vhd

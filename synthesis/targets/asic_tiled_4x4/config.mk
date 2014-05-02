@@ -9,7 +9,7 @@ asic_tiled_4x4: ../src/config_types.vhd \
  ../src/mem/bram.vhd \
  ../src/ni/dma.vhd \
  ../src/util/txt_util.vhd \
- ../src/ni/asynchronous/nAdapter.vhd \
+ ../src/ni/nAdapter.vhd \
  ../src/routers/asynchronous/sr_latch.vhd \
  ../src/routers/asynchronous/c_gate_generic.vhd \
  ../src/routers/asynchronous/latch_controller.vhd \

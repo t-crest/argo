@@ -47,7 +47,7 @@ entity channel_latch is
   generic (
     -- disables the clock gating
     -- default: gating enabled
-    constant GATING_ENABLED : integer := 0;
+    constant GATING_ENABLED : integer := 1;
 
     -- for some cases a delayed request is needed
     -- default: request delay disabled
@@ -169,7 +169,7 @@ begin
 
   NO_GATING : if GATING_ENABLED = 0 generate
     -- generate enable signal
-    lt_gated <= lt_en after delay;
+    lt_gated <= lt_en;
     
     -- Normal transparent latch, cf. figure 6.21 in S&F
     type_latch : process(type_in, lt_en, left_in, preset)

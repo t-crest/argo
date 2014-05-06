@@ -47,7 +47,7 @@ entity hpu_latch is
   generic (
     -- disables the clock gating
     -- default: gating enabled
-    constant GATING_ENABLED : integer := 0;
+    constant GATING_ENABLED : integer := 1;
 
     -- for some cases a delayed request is needed
     -- default: request delay disabled
@@ -110,7 +110,7 @@ begin
 
 
   -- Delay line at the output request
-  REQUEST_DELAY: if GENERATE_REQUEST_DELAY > 0 generate
+  REQUEST_DELAY : if GENERATE_REQUEST_DELAY > 0 generate
     -- synthesis generates two inverters, ensure the
     -- generation of an actually reasonable delay by the
     -- definition of a synthesis constraint at synthesis
@@ -119,9 +119,9 @@ begin
     -- out_req_2 <= not out_req_1 after 1 ns;
     -- out_req_1 <= not out_req_0 after 1 ns;
     req_delay : entity work.matched_delay
-	generic map(size => GENERATE_REQUEST_DELAY)
-	port map(d => out_req_0,
-		z => out_req_2);
+      generic map(size => GENERATE_REQUEST_DELAY)
+      port map(d => out_req_0,
+	       z => out_req_2);
   end generate REQUEST_DELAY;
 
   -- No delay line
@@ -129,11 +129,11 @@ begin
     out_req_2 <= out_req_0;
   end generate NO_REQUEST_DELAY;
 
-  ACKNOWLEDGE_DELAY: if GENERATE_ACKNOWLEDGE_DELAY >0 generate
+  ACKNOWLEDGE_DELAY : if GENERATE_ACKNOWLEDGE_DELAY > 0 generate
     ack_delay : entity work.matched_delay
-	generic map(size => GENERATE_ACKNOWLEDGE_DELAY)
-	port map(d => out_ack,
-		z => left_out.ack);
+      generic map(size => GENERATE_ACKNOWLEDGE_DELAY)
+      port map(d => out_ack,
+	       z => left_out.ack);
   end generate ACKNOWLEDGE_DELAY;
   right_out.req <= out_req_2;
 
@@ -147,14 +147,16 @@ begin
     lt_gated <= lt_en or (not type_out) after delay;
 
     -- Normal transparent latch, cf. figure 6.21 in S&F
-    type_latch : process(type_in, lt_en, preset)
+    type_latch : process(type_in, lt_en, preset, sel_in)
     begin
       if (lt_en = '1') then
 	type_out <= transport type_in after delay;
+	sel_out	 <= transport sel_in  after delay;
       end if;
 
       if (preset = '1') then
 	type_out <= '0';
+	sel_out	 <= init_sel;
       end if;
     end process type_latch;
 
@@ -163,12 +165,12 @@ begin
     begin
       if (lt_gated = '1') then
 	data <= transport left_in.data(PHIT_WIDTH-1 downto 0) after delay;  -- Transparent
-	sel_out	 <= transport sel_in  after delay;
+	
       end if;
 
       if (preset = '1') then
 	data <= init_data;		-- Preset overrides the above
-	sel_out <= init_sel;
+
 
       end if;
     end process data_latch;
@@ -176,7 +178,7 @@ begin
 
   NO_GATING : if GATING_ENABLED = 0 generate
     -- generate enable signal
-    lt_gated <= lt_en after delay;
+    lt_gated <= lt_en;
 
     -- Normal transparent latch, cf. figure 6.21 in S&F
     type_latch : process(type_in, lt_en, left_in, sel_in, preset)
@@ -190,7 +192,7 @@ begin
       if (preset = '1') then
 	type_out <= '0';
 	data	 <= init_data;		-- Preset overrides the above
-	sel_out <= init_sel;
+	sel_out	 <= init_sel;
       end if;
     end process type_latch;
   end generate NO_GATING;

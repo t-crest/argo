@@ -25,6 +25,7 @@ for {set curN 0} {$curN < $gridN} {incr curN} {
 	set router_stage1_controller_en [get_object_name [get_pins $nt/r/*_in_latch/controller/lt_en]]
 	set router_stage1_controller_Rin [get_object_name [get_pins $nt/r/*_in_latch/controller/Rin]]
 	set router_stage1_controller_Rout [get_object_name [get_pins $nt/r/*_in_latch/controller/Rout]]
+
 	# hpu latch
 	set router_stage2_controller [get_object_name [get_cells $nt/r/*hpu_inst/token_latch/controller]]
 	set router_stage2_controller_en [get_object_name [get_pins $nt/r/*hpu_inst/token_latch/controller/lt_en]]

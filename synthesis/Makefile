@@ -31,6 +31,9 @@ clean:
 	rm -rf synopsys_cache*
 	rm -rf *.ddc
 	rm -rf ../netlists/*
+	rm -rf reports
+	mkdir reports
+
 
 
 

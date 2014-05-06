@@ -9,9 +9,12 @@ asic_tiled_4x4: ../src/config_types.vhd \
  ../src/mem/bram.vhd \
  ../src/ni/dma.vhd \
  ../src/util/txt_util.vhd \
+ ../test/util/cmd_util.vhd \
  ../src/ni/nAdapter.vhd \
- ../src/routers/asynchronous/sr_latch.vhd \
- ../src/routers/asynchronous/c_gate_generic.vhd \
+ ../src/routers/asynchronous/rtl/sr_latch.vhd \
+ ../src/routers/asynchronous/rtl/c_gate_generic.vhd \
+ ../src/routers/asynchronous/rtl/matched_delay.vhd \
+ ../src/routers/asynchronous/delays.vhd \
  ../src/routers/asynchronous/latch_controller.vhd \
  ../src/routers/asynchronous/channel_latch.vhd \
  ../src/noc/tiled/link_pipeline.vhd \

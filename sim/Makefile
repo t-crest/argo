@@ -82,7 +82,7 @@ ocp:
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ocp/ocp_config.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ocp/ocp.vhd
 
-noc_defs: utils ocp work/config/_primary.dat
+noc_defs: utils ocp
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc_defs.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc_interface.vhd
 

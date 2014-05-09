@@ -177,10 +177,20 @@ begin  -- behav
         --st_write
         --print str(slt);
         report "ST write " & integer'image(node_id) & " " & integer'image(cnt) & "/" & integer'image(slt_num) severity note;
-        st_write(p_master,
+	if TARGET_IMPLEMENTATION = SYNC then
+	-- add a padding to the slot table entry for the lowest two bits in the
+	-- synchronous case.
+	         st_write(p_master,
+                 p_slave,
+                 std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
+                 slt & "00", clk);
+	else
+	         st_write(p_master,
                  p_slave,
                  std_logic_vector(to_unsigned(cnt*4, OCP_ADDR_WIDTH-ADDR_MASK_W)),
                  slt, clk);
+	end if;
+
         cnt := cnt + 1;
         exit when cnt = slt_num or endfile(schedule);
       end loop;

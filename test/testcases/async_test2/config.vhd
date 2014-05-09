@@ -59,8 +59,8 @@ package config is
     
     -- simulation delays
     constant PDELAY		: time := 500 ps;
-    constant NA_HPERIOD	: time := 5 ns;
-    constant P_HPERIOD	: time := 5 ns;
+    constant NA_HPERIOD	: time := 10 ns;
+    constant P_HPERIOD	: time := 10 ns;
     constant SKEW           : time := 0 ns;
     constant delay : time := 0.3 ns;
     

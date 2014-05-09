@@ -15,5 +15,5 @@ netlist_test2_description:
 	@echo "     set up for all 2 all communication"
 
 # append this testcase to the list of active testcases
-TESTCASE_LIST += netlist_test2
-TESTCASE_DESCRIPTIONS += netlist_test2_description
+#TESTCASE_LIST += netlist_test2
+#TESTCASE_DESCRIPTIONS += netlist_test2_description

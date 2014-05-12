@@ -5,12 +5,14 @@ namespace import stooop::*
 
 class grid_element {
     #constructor
-    proc grid_element {this grid row col height width} {
+    proc grid_element {this grid row col height width htype wtype} {
 	set ($this,row) $row
 	set ($this,col) $col
 	set ($this,width) $width
 	set ($this,height) $height
 	set ($this,grid) $grid
+	set ($this,wtype) $wtype
+	set ($this,htype) $htype
 	#puts "$row $col - ($width $height)"
     }
    
@@ -114,22 +116,57 @@ class grid_element {
 	} else {
 	    return $($this,height)
 	}
-    }    
+    }
+    
+    proc get_type {this} {
+	if {$($this,htype) eq "tile" && $($this,wtype) eq "tile"} {
+	    return "tile"
+	} elseif {$($this,htype) eq "track" && $($this,wtype) eq "track"} {
+	    return "crosstrack"
+	} elseif {$($this,htype) eq "track"} {
+	    return "track_v"
+	} elseif {$($this,wtype) eq "track"} {
+	    return "track_h"
+	} else {
+	    return "undef"
+	}
+    }
     #destructor
-    proc ~grid_element {this} {}
+    proc ~grid_element {this} { }
+}
+
+class tile {
+    proc tile {this row col height width tileN tileM} grid_element { $row $col $height $width "tile" "tile" } {
+	set ($this,tileN) $tileN
+	set ($this,tileM) $tileM
+    }
+    
+    proc tile_north {this} {}
+    proc tile_south {this} {}
+    proc tile_west {this} {}
+    proc tile_east {this} {}
+    
+    proc tile_orientation {this} {}
+    
+    proc tile_noc_port_east {this} {}
+    proc tile_noc_port_west {this} {}
+    proc tile_noc_port_south {this} {}
+    proc tile_noc_port_north {this} {}
+    
 }
 
 class grid {
-    proc grid {this width_vector height_vector} {
+    proc grid {this width_vector height_vector w_type_vector h_type_vector} {
 	set agrid {}
 	set aline {}
 	set h_ 0
 	set w_ 0
 	
 	# create grid elements
-	foreach h $height_vector {
-	    foreach w $width_vector {
-		lappend aline [new grid_element $this $h_ $w_ $h $w]
+	foreach h $height_vector ht $h_type_vector {
+	    foreach w $width_vector wt $w_type_vector {
+		#if $wt
+		lappend aline [new grid_element $this $h_ $w_ $h $w $wt $ht]
 		incr w_
 	    }
 	    lappend agrid $aline
@@ -137,15 +174,12 @@ class grid {
 	    set w_ 0
 	    incr h_
 	}
-	
-	
+		
 	set ($this,g) $agrid
 	
 	# link elements
-	foreach row $agrid {
-	    foreach col $row {
-		grid_element::set_neighbors $col
-	    }
+	foreach elem [join $agrid] {
+		grid_element::set_neighbors $elem
 	}
 	
     }
@@ -190,11 +224,14 @@ class grid {
 		set c [grid_element::get_col $col]
 		set r [grid_element::get_row $col]		
 		
+		set type [grid_element::get_type $col]
+		
 		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:none;stroke:#ff0000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
-		puts $f "<text x=\"$l\" y=\"$b\" style=\"font-size:50px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans\">$c,$r</text>"
+		puts $f "<text x=\"$l\" y=\"$b\" style=\"font-size:3px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans\">$c,$r $type</text>"
 	    }
 	}
 	puts $f "</svg>"
 	close $f
     }
 }
+

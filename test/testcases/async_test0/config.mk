@@ -12,5 +12,5 @@ async_test0_description:
 	@echo "     2x2 asynchronous noc, communication to two cores"
 
 # append this testcase to the list of active testcases
-TESTCASE_LIST += async_test0
-TESTCASE_DESCRIPTIONS += async_test0_description
+#TESTCASE_LIST += async_test0
+#TESTCASE_DESCRIPTIONS += async_test0_description

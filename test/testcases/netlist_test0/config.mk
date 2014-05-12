@@ -12,5 +12,5 @@ netlist_test0_description:
 	@echo "     post synthesis netlist simulation for the 2x2 asynchronous noc, communication to two cores"
 
 # append this testcase to the list of active testcases
-TESTCASE_LIST += netlist_test0
-TESTCASE_DESCRIPTIONS += netlist_test0_description
+#TESTCASE_LIST += netlist_test0
+#TESTCASE_DESCRIPTIONS += netlist_test0_description

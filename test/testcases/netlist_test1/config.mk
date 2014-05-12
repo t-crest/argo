@@ -13,5 +13,5 @@ netlist_test1_description:
 	@echo "     one to all communication"
 
 # append this testcase to the list of active testcases
-TESTCASE_LIST += netlist_test1
-TESTCASE_DESCRIPTIONS += netlist_test1_description
+#TESTCASE_LIST += netlist_test1
+#TESTCASE_DESCRIPTIONS += netlist_test1_description

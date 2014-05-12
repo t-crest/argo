@@ -55,6 +55,12 @@ package config is
   constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
   constant SWAP_PORTS		: boolean			 := true;
 
+  -- simulation delays
+  constant PDELAY     : time := 500 ps;
+  constant NA_HPERIOD : time := 10 ns;
+  constant P_HPERIOD  : time := 10 ns;
+  constant SKEW	      : time := 0 ns;
+  constant delay      : time := 0.3 ns;
 end package;  -- aegean_def
 
 

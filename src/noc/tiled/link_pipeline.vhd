@@ -44,6 +44,8 @@ use work.noc_defs.all;
 
 entity link_pipeline is
   generic (
+    -- direction: 0 north or south, 1 east or west
+    constant DIRECTION : in integer := 1;
     -- disables the clock gating
     -- default: gating enabled
     constant GATING_ENABLED : integer := 0;

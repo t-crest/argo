@@ -409,6 +409,7 @@ begin
 	pipeline_stage : for p in 0 to LINK_PIPELINE_STAGES - 1 generate
 	  pipeline_latch_north : entity work.link_pipeline(struct)
 	    generic map (
+	      direction => 0,
 	      init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
 	      init_data	 => (others => '0')
 	      )
@@ -421,6 +422,7 @@ begin
 	      );
 	  pipeline_latch_south : entity work.link_pipeline(struct)
 	    generic map (
+	      direction => 0,
 	      init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
 	      init_data	 => (others => '0')
 	      )
@@ -433,6 +435,7 @@ begin
 	      );
 	  pipeline_latch_east : entity work.link_pipeline(struct)
 	    generic map (
+	      direction => 1,
 	      init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
 	      init_data	 => (others => '0')
 	      )
@@ -445,6 +448,7 @@ begin
 	      );
 	  pipeline_latch_west : entity work.link_pipeline(struct)
 	    generic map (
+	      direction => 1,
 	      init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
 	      init_data	 => (others => '0')
 	      )

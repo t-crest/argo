@@ -16,6 +16,10 @@ set tracks {}
 set track_num 6
 set trackwidth [expr 35*$pin_width]
 set track_t {}
+
+set grid_width 50
+set grid_height 50
+
 for {set i 0} {$i < $track_num } {incr i} {
     lappend tracks $trackwidth
     lappend track_t track
@@ -55,9 +59,11 @@ lappend vtype $track_t
 
 set foo [new grid [join $horiz] [join $verti] [join $htype] [join $vtype]]
 set g [grid::get_grid $foo]
+set tg [grid::get_tile_grid $foo]
+set node [lindex $g 6 0]
 
-set node [lindex $g end end]
-grid_element::print $node 
+
+puts $tg
 
 puts [grid_element::get_box $node]
 puts [grid::get_box $foo]
@@ -66,5 +72,31 @@ puts $horiz
 puts $htype
 puts $verti
 puts $vtype
+
+set node [lindex $g 6 3]
+puts [grid_element::get_height $node ]
+set el [grid_element::split_vertical $node {5 5} "top"]
+puts [grid_element::get_height $node ]
+puts $el
+foreach e $el {
+    puts "#$e"
+    grid_element::print $e
+}
+set node [lindex $g 3 6]
+puts [grid_element::get_width $node ]
+set el [grid_element::split_horizontal $node {5 5} "left"]
+puts [grid_element::get_width $node ]
+puts $el
+foreach e $el {
+    puts "#$e"
+    grid_element::print $e
+}
+
+foreach node [join [grid::get_tile_grid $foo]] {
+  #tile::print $node  
+}
+
+
+
 grid::svg_dump $foo test3.svg
 grid::~grid $foo

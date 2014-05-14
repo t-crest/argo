@@ -98,5 +98,15 @@ foreach node [join [grid::get_tile_grid $foo]] {
 
 
 
-grid::svg_dump $foo test3.svg
+grid::svg_dump $foo test3.svg null
 grid::~grid $foo
+
+
+set node1 [lindex $g 0 0]
+set node2 [lindex $g end end]
+
+set path [a_star $node1 $node2]
+
+puts "Routing done ($node2 -> $node1)"
+puts $path
+grid::svg_dump $foo path.svg $path

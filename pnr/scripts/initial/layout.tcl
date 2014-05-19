@@ -117,6 +117,15 @@ class grid_element {
     proc get_east {this} {return $($this,east)}
     proc get_west {this} {return $($this,west)}
 
+    proc get_neighbor_tile {this} {
+	foreach neighbor "$($this,north) $($this,south) $($this,east) $($this,west)" {
+	    if {[grid_element::get_type $neighbor] eq "tile"} {
+		return $neighbor
+	    }
+	}
+	return null
+    }
+
     # set the neighbors manually
     proc set_north {this elem} {set ($this,north) $elem}
     proc set_south {this elem} {set ($this,south) $elem}
@@ -145,19 +154,21 @@ class grid_element {
 	return $co
     }
     
+    # are we allowed to take the path between $from and this?
     proc valid_path {this from} {
+	# no routing through tiles
 	if {$($this,type) eq "tile"} { return 0 }
-
-	# prevent track switches on the long vertical/horizontal tracks
-	#if {$($this,type) eq "track_v" && [grid_element::get_type $from] eq "track_v" && [grid_element::get_row $from] ne [grid_element::get_row $this] } {return 0}
-	#if {$($this,type) eq "track_h" && [grid_element::get_type $from] eq "track_h" &&  [grid_element::get_col $from] ne [grid_element::get_col $this]} {return 0}
+	# check whether the path is already blocked
 	if {[grid_element::check_blocked $this $from] eq 1} { return 0}
-	# do not route over ports 
-	#if {$($this,type) eq "port" && [grid_element::get_type $from] eq "port"} {return 0}
-	
+	# path is valid
 	return 1
     }
 
+    proc valid_placement {this} {
+	if {$($this,type) eq "track_h" || $($this,type) eq "track_v"} { return 1 }
+	return 0
+    }
+    # the center of this grid element
     proc get_center {this} {
 	set c {}
 	lappend c [expr $($this,width) / 2 + [grid_element::get_left $this]]
@@ -165,16 +176,24 @@ class grid_element {
 	return $c
     }
 
+    # distance to a point (manhattan norm)
     proc distance_to {this vector} {
 	set vector2 [grid_element::get_center $this]
 	set a1 [lindex $vector 0]
 	set a2 [lindex $vector2 0]
 	set b1 [lindex $vector end]
 	set b2 [lindex $vector2 end]
-	# air distance
-	#return [expr sqrt(($a1 - $a2)**2 + ($b1 - $b2)**2)]
-	# 
 	return [expr abs($a1 - $a2) + abs($b1 - $b2)]
+    }
+
+    # distance to a point (euclidian norm / air distance)
+    proc distance_to_euclid {this vector} {
+	set vector2 [grid_element::get_center $this]
+	set a1 [lindex $vector 0]
+	set a2 [lindex $vector2 0]
+	set b1 [lindex $vector end]
+	set b2 [lindex $vector2 end]
+	return [expr sqrt(($a1 - $a2)**2 + ($b1 - $b2)**2)]
     }
 
     proc get_left {this} {
@@ -496,7 +515,7 @@ class tile {
 	set ($this,neighbor_south) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) south] end]]
 	set ($this,neighbor_east) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) east] end]]
 	set ($this,neighbor_west) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) west] end]]
-	}
+    }
 
     proc get_neighbor_north {this} { return $($this,neighbor_north) }
     proc get_neighbor_south {this} { return $($this,neighbor_south) }
@@ -529,13 +548,13 @@ class tile {
 
     proc get_tile_port_east_target {this} {
 	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_east $this]]
-	}
+    }
     proc get_tile_port_west_target {this} {
 	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_west $this]]
-	}
+    }
     proc get_tile_port_north_target {this} {
 	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_north $this]]
-	}
+    }
     proc get_tile_port_south_target {this} {
 	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_south $this]]
     }
@@ -919,7 +938,7 @@ proc a_star_traceback {start_node final_node} {
 	    set node_object [a_star_node::get_object $node]
 	} else {
 	    set last_node_object $node_object
-	set node_object [a_star_node::get_object $node]
+	    set node_object [a_star_node::get_object $node]
 	    grid_element::mark_blocked $node_object $last_node_object
 	}
 	#puts "traceback: $node_object"
@@ -962,37 +981,93 @@ proc compare_pairs {pair1 pair2} {
 }
 
 proc get_path_length {node_list} {
-    set length 0
-    set pos [lindex $node_list 0]
-    set vector [grid_element::get_center $pos]
-    foreach node $node_list {
-	set length [expr [grid_element::distance_to $node $vector] + $length]
-	set vector [grid_element::get_center $node]       
-    }
-    return $length
+    return [expr [join [extract_length $node_list] +]]
 }
 
-proc find_valid_placement {path num_elements} {
+# function to find a placement for the pipeline stages:
+# takes a route (list of grid_elements) and the number of pipeline 
+# stages to add and returns a list of mappings, consisting out of 
+# the grid element where the stage is mapped to, a relative position within
+# the grid element and the offset of this position from the optimal point.
+
+proc find_valid_placement {node_list num_elements} {
     # get the total length of the path
-    set total_length [get_path_length $path]
+    set total_length [get_path_length $node_list]
     # calculate the length of the path segments
     set target_length [expr $total_length / ($num_elements + 1)]
     
     # trace through the path 
     set length 0
-    set pos [lindex $node_list 0]
-    set vector [grid_element::get_center $pos]
     set i 1
     set mapping {}
 
-    # initial mapping
-    foreach node $node_list {
-	set length [expr [grid_element::distance_to $node $vector] + $length]
-	set vector [grid_element::get_center $node]       
-	# most simple mapping approach: mapp to the next valid node after length > tracklength * i
-	if {$length >= [expr $target_length * $i] && [lsearch {track_h track_v} [grid_element::get_type $node]]} {
-	    lappend mapping "$node $length [expr $target_length * $i]"
-	    incr i
-	} 
+    # mapping
+    foreach node $node_list node_length [extract_length $node_list] {
+	while {1} {
+	    set k [expr $i*$target_length] 
+	    if {[grid_element::valid_placement $node]} {
+		if {$length <= $k && $k <= [expr $length + $node_length]} {
+		    # simple case: optimal position is within this grid element && we are allowed to place here
+		    set ratio [expr ($k-$length)/$node_length]
+		    lappend mapping "$node $ratio 0"
+		    incr i
+		} elseif {$k < $length} {
+		    # path is longer than optimum, place either at the begining of this grid element or at the 
+		    # last known valid position 
+		    puts "else $k < $length"
+		    # last valid position is better
+		    if {[expr abs($last_valid_length - $k)] < [expr abs($length - $k)]} {
+			lappend mapping [concat $last_valid [expr abs($last_valid_length - $k)]]
+			incr i
+			# this position is better
+		    } else {
+			lappend mapping "$node 0 [expr abs($length - $k)]"
+			incr i
+		    }
+		} else {
+		    # k is larger than this node, check next node
+		    break
+		}		
+		# the end of this node might be a valid placement, keep it for later
+		set last_valid "$node 1"
+		set last_valid_length [expr $length + $node_length]
+	    } else {
+		# not a valid placement, skip this node
+		break
+	    }	
+	}	
+	set length [expr $length + $node_length]
+    }
+    return $mapping
+}
 
+proc extract_length {path} {
+    set length_list {}
+    set prev_node [grid_element::get_neighbor_tile [lindex $path 0]]
+    foreach node $path {
+	if {$node eq [lindex $path end]} {
+	    set next_node  [grid_element::get_neighbor_tile [lindex $path end]]
+	} else {
+	    set next_node  [lindex $path [expr 1 + [lsearch $path $node]]]
+	}
 
+	set length 0
+
+	if {[grid_element::get_north $node] eq $prev_node || [grid_element::get_south $node] eq $prev_node} {
+	    set length [expr [grid_element::get_height $node]/2 + $length]
+	} else {
+	    set length [expr [grid_element::get_width $node]/2 + $length]
+	}
+
+	if {[grid_element::get_north $node] eq $next_node || [grid_element::get_south $node] eq $next_node} {
+	    set length [expr [grid_element::get_height $node]/2 + $length]
+	} else {
+	    set length [expr [grid_element::get_width $node]/2 + $length]
+	}
+	
+	lappend length_list $length
+	set prev_node $node
+    }
+    
+    return $length_list
+}

@@ -13,21 +13,73 @@ class grid_element {
 	set ($this,grid) $grid
 	set ($this,wtype) $wtype
 	set ($this,htype) $htype
+	set ($this,type) null
 	set ($this,type) [grid_element::get_type $this]
-	
-	set ($this,blocked_ns) 0
-	set ($this,blocked_ew) 0
+	set ($this,color) "#ffffff"
+	set ($this,blocked_n) 0
+	set ($this,blocked_e) 0
+	set ($this,blocked_s) 0
+	set ($this,blocked_w) 0
 
 	if {$($this,type) eq "track_v"} {
-	    set ($this,blocked_ns) 1
+	    set ($this,blocked_e) 1
+	    set ($this,blocked_w) 1
 	} 
 
 	if {$($this,type) eq "track_h"} {
-	    set ($this,blocked_ns) 1
+	    set ($this,blocked_s) 1
+	    set ($this,blocked_n) 1
 	} 
 
 	#set ($this,sucessor) null
 	#puts "$row $col - ($width $height)"
+    }
+
+    # mutually mark the path between the nodes as blocked
+    proc mark_blocked {this neighbor} {
+	grid_element::set_blocked $this $neighbor
+	grid_element::set_blocked $neighbor $this
+    }
+
+    # mutually check whether the path is blocked
+    proc check_blocked {this neighbor} {
+	if {[grid_element::get_blocked $this $neighbor] eq 1 || [grid_element::get_blocked $this $neighbor] eq 1} {
+	    return 1
+	}
+	return 0
+    }
+
+    # set the path from this to neighbor as blocked
+    proc set_blocked {this neighbor} {
+	if {[grid_element::get_north $this] eq $neighbor} {
+	    set ($this,blocked_n) 1
+	} 
+	if {[grid_element::get_east $this] eq $neighbor} {
+	    set ($this,blocked_e) 1
+	} 
+	if {[grid_element::get_west $this] eq $neighbor} {
+	    set ($this,blocked_w) 1
+	} 
+	if {[grid_element::get_south $this] eq $neighbor} {
+	    set ($this,blocked_s) 1
+	} 
+    }
+
+    # get whether the path from this node to the neighbor is blocked
+    proc get_blocked {this neighbor} {
+	if {[grid_element::get_north $this] eq $neighbor} {
+	    return $($this,blocked_n)
+	} 
+	if {[grid_element::get_east $this] eq $neighbor} {
+	    return $($this,blocked_e)
+	} 
+	if {[grid_element::get_west $this] eq $neighbor} {
+	    return $($this,blocked_w)
+	} 
+	if {[grid_element::get_south $this] eq $neighbor} {
+	    return $($this,blocked_s)
+	} 
+	return 0
     }
     
     proc print {this} {
@@ -57,6 +109,8 @@ class grid_element {
 	if {$w ne ""} { set ($this,west) $w} else {set ($this,west) null}
     }
     
+    proc get_grid {this} {return $($this,grid)}
+    
     # get the neighbors
     proc get_north {this} {return $($this,north)}
     proc get_south {this} {return $($this,south)}
@@ -68,6 +122,10 @@ class grid_element {
     proc set_south {this elem} {set ($this,south) $elem}
     proc set_east {this elem} {set ($this,east) $elem}
     proc set_west {this elem} {set ($this,west) $elem}
+
+    # color
+    proc set_color {this elem} {set ($this,color) $elem}
+    proc get_color {this} {return $($this,color)}
     
     # dimensions
     proc get_width {this} {return $($this,width)}
@@ -89,8 +147,14 @@ class grid_element {
     
     proc valid_path {this from} {
 	if {$($this,type) eq "tile"} { return 0 }
-	if {$($this,type) eq "track_v" && [grid_element::get_type $from] eq "track_v"} {return 0}
-	if {$($this,type) eq "track_h" && [grid_element::get_type $from] eq "track_h"} {return 0}
+
+	# prevent track switches on the long vertical/horizontal tracks
+	#if {$($this,type) eq "track_v" && [grid_element::get_type $from] eq "track_v" && [grid_element::get_row $from] ne [grid_element::get_row $this] } {return 0}
+	#if {$($this,type) eq "track_h" && [grid_element::get_type $from] eq "track_h" &&  [grid_element::get_col $from] ne [grid_element::get_col $this]} {return 0}
+	if {[grid_element::check_blocked $this $from] eq 1} { return 0}
+	# do not route over ports 
+	#if {$($this,type) eq "port" && [grid_element::get_type $from] eq "port"} {return 0}
+	
 	return 1
     }
 
@@ -151,12 +215,12 @@ class grid_element {
 	set element_list {}
 
 	# append this grid element to the top of the list...
-	if {$position eq "top"} { lappend element_list $this }
+	if {$position eq "bottom"} { lappend element_list $this }
 
 	foreach element_height $height_vector {
 	    set h [expr $h + $element_height]
 	    # create new elements
-	    lappend element_list [new grid_element $($this,grid) $($this,row) $($this,col) $element_height $($this,width) $($this,htype) $($this,wtype)]
+	    lappend element_list [new grid_element $($this,grid) $($this,row) $($this,col) $element_height $($this,width) "track" "track"]
 	    # add it to the extra element list of our grid
 	    grid::append $($this,grid) [lindex $element_list end]
 	}
@@ -165,7 +229,7 @@ class grid_element {
 	set ($this,height) [expr $($this,height) - $h]
 
 	# append this grid element to the bottom of the list...
-	if {$position ne "top"} { lappend element_list $this }
+	if {$position ne "bottom"} { lappend element_list $this }
 
     	# store neighbors
 	set north $($this,north) 
@@ -194,7 +258,7 @@ class grid_element {
 	foreach element_width $width_vector {
 	    set w [expr $w + $element_width]
 	    # create new elements
-	    lappend element_list [new grid_element $($this,grid) $($this,row) $($this,col) $($this,height) $element_width $($this,htype) $($this,wtype)]
+	    lappend element_list [new grid_element $($this,grid) $($this,row) $($this,col) $($this,height) $element_width "track" "track"]
 	    # add it to the extra element list of our grid
 	    grid::append $($this,grid) [lindex $element_list end]
 	}
@@ -224,7 +288,9 @@ class grid_element {
     }
 
     proc get_type {this} {
-	if {$($this,htype) eq "tile" && $($this,wtype) eq "tile"} {
+	if {$($this,type) ne "null"} {
+	    return $($this,type)
+	} elseif {$($this,htype) eq "tile" && $($this,wtype) eq "tile"} {
 	    return "tile"
 	} elseif {$($this,htype) eq "track" && $($this,wtype) eq "track"} {
 	    return "crosstrack"
@@ -233,9 +299,11 @@ class grid_element {
 	} elseif {$($this,wtype) eq "track"} {
 	    return "track_h"
 	} else {
-	    return "undef"
+	    return "null"
 	}
     }
+
+    proc set_type {this type} {set ($this,type) $type}
     #destructor
     proc ~grid_element {this} { }
 }
@@ -265,13 +333,12 @@ class tile {
 	set ($this,tileN) $tileN
 	set ($this,tileM) $tileM
 
-	puts "Tile: $tile_col $tile_row mapped to $tileN $tileM"
+	set ($this,name)  [get_object_name [get_cell noc_tile_*_$tileM\_$tileN]]
+
+	puts "$($this,name): $tile_col $tile_row mapped to $tileN $tileM"
     }
     
-    proc tile_north {this} {}
-    proc tile_south {this} {}
-    proc tile_west {this} {}
-    proc tile_east {this} {}
+    proc get_tile_name {this} {return $($this,name)} 
     
     proc orientation {this} {
 	if {[tile::my $this] && [tile::mx $this]} {
@@ -294,11 +361,6 @@ class tile {
 	if {[expr $($this,tile_col) %2] == 1 } { return 1 } else { return 0 }
     }
     
-    proc tile_noc_port_east {this} {}
-    proc tile_noc_port_west {this} {}
-    proc tile_noc_port_south {this} {}
-    proc tile_noc_port_north {this} {}
-    
     proc print {this} {
 	puts "Tile: $($this,tile_col) $($this,tile_row) maps to $($this,tileM) $($this,tileN)"
 	puts [grid_element::get_box $this]
@@ -306,21 +368,176 @@ class tile {
 	grid_element::print $this
     }
 
+    # splits up the neighbor track and sets up the neighbors
     proc split_router_port_tracks {this} {
-        set distance 10
+        set distance 150
 	set vector "$distance $distance"
-	if {[tile::orientation $this] eq "R0"} {
-	    grid_element::split_vertical [grid_element::get_east $this] $vector "bottom"
-	}
-	if {[tile::orientation $this] eq "R180"} {
-	    grid_element::split_vertical [grid_element::get_east $this] $vector "top"
-	}
-	if {[tile::orientation $this] eq "MX"} {
-	    grid_element::split_vertical [grid_element::get_west $this] $vector "bottom"
-	}
+	set c_west "#FF8500"
+	set c_east "#FFB600"
+	set c_north "#162EAE"
+	set c_south "#0776A0"
+	#http://colorschemedesigner.com/#0B41Tw0w0w0w0
 	if {[tile::orientation $this] eq "MY"} {
 	    grid_element::split_vertical [grid_element::get_east $this] $vector "bottom"
+	    grid_element::split_vertical [grid_element::get_east [grid_element::get_east $this]] $vector "bottom"
+	    set a [grid_element::get_south [grid_element::get_east $this]]
+	    set b [grid_element::get_south $a]
+	    set e [grid_element::get_south [grid_element::get_east [grid_element::get_east $this]]]
+	    set f [grid_element::get_south $e]
+	    grid_element::set_east $a $e
+	    grid_element::set_west $e $a
+	    grid_element::set_east $b $f
+	    grid_element::set_west $f $b
+
+	    grid_element::split_horizontal [grid_element::get_south $this] $vector "right"
+	    grid_element::split_horizontal [grid_element::get_south [grid_element::get_south $this]] $vector "right"
+	    set c [grid_element::get_east [grid_element::get_south $this]]
+	    set d [grid_element::get_east $c]
+	    set g [grid_element::get_east [grid_element::get_south [grid_element::get_south $this]]]
+	    set h [grid_element::get_east $g]
+	    grid_element::set_south $c $g
+	    grid_element::set_north $g $c
+	    grid_element::set_south $d $h
+	    grid_element::set_north $h $d
+	} elseif {[tile::orientation $this] eq "MX"} {
+	    grid_element::split_vertical [grid_element::get_west $this] $vector "top"
+	    grid_element::split_vertical [grid_element::get_west [grid_element::get_west $this]] $vector "top"
+	    set a [grid_element::get_north [grid_element::get_west $this]]
+	    set b [grid_element::get_north $a]
+	    set e [grid_element::get_north [grid_element::get_west [grid_element::get_west $this]]]
+	    set f [grid_element::get_north $e]
+	    grid_element::set_west $a $e
+	    grid_element::set_east $e $a
+	    grid_element::set_west $b $f
+	    grid_element::set_east $f $b
+	    grid_element::split_horizontal [grid_element::get_north $this] $vector "left"
+	    grid_element::split_horizontal [grid_element::get_north [grid_element::get_north $this]] $vector "left"
+	    set c [grid_element::get_west [grid_element::get_north $this]]
+	    set d [grid_element::get_west $c]
+	    set g [grid_element::get_west [grid_element::get_north [grid_element::get_north $this]]]
+	    set h [grid_element::get_west $g]
+	    grid_element::set_north $c $g
+	    grid_element::set_south $g $c
+	    grid_element::set_north $d $h
+	    grid_element::set_south $h $d
+	} elseif {[tile::orientation $this] eq "R180"} {
+	    grid_element::split_vertical [grid_element::get_east $this] $vector "top"
+	    grid_element::split_vertical [grid_element::get_east [grid_element::get_east $this]] $vector "top"
+	    set a [grid_element::get_north [grid_element::get_east $this]]
+	    set b [grid_element::get_north $a]
+	    set e [grid_element::get_north [grid_element::get_east [grid_element::get_east $this]]]
+	    set f [grid_element::get_north $e]
+	    grid_element::set_east $a $e
+	    grid_element::set_west $e $a
+	    grid_element::set_east $b $f
+	    grid_element::set_west $f $b
+	    grid_element::split_horizontal [grid_element::get_north $this] $vector "right"
+	    grid_element::split_horizontal [grid_element::get_north [grid_element::get_north $this]] $vector "right"
+	    set c [grid_element::get_east [grid_element::get_north $this]]
+	    set d [grid_element::get_east $c]
+	    set g [grid_element::get_east [grid_element::get_north [grid_element::get_north $this]]]
+	    set h [grid_element::get_east $g]
+	    grid_element::set_north $c $g
+	    grid_element::set_south $g $c
+	    grid_element::set_north $d $h
+	    grid_element::set_south $h $d
+	} else {
+	    grid_element::split_vertical [grid_element::get_west $this] $vector "bottom"
+	    grid_element::split_vertical [grid_element::get_west [grid_element::get_west $this]] $vector "bottom"
+	    set a [grid_element::get_south [grid_element::get_west $this]]
+	    set b [grid_element::get_south $a]
+	    set e [grid_element::get_south [grid_element::get_west [grid_element::get_west $this]]]
+	    set f [grid_element::get_south $e]
+	    grid_element::set_west $a $e
+	    grid_element::set_east $e $a
+	    grid_element::set_west $b $f
+	    grid_element::set_east $f $b
+
+	    grid_element::split_horizontal [grid_element::get_south $this] $vector "left"
+	    grid_element::split_horizontal [grid_element::get_south [grid_element::get_south $this]] $vector "left"
+	    set c [grid_element::get_west [grid_element::get_south $this]]
+	    set d [grid_element::get_west $c]
+	    set g [grid_element::get_west [grid_element::get_south [grid_element::get_south $this]]]
+	    set h [grid_element::get_west $g]
+	    grid_element::set_south $c $g
+	    grid_element::set_north $g $c
+	    grid_element::set_south $d $h
+	    grid_element::set_north $h $d
 	}
+
+	tile::set_tile_port_south $this $b
+	tile::set_tile_port_north $this $a
+	tile::set_tile_port_west $this $d
+	tile::set_tile_port_east $this $c
+
+	grid_element::set_color $a $c_north
+	grid_element::set_color $b $c_south
+	grid_element::set_color $c $c_east
+	grid_element::set_color $d $c_west
+
+	foreach t "$a $b $c $d" {
+	    grid_element::set_type $t port
+	}
+
+	foreach t "$e $f $g $h" {
+	    grid_element::set_type $t crosstrack_port
+	}	
+
+	# ensure there is no routing over the ports
+	grid_element::mark_blocked $a $b
+	grid_element::mark_blocked $b $a
+	grid_element::mark_blocked $c $d
+	grid_element::mark_blocked $d $c
+
+
+	set g [grid_element::get_grid $this]
+
+	set ($this,neighbor_north) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) north] end]]
+	set ($this,neighbor_south) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) south] end]]
+	set ($this,neighbor_east) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) east] end]]
+	set ($this,neighbor_west) [grid::get_tile_by_name $g [lindex [trace_to_next_tile $($this,name) west] end]]
+	}
+
+    proc get_neighbor_north {this} { return $($this,neighbor_north) }
+    proc get_neighbor_south {this} { return $($this,neighbor_south) }
+    proc get_neighbor_west {this} { return $($this,neighbor_west) }
+    proc get_neighbor_east {this} { return $($this,neighbor_east) }
+
+    proc get_neighbor_tile_port {this neighbor_tile} {
+	if {[tile::get_neighbor_north $neighbor_tile] eq $this} {
+	    return [tile::get_tile_port_north $neighbor_tile]
+	}
+	if {[tile::get_neighbor_south $neighbor_tile] eq $this} {
+	    return [tile::get_tile_port_south $neighbor_tile]
+	}
+	if {[tile::get_neighbor_west $neighbor_tile] eq $this} {
+	    return [tile::get_tile_port_west $neighbor_tile]
+	}
+	if {[tile::get_neighbor_east $neighbor_tile] eq $this} {
+	    return [tile::get_tile_port_east $neighbor_tile]
+	}
+    }
+
+    proc get_tile_port_north {this} {return $($this,t_north)}
+    proc get_tile_port_south {this} {return $($this,t_south)}
+    proc get_tile_port_west {this} {return $($this,t_west)}
+    proc get_tile_port_east {this} {return $($this,t_east)}
+    proc set_tile_port_north {this g} {set ($this,t_north) $g}
+    proc set_tile_port_south {this g} {set ($this,t_south) $g}
+    proc set_tile_port_west {this g} {set ($this,t_west) $g}
+    proc set_tile_port_east {this g} {set ($this,t_east) $g}
+
+    proc get_tile_port_east_target {this} {
+	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_east $this]]
+	}
+    proc get_tile_port_west_target {this} {
+	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_west $this]]
+	}
+    proc get_tile_port_north_target {this} {
+	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_north $this]]
+	}
+    proc get_tile_port_south_target {this} {
+	return [tile::get_neighbor_tile_port $this [tile::get_neighbor_south $this]]
     }
 
     proc get_tile_col {this} {return  $($this,tile_col)}
@@ -395,6 +612,17 @@ class grid {
 	return $co
     }
 
+    proc get_fplan {this} {
+	set co {}
+	lappend co [grid_element::get_right [lindex $($this,g) end end]]
+	lappend co [grid_element::get_top [lindex $($this,g) end end]]
+	lappend co 0
+	lappend co 0
+	lappend co 0
+	lappend co 0
+	return $co
+    }
+
     # add aditional elements to grid (outside grid structure)
     proc append {this element} {
 	lappend ($this,extra_g) $element 
@@ -407,6 +635,13 @@ class grid {
     
     proc get_tile_grid {this} {
 	return $($this,tile_g)
+    }
+
+    proc get_tile_by_name {this name} {
+	foreach tile [join $($this,tile_g)] {
+	    if {[tile::get_tile_name $tile] eq $name} {return $tile}
+	} 
+	return null
     }
     
     proc ~grid {this} {
@@ -451,6 +686,7 @@ class grid {
 	    
 	    set type [grid_element::get_type $elem]
 	    
+	    set color [grid_element::get_color $elem]
 	    
 	    #puts [classof $elem]
 	    if {[classof $elem] eq "::tile"} {
@@ -462,7 +698,7 @@ class grid {
 		puts $f "<text x=\"$l\" y=\"$tb\" style=\"font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans\">$c,$r $o</text>"
 		
 	    } else {
-		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:none;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
+		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:$color\;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
 	    }
 	}
 	puts $f "</svg>"
@@ -632,20 +868,28 @@ proc a_star_expand_node {currentNode openlist closedlist to_grid_element} {
     }
 
     foreach s $filtered_successor_list d $filtered_successor_direction {
-	
+	set malus 0
 	# enforce less direction changes by adding a slight malus
-	if {$d eq [a_star_node::get_predecessor_direction $currentNode]} {
-	    set direction_malus 0
-	} else {
-	    set direction_malus 1
-	}
+	if {$d ne [a_star_node::get_predecessor_direction $currentNode]} { incr malus 1}
+
+	# using less track crossing positions is better
+	#if {[grid_element::get_type $s] eq "crosstrack"} { incr malus 1}
+	
+	# wasting crosstracks beside ports is worse
+	#if {[grid_element::get_type $s] eq "crosstrack_port"} { incr malus 2}
+	
+	if {[grid_element::get_type $s] eq "track_v" || [grid_element::get_type $s] eq "track_h"} { incr malus 1 }
+
+	
+	# only enter ports if needed (start/target) - heavy malus to prevent to route over port
+	if {[grid_element::get_type $s] eq "port"} { incr malus 10 }
 
 	if {[lsearch $closedlist $s] >= 0} { continue }
 	# get center of neighbor
 	set center [grid_element::get_center $s]
 
 	# calculate the distance from the start node to the center of the neighbor
-	set tentative_g [expr [a_star_node::get_g $currentNode] + [grid_element::distance_to $grid_element $center] + $direction_malus]
+	set tentative_g [expr [a_star_node::get_g $currentNode] + [grid_element::distance_to $grid_element $center] * (100 + $malus)/100]
 
 	# 
 	set successor_node [as_pqueue::contains $openlist $s]
@@ -671,7 +915,13 @@ proc a_star_traceback {start_node final_node} {
     set node $final_node
     set node_list {}
     while {$node ne $start_node} {
+	if {$node eq $final_node} {
+	    set node_object [a_star_node::get_object $node]
+	} else {
+	    set last_node_object $node_object
 	set node_object [a_star_node::get_object $node]
+	    grid_element::mark_blocked $node_object $last_node_object
+	}
 	#puts "traceback: $node_object"
 	lappend node_list $node_object
 	set node [a_star_node::get_predecessor $node]
@@ -679,6 +929,36 @@ proc a_star_traceback {start_node final_node} {
     # add start node
     lappend node_list [a_star_node::get_object $node]
     return $node_list
+}
+
+
+proc trace_to_next_tile {tile port} {
+    set trace_list1 $tile
+    set tile_ [dbGet top.hInst.hInsts.name $tile -p]
+    
+    # forward tracing
+    set pin [get_pins $tile/$port\_out_b]
+    set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
+    set next_cell [get_object_name [get_cells -of_objects $next_pin]]
+    
+    lappend trace_list1 $next_cell
+
+    while {[regexp {pipeline_latch_.*} $next_cell]} {
+	puts $next_cell
+	set pin [get_pins $next_cell/right_in]
+	set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
+	set next_cell [get_object_name [get_cells -of_objects $next_pin]]
+	lappend trace_list1 $next_cell
+    }
+    return $trace_list1
+}
+
+proc compare_pairs {pair1 pair2} {
+    set a1 [lindex $pair1 0]
+    set a2 [lindex $pair2 0]
+    set b1 [lindex $pair1 end]
+    set b2 [lindex $pair2 end]
+    if {(($a1 == $b1) && ($a2 == $b2)) || (($a1 == $b2) && ($a2 == $b1)) } { return 0 } elseif {[grid_element::distance_to $a1 [grid_element::get_center $b1]] > [grid_element::distance_to $a2 [grid_element::get_center $b2]] } { return 1 } else {return -1}
 }
 
 proc get_path_length {node_list} {
@@ -714,5 +994,5 @@ proc find_valid_placement {path num_elements} {
 	    lappend mapping "$node $length [expr $target_length * $i]"
 	    incr i
 	} 
-    }
-}
+
+

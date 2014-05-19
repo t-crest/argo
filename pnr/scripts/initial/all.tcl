@@ -1,5 +1,8 @@
 #freeDesign
 
+source ../scripts/initial/layout.tcl
+source ../scripts/sizes.tcl
+
 #show the pipeline links as well
 setPreference MinFPModuleSize 10
 
@@ -11,7 +14,7 @@ source scripts/floorplan.tcl
 #saveDesign floorplanned.enc
 
 # tile placement 
-source scripts/place_tiles2.tcl
+#source scripts/place_tiles2.tcl
 breakhere
 # hand route tile interconnection
 set routes {}

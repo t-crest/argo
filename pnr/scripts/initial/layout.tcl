@@ -19,11 +19,11 @@ class grid_element {
 	set ($this,blocked_ew) 0
 
 	if {$($this,type) eq "track_v"} {
-	   set ($this,blocked_ns) 1
+	    set ($this,blocked_ns) 1
 	} 
 
 	if {$($this,type) eq "track_h"} {
-	   set ($this,blocked_ns) 1
+	    set ($this,blocked_ns) 1
 	} 
 
 	#set ($this,sucessor) null
@@ -679,4 +679,40 @@ proc a_star_traceback {start_node final_node} {
     # add start node
     lappend node_list [a_star_node::get_object $node]
     return $node_list
+}
+
+proc get_path_length {node_list} {
+    set length 0
+    set pos [lindex $node_list 0]
+    set vector [grid_element::get_center $pos]
+    foreach node $node_list {
+	set length [expr [grid_element::distance_to $node $vector] + $length]
+	set vector [grid_element::get_center $node]       
+    }
+    return $length
+}
+
+proc find_valid_placement {path num_elements} {
+    # get the total length of the path
+    set total_length [get_path_length $path]
+    # calculate the length of the path segments
+    set target_length [expr $total_length / ($num_elements + 1)]
+    
+    # trace through the path 
+    set length 0
+    set pos [lindex $node_list 0]
+    set vector [grid_element::get_center $pos]
+    set i 1
+    set mapping {}
+
+    # initial mapping
+    foreach node $node_list {
+	set length [expr [grid_element::distance_to $node $vector] + $length]
+	set vector [grid_element::get_center $node]       
+	# most simple mapping approach: mapp to the next valid node after length > tracklength * i
+	if {$length >= [expr $target_length * $i] && [lsearch {track_h track_v} [grid_element::get_type $node]]} {
+	    lappend mapping "$node $length [expr $target_length * $i]"
+	    incr i
+	} 
+    }
 }

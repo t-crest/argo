@@ -1,6 +1,13 @@
 #freeDesign
 
-source ../scripts/initial/layout.tcl
+set dir ../scripts/libs/stooop
+source ../scripts/libs/stooop/pkgIndex.tcl
+
+
+source ../scripts/initial/grid_classes.tcl
+source ../scripts/initial/a_star.tcl
+source ../scripts/initial/layout_utils.tcl
+
 source ../scripts/sizes.tcl
 
 #show the pipeline links as well

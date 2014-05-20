@@ -20,19 +20,20 @@ set pin_width 0.8
 set trackwidth [expr 2*35*$pin_width]
 set track_t {}
 
+# inner tracks
 for {set i 0} {$i < $track_num } {incr i} {
     lappend tracks $trackwidth
     lappend track_t track
 }
 
-
+# single outside tracks (left/bottom)
 lappend horiz $tracks
 lappend verti $tracks
 
 lappend htype $track_t
 lappend vtype $track_t
 
-
+# create the tiles and place tracks inbetween (horizontal)
 for {set i 0} {$i < $gridN} {incr i} {
     lappend horiz $grid_width
     lappend htype tile
@@ -41,7 +42,7 @@ for {set i 0} {$i < $gridN} {incr i} {
        lappend htype $track_t
     }
 }
-
+# create the tiles and place tracks inbetween (vertical)
 for {set i 0} {$i < $gridM} {incr i} {
     lappend verti $grid_height
     lappend vtype tile
@@ -51,17 +52,22 @@ for {set i 0} {$i < $gridM} {incr i} {
     }
 }
 
+# single outside tracks (right/top)
 lappend horiz $tracks
 lappend verti $tracks
 
 lappend htype $track_t
 lappend vtype $track_t
 
+# build up grid
 set grid [new grid [join $horiz] [join $verti] [join $htype] [join $vtype]]
-grid::svg_dump $grid dump.svg null
+grid::svg_dump $grid layout_initial.svg null
+
+# grid build, lets set the floorplan to size
 floorPlan -site CORE -d [grid::get_fplan $grid]
 
-# no rows here, create them later within the partitions
+# no rows here, we create them later within the partitions 
+# (prevents unwanted realignment of the tiles to the row grid)
 cutRow -area [join [dbGet top.fPlan.box]] 
 
 # place tiles
@@ -108,7 +114,7 @@ set routed_pathes {}
 foreach f [concat $simple_pathes $complex_pathes] {
     # inherit the color from the starting port
     set c [grid_element::get_color [lindex $f 0]]
-    set path [a_star [lindex $f 0] [lindex $f 1]]
+    set path [a_star::a_star [lindex $f 0] [lindex $f 1]]
     foreach setp $path {
 	if {$setp eq [lindex $f 0] || $setp eq [lindex $f 1]} {continue}
 	grid_element::set_color $setp $c
@@ -117,7 +123,7 @@ foreach f [concat $simple_pathes $complex_pathes] {
     incr i
 }
 
-grid::svg_dump $grid path_start_end.svg null
+grid::svg_dump $grid layout_path_route.svg null
 
 # partition design
 breakhere

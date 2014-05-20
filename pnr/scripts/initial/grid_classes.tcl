@@ -325,6 +325,102 @@ class grid_element {
     proc ~grid_element {this} { }
 }
 
+class pipeline_stage {
+    proc pipeline_stage {this mapping name_forward name_backward route index} grid_element { 
+	[grid_element::get_grid [lindex $mapping 0]] \
+	    [grid_element::get_row [lindex $mapping 0]] \
+	    [grid_element::get_col [lindex $mapping 0]] \
+	    [grid_element::get_height [lindex $mapping 0]] \
+	    [grid_element::get_width [lindex $mapping 0]] \
+	    "pipeline_stage" "pipeline_stage"
+    } {
+	set parent [lindex $mapping 0]
+	set relative_distance [lindex $mapping 1]
+	set ($this,parent) $parent
+	set ($this,forward) $name_forward
+	set ($this,backward) $name_backward
+	set ($this,route) $route
+        grid_element::set_north $this [grid_element::get_north $parent]
+	grid_element::set_west $this [grid_element::get_west $parent]
+        grid_element::set_east $this [grid_element::get_east $parent]
+	grid_element::set_south $this [grid_element::get_south $parent]
+
+        grid_element::set_type $this pipeline_stage
+	grid::append [grid_element::get_grid $parent] $this
+	grid_element::set_color $this #FF0000
+
+	set route_pos [lsearch $route $($this,parent)]
+	set prev_route [lindex $route [expr $route_pos - 1]]
+
+	set left 0
+	set bottom 0
+	if {[grid_element::get_south $parent] eq $prev_route} {
+	    set width [grid_element::get_width $parent]
+	    set height $::pipeline_stage_length
+	    set pos [expr [grid_element::get_height $parent] * $relative_distance]
+	    set bottom [expr $pos - $::pipeline_stage_length/2]
+	    if {$bottom < 0} { set bottom 0 }	    
+	} elseif {[grid_element::get_north $parent] eq $prev_route} {
+	    set width [grid_element::get_width $parent]
+	    set height $::pipeline_stage_length
+	    set pos [expr [grid_element::get_height $parent] * (1 - $relative_distance)]
+	    set bottom [expr $pos - $::pipeline_stage_length/2]
+	    if { $bottom > [expr [grid_element::get_height $parent] - $::pipeline_stage_length]} {
+		set bottom [expr [grid_element::get_height $parent] - $::pipeline_stage_length]
+	    }	
+	} elseif {[grid_element::get_west $parent] eq $prev_route} {
+	    set width $::pipeline_stage_length
+	    set height [grid_element::get_height $parent]
+	    set pos [expr [grid_element::get_width $parent] * $relative_distance]
+	    set left [expr $pos - $::pipeline_stage_length/2]
+	    if {$left < 0} { set left 0 }
+	} else {
+	    set width $::pipeline_stage_length
+	    set height [grid_element::get_height $parent]
+	    set pos [expr [grid_element::get_width $parent] * (1 - $relative_distance)]
+	    set left [expr $pos - $::pipeline_stage_length/2]
+	    if { $left > [expr [grid_element::get_width $parent] - $::pipeline_stage_length]} {
+		set left [expr [grid_element::get_width $parent] - $::pipeline_stage_length]
+	    } 
+	}
+	set ($this,left) [expr [grid_element::get_left $parent] + $left]
+	set ($this,bottom) [expr [grid_element::get_bottom $parent] + $bottom]
+	set ($this,width) $width
+	set ($this,height) $height
+	if {[grid_element::get_south $parent] eq $prev_route || [grid_element::get_north $parent] eq $prev_route} {
+	    set box1 "$($this,left) $($this,bottom) [expr $($this,left) + $width/2] [expr $($this,bottom) + $height]"
+	    set box2 "[expr $($this,left) + $width/2] $($this,bottom) [expr $($this,left) + $width] [expr $($this,bottom) + $height]"
+	} else {
+	    set box1 "$($this,left) $($this,bottom) [expr $($this,left) + $width] [expr $($this,bottom) + $height/2]"
+	    set box2 "$($this,left) [expr $($this,bottom) + $height/2] [expr $($this,left) + $width] [expr $($this,bottom) + $height]"
+	}
+
+	set ($this,box_forward) $box1
+	set ($this,box_backward) $box2
+	
+    }
+    
+    proc ~pipeline_stage {this} {}
+
+    # method to set up neighbors
+    proc set_next {this stage} {set ($this,next) $stage } 
+    proc get_next {this} {return $($this,next)}
+
+    proc set_prev {this stage} {set ($this,prev) $stage } 
+    proc get_prev {this} {return $($this,prev)}
+
+    proc get_left {this} {return $($this,left)}
+    proc get_bottom {this} {return $($this,bottom)}
+    proc get_width {this} {return $($this,width)}
+    proc get_height {this} {return $($this,height)}
+
+    proc get_box_backward {this} { return $($this,box_backward)}
+    proc get_box_forward {this} { return $($this,box_forward)}
+    
+    proc get_name_backward {this} { return $($this,backward)}
+    proc get_name_forward {this} { return $($this,forward)}
+}
+
 class tile {
     proc tile {this grid row col height width tile_col tile_row} grid_element { $grid $row $col $height $width "tile" "tile" } {
 	set ($this,tile_col) $tile_col
@@ -713,7 +809,12 @@ class grid {
 		set tb [expr $b + [grid_element::get_height $elem]/2] 
 		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:#cccccc;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
 		puts $f "<text x=\"$l\" y=\"$tb\" style=\"font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans\">$c,$r $o</text>"
-		
+	    } elseif {[classof $elem] eq "::pipeline_stage"} {
+		set w [pipeline_stage::get_width $elem]
+		set h [pipeline_stage::get_height $elem]
+		set l [pipeline_stage::get_left $elem]
+		set b [pipeline_stage::get_bottom $elem]
+		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:$color\;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
 	    } else {
 		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:$color\;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
 	    }

@@ -18,6 +18,7 @@ set tracks {}
 set track_num 3
 set pin_width 0.8
 set trackwidth [expr 2*35*$pin_width]
+set pipeline_stage_length [expr 0.5*$trackwidth]
 set track_t {}
 
 # inner tracks
@@ -78,52 +79,24 @@ foreach tile [join [grid::get_tile_grid $grid]] {
     setObjFPlanBoxList Module $t [grid_element::get_box $tile]
 }
 
-# find all paths - each one, starting from each tile
-set path_from_to {}
-foreach tile [join [grid::get_tile_grid $grid]] {
-    lappend path_from_to "[tile::get_tile_port_east $tile ] [tile::get_tile_port_east_target $tile]"
-    lappend path_from_to "[tile::get_tile_port_west $tile ] [tile::get_tile_port_west_target $tile]"
-    lappend path_from_to "[tile::get_tile_port_north $tile ] [tile::get_tile_port_north_target $tile]"
-    lappend path_from_to "[tile::get_tile_port_south $tile ] [tile::get_tile_port_south_target $tile]"
-}
-
-# the path ar biderectional, so we will find each one twice - sort all pairs...
-set path_from_to_sorted_tupels {}
-foreach tupel $path_from_to {lappend path_from_to_sorted_tupels [lsort $tupel]}
-
-# ... and get rid of the double ones
-set path_from_to_unique [lsort -unique -index 0 $path_from_to_sorted_tupels]
-
-# to minimize congestion we want to route the simple pathes first:
-# [row or column identical]
-set simple_pathes {}
-set complex_pathes {}
-foreach path $path_from_to_unique {
-    set a [lindex $path 0]
-    set b [lindex $path 1]
-    if {[grid_element::get_col $a] eq [grid_element::get_col $b] || [grid_element::get_row $a] eq [grid_element::get_row $b]} {
-	lappend simple_pathes $path 
-    } else {
-	lappend complex_pathes $path
-    }
-} 
-
-set i 0
-
-set routed_pathes {}
-foreach f [concat $simple_pathes $complex_pathes] {
-    # inherit the color from the starting port
-    set c [grid_element::get_color [lindex $f 0]]
-    set path [a_star::a_star [lindex $f 0] [lindex $f 1]]
-    foreach setp $path {
-	if {$setp eq [lindex $f 0] || $setp eq [lindex $f 1]} {continue}
-	grid_element::set_color $setp $c
-    }
-    lappend routed_pathes $path 
-    incr i
-}
-
+# get all paths
+set paths [::layout_utils::get_node_paths $grid]
+# create a routing for the paths
+set routes [::layout_utils::route_node_paths $paths]
 grid::svg_dump $grid layout_path_route.svg null
+# map pipelinestages to the routed paths
+set pipeline_stages [::layout_utils::map_pipeline_stages $routes]
+grid::svg_dump $grid layout_placed_pipeline_stages.svg null
+
+# place pipeline stages
+foreach stage [join $pipeline_stages] {
+    setObjFPlanBoxList Module [pipeline_stage::get_name_forward $stage] [pipeline_stage::get_box_forward $stage]
+    setObjFPlanBoxList Module [pipeline_stage::get_name_backward $stage] [pipeline_stage::get_box_backward $stage]
+}
+
+
+
+
 
 # partition design
 breakhere

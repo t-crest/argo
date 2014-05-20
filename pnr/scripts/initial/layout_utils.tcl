@@ -13,7 +13,7 @@ namespace eval layout_utils {
 	lappend trace_list1 $next_cell
 
 	while {[regexp {pipeline_latch_.*} $next_cell]} {
-	    puts $next_cell
+	    #puts $next_cell
 	    set pin [get_pins $next_cell/right_in]
 	    set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
 	    set next_cell [get_object_name [get_cells -of_objects $next_pin]]
@@ -120,5 +120,115 @@ namespace eval layout_utils {
 	}
 	
 	return $length_list
+    }
+
+    # returns a unique list of pathes from the noc, sorted by complexity 
+    # (simple fist, than cornercase)
+    proc get_node_paths {grid} {
+	# find all paths - each one, starting from each tile
+	set path_from_to {}
+	foreach tile [join [grid::get_tile_grid $grid]] {
+	    lappend path_from_to "[tile::get_tile_port_east $tile ] [tile::get_tile_port_east_target $tile]"
+	    lappend path_from_to "[tile::get_tile_port_west $tile ] [tile::get_tile_port_west_target $tile]"
+	    lappend path_from_to "[tile::get_tile_port_north $tile ] [tile::get_tile_port_north_target $tile]"
+	    lappend path_from_to "[tile::get_tile_port_south $tile ] [tile::get_tile_port_south_target $tile]"
+	}
+
+	# the paths are biderectional, so we will find each one twice - sort all pairs...
+	set path_from_to_sorted_tupels {}
+	foreach tupel $path_from_to {lappend path_from_to_sorted_tupels [lsort $tupel]}
+
+	# ... and get rid of the double ones
+	set path_from_to_unique [lsort -unique -index 0 $path_from_to_sorted_tupels]
+
+	# to minimize congestion we want to route the simple pathes first:
+	# [row or column identical]
+	set simple_paths {}
+	set complex_paths {}
+	foreach path $path_from_to_unique {
+	    set a [lindex $path 0]
+	    set b [lindex $path 1]
+	    if {[grid_element::get_col $a] eq [grid_element::get_col $b] || [grid_element::get_row $a] eq [grid_element::get_row $b]} {
+		lappend simple_paths $path 
+	    } else {
+		lappend complex_paths $path
+	    }
+	} 
+	# return the pathes in sorted order
+	return [concat $simple_paths $complex_paths]
+    }
+
+    # routes the paths supplied, returns a list of routes
+    #
+    proc route_node_paths {node_paths} {
+	set i 0
+	# route the path & use the color of the starting point as 
+	set routed_paths {}
+	foreach f $node_paths {
+	    # inherit the color from the starting port
+	    set c [grid_element::get_color [lindex $f 0]]
+	    set path [a_star::a_star [lindex $f 0] [lindex $f 1]]
+	    foreach setp $path {
+		if {$setp eq [lindex $f 0] || $setp eq [lindex $f 1]} {continue}
+		grid_element::set_color $setp $c
+	    }
+	    lappend routed_paths $path 
+	    incr i
+	}
+	return $routed_paths
+    }
+
+    # maps pipeline stages to the routed paths and creates 
+    # pipeline stage objects
+    # returns a list of pipeline stages
+    proc map_pipeline_stages {routes} {
+	set pipeline_stages {}
+	# place the pipeline stages 
+	foreach route $routes {
+	    set start [lindex $route 0]
+	    set end [lindex $route end]
+	    
+	    set start_tile [::grid_element::get_neighbor_tile $start]
+	    set end_tile [::grid_element::get_neighbor_tile $end]
+
+	    set start_name [tile::get_tile_name $start_tile]
+	    set end_name [tile::get_tile_name $end_tile] 
+
+	    # get the pipelinestages from start to end & from end to start
+	    set trace_forward null
+	    set trace_backward null
+
+	    foreach direction {north south east west} {
+		set f [::layout_utils::trace_to_next_tile $start_name $direction]
+		set b [::layout_utils::trace_to_next_tile $end_name $direction]
+		if {[lindex $f end] eq $end_name} { set trace_forward $f }
+		if {[lindex $b end] eq $start_name} { set trace_backward $b }
+	    }
+
+	    set pipeline_forward [lrange $trace_forward 1 end-1]
+	    set pipeline_backward [lreverse [lrange $trace_backward 1 end-1]]
+
+	    set mapping [layout_utils::find_valid_placement $route [llength $pipeline_forward]]
+
+	    set ps {}
+	    set i 0
+	    
+	    # create pipeline stage elements
+	    set prev_stage $start_tile
+	    foreach pf $pipeline_forward pb $pipeline_backward m $mapping {
+		set stage [new pipeline_stage $m $pf $pb $route $i]
+		pipeline_stage::set_prev $stage $prev_stage
+		if {$prev_stage ne $start_tile} {
+		    pipeline_stage::set_next $prev_stage $stage
+		}
+		lappend ps $stage 
+		set prev_stage $stage
+		incr i
+	    }
+	    pipeline_stage::set_next $stage $end_tile
+
+	    lappend pipeline_stages $ps
+	}
+	return $pipeline_stages
     }
 }

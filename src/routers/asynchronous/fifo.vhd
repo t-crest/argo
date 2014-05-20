@@ -1,6 +1,7 @@
-library IEEE, synopsys;
+--library IEEE, synopsys;
+library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use synopsys.attributes.all;
+--use synopsys.attributes.all;
 use work.config_types.all;
 use work.noc_defs.all;
 

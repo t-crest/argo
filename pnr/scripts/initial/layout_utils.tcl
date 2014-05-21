@@ -2,6 +2,12 @@ package require stooop
 namespace import stooop::*
 
 namespace eval layout_utils {
+    # Function to trace through the netlist from one tile to the next one, finding all
+    # pipeline stags inbetween
+    # Takes the tile object and a port (north, south, east, west) as an argument and 
+    # follows the path from there.
+    # Returns a list of the names of the tiles and the names of the pipeline stages, 
+    # in the order found.
     proc trace_to_next_tile {tile port} {
 	set trace_list1 $tile
 	
@@ -30,6 +36,7 @@ namespace eval layout_utils {
 	if {(($a1 == $b1) && ($a2 == $b2)) || (($a1 == $b2) && ($a2 == $b1)) } { return 0 } elseif {[grid_element::distance_to $a1 [grid_element::get_center $b1]] > [grid_element::distance_to $a2 [grid_element::get_center $b2]] } { return 1 } else {return -1}
     }
 
+    # Returns the actual length of a path
     proc get_path_length {node_list} {
 	return [expr [join [extract_length $node_list] +]]
     }
@@ -39,7 +46,6 @@ namespace eval layout_utils {
     # stages to add and returns a list of mappings, consisting out of 
     # the grid element where the stage is mapped to, a relative position within
     # the grid element and the offset of this position from the optimal point.
-
     proc find_valid_placement {node_list num_elements} {
 	# get the total length of the path
 	set total_length [get_path_length $node_list]
@@ -91,6 +97,10 @@ namespace eval layout_utils {
 	return $mapping
     }
 
+    # Method to calculate the actual length of a path: the length is calculated through the
+    # center of the path
+    # Returns a list of calculated lengths for each node of the path, the total length is 
+    # the sum of all this values
     proc extract_length {path} {
 	set length_list {}
 	set prev_node [grid_element::get_neighbor_tile [lindex $path 0]]
@@ -122,7 +132,10 @@ namespace eval layout_utils {
 	return $length_list
     }
 
-    # returns a unique list of pathes from the noc, sorted by complexity 
+    # To reduce congestion it is helpful to route simple connections 
+    # (straight) first. This function gets all the pathes between the tiles,
+    # uniquifies it to strip out the same pathes in the opposite direction
+    # Returns a unique list of tupels of start and end ports, sorted by complexity 
     # (simple fist, than cornercase)
     proc get_node_paths {grid} {
 	# find all paths - each one, starting from each tile
@@ -158,8 +171,10 @@ namespace eval layout_utils {
 	return [concat $simple_paths $complex_paths]
     }
 
-    # routes the paths supplied, returns a list of routes
-    #
+    # Function to determine an actual routing for the pathes, takes a list of 
+    # tupels of start and end port and finds a path through the grid between 
+    # those two using the A* algorithm.
+    # Returns a list of routes (which are lists of nodes)
     proc route_node_paths {node_paths} {
 	set i 0
 	# route the path & use the color of the starting point as 
@@ -178,6 +193,7 @@ namespace eval layout_utils {
 	return $routed_paths
     }
 
+    
     # maps pipeline stages to the routed paths and creates 
     # pipeline stage objects
     # returns a list of pipeline stages

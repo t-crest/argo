@@ -1,5 +1,7 @@
 package require stooop
 namespace import stooop::*
+# Autorouter based on the A* algorithm - finds the shortest path 
+# between two nodes through a grid implemented with the grid classes
 
 # priority queue class
 class as_pqueue {
@@ -9,6 +11,7 @@ class as_pqueue {
     }
     proc ~as_pqueue {this} {}
 
+    # adds an object to the queue
     proc put {this object} {
 	# if the 
 	if {[llength  $($this,queue)] == 0} {
@@ -21,12 +24,14 @@ class as_pqueue {
 
 	a_star_node::set_queue $object $this
     }
-
+    # compares two elements within the queue, used by sort to determine the prioritized order
     proc compare {node1 node2} {
 	set w1 [a_star_node::get_f $node1] 
 	set w2 [a_star_node::get_f $node2]
 	if {$w1 > $w2} { return 1 } elseif {$w1 < $w2} {return -1} else {return 0}
     }
+
+    # sorts the list if marked as unsorted
     proc sort {this} {
 	# sort only if new values added
 	if {$($this,unsorted)} {
@@ -35,22 +40,25 @@ class as_pqueue {
 	    set ($this,unsorted) 0
 	}
     }
+    # returns the element with the least f value from the list and removes it from the list
     proc pop {this} {
 	as_pqueue::sort $this
 	set r [lindex $($this,queue) 0]
 	set ($this,queue) [lrange $($this,queue) 1 end]	
 	return $r
     }    
+    # returns the element without removing
     proc top {this} {
 	puts [as_pqueue::print $this]
 	as_pqueue::sort $this
         return [lindex $($this,queue) 0]
     }
+    # checks whether the list is empty
     proc empty {this} {
 	if {[llength $($this,queue)] == 0} {return 1}
 	return 0
     }
-
+    # checks whether an object is part of the list
     proc contains {this object} {
 	foreach node $($this,queue) {
 	    set o [a_star_node::get_object $node]
@@ -58,10 +66,12 @@ class as_pqueue {
 	}
 	return null
     }
-
+    # forces the list to an unsorted status, to be used when the f value of an
+    # object has been modified from the outside
     proc update {this} {
 	set ($this,unsorted) 1
     }
+    # Helper method to print the list
     proc print {this} {
 	set l {}
 	foreach node $($this,queue) {

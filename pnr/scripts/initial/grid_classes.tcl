@@ -1,6 +1,7 @@
 package require stooop
 namespace import stooop::*
 
+# class reprecenting a rectangle within the layout grid
 class grid_element {
     #constructor
     proc grid_element {this grid row col height width htype wtype} {
@@ -115,11 +116,10 @@ class grid_element {
     proc get_east {this} {return $($this,east)}
     proc get_west {this} {return $($this,west)}
 
+    # returns the fist tile found beside this grid element, otherwise null
     proc get_neighbor_tile {this} {
 	foreach neighbor "$($this,north) $($this,south) $($this,east) $($this,west)" {
-	    if {[grid_element::get_type $neighbor] eq "tile"} {
-		return $neighbor
-	    }
+	    if {[grid_element::get_type $neighbor] eq "tile"} {	return $neighbor }
 	}
 	return null
     }
@@ -325,6 +325,9 @@ class grid_element {
     proc ~grid_element {this} { }
 }
 
+# pipeline stage class, used to represent the actual position of a pipeline stage.
+# each pipeline stage object actually represents two stages - one in forward direction,
+# the other one in backward direction
 class pipeline_stage {
     proc pipeline_stage {this mapping name_forward name_backward route index} grid_element { 
 	[grid_element::get_grid [lindex $mapping 0]] \
@@ -351,7 +354,9 @@ class pipeline_stage {
 
 	set route_pos [lsearch $route $($this,parent)]
 	set prev_route [lindex $route [expr $route_pos - 1]]
-
+	
+	# calculates the position of the pipeline stage based on the location
+	# of the previous element in the route
 	set left 0
 	set bottom 0
 	if {[grid_element::get_south $parent] eq $prev_route} {

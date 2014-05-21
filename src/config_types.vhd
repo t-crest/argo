@@ -44,7 +44,7 @@ use ieee.std_logic_1164.all;
 package config_types is
   -- Architectures & Implementations to choose from 
   type ARCHITECTURES is (RTL, FPGA, ASIC);
-  type IMPLEMENTATIONS is (SYNC, ASYNC);
+  type IMPLEMENTATIONS is (SYNC, ASYNC, ASYNC_FPGA);
 
   type latch_state is (opaque, transparent);
   type latch_state_vector is array (integer range <>) of latch_state;

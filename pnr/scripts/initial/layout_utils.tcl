@@ -1,6 +1,3 @@
-package require stooop
-namespace import stooop::*
-
 namespace eval layout_utils {
     # Function to trace through the netlist from one tile to the next one, finding all
     # pipeline stags inbetween

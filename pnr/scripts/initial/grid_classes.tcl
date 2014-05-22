@@ -1,6 +1,3 @@
-package require stooop
-namespace import stooop::*
-
 # class reprecenting a rectangle within the layout grid
 class grid_element {
     #constructor
@@ -359,34 +356,40 @@ class pipeline_stage {
 	# of the previous element in the route
 	set left 0
 	set bottom 0
+	# distance to edge to not place a stage
+	set keepout 10
 	if {[grid_element::get_south $parent] eq $prev_route} {
 	    set width [grid_element::get_width $parent]
 	    set height $::pipeline_stage_length
 	    set pos [expr [grid_element::get_height $parent] * $relative_distance]
 	    set bottom [expr $pos - $::pipeline_stage_length/2]
-	    if {$bottom < 0} { set bottom 0 }	    
+	    if {$bottom < $keepout} { set bottom $keepout }
+	    set direction 1
 	} elseif {[grid_element::get_north $parent] eq $prev_route} {
 	    set width [grid_element::get_width $parent]
 	    set height $::pipeline_stage_length
 	    set pos [expr [grid_element::get_height $parent] * (1 - $relative_distance)]
 	    set bottom [expr $pos - $::pipeline_stage_length/2]
-	    if { $bottom > [expr [grid_element::get_height $parent] - $::pipeline_stage_length]} {
-		set bottom [expr [grid_element::get_height $parent] - $::pipeline_stage_length]
+	    if { $bottom > [expr [grid_element::get_height $parent] - $::pipeline_stage_length - $keepout]} {
+		set bottom [expr [grid_element::get_height $parent] - $::pipeline_stage_length - $keepout]
 	    }	
+	    set direction -1
 	} elseif {[grid_element::get_west $parent] eq $prev_route} {
 	    set width $::pipeline_stage_length
 	    set height [grid_element::get_height $parent]
 	    set pos [expr [grid_element::get_width $parent] * $relative_distance]
 	    set left [expr $pos - $::pipeline_stage_length/2]
-	    if {$left < 0} { set left 0 }
+	    if {$left < $keepout} { set left $keepout }
+	    set direction -1
 	} else {
 	    set width $::pipeline_stage_length
 	    set height [grid_element::get_height $parent]
 	    set pos [expr [grid_element::get_width $parent] * (1 - $relative_distance)]
 	    set left [expr $pos - $::pipeline_stage_length/2]
-	    if { $left > [expr [grid_element::get_width $parent] - $::pipeline_stage_length]} {
-		set left [expr [grid_element::get_width $parent] - $::pipeline_stage_length]
+	    if { $left > [expr [grid_element::get_width $parent] - $::pipeline_stage_length - $keepout]} {
+		set left [expr [grid_element::get_width $parent] - $::pipeline_stage_length - $keepout]
 	    } 
+	    set direction 1
 	}
 	set ($this,left) [expr [grid_element::get_left $parent] + $left]
 	set ($this,bottom) [expr [grid_element::get_bottom $parent] + $bottom]
@@ -400,8 +403,9 @@ class pipeline_stage {
 	    set box2 "$($this,left) [expr $($this,bottom) + $height/2] [expr $($this,left) + $width] [expr $($this,bottom) + $height]"
 	}
 
-	set ($this,box_forward) $box1
-	set ($this,box_backward) $box2
+	set ($this,direction) $direction
+	set ($this,box_forward) $box2
+	set ($this,box_backward) $box1
 	
     }
     
@@ -424,6 +428,53 @@ class pipeline_stage {
     
     proc get_name_backward {this} { return $($this,backward)}
     proc get_name_forward {this} { return $($this,forward)}
+    proc get_parent {this} {return $($this,parent)}
+
+    proc get_direction {this} {return $($this,direction)}
+    proc get_swap_name {this} {
+	if {$($this,direction) == 1} {
+	    return $($this,forward)
+	} else {
+	    return $($this,backward)
+	}
+    }
+
+    proc get_forward_pins {this} {
+	set pins {}
+	lappend pins [dbGet [dbGet -p top.insts.name  $($this,forward)].instTerms.name *right* -p]
+	lappend pins [dbGet [dbGet -p top.insts.name  $($this,backward)].instTerms.name *left* -p]
+	return $pins
+    }
+ 
+    proc get_route_to {this} {
+	set pos [lsearch $($this,route) $($this,parent)]
+	# previous is tile
+	if {[classof $($this,prev)] eq "::tile"} {
+	    return [concat $($this,prev) [lrange $($this,route) 0 [expr $pos - 1]] $this]
+	}
+
+	set prev_parent [pipeline_stage::get_parent $($this,prev)]
+	set pos_prev [lsearch $($this,route) $prev_parent]
+
+	# same parent
+	if {$($this,parent) eq $prev_parent } {
+	    return "$($this,prev) $this"
+	} 
+	
+	# different parents
+	return [concat $($this,prev) [lrange $($this,route) [expr $pos_prev + 1] [expr $pos - 1]] $this]
+       
+    }
+
+    proc get_route_from {this} {
+	# next is tile
+	set pos [lsearch $($this,route) $($this,parent)]
+	if {[classof $($this,next)] eq "::tile"} {
+	    return [concat $this [lrange $($this,route) [expr $pos + 1] end] $($this,next)]
+	}
+	# get route to next
+	return [pipeline_stage::get_route_to $($this,next)]
+    }
 }
 
 class tile {

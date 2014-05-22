@@ -43,12 +43,19 @@ proc step_plan_route args {
 	    incr i
 	    set direction [lindex $step 0]
 	    set distance [lindex $step 1]
+
+	    if {$direction eq "DIRECT"} {
+		#lappend routeStack $t_pt
+		break
+	    }
+
 	    if {[llength $step] == 3} {
 		set mode [lindex $step 2]
 	    } else {
 		set mode "RELATIVE"
 	    }
     	    
+
 	    # ignore last distance and use the distance of the pin to finish at
 	    if {$i == [llength $steps]} {
 		if { ($direction eq "DOWN") || ($direction eq "UP") } {
@@ -104,7 +111,7 @@ proc step_route_stack args {
     foreach route $stack {
 	set net [lindex $route 0]
 	set points [lindex $route 1]
-	setEdit -nets $net -width_horizontal 0.4 -width_vertical 0.4 -layer_horizontal M7 -layer_vertical M6 -stop_at_drc 0
+	setEdit -nets $net -width_horizontal 0.4 -width_vertical 0.4 -layer_horizontal M7 -layer_vertical M6 -stop_at_drc 0 -snap_to_track 0 -snap_align_to center
 	foreach pointset [lrange $points 0 end-1] {
 	    editAddRoute $pointset
 	}

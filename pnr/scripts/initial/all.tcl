@@ -1,12 +1,16 @@
 #freeDesign
 
-set dir ../scripts/libs/stooop
-source ../scripts/libs/stooop/pkgIndex.tcl
+set PNR_DIR ../
 
+set dir $PNR_DIR/scripts/libs/stooop
+source $PNR_DIR/scripts/libs/stooop/pkgIndex.tcl
 
-source ../scripts/initial/grid_classes.tcl
-source ../scripts/initial/a_star.tcl
-source ../scripts/initial/layout_utils.tcl
+package require stooop
+namespace import stooop::*
+
+source $PNR_DIR/scripts/initial/grid_classes.tcl
+source $PNR_DIR/scripts/initial/a_star.tcl
+source $PNR_DIR/scripts/initial/layout_utils.tcl
 
 source ../scripts/sizes.tcl
 
@@ -22,11 +26,9 @@ source scripts/floorplan.tcl
 
 # tile placement 
 #source scripts/place_tiles2.tcl
-breakhere
+# breakhere
 # hand route tile interconnection
-set routes {}
-source scripts/hand_route_edges.tcl  
-source scripts/hand_route_tiles.tcl
+
 
 # partitioning
 savePartition -lib -dir ./partitions -def -pt

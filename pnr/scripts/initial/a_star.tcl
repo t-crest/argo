@@ -1,5 +1,3 @@
-package require stooop
-namespace import stooop::*
 # Autorouter based on the A* algorithm - finds the shortest path 
 # between two nodes through a grid implemented with the grid classes
 

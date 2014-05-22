@@ -26,8 +26,9 @@ source scripts/floorplan.tcl
 
 # tile placement 
 #source scripts/place_tiles2.tcl
-# breakhere
+
 # hand route tile interconnection
+setPtnPinStatus * * fixed
 
 
 # partitioning

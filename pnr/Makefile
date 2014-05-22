@@ -5,7 +5,7 @@ export SYNTHESIS_DIR := $(ARGO_PNR_DIR)/../synthesis
 all: assembly
 
 $(NETLIST_DIR)/tiled_noc_netlist.v: 
-	pushd $(SYNTHESIS_DIR); $(MAKE); popd
+	pushd $(SYNTHESIS_DIR); $(MAKE) asic_tiled_4x4; popd
 
 initial/partitions/tiled_noc/tiled_noc.globals: $(NETLIST_DIR)/tiled_noc_netlist.v
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/initial initial/scripts

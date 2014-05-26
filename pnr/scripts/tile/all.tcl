@@ -26,11 +26,6 @@ source scripts/sroute.tcl
 fit
 redraw
 
-set output_nets [dbGet [dbGet top.terms .isOutput].net.name]
-
-foreach net $output_nets {
-    #addBufferForFeedthrough -powerDomain PD_noc_switch -net $net -suffix "WIRE_DRIVER" -cell $ARGO_PNR_NOC_WIRE_BUF
-}
 
 # place
 source scripts/place.tcl
@@ -48,19 +43,8 @@ saveDesign post_cts.enc
 # route
 source scripts/route.tcl
 
-#routeDesign
-
-# delete the keepout zones
-# selectRouteBlk defLayerBlkName
-# deleteSelectedFromFPlan
-# selectRouteBlk defLayerBlkName
-# deleteSelectedFromFPlan
-# selectRouteBlk defLayerBlkName
-# deleteSelectedFromFPlan
-# selectRouteBlk defLayerBlkName
-# deleteSelectedFromFPlan
-# selectRouteBlk defLayerBlkName
-# deleteSelectedFromFPlan
+# add filler cells
+addFiller -cell $ARGO_PNR_FILLER_CELLS -prefix FILLER
 
 saveDesign tile.enc
 fit

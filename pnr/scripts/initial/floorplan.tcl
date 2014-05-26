@@ -75,8 +75,8 @@ foreach ct $cell_type_list {
 	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Left -layer 7 -spreadType start -spacing 0.8 -start 0 0 -pin $left_pins
 	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Right -layer 7 -spreadType start -spacing 0.8 -start 0 0 -pin $right_pins
     } else {
-	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Top -layer 7 -spreadType start -spacing 0.8 -start 0.8 $s -pin $left_pins
-	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Bottom -layer 7 -spreadType start -spacing 0.8 -start 0.8 $s -pin $right_pins
+	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Top -layer 6 -spreadType start -spacing 0.8 -start 0.8 $s -pin $left_pins
+	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Bottom -layer 6 -spreadType start -spacing 0.8 -start 0.8 $s -pin $right_pins
     }
 }
 
@@ -230,7 +230,7 @@ foreach path $pipeline_stage_routes path_instruction $inst {
 	    step_route_stack [step_plan_route $pins $route_instruction]
 	} else {
 	    set pins [join [pipeline_stage::get_forward_pins $start]]
-	    step_route_stack [step_plan_route $pins $route_instruction DEBUG]
+	    step_route_stack [step_plan_route $pins $route_instruction]
 	}
     }
 }

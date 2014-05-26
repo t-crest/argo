@@ -336,6 +336,8 @@ class pipeline_stage {
     } {
 	set parent [lindex $mapping 0]
 	set relative_distance [lindex $mapping 1]
+	set ($this,relative_distance) $relative_distance
+	puts "PS: $name_forward $mapping"
 	set ($this,parent) $parent
 	set ($this,forward) $name_forward
 	set ($this,backward) $name_backward
@@ -357,38 +359,42 @@ class pipeline_stage {
 	set left 0
 	set bottom 0
 	# distance to edge to not place a stage
-	set keepout 10
+	set keepout 0
 	if {[grid_element::get_south $parent] eq $prev_route} {
 	    set width [grid_element::get_width $parent]
 	    set height $::pipeline_stage_length
 	    set pos [expr [grid_element::get_height $parent] * $relative_distance]
-	    set bottom [expr $pos - $::pipeline_stage_length/2]
-	    if {$bottom < $keepout} { set bottom $keepout }
+	    set bottom [expr $pos - $::pipeline_stage_length]
+	    if { $bottom > [expr [grid_element::get_height $parent] - $::pipeline_stage_length + $keepout]} {
+		set bottom [expr [grid_element::get_height $parent] - $::pipeline_stage_length + $keepout]
+	    } elseif {$bottom < $keepout} { set bottom $keepout }
 	    set direction 1
 	} elseif {[grid_element::get_north $parent] eq $prev_route} {
 	    set width [grid_element::get_width $parent]
 	    set height $::pipeline_stage_length
 	    set pos [expr [grid_element::get_height $parent] * (1 - $relative_distance)]
-	    set bottom [expr $pos - $::pipeline_stage_length/2]
-	    if { $bottom > [expr [grid_element::get_height $parent] - $::pipeline_stage_length - $keepout]} {
-		set bottom [expr [grid_element::get_height $parent] - $::pipeline_stage_length - $keepout]
-	    }	
+	    set bottom [expr $pos - $::pipeline_stage_length]
+	    if { $bottom > [expr [grid_element::get_height $parent] - $::pipeline_stage_length + $keepout]} {
+		set bottom [expr [grid_element::get_height $parent] - $::pipeline_stage_length + $keepout]
+	    } elseif {$bottom < $keepout} { set bottom $keepout }
 	    set direction -1
 	} elseif {[grid_element::get_west $parent] eq $prev_route} {
 	    set width $::pipeline_stage_length
 	    set height [grid_element::get_height $parent]
 	    set pos [expr [grid_element::get_width $parent] * $relative_distance]
-	    set left [expr $pos - $::pipeline_stage_length/2]
-	    if {$left < $keepout} { set left $keepout }
+	    set left [expr $pos - $::pipeline_stage_length]
+	    if { $left > [expr [grid_element::get_width $parent] - $::pipeline_stage_length + $keepout]} {
+		set left [expr [grid_element::get_width $parent] - $::pipeline_stage_length + $keepout]
+	    } elseif {$left < $keepout} { set left $keepout }
 	    set direction -1
 	} else {
 	    set width $::pipeline_stage_length
 	    set height [grid_element::get_height $parent]
 	    set pos [expr [grid_element::get_width $parent] * (1 - $relative_distance)]
-	    set left [expr $pos - $::pipeline_stage_length/2]
-	    if { $left > [expr [grid_element::get_width $parent] - $::pipeline_stage_length - $keepout]} {
-		set left [expr [grid_element::get_width $parent] - $::pipeline_stage_length - $keepout]
-	    } 
+	    set left [expr $pos - $::pipeline_stage_length]
+	    if { $left > [expr [grid_element::get_width $parent] - $::pipeline_stage_length + $keepout]} {
+		set left [expr [grid_element::get_width $parent] - $::pipeline_stage_length + $keepout]
+	    } elseif {$left < $keepout} { set left $keepout }
 	    set direction 1
 	}
 	set ($this,left) [expr [grid_element::get_left $parent] + $left]
@@ -430,6 +436,7 @@ class pipeline_stage {
     proc get_name_forward {this} { return $($this,forward)}
     proc get_parent {this} {return $($this,parent)}
 
+    proc get_relative_distance {this} {return $($this,relative_distance)}
     proc get_direction {this} {return $($this,direction)}
     proc get_swap_name {this} {
 	if {$($this,direction) == 1} {
@@ -870,7 +877,9 @@ class grid {
 		set h [pipeline_stage::get_height $elem]
 		set l [pipeline_stage::get_left $elem]
 		set b [pipeline_stage::get_bottom $elem]
+		set tb [expr $b + [grid_element::get_height $elem]/2] 
 		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:$color\;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
+		puts $f "<text x=\"$l\" y=\"$tb\" style=\"font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans\">$elem</text>"
 	    } else {
 		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:$color\;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
 	    }

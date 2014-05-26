@@ -45,7 +45,7 @@ namespace eval layout_utils {
     # the grid element and the offset of this position from the optimal point.
     proc find_valid_placement {node_list num_elements} {
 	# get the total length of the path
-	set total_length [get_path_length $node_list]
+	set total_length [layout_utils::get_path_length $node_list]
 	# calculate the length of the path segments
 	set target_length [expr $total_length / ($num_elements + 1)]
 	
@@ -53,32 +53,40 @@ namespace eval layout_utils {
 	set length 0
 	set i 1
 	set mapping {}
-
+	set last_valid_length 0
+	set last_valid null
 	# mapping
-	foreach node $node_list node_length [extract_length $node_list] {
+	foreach node $node_list node_length [layout_utils::extract_length $node_list] {
 	    while {1} {
 		set k [expr $i*$target_length] 
 		if {[grid_element::valid_placement $node]} {
+		    #puts "$k $length" 
 		    if {$length <= $k && $k <= [expr $length + $node_length]} {
 			# simple case: optimal position is within this grid element && we are allowed to place here
 			set ratio [expr ($k-$length)/$node_length]
 			lappend mapping "$node $ratio 0"
+			#puts "map stage $i to $node"
 			incr i
 		    } elseif {$k < $length} {
 			# path is longer than optimum, place either at the begining of this grid element or at the 
 			# last known valid position 
-			puts "else $k < $length"
+			#puts "else $k < $length"
 			# last valid position is better
-			if {[expr abs($last_valid_length - $k)] < [expr abs($length - $k)]} {
+			if {$last_valid ne "null" && [expr abs($last_valid_length - $k)] < [expr abs($length - $k)]} {
 			    lappend mapping [concat $last_valid [expr abs($last_valid_length - $k)]]
-			    incr i
+			    #puts "map stage $i to $node"
+			    incr i		    
 			    # this position is better
 			} else {
 			    lappend mapping "$node 0 [expr abs($length - $k)]"
+			    #puts "map stage $i to $node"
 			    incr i
+
 			}
 		    } else {
-			# k is larger than this node, check next node
+			#puts "k is larger than this node ($node), check next node"
+			set last_valid "$node 1"
+			set last_valid_length [expr $length + $node_length]
 			break
 		    }		
 		    # the end of this node might be a valid placement, keep it for later
@@ -86,10 +94,16 @@ namespace eval layout_utils {
 		    set last_valid_length [expr $length + $node_length]
 		} else {
 		    # not a valid placement, skip this node
+		    #puts "skip $node"
 		    break
 		}	
 	    }	
 	    set length [expr $length + $node_length]
+	}
+	if {$i <= $num_elements} {
+	    #puts "no mapping for the last element found in loop, map to last known good position"
+	    lappend mapping [concat $last_valid [expr abs($last_valid_length - $k)]]
+
 	}
 	return $mapping
     }

@@ -1,4 +1,4 @@
-
+createClockTreeSpec -bufferList $ARGO_PNR_CTS_BUF -file scripts/Clock_relaxed.ctstch
 
 setOptMode -fixCap true -fixTran true -fixFanoutLoad false
 optDesign -preCTS
@@ -17,6 +17,9 @@ deleteAllCellPad
 
 setPlaceMode -padForPinNearBorder 0
 
-clockDesign -specFile scripts/Clock_relaxed.ctstch
+clockDesign -clk clk -specFile scripts/Clock_relaxed.ctstch
 
 deleteTrialRoute
+
+setOptMode -fixCap true -fixTran true -fixFanoutLoad false
+optDesign -postCTS

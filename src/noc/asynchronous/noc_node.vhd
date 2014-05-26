@@ -47,7 +47,7 @@ use work.noc_interface.all;
 
 entity noc_node is
 port (
-	--p_clk		: std_logic;
+	p_clk		: std_logic;
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 

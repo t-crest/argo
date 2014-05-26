@@ -85,8 +85,7 @@ begin
 
     token_latch : entity work.hpu_latch(struct)
       generic map (
-	init_token		   => EMPTY_TOKEN,
-	GENERATE_ACKNOWLEDGE_DELAY => hpu_ack_delay
+	init_token		   => EMPTY_TOKEN
 	)
       port map (
 	preset	  => preset,
@@ -105,8 +104,7 @@ begin
 
     token_latch : entity work.hpu_latch(struct)
       generic map (
-	init_token		   => VALID_TOKEN,
-	GENERATE_ACKNOWLEDGE_DELAY => hpu_ack_delay
+	init_token		   => VALID_TOKEN
 	)
       port map (
 	preset	  => preset,

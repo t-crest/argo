@@ -144,11 +144,16 @@ begin
 	generic map(size => hpu_second_req_delay)
 	port map(d => REQ_INT,
 		z => OUT_REQ_INT);
+		
+    out_ack_delay : entity work.matched_delay
+	generic map(size => hpu_ack_delay)
+	port map(d => chan_out_b.ack,
+		z => chan_in_b.ack);
 
   comb : process (chan_in_f, chan_out_b, VLD_TYPE, SOP, OUT_REQ_INT) is
   begin
     -- default case: forward everything
-    chan_in_b  <= chan_out_b;
+    --chan_in_b  <= chan_out_b;
     chan_out_f <= chan_in_f;
 
     -- implement delays (overrides req in assotiation above!)

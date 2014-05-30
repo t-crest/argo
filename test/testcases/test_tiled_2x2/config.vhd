@@ -46,6 +46,7 @@ package config is
     
     constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
     constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
+    constant GATING_ENABLED : integer := 1;
   
     constant N : integer := 2; -- Horizontal width
     constant M : integer := 2; -- Vertical Height

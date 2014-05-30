@@ -9,7 +9,6 @@ entity fifo is
   generic (
     N			       : integer;
     TOKEN		       : latch_state;
-    GATING_ENABLED	       : integer := 0;
     GENERATE_REQUEST_DELAY     : integer := 0;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0
     );
@@ -39,7 +38,6 @@ begin
     latch_stage : entity work.channel_latch(struct)
       generic map (
 	init_token		   => TOKEN,
-	GATING_ENABLED		   => GATING_ENABLED,
 	GENERATE_REQUEST_DELAY	   => GENERATE_REQUEST_DELAY,
 	GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY
 	)

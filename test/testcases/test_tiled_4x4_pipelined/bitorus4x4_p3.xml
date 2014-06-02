@@ -1,6 +1,6 @@
 <?xmlversion="1.0" encoding="UTF-8"?>
   <platform width="4" height="4">
-    <topology type="bitorus" routerDepth="3" linkDepth="3" ></topology>
+   <topology type="bitorus" routerDepth="3" linkDepth="0" ></topology>
   </platform>
   <communication type="all2all" phits="3" >
   </communication>

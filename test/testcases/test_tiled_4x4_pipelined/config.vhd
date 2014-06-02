@@ -52,7 +52,7 @@ package config is
     
     constant NODES : integer := N*M;
     constant PRD_LENGTH : integer := 21;
-
+    constant GATING_ENABLED : integer := 1;
     constant SWAP_PORTS : boolean := true;
     
     constant LINK_PIPELINE_STAGES : integer := 3;

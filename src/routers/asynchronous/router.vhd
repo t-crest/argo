@@ -103,7 +103,6 @@ begin
 	begin
 		north_in_latch : entity work.channel_latch(struct)
 		generic map (
-			GENERATE_REQUEST_DELAY => link_req_delay,
 			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
@@ -118,7 +117,6 @@ begin
 
 		south_in_latch : entity work.channel_latch(struct)
 		generic map (
-			GENERATE_REQUEST_DELAY => link_req_delay,
 			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
@@ -133,7 +131,6 @@ begin
 
 		east_in_latch : entity work.channel_latch(struct)
 		generic map (
-			GENERATE_REQUEST_DELAY => link_req_delay,
 			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
@@ -148,7 +145,6 @@ begin
 
 		west_in_latch : entity work.channel_latch(struct)
 		generic map (
-			GENERATE_REQUEST_DELAY => link_req_delay,
 			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
@@ -163,8 +159,7 @@ begin
 
 		resource_in_latch : entity work.channel_latch(struct)
 		generic map (
-			GENERATE_REQUEST_DELAY => inp_req_delay,
-			GENERATE_ACKNOWLEDGE_DELAY => inp_ack_delay,
+			GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay,
 			init_token => EMPTY_BUBBLE
 		)
 		port map (

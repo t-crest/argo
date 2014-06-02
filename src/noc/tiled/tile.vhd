@@ -39,6 +39,7 @@ use work.noc_defs.all;
 use work.ocp.all;
 use work.noc_interface.all;
 use work.tile_package.all;
+use work.config.all;
 
 entity tile is
   
@@ -240,8 +241,7 @@ begin  -- fake_tile
       N				 => 1,	-- 1
       TOKEN			 => EMPTY_BUBBLE,
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
-      GENERATE_ACKNOWLEDGE_DELAY => 1,	-- 1
-      GATING_ENABLED		 => 0
+      GENERATE_ACKNOWLEDGE_DELAY => 1 --1
       )
     port map (
       preset	=> reset,
@@ -256,8 +256,7 @@ begin  -- fake_tile
       N				 => 2,	-- 2
       TOKEN			 => VALID_TOKEN,
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
-      GENERATE_ACKNOWLEDGE_DELAY => 1,	-- 1
-      GATING_ENABLED		 => 0
+      GENERATE_ACKNOWLEDGE_DELAY => 1 --1
       )
     port map (
       preset	=> reset,

@@ -6,7 +6,7 @@ test_tiled_4x4_pipelined: clean test_tiled_4x4_pipelined_setup async_rtl_asic no
 	$(PREFIX) vsim -t 10ps -voptargs=+acc -do $(TESTDIR)/testcases/netlist_tiled/tile_netlist_rtl.do tiled_noc_tb
 
 test_tiled_4x4_pipelined_setup: work
-	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/testcases/test_tiled_4x4_swap/config.vhd 
+	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/testcases/test_tiled_4x4_pipelined/config.vhd 
 
 test_tiled_4x4_pipelined_description:
 	@echo "test_tiled_4x4_pipelined "

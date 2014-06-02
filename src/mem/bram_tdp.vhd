@@ -68,6 +68,7 @@ end bram_tdp;
 
 
 architecture rtl of bram_tdp is
+    
 -- Shared memory
     type mem_type is array ( (2**ADDR)-1 downto 0 ) of std_logic_vector(DATA-1 downto 0);
     shared variable mem : mem_type := (others => (others => '0'));

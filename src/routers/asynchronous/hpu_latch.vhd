@@ -45,10 +45,6 @@ use work.noc_defs.all;
 
 entity hpu_latch is
   generic (
-    -- disables the clock gating
-    -- default: gating enabled
-    constant GATING_ENABLED : integer := 1;
-
     -- for some cases a delayed request is needed
     -- default: request delay disabled
     constant GENERATE_REQUEST_DELAY : integer := 0;
@@ -84,8 +80,16 @@ architecture struct of hpu_latch is
   signal type_out : std_logic;
   signal lt_gated : std_logic;
 
-  signal out_req_0, out_req_1, out_req_2 : std_logic;
+  signal out_req_0, out_req_2 : std_logic;
   signal out_ack			 : std_logic;
+  
+  attribute max_fanout : string;
+  attribute buffer_type : string;
+  attribute max_fanout of lt_en : signal is "10";
+  attribute max_fanout of lt_gated : signal is "10";
+  attribute buffer_type of lt_en : signal is "none";
+  attribute buffer_type of lt_gated : signal is "none";
+  
 begin
   type_in   <= left_in.data(PHIT_WIDTH);
   --lt_gated <= lt_en or (not type_out) after delay;

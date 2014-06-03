@@ -434,6 +434,45 @@ begin
             end generate flip_even;
           end generate c_ne;
         end generate is_corner;
+
+        WIRETAP : if ENABLE_WIRETAP generate
+          north : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_north")
+            port map (
+              wire_fw => north_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
+              wire_bw => north_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
+          south : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_south")
+            port map (
+              wire_fw => south_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
+              wire_bw => south_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
+          east : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_east")
+            port map (
+              wire_fw => east_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
+              wire_bw => east_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
+          west : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_west")
+            port map (
+              wire_fw => west_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
+              wire_bw => west_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
+        end generate WIRETAP;
       end generate nodes_n;
     end generate nodes_m;
   end generate swap;

@@ -85,6 +85,8 @@ ocp:
 noc_defs: utils ocp
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc_defs.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc_interface.vhd
+	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/wiretap_package.vhd
+	$(PREFIX) vcom $(OPTIONS) $(TESTDIR)/util/wiretap.vhd
 
 utils:
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/util/txt_util.vhd

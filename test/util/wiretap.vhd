@@ -53,6 +53,8 @@ entity wiretap is
     name         : string  := "Node";
     N            : natural := 0;
     M            : natural := 0;
+    direction    : string  := "x";
+    is_input     : boolean := false;
     extra_string : string  := "");
 
   port (wire_fw : in channel_forward;
@@ -61,19 +63,22 @@ entity wiretap is
 end entity wiretap;
 
 architecture echelon of wiretap is
-  alias ROUTE    : std_logic_vector(15 downto 0) is wire_fw.data(15 downto 0);
   alias VLD_TYPE : std_logic is wire_fw.data(LINK_WIDTH-1);
   alias SOP      : std_logic is wire_fw.data(LINK_WIDTH-2);
   alias EOP      : std_logic is wire_fw.data(LINK_WIDTH-3);
 
+  alias STATUS_BITS : std_logic_vector(2 downto 0) is wire_fw.data(LINK_WIDTH -1 downto LINK_WIDTH-3);
 
-  type PAKET_STATES is (S_SOP, S_VLD, S_EOP, S_IDLE, S_ERROR);
-  signal state, state_next : PAKET_STATES := S_IDLE;
-  signal pkt_timestamp     : time;
-  signal header            : std_logic_vector(DATA_WIDTH - 1 downto 0);
-  signal data_1, data_2    : std_logic_vector(DATA_WIDTH - 1 downto 0);
+  type   PAKET_STATES is (S_SOP, S_VLD, S_EOP, S_IDLE, S_ERROR);
+  signal state, state_next         : PAKET_STATES := S_IDLE;
+  signal pkt_timestamp             : time;
+  signal header                    : std_logic_vector(DATA_WIDTH - 1 downto 0);
+  signal data_1, data_2            : std_logic_vector(DATA_WIDTH - 1 downto 0);
+  signal status1, status2, status3 : std_logic_vector(2 downto 0);
+  alias ROUTE                      : std_logic_vector(15 downto 0) is header(15 downto 0);
+  alias ADDR                       : std_logic_vector(15 downto 0) is header(31 downto 16);
 
-  constant complete_name : string := name & "_" & integer'image(N) & "_" & integer'image(M) & extra_string;
+  constant complete_name : string := name & "_" & integer'image(M) & "_" & integer'image(N) & extra_string;
 -- name of this wiretap instance
   
 begin  -- architecture echelon
@@ -86,78 +91,82 @@ begin  -- architecture echelon
     
     while true loop
       wait until wire_fw.req /= wire_bw.ack;
-      state <= state_next;
+      state   <= state_next;
       wait for delay;
+      status3 <= status2;
+      wait for 1 ps;
+      status2 <= status1;
+      wait for 1 ps;
+      status1 <= STATUS_BITS;
       case state is
         when S_IDLE =>
-          if (VLD_TYPE = '1' and SOP = '1') then
-            state_next         <= S_SOP;
+          if (VLD_TYPE = '1' and SOP = '1' and EOP = '0') then
+            state_next    <= S_SOP;
             pkt_timestamp <= NOW;
             header        <= wire_fw.data(header'range);
           else
             if VLD_TYPE = '1' then
-              state_next         <= S_ERROR;
+              state_next    <= S_ERROR;
               pkt_timestamp <= NOW;
             end if;
           end if;
         when S_EOP =>
-          if (VLD_TYPE = '1' and SOP = '1') then
-            state_next         <= S_SOP;
+          if (VLD_TYPE = '1' and SOP = '1' and EOP = '0') then
+            state_next    <= S_SOP;
             pkt_timestamp <= NOW;
             header        <= wire_fw.data(header'range);
           else
             if VLD_TYPE = '1' then
-              state_next         <= S_ERROR;
+              state_next    <= S_ERROR;
               pkt_timestamp <= NOW;
             else
-              state_next         <= S_IDLE;
+              state_next <= S_IDLE;
             end if;
           end if;
         when S_SOP =>
-          if (VLD_TYPE = '1') then
-            state_next  <= S_VLD;
-            data_1 <= wire_fw.data(data_1'range);
+          if (VLD_TYPE = '1' and SOP = '0' and EOP = '0') then
+            state_next <= S_VLD;
+            data_1     <= wire_fw.data(data_1'range);
           else
-            state         <= S_ERROR;
+            state_next    <= S_ERROR;
             pkt_timestamp <= NOW;
           end if;
         when S_VLD =>
-          if (VLD_TYPE = '1' and EOP = '1') then
-            state_next  <= S_EOP;
-            data_2 <= wire_fw.data(data_2'range);
+          if (VLD_TYPE = '1' and EOP = '1' and SOP = '0') then
+            state_next <= S_EOP;
+            data_2     <= wire_fw.data(data_2'range);
           else
-            state_next         <= S_ERROR;
+            state_next    <= S_ERROR;
             pkt_timestamp <= NOW;
+          end if;
+        when S_ERROR =>
+          if VLD_TYPE = '0' then
+            state_next <= S_IDLE;
           end if;
         when others =>
           if VLD_TYPE = '0' then
             state_next <= S_IDLE;
           else
-            state_next         <= S_ERROR;
+            state_next    <= S_ERROR;
             pkt_timestamp <= NOW;
           end if;
       end case;
-
-      wait for delay;
-      assert state_next /= S_ERROR report "WTAP: broken packet at " & complete_name severity warning;
-      if state_next = S_ERROR then
-        wait until VLD_TYPE = '0';
-        state_next <= S_IDLE;
-      end if;
-      end loop;
+      
+    end loop;
     
   end process pkt_fsm;
 
   file_out : process is
-    
+
   begin  -- process file_out
     while true loop
       wait on state;
       if (state = S_EOP) then
-        print(tap_file, time'image(pkt_timestamp) & " " & complete_name & ": " & hstr(header) & " " & hstr(data_1) & " " & hstr(data_2));
+        print(tap_file, time'image(pkt_timestamp) & "; " & complete_name & "; [Addr: " & hstr(ADDR) & ", Route: " & wiretap_decode_route(ROUTE, is_input, direction) & "]; " & hstr(data_1) & "; " & hstr(data_2));
       end if;
       if state = S_ERROR then
-        print(tap_file, time'image(pkt_timestamp) & " " & complete_name & ": broken packet");
+        print(tap_file, time'image(pkt_timestamp) & "; " & complete_name & "; broken packet last 3 status bits: (" & str(status3) & ", " & str(status2) & ", " & str(status1) & ")");
+        report "WTAP: broken packet with (" & str(status3) & ", " & str(status2) & ", " & str(status1) & ") at " & complete_name severity error;
       end if;
     end loop;
   end process file_out;

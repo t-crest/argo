@@ -44,4 +44,43 @@ package wiretap_package is
 
   file tap_file : text open write_mode is "noc_wiretap.txt";
 
+  function wiretap_decode_route(slv : std_logic_vector; is_input: boolean; direction: string) return string;
+  
 end package wiretap_package;
+
+package body wiretap_package is
+
+  function wiretap_decode_route(slv : std_logic_vector; is_input: boolean; direction: string) return string is
+    variable str : string(1 to slv'length/2);
+    variable dir : std_logic_vector(1 downto 0);
+    variable decoded_dir : string(1 to 1) := "X";
+  begin
+    if is_input then
+      dir := slv(1 downto 0);
+      case dir is
+        when "00"   => decoded_dir := "n";
+        when "01"   => decoded_dir := "e";
+        when "10"   => decoded_dir := "s";
+        when "11"   => decoded_dir := "w";
+        when others => decoded_dir := "X";
+      end case;
+      if direction = decoded_dir then
+        return "FINAL";
+      end if;
+    end if;
+    for i in 0 to slv'length/2 - 1 loop
+      dir := slv(2*i + 1 downto 2*i);
+      case dir is
+        when "00"   => str(slv'length/2 - i) := 'N';
+        when "01"   => str(slv'length/2 - i) := 'E';
+        when "10"   => str(slv'length/2 - i) := 'S';
+        when "11"   => str(slv'length/2 - i) := 'W';
+        when others => str(slv'length/2 - i) := 'X';
+      end case;
+    end loop;  -- i
+    return str;
+  end wiretap_decode_route;
+  
+
+
+end wiretap_package;

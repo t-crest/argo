@@ -143,42 +143,87 @@ begin
             );
 
         WIRETAP : if ENABLE_WIRETAP generate
-          north : entity work.wiretap
+          north_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_north")
+              direction => "n",
+              is_input => true,
+              extra_string => "_north_in")
             port map (
               wire_fw => north_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => north_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
-          south : entity work.wiretap
+          south_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_south")
+              direction => "s",
+              is_input => true,
+              extra_string => "_south_in")
             port map (
               wire_fw => south_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => south_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
-          east : entity work.wiretap
+          east_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_east")
+              direction => "e",
+              is_input => true,
+              extra_string => "_east_in")
             port map (
               wire_fw => east_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => east_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
-          west : entity work.wiretap
+          west_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_west")
+              direction => "w",
+              is_input => true,
+              extra_string => "_west_in")
             port map (
               wire_fw => west_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => west_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
+          
+          north_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_north_out")
+            port map (
+              wire_fw => north_out_f(i)(j),
+              wire_bw => north_out_b(i)(j));
+          south_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_south_out")
+            port map (
+              wire_fw => south_out_f(i)(j),
+              wire_bw => south_out_b(i)(j));
+          east_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_east_out")
+            port map (
+              wire_fw => east_out_f(i)(j),
+              wire_bw => east_out_b(i)(j));
+          west_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_west_out")
+            port map (
+              wire_fw => west_out_f(i)(j),
+              wire_bw => west_out_b(i)(j));
         end generate WIRETAP;
       end generate nodes_n;
     end generate nodes_m;
@@ -435,43 +480,88 @@ begin
           end generate c_ne;
         end generate is_corner;
 
+
         WIRETAP : if ENABLE_WIRETAP generate
-          north : entity work.wiretap
+          north_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_north")
+              direction => "n",
+              is_input => true,
+              extra_string => "_north_in")
             port map (
               wire_fw => north_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => north_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
-          south : entity work.wiretap
+          south_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_south")
+              direction => "s",
+              is_input => true,
+              extra_string => "_south_in")
             port map (
               wire_fw => south_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => south_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
-          east : entity work.wiretap
+          east_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_east")
+              direction => "e",
+              is_input => true,
+              extra_string => "_east_in")
             port map (
               wire_fw => east_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => east_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
-          west : entity work.wiretap
+          west_in : entity work.wiretap
             generic map (
               name         => "Node",
               N            => j,
               M            => i,
-              extra_string => "_west")
+              direction => "w",
+              is_input => true,
+              extra_string => "_west_in")
             port map (
               wire_fw => west_in_f_p(LINK_PIPELINE_STAGES)(i)(j),
               wire_bw => west_in_b_p(LINK_PIPELINE_STAGES)(i)(j));
+          north_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_north_out")
+            port map (
+              wire_fw => north_out_f(i)(j),
+              wire_bw => north_out_b(i)(j));
+          south_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_south_out")
+            port map (
+              wire_fw => south_out_f(i)(j),
+              wire_bw => south_out_b(i)(j));
+          east_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_east_out")
+            port map (
+              wire_fw => east_out_f(i)(j),
+              wire_bw => east_out_b(i)(j));
+          west_out : entity work.wiretap
+            generic map (
+              name         => "Node",
+              N            => j,
+              M            => i,
+              extra_string => "_west_out")
+            port map (
+              wire_fw => west_out_f(i)(j),
+              wire_bw => west_out_b(i)(j));
         end generate WIRETAP;
       end generate nodes_n;
     end generate nodes_m;
@@ -488,7 +578,7 @@ begin
         pipeline_stage : for p in 0 to LINK_PIPELINE_STAGES - 1 generate
           pipeline_latch_north : entity work.link_pipeline(struct)
             generic map (
-	      direction => 0,
+              direction  => 0,
               init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
               init_data  => (others => '0')
               )
@@ -501,7 +591,7 @@ begin
               );
           pipeline_latch_south : entity work.link_pipeline(struct)
             generic map (
-	      direction => 0,
+              direction  => 0,
               init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
               init_data  => (others => '0')
               )
@@ -514,7 +604,7 @@ begin
               );
           pipeline_latch_east : entity work.link_pipeline(struct)
             generic map (
-	      direction => 1,
+              direction  => 1,
               init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
               init_data  => (others => '0')
               )
@@ -527,7 +617,7 @@ begin
               );
           pipeline_latch_west : entity work.link_pipeline(struct)
             generic map (
-	      direction => 1,
+              direction  => 1,
               init_token => LINK_PIPELINE_INIT(p mod LINK_PIPELINE_INIT'length),
               init_data  => (others => '0')
               )

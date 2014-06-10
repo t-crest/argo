@@ -69,11 +69,6 @@ architecture mousetrap of latch_controller is
   signal enable	     : std_logic;
   signal reset	     : std_logic;
   signal D, Q	     : std_logic;
-  signal preset_del  : std_logic;
-  signal preset_del2 : std_logic;
-  --signal reset  : std_logic;
-  --signal r_prev : std_logic;
-  --signal r_out : std_logic;
 
 begin
 
@@ -82,36 +77,10 @@ begin
   enable <= transport r_next xnor Aout after delay;
   lt_en	 <= enable;
 
-  --r_prev <= (not Rin) when resolve_latch_state(init_token)='1' else Rin;
-  --r_out <= (not r_next) when resolve_latch_state(init_token)='1' else r_next;
-
-  --set <= resolve_latch_state(init_token) and preset;
-  --reset <= not(resolve_latch_state(init_token)) and preset;
-
-  --req_latch: process (preset, enable, r_prev)
-  --begin
-  --if preset='1' then
-  --r_next <= '0';
---	elsif enable='1' then
-  --	  r_next <= transport r_prev after delay;
-  --  end if;
---  end process req_latch;
-
-  --req_prev <= Rin when enable='1' else r_next;
-
-  --r_next <= set or ((not reset) and req_prev);
-
-  --set <= resolve_latch_state(init_token) and preset;
-  --reset <= not(resolve_latch_state(init_token)) and preset;
-
-  --preset_del <= not preset;
-  --preset_del2 <= not preset_del;
-
+  -- default behaviour: direct rtl description
   no_asic_implementation : if TARGET_ARCHITECTURE /= ASIC generate
     req_latch : process(Rin, enable, preset)
     begin
-      --if set = '1' then
-      --r_next <= '1';
       if preset = '1' then
 	r_next <= resolve_latch_state(init_token);
       elsif enable = '1' then
@@ -120,6 +89,10 @@ begin
     end process req_latch;
   end generate no_asic_implementation;
 
+  -- asic implementation: infer a latch with reset and provide the environment
+  -- to simulate a set latch if needed
+  -- todo: add an option for the reset to be low active for the whole design for
+  -- asic implementation 
   asic_implementation : if TARGET_ARCHITECTURE = ASIC generate
     -- library has latches with low active reset
     reset <= not preset;
@@ -138,39 +111,12 @@ begin
     -- latch with low active reset
     req_latch : process(D, enable, reset)
     begin
-      --if set = '1' then
-      --r_next <= '1';
       if reset = '0' then
 	Q <= '0';
       elsif enable = '1' then
 	Q <= transport D after delay;
       end if;
     end process req_latch;
-    
-    -- --explicit description of the reset circuitry
-    --reset_transparent : if init_token = transparent generate
-    --	req_latch : process(Rin, enable, preset)
-    --	variable rin_reset : std_logic;
-    --	begin
-    --	rin_reset := (not Rin) nor preset;
-    --	if enable = '1' then
-    --	  r_next <= transport rin_reset after delay;
-    --	end if;
-    --	end process req_latch;
-    --end generate reset_transparent;
-
-  --reset_opaque: if init_token = opaque generate
-  --  req_latch : process(Rin, enable, preset)
-  --	variable rin_reset : std_logic;
-  --	variable enable_reset : std_logic;
-  --  begin
-  --	rin_reset := Rin or preset;
-  --	enable_reset := enable or preset;
-  --	if enable_reset = '1' then
-  --	  r_next <= transport rin_reset after delay;
-  --	end if;
-  --  end process req_latch;
-  --end generate reset_opaque;
   end generate asic_implementation;
 
 end mousetrap;

@@ -10,6 +10,15 @@ if {[info command lreverse] == ""} {
     } ;# RS
 }
 
+proc assign_delay {cell min max comment} {
+    set net [get_net $cell/internal]
+    set from [get_pins -of_objects $net -filter pin_direction==out]
+    set to [get_pins -of_objects $net -filter pin_direction==in]
+    set_min_delay -from $from -to $to $min -comment $comment
+    set_max_delay -from $from -to $to $max -comment $comment
+    puts "Matched Delay: $min < delay($cell) < $max: $comment "
+}
+
 # List of signals to be clocked by either phase 1 or phase two
 set c1_g {}
 set c2_g {}
@@ -80,8 +89,9 @@ for {set curN 0} {$curN < $gridN} {incr curN} {
 
 	# constraint the pipeline latch stages
 	for {set stage 0} {$stage < $LINK_PIPELINE_STAGES} {incr stage} {
-	    
-	    foreach latch [get_object_name [get_cells pipeline_latch_*_$curN\_$curM\_$stage]] {
+	    set latches_noflip [get_object_name [get_cells pipeline_latch_*_$curN\_$curM\_$stage]]
+	    set latches_flip  [get_object_name [get_cells pipeline_latch_*_$curN\_$curM\_$stage\_flip]]
+	    foreach latch [concat $latches_flip $latches_noflip] {
 		# append controller to list for later constraining
 		lappend link_pipeline_ctrl $latch/stage/controller
 		set latch_en [get_object_name [get_pins $latch/stage/controller/lt_en]]
@@ -112,18 +122,8 @@ for {set curN 0} {$curN < $gridN} {incr curN} {
 	# the latches within the router
 	set_false_path -through [get_pins $nt/na/pkt_in]
 	set_false_path -through [get_pins $nt/na/pkt_out]
-	set_false_path -through [get_pins -hierarchical controller/Rin]
 
-	# Make sure pathes through preset are surpressed
-	set_disable_timing [get_pins -hierarchical controller/preset]
-	set_false_path -through [get_pins -hierarchical controller/preset]
-	set_false_path -through [get_pins -hierarchical c_sync_req/preset]
-	set_false_path -through [get_pins -hierarchical c_sync_ack/preset]
-	set_false_path -through [get_pins -hierarchical latch/s]
-	set_false_path -through [get_pins -hierarchical latch/r]
-	set_false_path -through [get_pins -hierarchical r_next_reg/enable]
-	set_false_path -through [get_pins -hierarchical r_next_reg/data_in] 
-	
+
 	# set up a timing constraint for the combinatoric in & output of the ni
 	set to [get_object_name \
 	    [get_pins -of_objects \
@@ -136,61 +136,30 @@ for {set curN 0} {$curN < $gridN} {incr curN} {
 	set from [get_object_name [get_pins -of_object [get_net $nt/del_half_clk0] -filter pin_direction==out]]
 	set_min_delay -from $from -to $to .45 -comment "matched delay between ni & router"
 
-	# matched delay for request between input latch and hpu latch
+	# matched delay for request between input latch and hpu latch (first part)
+	foreach cell [get_object_name [get_cell $nt/r/*hpu_inst/hpu_combinatorial/in_req_delay]] {
+	    assign_delay $cell .26 .31 "matched delay for hpu (d1)"
+	}
+
+	# matched delay for request between input latch and hpu latch (second part)
+	foreach cell [get_object_name [get_cell $nt/r/*hpu_inst/hpu_combinatorial/out_req_delay]] {
+	    assign_delay $cell .13 .18 "matched delay for hpu (d2)"
+	}
 	
-	set hpu_delay_net_A [get_object_name [get_net $nt/r/*hpu_inst/hpu_combinatorial/REQ_INT]]
-
-	foreach net_o $hpu_delay_net_A {
-	    # in a nutshell: we have the name of the output net, so find the driving cell and get the name of the net of its input.
-	    set net [get_object_name [get_net -of_object [get_pins -of_object [get_cell -of_objects [get_pins -of_objects [get_net $net_o] -filter pin_direction==out]] -filter pin_direction==in]]]
-	    set from [get_pins -of_objects [get_net $net] -filter pin_direction==out]
-	    set to [get_pins -of_objects [get_net $net] -filter pin_direction==in]
-	    set_max_delay -from $from -to $to .31 -comment "matched delay for hpu (d1)"
-	    #0.27
-	    set_min_delay -from $from -to $to .26 -comment "matched delay for hpu (d1)"
-	    #0.22	    
-	}
-
-	set hpu_delay_net_B [get_object_name [get_net $nt/r/*hpu_inst/hpu_combinatorial/chan_out_f\[REQ\]]]
-	foreach net_o $hpu_delay_net_B {
-	    # in a nutshell: we have the name of the output net, so find the driving cell and get the name of the net of its input.
-	    set net [get_object_name [get_net -of_object [get_pins -of_object [get_cell -of_objects [get_pins -of_objects [get_net $net_o] -filter pin_direction==out]] -filter pin_direction==in]]]
-	    set from [get_pins -of_objects [get_net $net] -filter pin_direction==out]
-	    set to [get_pins -of_objects [get_net $net] -filter pin_direction==in]
-	    set_max_delay -from $from -to $to .18 -comment "matched delay for hpu (d2)"
-	    #0.27
-	    set_min_delay -from $from -to $to .13 -comment "matched delay for hpu (d2)"
-	    #0.22	    
-	}
-
 	# compensate for the delayed gated latch enable at the sel lines by adding an
 	# acknowledge delay to keep the input data stable until the data is stored.
-	set hpu_latch_acknowledge_net [get_object_name [get_nets -of_objects [get_pins -of_objects [get_cells -of_objects [get_pins -of_object [get_net $nt/r/*hpu_inst/token_latch/out_ack] -filter pin_direction==in]] -filter pin_direction==out]]]
-	foreach net $hpu_latch_acknowledge_net {
-	    set from [get_pins -of_objects [get_net $net] -filter pin_direction==out]
-	    set to [get_pins -of_objects [get_net $net] -filter pin_direction==in]
-	    set_min_delay -from $from -to $to .1 -comment "compensate for clock gating delay in hpu"
+	foreach cell [get_object_name [get_cell $nt/r/*hpu_inst/hpu_combinatorial/out_ack_delay]] {
+	    assign_delay $cell .1 .18 "compensate for clock gating delay in hpu"
 	}
 
+
 	# matched delay for request in xbar
-	set router_delay_2_3_net [get_object_name [get_net $nt/r/xbar_with_latches/crossbar/del]]
-	foreach net $router_delay_2_3_net {
-	    set from [get_pins -of_objects [get_net $net] -filter pin_direction==out]
-	    set to [get_pins -of_objects [get_net $net] -filter pin_direction==in]
-	    set_max_delay -from $from -to $to .18 -comment "matched delay for xbar" 
-	    #0.18
-	    set_min_delay -from $from -to $to .12 -comment "matched delay for xbar"
-	    #0.12
-	}
+	set cell [get_object_name [get_cell $nt/r/xbar_with_latches/crossbar/delay_req_element]]
+	assign_delay $cell .12 .18 "matched delay for xbar"
 
 	# break timing_loops
 	
-	# timing constraints for the controller
-	foreach controller [concat $router_stage2_controller $link_pipeline_ctrl] {
-	    set_max_delay -from $controller/preset -to $controller/r_next_reg/enable 0.04 -comment "ensure reset order"
-	    set_max_delay -from $controller/Rin -to $controller/r_next_reg/data_in 0.04 -comment "ensure reset order"
-	    set_min_delay -from $controller/preset -to $controller/r_next_reg/data_in 0.1 -comment "ensure reset order"
-	}
+	
 
 	# C-Elements
 	set_disable_timing $nt/r/xbar_with_latches/crossbar/c_sync_req/latch/C9/B
@@ -199,8 +168,28 @@ for {set curN 0} {$curN < $gridN} {incr curN} {
     }
 }
 
+
+# timing constraints for the controller
+#[concat $router_stage2_controller $link_pipeline_ctrl]
+foreach controller [get_object_name [get_cell -hierarchical controller]]  {
+#    set_max_delay -from $controller/preset -to $controller/r_next_reg/enable 0.04 -comment "ensure reset order"
+#    set_max_delay -from $controller/Rin -to $controller/r_next_reg/data_in 0.04 -comment "ensure reset order"
+#    set_min_delay -from $controller/preset -to $controller/r_next_reg/data_in 0.1 -comment "ensure reset order"
+}
+set_false_path -through [get_pins -hierarchical controller/Rin]
+
+# Make sure pathes through preset are surpressed
+set_disable_timing [get_pins -hierarchical controller/preset]
+set_false_path -through [get_pins -hierarchical controller/preset]
+set_false_path -through [get_pins -hierarchical c_sync_req/preset]
+set_false_path -through [get_pins -hierarchical c_sync_ack/preset]
+set_false_path -through [get_pins -hierarchical latch/s]
+set_false_path -through [get_pins -hierarchical latch/r]
+set_false_path -through [get_pins -hierarchical r_next_reg/enable]
+set_false_path -through [get_pins -hierarchical r_next_reg/data_in] 
+
 # clock for the ni, processor, ...
-create_clock -name ni_clk -period 3.6 -waveform {0 1.2} [get_ports n_clk] -comment "clock constraint for the network interface"
+create_clock -name ni_clk -period 1 -waveform {0 0.5} [get_ports n_clk] -comment "clock constraint for the network interface"
 
 # two phase non overlapping clock definition for timing analysis between 
 # the stages: these fake clocks are defined at the enable outputs of the

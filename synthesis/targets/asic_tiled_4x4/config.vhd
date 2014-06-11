@@ -48,11 +48,12 @@ package config is
   constant N : integer := 4;		-- Horizontal width
   constant M : integer := 4;		-- Vertical Height
 
+  constant GATING_ENABLED : natural := 1;
   constant NODES      : integer := N*M;
   constant PRD_LENGTH : integer := 23;
 
-  constant LINK_PIPELINE_STAGES : natural			 := 3;
-  constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
+  constant LINK_PIPELINE_STAGES : natural			 := 1;
+  constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (transparent, transparent, transparent, transparent);
   constant SWAP_PORTS		: boolean			 := true;
 
   -- simulation delays

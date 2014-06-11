@@ -24,6 +24,24 @@ source scripts/load_design.tcl
 source scripts/floorplan.tcl
 #saveDesign floorplanned.enc
 
+# fix missing vias etc. while keeping the handrouting
+ecoRoute -modifyOnlyLayers 6:7
+
+# route clock & reset
+deselectAll
+selectNet reset
+selectNet n_clk
+
+setNanoRouteMode -quiet -timingEngine {}
+setNanoRouteMode -quiet -routeWithSiPostRouteFix 0
+setNanoRouteMode -quiet -routeTopRoutingLayer default
+setNanoRouteMode -quiet -routeBottomRoutingLayer default
+setNanoRouteMode -quiet -drouteEndIteration default
+setNanoRouteMode -quiet -routeWithTimingDriven false
+setNanoRouteMode -quiet -routeWithSiDriven false
+setNanoRouteMode -quiet -routeEcoOnlyInLayers 4:7
+routeDesign -globalDetail
+
 # tile placement 
 #source scripts/place_tiles2.tcl
 

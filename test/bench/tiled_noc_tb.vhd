@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <eit-cpm@cas-07.eit.lth.se>
 -- Company    : 
 -- Created    : 2014-02-25
--- Last update: 2014-04-03
+-- Last update: 2014-06-10
 -- Platform   : 
 -- Standard   : VHDL'93
 -------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ begin  -- architecture foo
 
   -- clock generation
 
-  reset <= '0'     after 4 * NA_HPERIOD + delay;
+  reset <= '0'     after 11 * NA_HPERIOD;
   --proc clock
   clk_generate : process
   begin

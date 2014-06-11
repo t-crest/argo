@@ -1,0 +1,2195 @@
+library(fake_spm_processor){
+  define(drc_blocktype,cell,string);
+  define(drc_blockgroup,cell,string);
+  define(drc_restriction,cell,string);
+  define(drc_maxparallel,cell,integer);
+  define(drc_pinsigtype,pin,string);
+  define(drc_pindrive,pin,string);
+  define(drc_pinfunction,pin,string);
+ 
+cell(spm){
+   drc_blockgroup : "stdcell";
+   drc_blocktype : "primitive";
+   drc_maxparallel : 1;
+   drc_restriction : "none";
+
+  pin(a_spm_slave[63]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[62]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[61]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[60]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[59]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[58]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[57]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[56]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[55]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[54]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[53]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[52]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[51]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[50]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[49]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[48]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[47]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[46]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[45]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[44]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[43]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[42]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[41]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[40]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[39]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[38]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[37]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[36]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[35]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[34]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[33]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[32]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[31]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[30]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[29]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[28]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[27]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[26]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[25]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[24]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[23]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[22]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[21]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[20]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[19]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[18]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[17]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[16]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[15]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[14]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[13]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[12]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[11]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[10]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[9]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[8]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[7]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[6]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[5]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[4]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[3]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[2]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[1]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_slave[0]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[72]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[71]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[70]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[69]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[68]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[67]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[66]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[65]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[64]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[63]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[62]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[61]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[60]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[59]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[58]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[57]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[56]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[55]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[54]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[53]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[52]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[51]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[50]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[49]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[48]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[47]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[46]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[45]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[44]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[43]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[42]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[41]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[40]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[39]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[38]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[37]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[36]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[35]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[34]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[33]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[32]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[31]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[30]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[29]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[28]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[27]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[26]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[25]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[24]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[23]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[22]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[21]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[20]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[19]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[18]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[17]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[16]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[15]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[14]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[13]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[12]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[11]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[10]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[9]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[8]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[7]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[6]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[5]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[4]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[3]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[2]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[1]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_spm_master[0]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[63]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[62]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[61]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[60]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[59]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[58]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[57]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[56]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[55]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[54]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[53]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[52]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[51]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[50]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[49]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[48]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[47]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[46]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[45]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[44]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[43]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[42]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[41]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[40]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[39]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[38]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[37]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[36]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[35]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[34]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[33]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[32]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[31]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[30]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[29]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[28]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[27]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[26]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[25]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[24]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[23]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[22]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[21]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[20]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[19]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[18]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[17]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[16]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[15]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[14]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[13]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[12]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[11]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[10]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[9]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[8]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[7]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[6]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[5]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[4]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[3]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[2]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[1]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_slave[0]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[72]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[71]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[70]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[69]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[68]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[67]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[66]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[65]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[64]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[63]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[62]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[61]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[60]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[59]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[58]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[57]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[56]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[55]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[54]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[53]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[52]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[51]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[50]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[49]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[48]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[47]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[46]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[45]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[44]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[43]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[42]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[41]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[40]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[39]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[38]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[37]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[36]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[35]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[34]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[33]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[32]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[31]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[30]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[29]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[28]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[27]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[26]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[25]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[24]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[23]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[22]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[21]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[20]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[19]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[18]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[17]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[16]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[15]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[14]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[13]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[12]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[11]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[10]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[9]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[8]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[7]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[6]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[5]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[4]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[3]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[2]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[1]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_spm_master[0]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(a_clk){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(b_clk){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(reset){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(gnd){
+    direction : "inout";
+    drc_pindrive : "none";
+    drc_pinfunction : "bias";
+    drc_pinsigtype : "gnd";
+   }
+  pin(vdd){
+    direction : "inout";
+    drc_pindrive : "none";
+    drc_pinfunction : "bias";
+    drc_pinsigtype : "pos_supply";
+   }
+ }
+
+  cell(processor){
+   drc_blockgroup : "stdcell";
+   drc_blocktype : "primitive";
+   drc_maxparallel : 1;
+   drc_restriction : "none";
+   pin(gnd){
+    direction : "inout";
+    drc_pindrive : "none";
+    drc_pinfunction : "bias";
+    drc_pinsigtype : "gnd";
+   }
+   pin(vdd){
+    direction : "inout";
+    drc_pindrive : "none";
+    drc_pinfunction : "bias";
+    drc_pinsigtype : "pos_supply";
+   }
+  pin(clk){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(reset){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[72]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[71]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[70]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[69]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[68]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[67]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[66]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[65]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[64]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[63]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[62]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[61]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[60]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[59]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[58]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[57]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[56]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[55]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[54]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[53]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[52]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[51]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[50]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[49]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[48]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[47]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[46]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[45]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[44]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[43]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[42]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[41]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[40]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[39]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[38]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[37]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[36]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[35]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[34]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[33]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[32]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[31]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[30]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[29]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[28]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[27]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[26]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[25]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[24]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[23]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[22]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[21]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[20]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[19]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[18]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[17]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[16]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[15]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[14]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[13]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[12]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[11]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[10]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[9]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[8]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[7]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[6]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[5]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[4]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[3]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[2]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[1]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_master[0]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[63]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[62]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[61]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[60]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[59]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[58]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[57]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[56]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[55]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[54]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[53]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[52]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[51]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[50]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[49]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[48]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[47]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[46]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[45]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[44]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[43]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[42]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[41]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[40]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[39]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[38]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[37]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[36]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[35]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[34]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[33]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[32]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[31]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[30]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[29]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[28]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[27]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[26]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[25]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[24]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[23]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[22]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[21]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[20]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[19]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[18]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[17]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[16]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[15]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[14]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[13]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[12]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[11]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[10]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[9]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[8]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[7]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[6]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[5]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[4]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[3]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[2]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[1]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_spm_slave[0]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[71]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[70]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[69]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[68]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[67]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[66]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[65]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[64]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[63]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[62]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[61]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[60]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[59]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[58]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[57]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[56]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[55]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[54]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[53]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[52]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[51]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[50]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[49]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[48]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[47]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[46]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[45]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[44]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[43]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[42]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[41]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[40]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[39]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[38]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[37]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[36]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[35]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[34]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[33]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[32]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[31]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[30]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[29]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[28]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[27]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[26]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[25]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[24]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[23]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[22]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[21]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[20]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[19]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[18]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[17]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[16]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[15]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[14]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[13]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[12]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[11]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[10]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[9]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[8]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[7]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[6]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[5]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[4]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[3]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[2]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[1]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_master[0]){
+    direction : "output";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[34]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[33]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[32]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[31]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[30]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[29]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[28]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[27]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[26]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[25]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[24]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[23]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[22]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[21]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[20]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[19]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[18]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[17]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[16]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[15]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[14]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[13]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[12]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[11]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[10]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[9]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[8]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[7]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[6]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[5]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[4]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[3]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[2]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[1]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_ocp_slave[0]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[7]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[6]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[5]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[4]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[3]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[2]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[1]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+  pin(p_settings[0]){
+    direction : "input";
+    drc_pinsigtype : "signal";
+    }
+ }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

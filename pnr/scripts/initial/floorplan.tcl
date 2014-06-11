@@ -74,9 +74,14 @@ foreach ct $cell_type_list {
     if {[regexp {link_pipeline_1_.*} $cell_type]} {
 	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Left -layer 7 -spreadType start -spacing 0.8 -start 0 0 -pin $left_pins
 	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Right -layer 7 -spreadType start -spacing 0.8 -start 0 0 -pin $right_pins
+	
+	editPin -cell $cell_type  -pinWidth 0.1 -pinDepth 0.52 -fixOverlap 1 -side right -layer 5 -assign 31.0 0.0 -pin preset
+	
     } else {
 	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Top -layer 6 -spreadType start -spacing 0.8 -start 0.8 $s -pin $left_pins
 	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Bottom -layer 6 -spreadType start -spacing 0.8 -start 0.8 $s -pin $right_pins
+	editPin -cell $cell_type  -pinWidth 0.1 -pinDepth 0.52 -fixOverlap 1 -side Bottom -layer 4 -assign 31.0 0.0 -pin preset
+        
     }
 }
 
@@ -183,7 +188,7 @@ foreach path $pipeline_stage_routes path_directions $routing_steps {
 	lappend simplified_instr $prev_direction
 
 	lappend foo $simplified_instr
-
+	set offset 0.8
 	    if {[llength $simplified_route] == 1} {
 		lappend router_instructions "DIRECT"
 	    } elseif {[llength $simplified_route] == 2} {
@@ -192,14 +197,18 @@ foreach path $pipeline_stage_routes path_directions $routing_steps {
 		foreach node [lrange $simplified_route 0 end-2] instr [lrange $simplified_instr 0 end-2] {
 		    if {$instr eq "RIGHT"} {
 			set dist [lindex [grid_element::get_box $node] 0]
+			set d 1
 		    } elseif {$instr eq "LEFT"} {
 			set dist [lindex [grid_element::get_box $node] 2]
+			set d -1
 		    } elseif {$instr eq "UP"} {
 			set dist [lindex [grid_element::get_box $node] 1]
+			set d 1
 		    } elseif {$instr eq "DOWN"} {
 			set dist [lindex [grid_element::get_box $node] 3]
+			set d -1
 		    }
-		    lappend router_instructions "$instr $dist ABSOLUTE"
+		    lappend router_instructions "$instr [expr $dist + $d * $offset] ABSOLUTE"
 		}
 		lappend router_instructions "[lindex $simplified_instr end-1] *"
 	    }
@@ -224,9 +233,7 @@ foreach path $pipeline_stage_routes path_instruction $inst {
 	    } else {
 		set direction south
 	    }
-
 	    set pins [dbGet $tile.instTerms.name *$direction\* -p]
-
 	    step_route_stack [step_plan_route $pins $route_instruction]
 	} else {
 	    set pins [join [pipeline_stage::get_forward_pins $start]]

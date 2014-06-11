@@ -224,13 +224,14 @@ namespace eval a_star {
 	set node $final_node
 	set node_list {}
 	while {$node ne $start_node} {
-	    if {$node eq $final_node} {
-		set node_object [a_star_node::get_object $node]
-	    } else {
-		set last_node_object $node_object
-		set node_object [a_star_node::get_object $node]
-		grid_element::mark_blocked $node_object $last_node_object
-	    }
+	    #if {$node eq $final_node} {
+	    #	set node_object [a_star_node::get_object $node]
+	    #} else {
+	    #	set last_node_object $node_object
+	    #	set node_object [a_star_node::get_object $node]
+	    #	grid_element::mark_blocked $node_object $last_node_object
+	    #}
+	    set node_object [a_star_node::get_object $node]
 	    #puts "traceback: $node_object"
 	    lappend node_list $node_object
 	    set node [a_star_node::get_predecessor $node]
@@ -238,5 +239,13 @@ namespace eval a_star {
 	# add start node
 	lappend node_list [a_star_node::get_object $node]
 	return $node_list
+    }
+
+    # mark a route a blocked if the path is accepted
+    proc mark_route_blocked {node_list} {
+	set last_node_object [lindex $node_list 0]
+	foreach node_object [lrange $node_list 1 end] {
+	    grid_element::mark_blocked $node_object $last_node_object
+	}
     }
 }

@@ -6,8 +6,11 @@ namespace eval layout_utils {
     # Returns a list of the names of the tiles and the names of the pipeline stages, 
     # in the order found.
     proc trace_to_next_tile {tile port} {
+	return [lindex [trace_to_next_tile_extended $tile $port] 0]
+    }
+    proc trace_to_next_tile_extended {tile port} {
 	set trace_list1 $tile
-	
+	set trace_ports $port
 	# forward tracing
 	set pin [get_pins $tile/$port\_out_b]
 	set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
@@ -17,12 +20,18 @@ namespace eval layout_utils {
 
 	while {[regexp {pipeline_latch_.*} $next_cell]} {
 	    #puts $next_cell
+	    lappend trace_ports pipeline_stage
 	    set pin [get_pins $next_cell/right_in]
 	    set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
 	    set next_cell [get_object_name [get_cells -of_objects $next_pin]]
 	    lappend trace_list1 $next_cell
 	}
-	return $trace_list1
+	regexp {.*(east|west|north|south).*} [get_object_name $next_pin] pin_full_name direction
+	lappend trace_ports $direction
+	set retlist {}
+	lappend retlist $trace_list1
+	lappend retlist $trace_ports
+	return $retlist
     }
 
     proc compare_pairs {pair1 pair2} {
@@ -178,6 +187,7 @@ namespace eval layout_utils {
 		lappend complex_paths $path
 	    }
 	} 
+
 	# return the pathes in sorted order
 	return [concat $simple_paths $complex_paths]
     }
@@ -194,6 +204,38 @@ namespace eval layout_utils {
 	    # inherit the color from the starting port
 	    set c [grid_element::get_color [lindex $f 0]]
 	    set path [a_star::a_star [lindex $f 0] [lindex $f 1]]
+	    # ensure that the path is not routed on again
+	    a_star::mark_route_blocked $path
+	    foreach setp $path {
+		if {$setp eq [lindex $f 0] || $setp eq [lindex $f 1]} {continue}
+		grid_element::set_color $setp $c
+	    }
+	    lappend routed_paths $path 
+	    incr i
+	}
+	return $routed_paths
+    }
+
+    # Function to determine an actual routing for the pathes, takes a list of 
+    # tupels of start and end port and finds a path through the grid between 
+    # those two using the A* algorithm.
+    # Returns a list of routes (which are lists of nodes)
+    # More advanced implementation: routes all routes on the empty grid, 
+    # determines the length, keeps the shortest non overlapping,
+    # repeats until all routes are routed
+    proc route_node_paths2 {node_paths} {
+	set i 0
+	# route the path & use the color of the starting point as 
+	set remaining_paths $node_paths
+
+	while [llength $remaining_paths
+	set routed_paths {}
+	foreach f $node_paths {
+	    # inherit the color from the starting port
+	    set c [grid_element::get_color [lindex $f 0]]
+	    set path [a_star::a_star [lindex $f 0] [lindex $f 1]]
+	    # ensure that the path is not routed on again
+	    a_star::mark_route_blocked $path
 	    foreach setp $path {
 		if {$setp eq [lindex $f 0] || $setp eq [lindex $f 1]} {continue}
 		grid_element::set_color $setp $c

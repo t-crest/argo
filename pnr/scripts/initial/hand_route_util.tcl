@@ -111,7 +111,7 @@ proc step_route_stack args {
     foreach route $stack {
 	set net [lindex $route 0]
 	set points [lindex $route 1]
-	setEdit -nets $net -width_horizontal 0.4 -width_vertical 0.4 -layer_horizontal M7 -layer_vertical M6 -stop_at_drc 0 -snap_to_track 0 -snap_align_to center
+	setEdit -nets $net -width_horizontal 0.4 -width_vertical 0.4 -layer_horizontal M7 -layer_vertical M6 -stop_at_drc 0 -snap_to_track 0 -snap_align_to center -allow_geom_drc 1 -extend_end_wires 1 -extend_start_wires 1
 	foreach pointset [lrange $points 0 end-1] {
 	    editAddRoute $pointset
 	}

@@ -1,0 +1,49 @@
+# Initialize variables
+source $env(ARGO_PNR_DIR)/scripts/sizes.tcl
+source $env(ARGO_PNR_DIR)/scripts/pnr_settings.tcl
+
+
+# first element of list is the name of the power domain, all other  
+# define the instances to be attetched to this power domain
+set domain_members {{noc_switch na/* r/* input_fifo/* output_fifo/* half_clk_reg U* I_*}}
+set domains {}
+foreach d $domain_members {
+    lappend domains [lindex $d 0]
+}
+
+##########################################################
+##########################################################
+###############       Technology part      ###############
+##########################################################
+##########################################################
+
+set_cpf_version		1.1
+set_power_unit		uW
+#set_power_target	-leakage {0.1} -dynamic {10}
+    
+
+
+set voltages {}
+foreach domain $domains {
+	lappend voltages VDD_$domain
+}
+
+##########################################################
+################## Library Definitions ###################
+##########################################################
+
+
+# Operating corner: V = 1.20 ; T = 25; TC
+define_library_set -name TT -libraries $ARGO_PNR_LIBS_TT
+
+   
+##########################################################
+################       Level shifter    ##################
+##########################################################
+##########################################################
+#define_level_shifter_cell -cells LS_GP_INVOLVED_FINAL_V2 -direction up -ground gnd \
+#        -input_power_pin vddi -output_power_pin vddo -input_voltage_range 0.2:1.2 -output_voltage_range 1.2 -valid_location to
+#define_level_shifter_cell -cells LS_GP_INVOLVED_FINAL_V2_ALL_GP -direction up -ground gnd \
+#        -input_power_pin vddi -output_power_pin vddo -input_voltage_range 0.2:1.2 -output_voltage_range 1.2 -valid_location to
+#define_level_shifter_cell -cells LS_GP_INVOLVED_FINAL_V2 -direction up -ground gnd \
+#        -input_power_pin vddi -output_power_pin vddo -input_voltage_range 0.2:1.2 -output_voltage_range 1.2 -library_set lib_1_2V_svt_lp_tc -valid_location to

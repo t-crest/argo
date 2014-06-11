@@ -119,7 +119,7 @@ begin
     nodes_m : for i in 0 to M-1 generate
       nodes_n : for j in 0 to N-1 generate
       begin
-	noc_tile : tile
+	noc_tile_noswap : tile
 	  port map (
 	    clk		=> n_clk,
 	    reset	=> reset,

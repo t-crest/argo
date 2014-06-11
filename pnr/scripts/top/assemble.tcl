@@ -7,6 +7,10 @@ set init_design_uniquify {1}
 # restore the design
 
 source stage_partitions.tcl 
+
+loadCPF scripts/power_domains.cpf  
+commitCPF
+
 set options " -topDir . -blockDir ../tile/tile.enc.dat [join $stage_partitions] -fe -mmmcFile $init_mmmc_file"
 eval "assembleDesign $options"
 

@@ -39,13 +39,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.noc_defs.all;
+use work.config_types.all;
+use work.config.all;
 
 entity bram is
 
   generic (
     DATA	  : integer := 32;
-    ADDR	  : integer := 14;
-    RESET_DISABLE : integer := 0
+    ADDR	  : integer := 14
     );
 
   port (
@@ -71,7 +72,7 @@ begin
   begin
     if reset = '1' then
       -- No reset for FPGA implementation
-      if RESET_DISABLE = 0 then
+      if TARGET_ARCHITECTURE /= FPGA then
 	mem	<= (others => (others => '0'));
 	rd_data <= (others => '0');
       end if;

@@ -38,8 +38,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.config_types.all;
 use work.noc_defs.all;
-use work.delays.all;
-
 
 entity hpu is
   generic (
@@ -85,8 +83,7 @@ begin
 
     token_latch : entity work.hpu_latch(struct)
       generic map (
-	init_token		   => EMPTY_TOKEN,
-	GENERATE_ACKNOWLEDGE_DELAY => hpu_ack_delay
+	init_token		   => EMPTY_TOKEN
 	)
       port map (
 	preset	  => preset,
@@ -105,8 +102,7 @@ begin
 
     token_latch : entity work.hpu_latch(struct)
       generic map (
-	init_token		   => VALID_TOKEN,
-	GENERATE_ACKNOWLEDGE_DELAY => hpu_ack_delay
+	init_token		   => VALID_TOKEN
 	)
       port map (
 	preset	  => preset,

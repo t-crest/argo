@@ -1,6 +1,7 @@
-library IEEE, synopsys;
+--library IEEE, synopsys;
+library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-use synopsys.attributes.all;
+--use synopsys.attributes.all;
 use work.config_types.all;
 use work.noc_defs.all;
 
@@ -8,7 +9,6 @@ entity fifo is
   generic (
     N			       : integer;
     TOKEN		       : latch_state;
-    GATING_ENABLED	       : integer := 0;
     GENERATE_REQUEST_DELAY     : integer := 0;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0
     );
@@ -38,7 +38,6 @@ begin
     latch_stage : entity work.channel_latch(struct)
       generic map (
 	init_token		   => TOKEN,
-	GATING_ENABLED		   => GATING_ENABLED,
 	GENERATE_REQUEST_DELAY	   => GENERATE_REQUEST_DELAY,
 	GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY
 	)

@@ -116,7 +116,7 @@ begin
     nodes_n : for j in 0 to N-1 generate
       node : entity work.noc_node
         port map (
-          --p_clk => p_clk,
+          p_clk => p_clk,
           n_clk => n_clk,
           reset => reset,
 

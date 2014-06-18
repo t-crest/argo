@@ -79,7 +79,6 @@ component fifo is
   generic (
     N			       : integer;
     TOKEN		       : latch_state;
-    GATING_ENABLED	       : integer := 0;
     GENERATE_REQUEST_DELAY     : integer := 0;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0
     );
@@ -212,8 +211,7 @@ begin
 			    N => 0,  				-- 1
 			    TOKEN => EMPTY_BUBBLE,
 			    GENERATE_REQUEST_DELAY => 1,  	-- 1
-			    GENERATE_ACKNOWLEDGE_DELAY => 1,  	-- 1
-			    GATING_ENABLED => 0    
+			    GENERATE_ACKNOWLEDGE_DELAY => 1 --1    
 			  )
 			  port map (
 			    preset    => reset,
@@ -228,8 +226,7 @@ begin
 			    N => 0,  				-- 2
 			    TOKEN => VALID_TOKEN,
 			    GENERATE_REQUEST_DELAY => 1,  	-- 1
-			    GENERATE_ACKNOWLEDGE_DELAY => 1,  	-- 1
-			    GATING_ENABLED => 0
+			    GENERATE_ACKNOWLEDGE_DELAY => 1 --1
 			  )
 			  port map (
 			    preset    => reset,

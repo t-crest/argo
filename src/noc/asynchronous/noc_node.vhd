@@ -43,11 +43,12 @@ use work.config_types.all;
 use work.noc_defs.all;
 use work.ocp.all;
 use work.noc_interface.all;
+use work.delays.all;
 
 
 entity noc_node is
 port (
-	--p_clk		: std_logic;
+	p_clk		: std_logic;
 	n_clk		: in std_logic;
 	reset		: in std_logic;
 
@@ -88,7 +89,7 @@ architecture struct of noc_node is
 
 ------------------------------signal declarations----------------------------
 
-signal ip_to_net_f	: channel_forward;
+signal ip_to_net_f, ip_to_net_f_delayed	: channel_forward;
 signal ip_to_net_b	: channel_backward;
 signal net_to_ip_f	: channel_forward;
 signal net_to_ip_b	: channel_backward;
@@ -153,6 +154,7 @@ del_half_clk0 <= not half_clk;
 --del_half_clk1 <= not del_half_clk0;
 ip_to_net_f.req <= not del_half_clk0 after 2 ns;
 ip_to_net_f.data <= ip_to_net_link;
+ip_to_net_f_delayed.data <= ip_to_net_f.data;
 
 
 -- <= ip_to_net_b.ack;
@@ -193,15 +195,13 @@ net_to_ip_b.ack <= not del_half_clk0 after 2 ns;
 
 input_fifo : entity work.fifo(rtl)
   generic map (
-    N => 0,  				-- 1
+    N => 1,  				-- 1
     TOKEN => EMPTY_BUBBLE,
-    GENERATE_REQUEST_DELAY => 1,  	-- 1
-    GENERATE_ACKNOWLEDGE_DELAY => 1,  	-- 1
-    GATING_ENABLED => 0    
+    GENERATE_REQUEST_DELAY => link_req_delay  	-- 1  
   )
   port map (
     preset    => reset,
-    left_in   => ip_to_net_f,
+    left_in   => ip_to_net_f_delayed,
     left_out  => ip_to_net_b,
     right_out => fifo_to_net_f,
     right_in  => fifo_to_net_b
@@ -209,11 +209,10 @@ input_fifo : entity work.fifo(rtl)
 
 output_fifo : entity work.fifo(rtl)
   generic map (
-    N => 0,  				-- 2
+    N => 2,  				-- 2
     TOKEN => VALID_TOKEN,
-    GENERATE_REQUEST_DELAY => 1,  	-- 1
-    GENERATE_ACKNOWLEDGE_DELAY => 1,  	-- 1
-    GATING_ENABLED => 0
+    GENERATE_REQUEST_DELAY => link_req_delay,  	-- 1
+    GENERATE_ACKNOWLEDGE_DELAY => link_ack_delay  --1
   )
   port map (
     preset    => reset,
@@ -222,5 +221,10 @@ output_fifo : entity work.fifo(rtl)
     right_out => net_to_ip_f,
     right_in  => net_to_ip_b
   );
+  
+  delay_ip_to_net_f : entity work.matched_delay
+    generic map(size => inp_req_delay)
+    port map(d => ip_to_net_f.req,
+        z => ip_to_net_f_delayed.req);
 
 end struct;

@@ -41,6 +41,7 @@ use ieee.NUMERIC_STD.all;
 use ieee.std_logic_1164.all;
 use work.config_types.all;
 use work.noc_defs.all;
+use work.delays.all;
 
 entity crossbar_stage is
 	port(
@@ -87,7 +88,8 @@ begin
  			ch_latch : entity work.channel_latch(struct)
  			generic map (
  				init_token => EMPTY_TOKEN,
- 				init_data => (others => '0')
+ 				init_data => (others => '0'),
+ 				GENERATE_REQUEST_DELAY => link_req_delay
 			)
 			port map (
  				preset    => preset,

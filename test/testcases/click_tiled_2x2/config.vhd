@@ -1,17 +1,16 @@
--- 
 -- Copyright Technical University of Denmark. All rights reserved.
 -- This file is part of the T-CREST project.
--- 
+--
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are met:
--- 
+--
 --    1. Redistributions of source code must retain the above copyright notice,
 --       this list of conditions and the following disclaimer.
--- 
+--
 --    2. Redistributions in binary form must reproduce the above copyright
 --       notice, this list of conditions and the following disclaimer in the
 --       documentation and/or other materials provided with the distribution.
--- 
+--
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
 -- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -22,73 +21,56 @@
 -- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 -- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 -- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--- 
+--
 -- The views and conclusions contained in the software and documentation are
 -- those of the authors and should not be interpreted as representing official
 -- policies, either expressed or implied, of the copyright holder.
--- 
-
-
---------------------------------------------------------------------------------
--- A parameterized latch stage of the asynchronous noc.
 --
--- Authors: Evangelia Kasapaki
---          Rasmus Bo Sorensen
+
+
+--------------------------------------------------------------------------------
+-- Definitions package
+--
+-- Author: Evangelia Kasapaki
+-- Author: Rasmus Bo Soerensen
 --------------------------------------------------------------------------------
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 use work.config_types.all;
-use work.noc_defs.all;
 
+package config is
+  
+    
+    
+    
+    constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
+    constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
+    constant GATING_ENABLED : integer := 1;
+  
+    constant N : integer := 2; -- Horizontal width
+    constant M : integer := 2; -- Vertical Height
 
-entity link_pipeline is
-  generic (
-    -- direction: 0 north or south, 1 east or west
-    constant DIRECTION      : in integer := 1;
-    -- disables the clock gating
-    -- default: gating enabled
-    constant GATING_ENABLED :    integer := 0;
+    constant NODES : integer := N*M;
+    constant PRD_LENGTH : integer := 5;
 
-    -- for some cases a delayed request is needed
-    -- default: request delay disabled
-    constant GENERATE_REQUEST_DELAY : integer := 0;
+    constant SWAP_PORTS : boolean := false;
+    
+    constant LINK_PIPELINE_STAGES : integer := 0;
+    constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
+    
+    constant TEST_TILED_2x2_DIR : string := "../test/testcases/test_tiled_2x2/";
+    constant TG_SCHEDULE_FILE : string := TEST_TILED_2x2_DIR & "all_to_all.sched";
+    constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";
+    constant TG_DMA_INIT_FILE : string := TEST_TILED_2x2_DIR & "DMA_init.dat";
+    
+    -- simulation delays
+    constant PDELAY		: time := 500 ps;
+    constant NA_HPERIOD	: time := 5 ns;
+    constant P_HPERIOD	: time := 5 ns;
+    constant SKEW           : time := 0 ns;
+    constant delay : time := 0.3 ns;
+    
+end package ; -- aegean_def
 
-    -- to fix hold violations: delay the acknowledge
-    constant GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
-
-    -- initial state to implement
-    constant init_token : latch_state := EMPTY_BUBBLE;
-
-    -- initial data
-    constant init_data : phit_t := (others => 'X')  -- Forced unknown
-    );
-  port (
-    preset    : in  std_logic;
-    left_in   : in  channel_forward;
-    left_out  : out channel_backward;
-    right_out : out channel_forward;
-    right_in  : in  channel_backward
-    );
-end link_pipeline;
-
-
-architecture struct of link_pipeline is
-
-begin
-  fifo_1 : entity work.fifo
-    generic map (
-      N                          => 1,
-      TOKEN                      => init_token,
-      GENERATE_REQUEST_DELAY     => GENERATE_REQUEST_DELAY,
-      GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY,
-      init_data                  => init_data)
-    port map (
-      preset    => preset,
-      left_in   => left_in,
-      left_out  => left_out,
-      right_out => right_out,
-      right_in  => right_in);
-
-end struct;
 

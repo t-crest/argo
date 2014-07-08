@@ -123,6 +123,14 @@ router_async: ni_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/crossbar_stage.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/router.vhd
 
+router_click: ni_async
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/click.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/click_stage.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/fifo.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/hpu_c.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/xbar_c.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/router.vhd
+
 noc_sync: router_sync
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/synchronous/noc_node.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/synchronous/noc_n.vhd
@@ -136,10 +144,14 @@ noc_async_selftimed: router_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/asynchronous/fpga/noc_n.vhd
 
 
-tile: router_async traffic_generators
+tile: traffic_generators
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tile.vhd
 
-noc_tiled: tile
+noc_tiled: router_async tile
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/link_pipeline.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc.vhd
+
+noc_tiled_click: router_click tile
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/link_pipeline.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc.vhd
 

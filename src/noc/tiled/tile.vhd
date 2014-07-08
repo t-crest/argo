@@ -238,7 +238,7 @@ begin  -- fake_tile
 
   input_fifo : entity work.fifo(rtl)
     generic map (
-      N				 => 0,	-- 1
+      N				 => 1,	-- 1
       TOKEN			 => EMPTY_BUBBLE,
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
       GENERATE_ACKNOWLEDGE_DELAY => 1 --1
@@ -253,7 +253,7 @@ begin  -- fake_tile
 
   output_fifo : entity work.fifo(rtl)
     generic map (
-      N				 => 0,	-- 2
+      N				 => 2,	-- 2
       TOKEN			 => VALID_TOKEN,
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
       GENERATE_ACKNOWLEDGE_DELAY => 1 --1

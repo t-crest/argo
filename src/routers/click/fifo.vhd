@@ -11,7 +11,7 @@ entity fifo is
     TOKEN                      : latch_state;
     GENERATE_REQUEST_DELAY     : integer := 0;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
-    init_data                  : phit_t  := (others => 'X')
+    init_data : phit_t := (others => '0')
     );
   port (
     preset    : in  std_logic;
@@ -34,25 +34,25 @@ architecture rtl of fifo is
 
 begin
 
-
-  fifo_latches : for i in N-1 downto 0 generate
-    latch_stage : entity work.channel_latch(struct)
+  fifo_stages : for i in N-1 downto 0 generate
+    click_stage_1 : entity work.click_stage
       generic map (
-        init_token                 => TOKEN,
         GENERATE_REQUEST_DELAY     => GENERATE_REQUEST_DELAY,
-        GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY
-        )
+        GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY,
+        init_token                 => TOKEN,
+        init_data                  => init_data,
+        left_N                     => 1,
+        right_N                    => 1)
       port map (
-        preset    => preset,
-        left_in   => stage_link_f(i),
-        left_out  => stage_link_b(i),
-        right_out => stage_link_f(i+1),
-        right_in  => stage_link_b(i+1),
-        lt_enable => open
-        );
-  end generate fifo_latches;
-
-
+        reset        => preset,
+        left_data    => stage_link_f(i).data,
+        right_data   => stage_link_f(i+1).data,
+        left_req(0)  => stage_link_f(i).req,
+        right_req    => stage_link_f(i+1).req,
+        left_ack     => stage_link_b(i).ack,
+        right_ack(0) => stage_link_b(i+1).ack,
+        click_out    => open);
+  end generate fifo_stages;
 
 
   stage_link_f(0) <= left_in;

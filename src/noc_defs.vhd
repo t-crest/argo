@@ -116,6 +116,9 @@ package noc_defs is
 		ack : std_logic;
 	end record channel_backward;
 
+        type channel_forward_vector is array (integer range <>) of channel_forward;
+        type channel_backward_vector is array (integer range <>) of channel_backward;
+
 --	type channel is record
 --		forward : channel_forward;
 --		backward : channel_backward;

@@ -53,7 +53,7 @@ begin  -- architecture foo
 
   -- clock generation
 
-  reset <= '0'     after 11 * NA_HPERIOD;
+  reset <= '0'     after 11 * NA_HPERIOD + 200 ps;
   --proc clock
   clk_generate : process
   begin

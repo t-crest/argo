@@ -52,7 +52,7 @@ package config is
   constant NODES      : integer := N*M;
   constant PRD_LENGTH : integer := 5;
 
-  constant LINK_PIPELINE_STAGES : natural			 := 1;
+  constant LINK_PIPELINE_STAGES : natural			 := 0;
   constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (transparent, transparent, transparent, transparent);
   constant SWAP_PORTS		: boolean			 := true;
 

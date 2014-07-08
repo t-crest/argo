@@ -49,7 +49,7 @@ foreach_in_collection cell [get_cells noc_tile*] {
 	    # -format {arrival} 
 	    #set delay [lindex $timing_list { 1 1 8}]
 	    set delay [lindex $timing_list {1 1 5 1 0 end } ]
-	    set st [lindex $foo 1 1 6 1 0 end ]
+	    #set st [lindex $foo 1 1 6 1 0 end ]
 	    if {$delay eq ""} {
 		set timing_list [report_timing -from $start_pin_ -to $end_pin -unconstrained -tcl_list]
 		set delay [lindex $timing_list {1 1 0 1 1 1 3 } ]
@@ -65,7 +65,7 @@ foreach_in_collection cell [get_cells noc_tile*] {
 	    }
 	    set path [join $p ","]
 	    
-	    puts $f "$cell_ ; $direction; $start_pin_ ; $end_pin_ ; $net_ ; $st; $delay ; $cap ; $t_length ; $M1 ; $M2 ; $M3 ; $M4 ; $M5 ; $M6 ; $M7 ; $M8 ; $via ; $path" 
+	    puts $f "$cell_ ; $direction; $start_pin_ ; $end_pin_ ; $net_ ; st; $delay ; $cap ; $t_length ; $M1 ; $M2 ; $M3 ; $M4 ; $M5 ; $M6 ; $M7 ; $M8 ; $via ; $path" 
 	}
     }
 }

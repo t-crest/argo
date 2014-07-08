@@ -11,14 +11,14 @@ foreach direction {west north east south} {
 	set sd counterclockwise
     }	
     if {[lsearch {east west} $direction] > -1} {
-	set layers {M6}
+	set layers $ARGO_LINK_ROUTE_V
 	# {M2 M4} 
 	set dir_row col
 	set dir_col row
 	set pin_pos $pin_pos_east_west
 	set side Bottom
     } else {
-	set layers {M7}
+	set layers $ARGO_LINK_ROUTE_H
 	#{M3 M5}
 	set dir_row row
 	set dir_col col

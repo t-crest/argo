@@ -1,6 +1,6 @@
 # some variables
 set NETLIST_DIR ../netlists
-set LINK_PIPELINE_STAGES 1
+set LINK_PIPELINE_STAGES 0 
 set target targets/asic_tiled_4x4
 
 set gridN 4

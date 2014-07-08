@@ -17,3 +17,7 @@ eval "assembleDesign $options"
 
 saveNetlist $env(NETLIST_DIR)/tiled_noc_pnr.v
 write_sdf $env(NETLIST_DIR)/tiled_noc_pnr.sdf
+rcOut -spef tiled_noc.spef -rc_corner TT
+
+source scripts/timing_data.tcl
+trace_noc_timing

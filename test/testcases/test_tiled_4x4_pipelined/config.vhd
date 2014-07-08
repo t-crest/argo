@@ -51,15 +51,15 @@ package config is
     constant M : integer := 4; -- Vertical Height
     
     constant NODES : integer := N*M;
-    constant PRD_LENGTH : integer := 21;
-    constant GATING_ENABLED : integer := 0;
-    constant SWAP_PORTS : boolean := false;
+    constant PRD_LENGTH : integer := 23;
+    constant GATING_ENABLED : integer := 1;
+    constant SWAP_PORTS : boolean := true;
     
-    constant LINK_PIPELINE_STAGES : integer := 3;
-    constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (transparent, transparent, transparent, opaque);
+    constant LINK_PIPELINE_STAGES : integer := 1;
+    constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (transparent, transparent, transparent, transparent);
     
     constant TEST_DIR : string := "../test/testcases/test_tiled_4x4_pipelined/";
-    constant TG_SCHEDULE_FILE : string := TEST_DIR & "all_to_all_noswap.sched";
+    constant TG_SCHEDULE_FILE : string := TEST_DIR & "all_to_all.sched";
     constant TG_SPM_INIT_FILE : string := TEST_DIR & "SPM_init.dat";
     constant TG_DMA_INIT_FILE : string := TEST_DIR & "DMA_init.dat";
     

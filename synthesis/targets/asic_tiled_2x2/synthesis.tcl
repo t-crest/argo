@@ -1,6 +1,6 @@
 # some variables
 set NETLIST_DIR ../netlists
-set LINK_PIPELINE_STAGES 1
+set LINK_PIPELINE_STAGES 0
 set target targets/asic_tiled_2x2
 
 # cleaner output: yes, we know that we have unresolved references 

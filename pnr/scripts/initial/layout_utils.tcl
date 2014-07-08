@@ -15,7 +15,8 @@ namespace eval layout_utils {
 	set pin [get_pins $tile/$port\_out_b]
 	set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
 	set next_cell [get_object_name [get_cells -of_objects $next_pin]]
-	
+	regexp {(noc_tile_.*_[0-9]*_[0-9]*|pipeline_latch.*).*} $next_cell complete filtered
+	set next_cell $filtered
 	lappend trace_list1 $next_cell
 
 	while {[regexp {pipeline_latch_.*} $next_cell]} {
@@ -24,6 +25,8 @@ namespace eval layout_utils {
 	    set pin [get_pins $next_cell/right_in]
 	    set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
 	    set next_cell [get_object_name [get_cells -of_objects $next_pin]]
+	    regexp {(noc_tile_.*_[0-9]*_[0-9]*|pipeline_latch.*).*} $next_cell complete filtered
+	    set next_cell $filtered
 	    lappend trace_list1 $next_cell
 	}
 	regexp {.*(east|west|north|south).*} [get_object_name $next_pin] pin_full_name direction
@@ -270,9 +273,14 @@ namespace eval layout_utils {
 	    foreach direction {north south east west} {
 		set f [::layout_utils::trace_to_next_tile $start_name $direction]
 		set b [::layout_utils::trace_to_next_tile $end_name $direction]
+		
+		
 		if {[lindex $f end] eq $end_name} { set trace_forward $f }
 		if {[lindex $b end] eq $start_name} { set trace_backward $b }
 	    }
+	    
+	    # no pipeline stage? skip skip skip...
+	    if {[llength $f] == 2} { continue }
 
 	    set pipeline_forward [lrange $trace_forward 1 end-1]
 	    set pipeline_backward [lreverse [lrange $trace_backward 1 end-1]]

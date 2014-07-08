@@ -39,7 +39,7 @@ class grid_element {
 
     # mutually check whether the path is blocked
     proc check_blocked {this neighbor} {
-	if {[grid_element::get_blocked $this $neighbor] eq 1 || [grid_element::get_blocked $this $neighbor] eq 1} {
+	if {[grid_element::get_blocked $this $neighbor] eq 1 || [grid_element::get_blocked $neighbor $this] eq 1} {
 	    return 1
 	}
 	return 0
@@ -829,7 +829,13 @@ class grid {
 	}
     }
     
-    proc svg_dump {this filename elements} {
+    proc svg_dump {this filename elements} { svg_dump_extra $this $filename $elements ""} 
+
+    proc svg_dump_polylines {this filename polylines} {
+	svg_dump_extra $this $filename [join [::grid::get_tile_grid $this]] $polylines
+    }
+
+    proc svg_dump_extra {this filename elements extra} {
 	set f [open $filename "w"]
 	if {$elements eq "null"} {
 	    set vect [join [concat $($this,g) $($this,extra_g)]]
@@ -844,11 +850,18 @@ class grid {
 		xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" \
 		xmlns:svg=\"http://www.w3.org/2000/svg\" \
 		xmlns=\"http://www.w3.org/2000/svg\" \
-		version=\"1.1\" \
-		>"
+		version=\"1.1\" \	
+		>\	
+               <defs>\
+                <style type=\"text/css\"><!\[CDATA\[ \
+                 .wire { \
+                  fill: none; stroke-width: 0.4} \
+                  /* EXTRA_CSS_MARKER */ \
+                  \
+                \]\]></style> \
+               </defs> "
 	#<g transform=\"translate(0,$g_h)\"><g transform=\"scale(1,-1)\">"
 
-	
 	#puts $vect
 	foreach elem $vect {
 	    set w [grid_element::get_width $elem]
@@ -884,6 +897,9 @@ class grid {
 		puts $f "<rect width=\"$w\" height=\"$h\" x=\"$l\" y=\"$b\" style=\"fill:$color\;stroke:#999999;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\" />"
 	    }
 	}
+
+	puts $f $extra
+
 	puts $f "</svg>"
 	close $f
     }

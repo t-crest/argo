@@ -40,5 +40,19 @@ foreach pipeline_stage [get_object_name [get_cells pipeline*]] {
     catch {create_power_group -name $pipeline_stage [get_cells $pipeline_stage]}
 }
 
+set all_routers [get_object_name [get_cells noc_tile*/r]]
+set all_pl_stages [get_object_name [get_cells pipeline*]]
+
+catch {create_power_group -name all_routers [get_cells $all_routers]}
+catch {create_power_group -name all_pl_stages [get_cells $all_pl_stages]}
+
+catch {create_power_group -name all_network [get_cells [concat $all_pl_stages $all_routers]]}
+
+set all_na [get_object_name [get_cells noc_tile*/na]]
+catch {create_power_group -name all_na [get_cells $all_na]}
+
+set all_controller [get_object_name [get_cells -hierarchical controller]]
+catch {create_power_group -name all_controller [get_cells $all_controller]}
+
 
 report_power -verbose > power.report

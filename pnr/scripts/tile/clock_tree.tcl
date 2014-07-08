@@ -1,5 +1,6 @@
 createClockTreeSpec -bufferList $ARGO_PNR_CTS_BUF -file scripts/Clock_relaxed.ctstch
 
+setOptMode -addPortAsNeeded false
 setOptMode -fixCap true -fixTran true -fixFanoutLoad false
 optDesign -preCTS
 setOptMode -fixCap true -fixTran true -fixFanoutLoad true

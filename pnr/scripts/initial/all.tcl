@@ -1,6 +1,10 @@
 #freeDesign
 
+# load design config
+source scripts/load_design.tcl
+
 set PNR_DIR ../
+source $PNR_DIR/scripts/pnr_settings.tcl
 
 set dir $PNR_DIR/scripts/libs/stooop
 source $PNR_DIR/scripts/libs/stooop/pkgIndex.tcl
@@ -8,24 +12,23 @@ source $PNR_DIR/scripts/libs/stooop/pkgIndex.tcl
 package require stooop
 namespace import stooop::*
 
-source $PNR_DIR/scripts/initial/grid_classes.tcl
-source $PNR_DIR/scripts/initial/a_star.tcl
-source $PNR_DIR/scripts/initial/layout_utils.tcl
+source scripts/grid_classes.tcl
+source scripts/a_star.tcl
+source scripts/layout_utils.tcl
 
 source ../scripts/sizes.tcl
 
 #show the pipeline links as well
 setPreference MinFPModuleSize 10
 
-# load design config
-source scripts/load_design.tcl
+
 
 # floorplanning
 source scripts/floorplan.tcl
 #saveDesign floorplanned.enc
 
 # fix missing vias etc. while keeping the handrouting
-ecoRoute -modifyOnlyLayers 6:7
+ecoRoute -modifyOnlyLayers 3:7
 
 # route clock & reset
 deselectAll
@@ -39,7 +42,7 @@ setNanoRouteMode -quiet -routeBottomRoutingLayer default
 setNanoRouteMode -quiet -drouteEndIteration default
 setNanoRouteMode -quiet -routeWithTimingDriven false
 setNanoRouteMode -quiet -routeWithSiDriven false
-setNanoRouteMode -quiet -routeEcoOnlyInLayers 4:7
+setNanoRouteMode -quiet -routeEcoOnlyInLayers 3:7
 routeDesign -globalDetail
 
 # tile placement 

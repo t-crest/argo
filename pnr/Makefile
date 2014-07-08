@@ -25,7 +25,7 @@ pipeline_stages: $(addsuffix /stage.enc, $(shell find initial/partitions/ -type 
 	@echo building $(PIPELINE_STAGE)
 	echo set stage $(PIPELINE_STAGE) > $(dir $@)/stage.tcl; 
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/link_pipeline $(dir $@)/scripts
-	pushd $(dir $@); encounter -win -init scripts/all.tcl; popd
+	pushd $(dir $@); encounter -init scripts/make.tcl; popd
 
 initial/partitions/tile/tile.enc: initial/partitions/tiled_noc/tiled_noc.globals
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/tile initial/partitions/tile/scripts
@@ -36,7 +36,7 @@ tile: initial/partitions/tiled_noc/tiled_noc.globals
 	pushd initial/partitions/tile; encounter -win; popd
 
 assembly: PIPELINE_STAGE_PARTITIONS=$(shell find initial/partitions/ -type d -name "link_pipe*" -printf " -blockdir ../%f/stage.enc.dat")
-assembly: initial/partitions/tile/tile.enc scripts/top/timing_analysis.tcl scripts/top/assemble.tcl
+assembly: initial/partitions/tile/tile.enc scripts/top/timing_analysis.tcl scripts/top/assemble.tcl pipeline_stages
 	echo set stage_partitions {$(PIPELINE_STAGE_PARTITIONS)} > initial/partitions/tiled_noc/stage_partitions.tcl;
 	pushd initial/partitions/tiled_noc; ln -s -f -n $(ARGO_PNR_DIR)/scripts/top scripts; ln -s -f -n $(NETLIST_DIR) netlists; encounter -win -init scripts/assemble.tcl; popd
 

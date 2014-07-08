@@ -7,9 +7,9 @@ proc step_plan_route args {
     set steps [lindex $args 1]   
     
     if {([llength $args] == 3) && ([lindex $args 2] eq "DEBUG")} {
-	set debug 1
+	set debug_enabled 1
     } else { 
-	set debug 0 
+	set debug_enabled 0 
     } 
 
     set n 0
@@ -21,13 +21,20 @@ proc step_plan_route args {
 	set cell [dbGet $f.inst.name]
 	set box  [dbGet $f.inst.box]
 	set f_ [dbGet $f.name]
-	set t [lsearch -not -inline [dbGet $f.net.instTerms] $f]
+	set i_terms [dbGet $f.net.instTerms]
+	if {[llength $i_terms] < 2} {
+	    puts "WARNING: Net [dbGet $f.net.name] has only a [llength $i_terms] terminals - skip routing"
+	    continue
+	}
+	set t [lsearch -not -inline $i_terms $f]
 	set t_ [dbGet $t.name]
+
+	
 	# coordinates
 	set f_pt [dbGet $f.pt]
 	set t_pt [dbGet $t.pt]
 
-	if {$debug == 1} {puts "$cell ($box) $f_pt -> $t_pt"}
+	if {$debug_enabled == 1} {puts "$cell ($box) $f_pt -> $t_pt"}
 
 	# start at pin
 	set x [lindex $f_pt {0 0}] 
@@ -87,7 +94,7 @@ proc step_plan_route args {
 		} 
 	    }
 
-	    if {$debug == 1} {puts "$i $step $x $y"}
+	    if {$debug_enabled == 1} {puts "$i $step $x $y"}
 	    #editAddRoute $x $y
 	    lappend routeStack "$x $y"
 
@@ -106,12 +113,27 @@ proc step_plan_route args {
     return $step_stack    
 }
 
+proc step_rout_stack_svg_polyline {stack} {
+    set polylines {}
+    foreach route $stack {
+	lassign $route net points 
+	# replace invalid css characters with _
+	regsub -all {[^a-zA-Z0-9_\-]} [join $net] _ net
+	set p {}
+	foreach point $points {
+	    lappend p [join $point ","]
+	}
+	lappend polylines "<polyline class=\"[join $net] wire\" points=\"$p\" />"	
+    }
+    return $polylines
+}
+
 proc step_route_stack args {
     set stack [lindex $args 0]
     foreach route $stack {
 	set net [lindex $route 0]
 	set points [lindex $route 1]
-	setEdit -nets $net -width_horizontal 0.4 -width_vertical 0.4 -layer_horizontal M7 -layer_vertical M6 -stop_at_drc 0 -snap_to_track 0 -snap_align_to center -allow_geom_drc 1 -extend_end_wires 1 -extend_start_wires 1
+	setEdit -nets $net -width_horizontal $::ARGO_LINK_WIDTH -width_vertical $::ARGO_LINK_WIDTH -layer_horizontal $::ARGO_LINK_ROUTE_H -layer_vertical $::ARGO_LINK_ROUTE_V -stop_at_drc 0 -snap_to_track 0 -snap_align_to center -allow_geom_drc 1 -extend_end_wires 1 -extend_start_wires 1
 	foreach pointset [lrange $points 0 end-1] {
 	    editAddRoute $pointset
 	}

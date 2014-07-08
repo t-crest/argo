@@ -72,15 +72,15 @@ foreach ct $cell_type_list {
     set right_pins [lreverse [dbGet $db_cell.terms.name *right*]]
     set s [expr $trackwidth/2]
     if {[regexp {link_pipeline_1_.*} $cell_type]} {
-	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Left -layer 7 -spreadType start -spacing 0.8 -start 0 0 -pin $left_pins
-	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Right -layer 7 -spreadType start -spacing 0.8 -start 0 0 -pin $right_pins
+	editPin -cell $cell_type -pinWidth $ARGO_LINK_WIDTH -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Left -layer $ARGO_LINK_ROUTE_H -spreadType start -spacing 0.8 -start 0 0 -pin $left_pins
+	editPin -cell $cell_type -pinWidth $ARGO_LINK_WIDTH -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Right -layer $ARGO_LINK_ROUTE_H -spreadType start -spacing 0.8 -start 0 0 -pin $right_pins
 	
-	editPin -cell $cell_type  -pinWidth 0.1 -pinDepth 0.52 -fixOverlap 1 -side right -layer 5 -assign 31.0 0.0 -pin preset
+	editPin -cell $cell_type  -pinWidth $ARGO_LINK_WIDTH -pinDepth 0.52 -fixOverlap 1 -side right -layer $ARGO_EXTRA_PIN_LAYER -assign 31.0 0.0 -pin preset
 	
     } else {
-	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Top -layer 6 -spreadType start -spacing 0.8 -start 0.8 $s -pin $left_pins
-	editPin -cell $cell_type -pinWidth 0.4 -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Bottom -layer 6 -spreadType start -spacing 0.8 -start 0.8 $s -pin $right_pins
-	editPin -cell $cell_type  -pinWidth 0.1 -pinDepth 0.52 -fixOverlap 1 -side Bottom -layer 4 -assign 31.0 0.0 -pin preset
+	editPin -cell $cell_type -pinWidth $ARGO_LINK_WIDTH -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection clockwise -side Top -layer $ARGO_LINK_ROUTE_V -spreadType start -spacing 0.8 -start 0.8 $s -pin $left_pins
+	editPin -cell $cell_type -pinWidth $ARGO_LINK_WIDTH -pinDepth 1.415 -fixOverlap 1 -unit MICRON -spreadDirection counterclockwise -side Bottom -layer $ARGO_LINK_ROUTE_V -spreadType start -spacing 0.8 -start 0.8 $s -pin $right_pins
+	editPin -cell $cell_type  -pinWidth $ARGO_LINK_WIDTH -pinDepth 0.52 -fixOverlap 1 -side Bottom -layer $ARGO_EXTRA_PIN_LAYER -assign 31.0 0.0 -pin preset
         
     }
 }
@@ -111,6 +111,15 @@ foreach path $pipeline_stages {
     lappend pipeline_stage_routes $p_routes
 } 
 
+# FIXME: hack for no pipeline stages: use routes instead. will break if only some pathes w/o pipeline stages
+if {[llength $pipeline_stage_routes] == 0} {
+    foreach route $routes {
+	set start [::grid_element::get_neighbor_tile [lindex $route 0]]
+	set end [::grid_element::get_neighbor_tile [lindex $route end]]
+	set r [concat $start $route $end]
+	lappend pipeline_stage_routes "\{$r\}"
+    }
+}
 
 set routing_steps {}
 foreach path $pipeline_stage_routes {
@@ -218,6 +227,7 @@ foreach path $pipeline_stage_routes path_directions $routing_steps {
     lappend inst $path_router_instruction
 }
 
+set svg_pathes {}
 foreach path $pipeline_stage_routes path_instruction $inst {
     foreach route $path route_instruction $path_instruction {
 	set start [lindex $route 0]
@@ -234,10 +244,16 @@ foreach path $pipeline_stage_routes path_instruction $inst {
 		set direction south
 	    }
 	    set pins [dbGet $tile.instTerms.name *$direction\* -p]
-	    step_route_stack [step_plan_route $pins $route_instruction]
+	    set stack [step_plan_route $pins $route_instruction]
+	    step_route_stack $stack
+	    lappend svg_pathes [step_rout_stack_svg_polyline $stack]
 	} else {
 	    set pins [join [pipeline_stage::get_forward_pins $start]]
-	    step_route_stack [step_plan_route $pins $route_instruction]
+	    set stack [step_plan_route $pins $route_instruction]
+	    step_route_stack $stack
+	    lappend svg_pathes [step_rout_stack_svg_polyline $stack]
 	}
     }
 }
+set polylines [join [join $svg_pathes] "\n"]
+::grid::svg_dump_polylines $grid "polylines.svg" $polylines

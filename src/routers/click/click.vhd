@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <chm@AdoraBelle.local>
 -- Company    : 
 -- Created    : 2014-04-25
--- Last update: 2014-07-08
+-- Last update: 2014-07-10
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ use work.config_types.all;
 entity click is
   generic (
     -- reset value for the state register
-    init_token : latch_state;
+    init_phase : std_logic := 'H';
     -- number of acknowledge inputs
     ACK_N       : integer   := 1;
     -- number of request inputs
@@ -50,12 +50,12 @@ begin  -- architecture behav
   -- type   : combinational
   -- inputs : req_i, ack_o, req
   -- outputs: click_int, req_next
-  comb : process (req_i, ack_o, req) is
+  comb : process (req_i, ack_o, req , reset) is
     variable and1 : std_logic;
     variable and2 : std_logic;
   begin  -- process and1_or_and2
-    and1 := req;
-    and2 := not req;
+    and1 := req and not reset;
+    and2 := not req and not reset;
     for i in req_i'range loop
       and1 := and1 and not req_i(i);
       and2 := and2 and req_i(i);
@@ -64,14 +64,14 @@ begin  -- architecture behav
       and1 := and1 and ack_o(j);
       and2 := and2 and not ack_o(j);
     end loop;  -- j
-    click_int <= transport (and1 or and2) after 1 ns;
+    click_int <= transport (and1 or and2) after delay;
     req_next  <= not req;
   end process comb;
 
   -- assign outputs
-  ack_i <= transport req after 1 ns;
-  req_o <= transport req after 1 ns;
-  click <= click_int;
+  ack_i <= transport req after delay;
+  req_o <= transport req after 2*delay;
+  click <= click_int ;
 
   -- purpose: click state register
   -- type   : sequential
@@ -80,7 +80,7 @@ begin  -- architecture behav
   state_reg : process (click_int, reset) is
   begin  -- process state_reg
     if reset = '1' then                 -- asynchronous reset (active low)
-      req <= resolve_latch_state(init_token);
+      req <= init_phase;
     elsif click_int'event and click_int = '1' then  -- rising clock edge
       req <= req_next;
     end if;

@@ -79,7 +79,7 @@ begin
   fifo_1 : entity work.fifo
     generic map (
       N                          => 1,
-      TOKEN                      => init_token,
+     -- TOKEN                      => init_token,
       GENERATE_REQUEST_DELAY     => GENERATE_REQUEST_DELAY,
       GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY,
       init_data                  => init_data)

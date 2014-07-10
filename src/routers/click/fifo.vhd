@@ -8,7 +8,7 @@ use work.noc_defs.all;
 entity fifo is
   generic (
     N                          : integer;
-    TOKEN                      : latch_state;
+    init_phase                 : std_logic_vector :="00";
     GENERATE_REQUEST_DELAY     : integer := 0;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
     init_data : phit_t := (others => '0')
@@ -39,7 +39,7 @@ begin
       generic map (
         GENERATE_REQUEST_DELAY     => GENERATE_REQUEST_DELAY,
         GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY,
-        init_token                 => TOKEN,
+        init_phase                 => init_phase(i mod init_phase'length + init_phase'low),
         init_data                  => init_data,
         left_N                     => 1,
         right_N                    => 1)

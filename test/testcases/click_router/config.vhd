@@ -59,7 +59,7 @@ package config is
     constant LINK_PIPELINE_STAGES : integer := 0;
     constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
     
-    constant TEST_TILED_2x2_DIR : string := "../test/testcases/click_tiled_2x2/";
+    constant TEST_TILED_2x2_DIR : string := "../test/testcases/test_tiled_2x2/";
     constant TG_SCHEDULE_FILE : string := TEST_TILED_2x2_DIR & "all_to_all.sched";
     constant TG_SPM_INIT_FILE : string := TEST_TILED_2x2_DIR & "SPM_init.dat";
     constant TG_DMA_INIT_FILE : string := TEST_TILED_2x2_DIR & "DMA_init.dat";

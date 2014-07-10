@@ -147,11 +147,14 @@ noc_async_selftimed: router_async
 tile: traffic_generators
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tile.vhd
 
+tile_click: traffic_generators
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tile_click.vhd
+
 noc_tiled: router_async tile
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/link_pipeline.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc.vhd
 
-noc_tiled_click: router_click tile
+noc_tiled_click: router_click tile_click
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/link_pipeline.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/noc/tiled/tiled_noc.vhd
 

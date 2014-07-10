@@ -89,7 +89,7 @@ begin
         demux_out(i) := demux_out(i) or bars(j, i);
       end loop;
 
-      left_out(i) <= right_in(i);
+      left_out(i).ack <= right_in(i).ack;
       right_out(i).data <= demux_out(i);
       right_out(i).req  <= left_in(i).req;  -- does not matter here, the reqs
                                             -- are wired outside

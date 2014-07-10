@@ -48,7 +48,7 @@ entity click_stage is
     -- to fix hold violations: delay the acknowledge
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
     -- initial state to implement
-    init_token  : latch_state := EMPTY_BUBBLE;
+    init_phase  : std_logic := '0';
     -- initial data
     init_data   : phit_t      := (others => 'X');  -- Forced unknown
     -- no. of left inputs
@@ -92,7 +92,7 @@ begin  -- architecture behav
   -- the controller
   click_controller : entity work.click
     generic map (
-      init_token => init_token,
+      init_phase => init_phase,
       ACK_N       => right_N,
       REQ_N       => left_N)
     port map (

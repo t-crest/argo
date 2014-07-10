@@ -239,9 +239,9 @@ begin  -- fake_tile
   input_fifo : entity work.fifo(rtl)
     generic map (
       N				 => 0,	-- 1
-      TOKEN			 => EMPTY_BUBBLE,
+      init_phase		 => "00",
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
-      GENERATE_ACKNOWLEDGE_DELAY => 1 --1
+      GENERATE_ACKNOWLEDGE_DELAY => 1	--1
       )
     port map (
       preset	=> reset,
@@ -254,9 +254,9 @@ begin  -- fake_tile
   output_fifo : entity work.fifo(rtl)
     generic map (
       N				 => 0,	-- 2
-      TOKEN			 => VALID_TOKEN,
+      init_phase		 => "00",
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
-      GENERATE_ACKNOWLEDGE_DELAY => 1 --1
+      GENERATE_ACKNOWLEDGE_DELAY => 1	--1
       )
     port map (
       preset	=> reset,

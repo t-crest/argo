@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <chm@AdoraBelle.local>
 -- Company    : 
 -- Created    : 2014-04-25
--- Last update: 2014-07-10
+-- Last update: 2014-07-11
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -54,8 +54,8 @@ begin  -- architecture behav
     variable and1 : std_logic;
     variable and2 : std_logic;
   begin  -- process and1_or_and2
-    and1 := req and not reset;
-    and2 := not req and not reset;
+    and1 := req;
+    and2 := not req;
     for i in req_i'range loop
       and1 := and1 and not req_i(i);
       and2 := and2 and req_i(i);
@@ -64,7 +64,7 @@ begin  -- architecture behav
       and1 := and1 and ack_o(j);
       and2 := and2 and not ack_o(j);
     end loop;  -- j
-    click_int <= transport (and1 or and2) after delay;
+    click_int <= transport ((and1 or and2) and not reset) after delay;
     req_next  <= not req;
   end process comb;
 

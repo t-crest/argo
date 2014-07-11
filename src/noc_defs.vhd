@@ -47,7 +47,7 @@ package noc_defs is
 	constant DATA_WIDTH	: integer := 32;
 	constant SPM_CMD_WIDTH	: integer := 1;		-- 8 possible cmds --> 2
 	constant SPM_DATA_WIDTH	: integer := 64;
-	constant SPM_ADDR_WIDTH	: integer := 9;	-- 14 --> 64 kB address space -16->256kb
+	constant SPM_ADDR_WIDTH	: integer := 9--> 64 kB address space -16->256kb
 	constant BLK_CNT	: integer := 14;
     constant SPM_ADDR_WIDTH_MAX : integer := 16; -- SPM addr width cannot be more than 16 bits -> 256kb
 
@@ -101,7 +101,7 @@ package noc_defs is
 	subtype type_t is std_logic;
 	subtype phit_t is std_logic_vector(PHIT_WIDTH-1 downto 0);
 	subtype onehot_sel is std_logic_vector(ARITY-1 downto 0);
-
+	type link_t_vector is array (integer range <>) of link_t;
 
 	constant LINE_ZERO: link_t := (others => '0');
 

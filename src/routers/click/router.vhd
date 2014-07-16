@@ -201,6 +201,7 @@ begin  -- architecture click_router
     ---------------------------------------------------------------------------
     in_s : entity work.click_stage
       generic map (
+	GENERATE_REQUEST_DELAY => 1,
 	init_phase => in_phase,	--EMPTY_BUBBLE,
 	init_data  => (others => '0'),
 	left_N	   => 1,
@@ -235,7 +236,9 @@ begin  -- architecture click_router
     -- HPU stages
     ----------------------------------------------------------------------------
     hpu_s : entity work.click_stage
+      
       generic map (
+	GENERATE_REQUEST_DELAY => 1,
 	init_phase => hpu_phase,
 	init_data  => (others => '0'),
 	left_N	   => 1,
@@ -256,10 +259,11 @@ begin  -- architecture click_router
 
     -- Collect the requests & acknowledges for synchronisation, add delay
     -- elements to request
-    delay_req_element : entity work.matched_delay
-      generic map(size => crossbar_sync_req_delay)
-      port map(d => hpu_s_TO_xbar_FW(i).req,
-	       z => xbar_reqs(i));
+    --delay_req_element : entity work.matched_delay
+    --  generic map(size => crossbar_sync_req_delay)
+    --  port map(d => hpu_s_TO_xbar_FW(i).req,
+    --	       z => xbar_reqs(i));
+    xbar_reqs(i) <= hpu_s_TO_xbar_FW(i).req;
     xbar_acks(i) <= xbar_TO_out_s_BW(i).ack;
     --hpu_s_TO_xbar_BW(i).ack;
 
@@ -269,7 +273,7 @@ begin  -- architecture click_router
     -- only a single crossbar is needed, so only instanciate it once
     -- kept in this loop to keep the instanciations in order with the data
     -- flow through the pipeline
-    xbar_instance : if is_ni generate
+     xbar_instance : if is_ni generate
       xbar : entity work.crossbar
 	port map (
 	  preset     => preset,
@@ -279,12 +283,14 @@ begin  -- architecture click_router
 	  right_out  => xbar_TO_out_s_FW,
 	  right_in   => xbar_TO_out_s_BW);
     end generate xbar_instance;
+    
 
     ----------------------------------------------------------------------------
     -- Output stages
     ----------------------------------------------------------------------------
     out_s : entity work.click_stage
       generic map (
+	GENERATE_REQUEST_DELAY => 1,
 	init_phase => out_phase,	--EMPTY_TOKEN,
 	init_data  => (others => '0'),
 	left_N	   => ARITY,

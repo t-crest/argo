@@ -6,11 +6,11 @@
 -- modification, are permitted provided that the following conditions are met:
 -- 
 --    1. Redistributions of source code must retain the above copyright notice,
---       this list of conditions and the following disclaimer.
+--	 this list of conditions and the following disclaimer.
 -- 
 --    2. Redistributions in binary form must reproduce the above copyright
---       notice, this list of conditions and the following disclaimer in the
---       documentation and/or other materials provided with the distribution.
+--	 notice, this list of conditions and the following disclaimer in the
+--	 documentation and/or other materials provided with the distribution.
 -- 
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -44,17 +44,17 @@ use work.noc_defs.all;
 entity click_stage is
   generic (
     -- for some cases a delayed request is needed
-    GENERATE_REQUEST_DELAY     : integer := 0;
+    GENERATE_REQUEST_DELAY     : integer   := 0;
     -- to fix hold violations: delay the acknowledge
-    GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
+    GENERATE_ACKNOWLEDGE_DELAY : integer   := 0;
     -- initial state to implement
-    init_phase  : std_logic := '0';
+    init_phase		       : std_logic := '0';
     -- initial data
-    init_data   : phit_t      := (others => 'X');  -- Forced unknown
+    init_data		       : phit_t	   := (others => 'X');	-- Forced unknown
     -- no. of left inputs
-    left_N      : natural     := 1;
+    left_N		       : natural   := 1;
     -- no. of right outputs
-    right_N     : natural     := 1
+    right_N		       : natural   := 1
     );
 
   
@@ -74,8 +74,8 @@ architecture behav of click_stage is
   component click is
     generic (
       init_token : latch_state;
-      ACK_N      : integer;
-      REQ_N      : integer);
+      ACK_N	 : integer;
+      REQ_N	 : integer);
     port (
       req_i : in  std_logic_vector(REQ_N - 1 downto 0);
       ack_o : in  std_logic_vector(ACK_N - 1 downto 0);
@@ -85,53 +85,77 @@ architecture behav of click_stage is
       click : out std_logic);
   end component click;
 
-  signal click_s         : std_logic;
-  signal data, data_next : link_t;
+  signal click_internal, click_gated : std_logic;
+  signal data, data_next	     : link_t;
+  signal left_req_delayed	     : std_logic_vector(left_N-1 downto 0);
 begin  -- architecture behav
 
+  -- delay on the request
+  req_delays : for i in left_req'range generate
+    delay_req_element : entity work.matched_delay
+      generic map(size => GENERATE_REQUEST_DELAY)
+      port map(d => left_req(i),
+	       z => left_req_delayed(i));
+  end generate req_delays;
+
   -- the controller
-  click_controller : entity work.click
+  controller : entity work.click
     generic map (
       init_phase => init_phase,
-      ACK_N       => right_N,
-      REQ_N       => left_N)
+      ACK_N	 => right_N,
+      REQ_N	 => left_N)
     port map (
-      req_i => left_req,
+      req_i => left_req_delayed,
       ack_o => right_ack,
       reset => reset,
       ack_i => left_ack,
       req_o => right_req,
-      click => click_s);
+      click => click_internal);
 
-  -- purpose: data assignment, gating implementation
-  -- type   : combinational
-  -- inputs : left_data, data
-  -- outputs: data_next
-  comb : process (left_data, data) is
-  begin  -- process comb
-    -- default assignment: keep data
-    data_next               <= data;
-    -- allways forward the status bits
-    data_next(34 downto 32) <= left_data(34 downto 32);
-    -- only forward data when valid
-    if left_data(34) = '1' then
-      data_next <= left_data;
-    end if;
-  end process comb;
+  
+  gating : if GATING_ENABLED = 1 generate
+    click_gated <= click_internal and left_data(34);
+    ---------------------------------------------------------------------------
+    -- data bits are gated
+    ---------------------------------------------------------------------------
+    reg_gated : process (click_gated, reset) is
+    begin  -- process reg_gated
+      if reset = '1' then		-- asynchronous reset (active low)
+	data(31 downto 0) <= (others => '0');
+      elsif click_gated'event and click_gated = '1' then  -- rising clock edge
+	data(31 downto 0) <= left_data(31 downto 0);
+      end if;
+    end process reg_gated;
 
-  -- purpose: register transition
-  -- type   : sequential
-  -- inputs : click, reset, data_next
-  -- outputs: data
-  registers : process (click_s, reset) is
-  begin  -- process registers
-    if reset = '1' then                 -- asynchronous reset (active low)
-      data <= (others => '0');
-    elsif click_s'event and click_s = '1' then  -- rising clock edge
-      data <= data_next;
-    end if;
-  end process registers;
-
+    ---------------------------------------------------------------------------
+    -- the status bits are always forwarded
+    ---------------------------------------------------------------------------
+    reg_ungated : process (click_internal, reset) is
+    begin  -- process reg_ungated
+      if reset = '1' then		-- asynchronous reset (active low)
+	data(34 downto 32) <= (others => '0');
+      elsif click_internal'event and click_internal = '1' then	-- rising clock edge
+	data(34 downto 32) <= left_data(34 downto 32);
+      end if;
+    end process reg_ungated;
+  end generate gating;
   right_data <= data;
-  click_out  <= click_s;
+  click_out  <= click_internal;
+
+  no_gating : if GATING_ENABLED = 0 generate
+    ---------------------------------------------------------------------------
+    -- simple implementation: just a register bank.
+    ---------------------------------------------------------------------------
+    reg_gated : process (click_internal, reset) is
+    begin  -- process reg_gated
+      if reset = '1' then		-- asynchronous reset (active low)
+	data <= (others => '0');
+      elsif click_internal'event and click_internal = '1' then  -- rising clock edge
+	data <= left_data;
+      end if;
+    end process reg_gated;
+  end generate no_gating;
+
+
+
 end architecture behav;

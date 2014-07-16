@@ -137,11 +137,12 @@ begin
   -- route selection out
   xbar_conf <= sel;
   
-  req_delay : entity work.matched_delay
-    generic map(size => hpu_first_req_delay)
-    port map(d => IN_REQ,
-             z => OUT_REQ_INT);
+--  req_delay : entity work.matched_delay
+--    generic map(size => hpu_first_req_delay)
+--    port map(d => IN_REQ,
+--             z => OUT_REQ_INT);
 
+  OUT_REQ_INT <= IN_REQ;
 
   comb : process (left_in, right_in, VLD_TYPE, SOP, OUT_REQ_INT) is
   begin

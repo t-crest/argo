@@ -58,7 +58,8 @@ package traffic_generator_package is
   signal TG_TRANSFER_DONE   : std_logic := '0';
   signal TG_SIMULATION_DONE : std_logic := '0';  -- stop the simulation
 
-
+  type phit_vector_t is array (integer range <>) of phit_t;
+  
   function tg_dma_setup_addr (
     dma_id : integer)
     return std_logic_vector;

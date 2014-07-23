@@ -40,37 +40,34 @@ use ieee.std_logic_1164.all;
 use work.config_types.all;
 
 package config is
+  constant SPM_ADDR_WIDTH : integer := 9;
+  constant TARGET_ARCHITECTURE   : ARCHITECTURES   := RTL;
+  constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
+  constant GATING_ENABLED        : integer         := 1;
 
-    
-    
-    
-    constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
-    constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
-    constant GATING_ENABLED : integer := 1;
-    
-    constant N : integer := 4; -- Horizontal width
-    constant M : integer := 4; -- Vertical Height
-    
-    constant NODES : integer := N*M;
-    constant PRD_LENGTH : integer := 23;
+  constant N : integer := 4;            -- Horizontal width
+  constant M : integer := 4;            -- Vertical Height
 
-    constant SWAP_PORTS : boolean := true;
-    
-    constant LINK_PIPELINE_STAGES : integer := 0;
-    constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
-    
-    constant TEST_DIR : string := "../test/testcases/test_tiled_4x4_swap/";
-    constant TG_SCHEDULE_FILE : string := TEST_DIR & "all_to_all.sched";
-    constant TG_SPM_INIT_FILE : string := TEST_DIR & "SPM_init.dat";
-    constant TG_DMA_INIT_FILE : string := TEST_DIR & "DMA_init.dat";
-    
-    -- simulation delays
-    constant PDELAY		: time := 500 ps;
-    constant NA_HPERIOD	: time := 5 ns;
-    constant P_HPERIOD	: time := 5 ns;
-    constant SKEW           : time := 0 ns;
-    constant delay : time := 0.3 ns;
-    
-end package ; -- aegean_def
+  constant NODES      : integer := N*M;
+  constant PRD_LENGTH : integer := 23;
+
+  constant SWAP_PORTS : boolean := true;
+
+  constant LINK_PIPELINE_STAGES : integer                        := 0;
+  constant LINK_PIPELINE_INIT   : latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
+
+  constant TEST_DIR         : string := "../test/testcases/test_tiled_4x4_swap/";
+  constant TG_SCHEDULE_FILE : string := TEST_DIR & "all_to_all.sched";
+  constant TG_SPM_INIT_FILE : string := TEST_DIR & "SPM_init.dat";
+  constant TG_DMA_INIT_FILE : string := TEST_DIR & "DMA_init.dat";
+
+  -- simulation delays
+  constant PDELAY     : time := 500 ps;
+  constant NA_HPERIOD : time := 5 ns;
+  constant P_HPERIOD  : time := 5 ns;
+  constant SKEW       : time := 0 ns;
+  constant delay      : time := 0.3 ns;
+  
+end package;  -- aegean_def
 
 

@@ -10,3 +10,7 @@ routeDesign -globalDetail
 setNanoRouteMode -quiet -drouteUseMultiCutViaEffort high
 setNanoRouteMode -quiet -droutePostRouteSwapVia multiCut
 detailRoute
+
+setOptMode -fixCap true -fixTran true -fixFanoutLoad false
+optDesign -postRoute
+optDesign -postRoute -hold

@@ -41,6 +41,7 @@ use ieee.std_logic_1164.all;
 use work.config_types.all;
 
 package config is
+    constant SPM_ADDR_WIDTH : integer := 8; --> 64 kB address space -16->256kb
 
   constant TARGET_ARCHITECTURE	 : ARCHITECTURES   := ASIC;
   constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;

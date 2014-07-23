@@ -9,7 +9,7 @@ entity fifo is
   generic (
     N                          : integer;
     init_phase                 : std_logic_vector :="00";
-    GENERATE_REQUEST_DELAY     : integer := 0;
+    GENERATE_REQUEST_DELAY     : integer := 1;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
     init_data : phit_t := (others => '0')
     );

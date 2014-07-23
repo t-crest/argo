@@ -7,7 +7,7 @@ all: assembly
 .PHONY: all initial pipeline_stages tile assembly clean
 
 $(NETLIST_DIR)/tiled_noc_netlist.v: 
-	pushd $(SYNTHESIS_DIR); $(MAKE) asic_tiled_4x4; popd
+	pushd $(SYNTHESIS_DIR); $(MAKE) asic_tiled_4x4_click; popd
 
 initial/partitions/tiled_noc/tiled_noc.globals: $(NETLIST_DIR)/tiled_noc_netlist.v
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/initial initial/scripts

@@ -1112,10 +1112,12 @@ cell(spm){
   pin(a_clk){
     direction : "input";
     drc_pinsigtype : "signal";
+    drc_pinfunction : "clock";
     }
   pin(b_clk){
     direction : "input";
     drc_pinsigtype : "signal";
+    drc_pinfunction : "clock";
     }
   pin(reset){
     direction : "input";

@@ -126,7 +126,9 @@ architecture click_router of router is
       GENERATE_REQUEST_DELAY	 : integer;
       GENERATE_ACKNOWLEDGE_DELAY : integer;
       RESET_STATE		 : std_logic;
-      init_token		 : latch_state;
+      init_phase		 : std_logic;
+      init_phase_left		 : std_logic;
+      init_phase_right		 : std_logic;
       init_data			 : phit_t;
       left_N			 : natural;
       right_N			 : natural);
@@ -202,10 +204,12 @@ begin  -- architecture click_router
     in_s : entity work.click_stage
       generic map (
 	GENERATE_REQUEST_DELAY => 1,
-	init_phase => in_phase,	--EMPTY_BUBBLE,
-	init_data  => (others => '0'),
-	left_N	   => 1,
-	right_N	   => 1)
+	init_phase	       => in_phase,
+--	init_phase_left	       => out_phase,
+--	init_phase_right       => hpu_phase,
+	init_data	       => (others => '0'),
+	left_N		       => 1,
+	right_N		       => 1)
       port map (
 	reset	     => preset,
 	left_data    => left_in(i).data,
@@ -239,10 +243,12 @@ begin  -- architecture click_router
       
       generic map (
 	GENERATE_REQUEST_DELAY => 1,
-	init_phase => hpu_phase,
-	init_data  => (others => '0'),
-	left_N	   => 1,
-	right_N	   => ARITY)
+	init_phase	       => hpu_phase,
+--	init_phase_left	       => in_phase,
+--	init_phase_right       => out_phase,
+	init_data	       => (others => '0'),
+	left_N		       => 1,
+	right_N		       => ARITY)
       port map (
 	reset	    => preset,
 	left_data   => hpu_c_TO_hpu_s_FW(i).data,
@@ -260,8 +266,8 @@ begin  -- architecture click_router
     -- Collect the requests & acknowledges for synchronisation, add delay
     -- elements to request
     --delay_req_element : entity work.matched_delay
-    --  generic map(size => crossbar_sync_req_delay)
-    --  port map(d => hpu_s_TO_xbar_FW(i).req,
+    --	generic map(size => crossbar_sync_req_delay)
+    --	port map(d => hpu_s_TO_xbar_FW(i).req,
     --	       z => xbar_reqs(i));
     xbar_reqs(i) <= hpu_s_TO_xbar_FW(i).req;
     xbar_acks(i) <= xbar_TO_out_s_BW(i).ack;
@@ -273,7 +279,7 @@ begin  -- architecture click_router
     -- only a single crossbar is needed, so only instanciate it once
     -- kept in this loop to keep the instanciations in order with the data
     -- flow through the pipeline
-     xbar_instance : if is_ni generate
+    xbar_instance : if is_ni generate
       xbar : entity work.crossbar
 	port map (
 	  preset     => preset,
@@ -283,7 +289,7 @@ begin  -- architecture click_router
 	  right_out  => xbar_TO_out_s_FW,
 	  right_in   => xbar_TO_out_s_BW);
     end generate xbar_instance;
-    
+
 
     ----------------------------------------------------------------------------
     -- Output stages
@@ -291,10 +297,12 @@ begin  -- architecture click_router
     out_s : entity work.click_stage
       generic map (
 	GENERATE_REQUEST_DELAY => 1,
-	init_phase => out_phase,	--EMPTY_TOKEN,
-	init_data  => (others => '0'),
-	left_N	   => ARITY,
-	right_N	   => 1)
+	init_phase	       => out_phase,  
+--	init_phase_left	       => hpu_phase,
+--	init_phase_right       => in_phase,
+	init_data	       => (others => '0'),
+	left_N		       => ARITY,
+	right_N		       => 1)
       port map (
 	reset	     => preset,
 	left_data    => xbar_TO_out_s_FW(i).data,

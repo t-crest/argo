@@ -41,17 +41,18 @@ use ieee.std_logic_1164.all;
 use work.config_types.all;
 
 package config is
-    constant SPM_ADDR_WIDTH : integer := 8; --> 64 kB address space -16->256kb
+
+  constant SPM_ADDR_WIDTH : integer := 8; --> 64 kB address space -16->256kb
 
   constant TARGET_ARCHITECTURE	 : ARCHITECTURES   := ASIC;
   constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
 
-  constant N : integer := 2;		-- Horizontal width
-  constant M : integer := 2;		-- Vertical Height
+  constant N : integer := 4;		-- Horizontal width
+  constant M : integer := 4;		-- Vertical Height
 
   constant GATING_ENABLED : natural := 1;
   constant NODES      : integer := N*M;
-  constant PRD_LENGTH : integer := 5;
+  constant PRD_LENGTH : integer := 23;
 
   constant LINK_PIPELINE_STAGES : natural			 := 0;
   constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (transparent, transparent, transparent, transparent);

@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <chm@AdoraBelle.local>
 -- Company    : 
 -- Created    : 2014-04-25
--- Last update: 2014-07-11
+-- Last update: 2014-07-16
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -22,11 +22,14 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.config.all;
 use work.config_types.all;
+use work.click_package.all;
 
 entity click is
   generic (
     -- reset value for the state register
-    init_phase : std_logic := 'H';
+    init_phase : std_logic := '1';
+    init_phase_left: std_logic := 'X';
+    init_phase_right: std_logic := 'X';
     -- number of acknowledge inputs
     ACK_N       : integer   := 1;
     -- number of request inputs
@@ -43,7 +46,7 @@ end entity click;
 
 architecture behav of click is
   signal req, req_next : std_logic;
-  signal click_int     : std_logic;
+  signal click_int, click_pre_gating    : std_logic;
 begin  -- architecture behav
   
   -- purpose: implement the combinatorical part of the controller
@@ -64,9 +67,19 @@ begin  -- architecture behav
       and1 := and1 and ack_o(j);
       and2 := and2 and not ack_o(j);
     end loop;  -- j
-    click_int <= transport ((and1 or and2) and not reset) after delay;
+    click_pre_gating <= transport (and1 or and2) after delay;
     req_next  <= not req;
   end process comb;
+
+  -- in case reset click gating is needed
+  --click_reset_gated: if resolve_neighbor_phases(init_phase_left, init_phase, init_phase_right) generate
+    click_int <= (click_pre_gating and not reset);
+  --end generate click_reset_gated;
+  -- otherwise just pass through
+  --click_reset_not_gated: if not resolve_neighbor_phases(init_phase_left, init_phase, init_phase_right) generate
+    --click_int <= click_pre_gating;
+  --end generate click_reset_not_gated;
+  
 
   -- assign outputs
   ack_i <= transport req after delay;

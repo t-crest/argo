@@ -124,6 +124,7 @@ router_async: ni_async
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/asynchronous/router.vhd
 
 router_click: ni_async
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/click_package.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/click.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/click_stage.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/routers/click/fifo.vhd

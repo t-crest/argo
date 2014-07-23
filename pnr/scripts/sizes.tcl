@@ -25,10 +25,10 @@ set tile_width [expr 133 * $distance_unit]
 set tile_height [expr 133 * $distance_unit]
 
 set router_width [expr 27 * $distance_unit]
-set router_height [expr 18 * $distance_unit]
+set router_height [expr 22 * $distance_unit]
 
 set na_width [expr 9 * $distance_unit]
-set na_height [expr 18 * $distance_unit]
+set na_height [expr 22 * $distance_unit]
 
 # distance between the tiles
 #set distance [expr $cell_height * 10]

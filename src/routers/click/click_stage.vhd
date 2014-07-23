@@ -49,6 +49,9 @@ entity click_stage is
     GENERATE_ACKNOWLEDGE_DELAY : integer   := 0;
     -- initial state to implement
     init_phase		       : std_logic := '0';
+    -- neighbor init phases
+    init_phase_left	       : std_logic := 'X';
+    init_phase_right	       : std_logic := 'X';
     -- initial data
     init_data		       : phit_t	   := (others => 'X');	-- Forced unknown
     -- no. of left inputs
@@ -73,9 +76,11 @@ end entity click_stage;
 architecture behav of click_stage is
   component click is
     generic (
-      init_token : latch_state;
-      ACK_N	 : integer;
-      REQ_N	 : integer);
+      init_phase       : std_logic;
+      init_phase_left  : std_logic;
+      init_phase_right : std_logic;
+      ACK_N	       : integer;
+      REQ_N	       : integer);
     port (
       req_i : in  std_logic_vector(REQ_N - 1 downto 0);
       ack_o : in  std_logic_vector(ACK_N - 1 downto 0);
@@ -101,9 +106,11 @@ begin  -- architecture behav
   -- the controller
   controller : entity work.click
     generic map (
-      init_phase => init_phase,
-      ACK_N	 => right_N,
-      REQ_N	 => left_N)
+      init_phase       => init_phase,
+      init_phase_left  => init_phase_left,
+      init_phase_right => init_phase_right,
+      ACK_N	       => right_N,
+      REQ_N	       => left_N)
     port map (
       req_i => left_req_delayed,
       ack_o => right_ack,
@@ -121,21 +128,21 @@ begin  -- architecture behav
     reg_gated : process (click_gated, reset) is
     begin  -- process reg_gated
       if reset = '1' then		-- asynchronous reset (active low)
-	data(31 downto 0) <= (others => '0');
+	data(33 downto 0) <= (others => '0');
       elsif click_gated'event and click_gated = '1' then  -- rising clock edge
-	data(31 downto 0) <= left_data(31 downto 0);
+	data(33 downto 0) <= left_data(33 downto 0);
       end if;
     end process reg_gated;
 
     ---------------------------------------------------------------------------
-    -- the status bits are always forwarded
+    -- the valid bit is always forwarded
     ---------------------------------------------------------------------------
     reg_ungated : process (click_internal, reset) is
     begin  -- process reg_ungated
       if reset = '1' then		-- asynchronous reset (active low)
-	data(34 downto 32) <= (others => '0');
+	data(34) <= '0';
       elsif click_internal'event and click_internal = '1' then	-- rising clock edge
-	data(34 downto 32) <= left_data(34 downto 32);
+	data(34) <= left_data(34);
       end if;
     end process reg_ungated;
   end generate gating;
@@ -150,7 +157,7 @@ begin  -- architecture behav
     begin  -- process reg_gated
       if reset = '1' then		-- asynchronous reset (active low)
 	data <= (others => '0');
-      elsif click_internal'event and click_internal = '1' then  -- rising clock edge
+      elsif click_internal'event and click_internal = '1' then	-- rising clock edge
 	data <= left_data;
       end if;
     end process reg_gated;

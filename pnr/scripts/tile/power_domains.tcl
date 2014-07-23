@@ -1,6 +1,9 @@
 loadCPF scripts/power_domains.cpf
 commitCPF
 
+# remove all rows (new rows will be created later)
+cutRow -area [dbGet top.fPlan.box]
+
 setObjFPlanBox Group PD_noc_switch $fp_left $fp_bottom [expr $fp_left + $router_width] [expr $fp_bottom + $router_height]
 
 #modifyPowerDomainAttr PD_nAdapter -minGaps $fp_distance $fp_distance $fp_distance $fp_distance
@@ -36,7 +39,7 @@ if {$ARGO_PNR_USE_SPM_SRAM == 1} {
     set p_h [expr $p_top - $p_bottom]
 
     set p_size "$p_w $p_h"
-
+    cutRow -area "$p_left $p_bottom $p_right $p_top"
     setObjFPlanBox Instance processor_1 $p_left $p_bottom $p_right $p_top
 
     set s_left [expr $fp_left + $router_width + $fp_distance]
@@ -48,6 +51,6 @@ if {$ARGO_PNR_USE_SPM_SRAM == 1} {
     set s_h [expr $s_top - $s_bottom]
 
     set s_size "$s_w $s_h"
-
+    cutRow -area "$s_left $s_bottom $s_right $s_top"
     setObjFPlanBox Instance spm_1 $s_left $s_bottom $s_right $s_top
 }

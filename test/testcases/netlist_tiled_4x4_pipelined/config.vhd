@@ -41,9 +41,7 @@ use work.config_types.all;
 
 package config is
   
-    
-    
-    
+    constant SPM_ADDR_WIDTH : integer := 8; --> 64 kB address space -16->256kb
     constant TARGET_ARCHITECTURE : ARCHITECTURES := RTL;
     constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
 
@@ -64,8 +62,8 @@ package config is
     
     -- simulation delays
     constant PDELAY		: time := 500 ps;
-    constant NA_HPERIOD	: time := 2 ns;
-    constant P_HPERIOD	: time := 2 ns;
+    constant NA_HPERIOD	: time := 4 ns;
+    constant P_HPERIOD	: time := 4 ns;
     constant SKEW           : time := 0 ns;
     constant delay : time := 0.2 ns;
     

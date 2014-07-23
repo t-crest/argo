@@ -31,9 +31,6 @@ redraw
 source scripts/place.tcl
 fit
 redraw
-# level shifter sroute
-#source scripts/sroute_ls.tcl
-
 saveDesign post_place.enc
 
 # clock tree synthesis

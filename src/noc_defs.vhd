@@ -47,7 +47,6 @@ package noc_defs is
 	constant DATA_WIDTH	: integer := 32;
 	constant SPM_CMD_WIDTH	: integer := 1;		-- 8 possible cmds --> 2
 	constant SPM_DATA_WIDTH	: integer := 64;
-	constant SPM_ADDR_WIDTH	: integer := 9; --> 64 kB address space -16->256kb
 	constant BLK_CNT	: integer := 14;
     constant SPM_ADDR_WIDTH_MAX : integer := 16; -- SPM addr width cannot be more than 16 bits -> 256kb
 

@@ -40,6 +40,7 @@ use ieee.std_logic_1164.all;
 use work.config_types.all;
 
 package config is
+	constant SPM_ADDR_WIDTH	: integer := 9;
   
     
     

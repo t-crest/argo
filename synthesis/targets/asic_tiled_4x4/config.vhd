@@ -5,11 +5,11 @@
 -- modification, are permitted provided that the following conditions are met:
 --
 --    1. Redistributions of source code must retain the above copyright notice,
---	 this list of conditions and the following disclaimer.
+--       this list of conditions and the following disclaimer.
 --
 --    2. Redistributions in binary form must reproduce the above copyright
---	 notice, this list of conditions and the following disclaimer in the
---	 documentation and/or other materials provided with the distribution.
+--       notice, this list of conditions and the following disclaimer in the
+--       documentation and/or other materials provided with the distribution.
 --
 -- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
 -- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -42,18 +42,19 @@ use work.config_types.all;
 
 package config is
 
-  constant TARGET_ARCHITECTURE	 : ARCHITECTURES   := ASIC;
+  constant SPM_ADDR_WIDTH        : integer         := 9;
+  constant TARGET_ARCHITECTURE   : ARCHITECTURES   := ASIC;
   constant TARGET_IMPLEMENTATION : IMPLEMENTATIONS := ASYNC;
 
-  constant N : integer := 4;		-- Horizontal width
-  constant M : integer := 4;		-- Vertical Height
+  constant N : integer := 4;            -- Horizontal width
+  constant M : integer := 4;            -- Vertical Height
 
   constant NODES      : integer := N*M;
   constant PRD_LENGTH : integer := 23;
 
-  constant LINK_PIPELINE_STAGES : natural			 := 1;
-  constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
-  constant SWAP_PORTS		: boolean			 := true;
+  constant LINK_PIPELINE_STAGES : natural                        := 1;
+  constant LINK_PIPELINE_INIT   : latch_state_vector(3 downto 0) := (EMPTY_BUBBLE, EMPTY_TOKEN, VALID_BUBBLE, VALID_TOKEN);
+  constant SWAP_PORTS           : boolean                        := true;
 
 end package;  -- aegean_def
 

@@ -39,6 +39,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.vital_primitives.all;
 use ieee.vital_timing.all;
+use work.config.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
 

@@ -8,7 +8,7 @@ use work.noc_defs.all;
 entity fifo is
   generic (
     N                          : integer;
-    TOKEN                      : latch_state;
+    TOKEN                      : latch_state := transparent;
     GENERATE_REQUEST_DELAY     : integer := 0;
     GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
     init_data                  : phit_t  := (others => 'X')

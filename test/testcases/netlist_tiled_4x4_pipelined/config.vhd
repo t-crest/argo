@@ -61,7 +61,7 @@ package config is
     constant LINK_PIPELINE_INIT	: latch_state_vector(3 downto 0) := (transparent, transparent, transparent, transparent);
     
     -- simulation delays
-    constant PDELAY		: time := 500 ps;
+    constant PDELAY		: time := 800 ps;
     constant NA_HPERIOD	: time := 4 ns;
     constant P_HPERIOD	: time := 4 ns;
     constant SKEW           : time := 0 ns;

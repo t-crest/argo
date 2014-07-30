@@ -19,8 +19,8 @@ set vhdl_files {
  ../src/routers/asynchronous/delays.vhd
  ../src/routers/asynchronous/latch_controller.vhd
  ../src/routers/asynchronous/channel_latch.vhd
- ../src/noc/tiled/link_pipeline.vhd
  ../src/routers/asynchronous/fifo.vhd
+ ../src/noc/tiled/link_pipeline.vhd
  ../src/routers/asynchronous/hpu_latch.vhd
  ../src/routers/asynchronous/hpu_comb.vhd
  ../src/routers/asynchronous/hpu.vhd

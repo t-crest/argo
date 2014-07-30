@@ -52,8 +52,16 @@ source $target/flip_cells.tcl
 # apply timing constraints 
 source $target/timing_constraints.tcl
 
+# flatten the busses
+define_name_rules flat_busses -flatten_multi_dimension_busses
+change_names -hierarchy -rules flat_busses
+
 # characterize the environment of a tile...
 characterize noc_tile_*_0_0
+
+# flatten the dma table in the NA 
+current_design nAdapter
+ungroup -flatten dma_table
 
 # just work within a single tile for now...
 current_design tile

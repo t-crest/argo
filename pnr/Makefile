@@ -4,10 +4,17 @@ export SYNTHESIS_DIR := $(ARGO_PNR_DIR)/../synthesis
 
 all: assembly
 
-.PHONY: all initial pipeline_stages tile assembly clean
+.PHONY: all initial pipeline_stages tile assembly clean click_netlist mousetrap_netlist
 
-$(NETLIST_DIR)/tiled_noc_netlist.v: 
+#$(NETLIST_DIR)/tiled_noc_netlist.v: 
+click_netlist:
 	pushd $(SYNTHESIS_DIR); $(MAKE) asic_tiled_4x4_click; popd
+mousetrap_netlist:
+	pushd $(SYNTHESIS_DIR); $(MAKE) asic_tiled_4x4; popd
+
+click: click_netlist assembly
+
+mousetrap: mousetrap_netlist assembly
 
 initial/partitions/tiled_noc/tiled_noc.globals: $(NETLIST_DIR)/tiled_noc_netlist.v
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/initial initial/scripts
@@ -16,7 +23,7 @@ initial/partitions/tiled_noc/tiled_noc.globals: $(NETLIST_DIR)/tiled_noc_netlist
 initial: $(NETLIST_DIR)/tiled_noc_netlist.v
 	mkdir -p initial
 	ln -s -f -n $(ARGO_PNR_DIR)/scripts/initial initial/scripts
-	pushd initial; encounter -win -init scripts/all.tcl; popd
+	pushd initial; encounter -win ; popd
 
 pipeline_stages: $(addsuffix /stage.enc, $(shell find initial/partitions/ -type d -name "link_pipe*"))
 

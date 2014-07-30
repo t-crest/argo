@@ -51,6 +51,8 @@ if {[lsearch [get_object_name [get_clocks]] constraint_clk] < 0} {
     set_false_path -through [get_pins -hierarchical latch/r]
     set_false_path -through [get_pins -hierarchical r_next_reg/G]
     set_false_path -through [get_pins -hierarchical r_next_reg/D] 
+    
+    set_clock_groups -asynchronous -group ni_clk -group [get_clocks twophase*]
 
 } else {
     # Click element based design ################################################################
@@ -83,9 +85,12 @@ if {[lsearch [get_object_name [get_clocks]] constraint_clk] < 0} {
     #set_false_path -through [get_pins -hierarchical controller/req_i*]
     #set_max_delay -from ni_clk -to [get_pins -hierarchical na/pkt_* -filter pin_direction==out] 0.2
 
-    # Make sure pathes through preset are surpressed
+    # Make sure pathes through reset are surpressed
     #set_disable_timing [get_pins -hierarchical controller/reset]
     #set_false_path -through [get_pins -hierarchical controller/reset]
     #set_false_path -through [get_pins -hierarchical req_reg/D] 
+    #set_false_path -from reset -to [get_clocks ni_clk]
+    set_clock_groups -asynchronous -group ni_clk -group [get_clocks constraint*]
 
 }
+

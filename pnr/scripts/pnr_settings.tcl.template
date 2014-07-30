@@ -19,8 +19,18 @@ set ARGO_PNR_CTS_BUF
 # Enable placement of the Dual port SRAM if used for synthesis
 set ARGO_PNR_USE_SPM_SRAM 0
 
+# Filler cells
+set ARGO_PNR_FILLER_CELLS
+
 # Drive buffer for the long noc wires
 set ARGO_PNR_NOC_WIRE_BUF 
 
 # Cell to use as well tap
 set ARGO_PNR_WELLTAP_CELL 
+
+# Link layers
+set ARGO_LINK_ROUTE_V M6
+set ARGO_LINK_ROUTE_H M7
+set ARGO_LINK_WIDTH 0.2
+
+set ARGO_EXTRA_PIN_LAYER M5

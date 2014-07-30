@@ -1,3 +1,6 @@
+# Innclude technology cpf and sub-cpf of tile
+source $env(ARGO_PNR_DIR)/scripts/technology.cpf
+source $env(ARGO_PNR_DIR)/scripts/tile/designs.cpf
 
 
 ##########################################################
@@ -5,15 +8,16 @@
 ################       Design part      ##################
 ##########################################################
 ##########################################################
+   
+set_design tiled_noc
 
-  
-set_design $design_name
+
+
      
 ##########################################################
 ################## Creating power nets ###################
 ##########################################################
 create_power_nets -nets {VDD_DEFAULT} -voltage 1.2
-create_power_nets -nets $voltages -voltage 1.2
 create_ground_nets -nets GND -voltage 0
 
 
@@ -22,29 +26,7 @@ create_ground_nets -nets GND -voltage 0
 ################# Creating power domains #################
 ##########################################################
 
-foreach domain_member $domain_members {
-    set domain [lindex $domain_member 0]
-    create_power_domain \
-    -name PD_$domain \
-    -instances [lrange $domain_member 1 end]
-}
-
-
-#create_power_domain \
-#    -name PD_2 \
-#    -instances {noc_switch_2/*}
-
-
-#create_power_domain \
-#    -name PD_PERI \
-#    -instances peripherals_2/*
-
-
-
-#External PSO domain
-
-
-#default domain
+# default domain
 create_power_domain \
     -name PD_DEFAULT \
     -default \
@@ -67,9 +49,6 @@ update_nominal_condition -name cond_TT -library_set "TT"
 create_nominal_condition -name cond_off -voltage 0.0
 
 set power_modes {PD_DEFAULT@cond_TT}
-foreach domain $domains {
-    lappend power_modes PD_$domain\@cond_TT
-}
 
 create_power_mode -name PM_DEFAULT -domain_conditions $power_modes -default
 
@@ -85,25 +64,8 @@ create_power_mode -name PM_DEFAULT -domain_conditions $power_modes -default
 ################ Describing power nets ###################
 ##########################################################
 
-foreach domain $domains {
-    create_global_connection -domain PD_$domain -net GND -pins GNDC
-    create_global_connection -domain PD_$domain -net GND -pins GND
-    create_global_connection -domain PD_$domain -net GND -pins gnd
-    create_global_connection -domain PD_$domain -net GND -pins Gnd
-    create_global_connection -domain PD_$domain -net VDD_$domain -pins vdd
 
-    create_global_connection -net VDD_$domain -pins VDDC -instances  PAD_VDD_$domain
-}
-
-
-
-#create_global_connection -domain PD_2 -net GND -pins gnd
-#create_global_connection -domain PD_2 -net GND -pins Gnd
-#create_global_connection -domain PD_2 -net VDD_2 -pins vdd
-
-#create_global_connection -net VDD_1 -pins VDDC -instances  PAD_VDD_1
-#create_global_connection -net VDD_2 -pins VDDC -instances  PAD_VDD_2
-
+## Shared, to be connected by Oskar ##
 create_global_connection -net VDD_DEFAULT -pins VDDC -instances PAD_VDD
 create_global_connection -net GND -pins GNDC -instances PAD_GND
 
@@ -112,13 +74,8 @@ create_global_connection -net GND -pins GNDC -instances PAD_GND
 ##########################################################
 
 update_power_domain -name PD_DEFAULT -internal_power_net VDD_DEFAULT
-foreach domain $domains {
-    update_power_domain -name PD_$domain -internal_power_net VDD_$domain
-}
 
-#set_instance spm_1 -model spm -domain_mapping { {PD_DEFAULT PD_DEFAULT} }
-#set_instance spm_1 -model processor -domain_mapping { {PD_DEFAULT PD_DEFAULT} }
+
+set_instance noc_tile_corner_0_0 -design tile -domain_mapping { {PD_noc_switch PD_DEFAULT} }
 
 end_design
-
-

@@ -12,7 +12,7 @@ namespace eval layout_utils {
 	set trace_list1 $tile
 	set trace_ports $port
 	# forward tracing
-	set pin [get_pins $tile/$port\_out_b]
+	set pin [get_pins $tile/$port\_out_b*]
 	set next_pin [get_pins -of_objects [get_nets -of_objects $pin] -filter pin_direction==out]
 	set next_cell [get_object_name [get_cells -of_objects $next_pin]]
 	regexp {(noc_tile_.*_[0-9]*_[0-9]*|pipeline_latch.*).*} $next_cell complete filtered

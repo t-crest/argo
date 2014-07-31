@@ -6,7 +6,7 @@
 -- Author     : Christoph Müller  <chm@AdoraBelle.local>
 -- Company    : 
 -- Created    : 2014-04-25
--- Last update: 2014-07-16
+-- Last update: 2014-07-31
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -73,7 +73,8 @@ begin  -- architecture behav
 
   -- in case reset click gating is needed
   --click_reset_gated: if resolve_neighbor_phases(init_phase_left, init_phase, init_phase_right) generate
-    click_int <= (click_pre_gating and not reset);
+    click_int <= click_pre_gating;
+      --(click_pre_gating and not reset);
   --end generate click_reset_gated;
   -- otherwise just pass through
   --click_reset_not_gated: if not resolve_neighbor_phases(init_phase_left, init_phase, init_phase_right) generate

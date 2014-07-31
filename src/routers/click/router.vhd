@@ -67,9 +67,10 @@ use work.delays.all;
 
 entity router is
   generic (
-    in_phase  : std_logic := '1';
-    hpu_phase : std_logic := '1';
-    out_phase : std_logic := '0');
+    --						   local port            all other ports
+    in_phase  : std_logic_vector(ARITY - 1 downto 0) := "1" & (ARITY - 2 downto 0 => '1');
+    hpu_phase : std_logic_vector(ARITY - 1 downto 0) := "1" & (ARITY - 2 downto 0 => '0');
+    out_phase : std_logic_vector(ARITY - 1 downto 0) := "1" & (ARITY - 2 downto 0 => '1'));
   port (
     preset	  : in	std_logic;
     -- Input ports
@@ -204,7 +205,7 @@ begin  -- architecture click_router
     in_s : entity work.click_stage
       generic map (
 	GENERATE_REQUEST_DELAY => 1,
-	init_phase	       => in_phase,
+	init_phase	       => in_phase(i),
 --	init_phase_left	       => out_phase,
 --	init_phase_right       => hpu_phase,
 	init_data	       => (others => '0'),
@@ -243,7 +244,7 @@ begin  -- architecture click_router
       
       generic map (
 	GENERATE_REQUEST_DELAY => 1,
-	init_phase	       => hpu_phase,
+	init_phase	       => hpu_phase(i),
 --	init_phase_left	       => in_phase,
 --	init_phase_right       => out_phase,
 	init_data	       => (others => '0'),
@@ -297,7 +298,7 @@ begin  -- architecture click_router
     out_s : entity work.click_stage
       generic map (
 	GENERATE_REQUEST_DELAY => 1,
-	init_phase	       => out_phase,  
+	init_phase	       => out_phase(i),  
 --	init_phase_left	       => hpu_phase,
 --	init_phase_right       => in_phase,
 	init_data	       => (others => '0'),

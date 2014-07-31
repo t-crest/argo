@@ -7,11 +7,12 @@ use work.noc_defs.all;
 
 entity fifo is
   generic (
-    N                          : integer;
-    init_phase                 : std_logic_vector :="00";
-    GENERATE_REQUEST_DELAY     : integer := 1;
-    GENERATE_ACKNOWLEDGE_DELAY : integer := 0;
-    init_data : phit_t := (others => '0')
+    N			       : integer	  := 2;
+    init_phase		       : std_logic_vector := "00";
+    reset_gate_click	       : std_logic_vector := "11";
+    GENERATE_REQUEST_DELAY     : integer	  := 1;
+    GENERATE_ACKNOWLEDGE_DELAY : integer	  := 0;
+    init_data		       : phit_t		  := (others => '0')
     );
   port (
     preset    : in  std_logic;
@@ -37,27 +38,28 @@ begin
   fifo_stages : for i in N-1 downto 0 generate
     click_stage_1 : entity work.click_stage
       generic map (
-        GENERATE_REQUEST_DELAY     => GENERATE_REQUEST_DELAY,
-        GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY,
-        init_phase                 => init_phase(i mod init_phase'length + init_phase'low),
-        init_data                  => init_data,
-        left_N                     => 1,
-        right_N                    => 1)
+	GENERATE_REQUEST_DELAY	   => GENERATE_REQUEST_DELAY,
+	GENERATE_ACKNOWLEDGE_DELAY => GENERATE_ACKNOWLEDGE_DELAY,
+	init_phase		   => init_phase(i mod init_phase'length + init_phase'low),
+	reset_gate_click	   => (reset_gate_click(i) = '1'),
+	init_data		   => init_data,
+	left_N			   => 1,
+	right_N			   => 1)
       port map (
-        reset        => preset,
-        left_data    => stage_link_f(i).data,
-        right_data   => stage_link_f(i+1).data,
-        left_req(0)  => stage_link_f(i).req,
-        right_req    => stage_link_f(i+1).req,
-        left_ack     => stage_link_b(i).ack,
-        right_ack(0) => stage_link_b(i+1).ack,
-        click_out    => open);
+	reset	     => preset,
+	left_data    => stage_link_f(i).data,
+	right_data   => stage_link_f(i+1).data,
+	left_req(0)  => stage_link_f(i).req,
+	right_req    => stage_link_f(i+1).req,
+	left_ack     => stage_link_b(i).ack,
+	right_ack(0) => stage_link_b(i+1).ack,
+	click_out    => open);
   end generate fifo_stages;
 
 
   stage_link_f(0) <= left_in;
-  left_out        <= stage_link_b(0);
-  right_out       <= stage_link_f(N);
+  left_out	  <= stage_link_b(0);
+  right_out	  <= stage_link_f(N);
   stage_link_b(N) <= right_in;
   
 end rtl;

@@ -49,9 +49,8 @@ entity click_stage is
     GENERATE_ACKNOWLEDGE_DELAY : integer   := 0;
     -- initial state to implement
     init_phase		       : std_logic := '0';
-    -- neighbor init phases
-    init_phase_left	       : std_logic := 'X';
-    init_phase_right	       : std_logic := 'X';
+    -- reset gate the click
+    reset_gate_click	       : boolean   := true;
     -- initial data
     init_data		       : phit_t	   := (others => 'X');	-- Forced unknown
     -- no. of left inputs
@@ -77,8 +76,7 @@ architecture behav of click_stage is
   component click is
     generic (
       init_phase       : std_logic;
-      init_phase_left  : std_logic;
-      init_phase_right : std_logic;
+      reset_gate_click : boolean;
       ACK_N	       : integer;
       REQ_N	       : integer);
     port (
@@ -107,8 +105,7 @@ begin  -- architecture behav
   controller : entity work.click
     generic map (
       init_phase       => init_phase,
-      init_phase_left  => init_phase_left,
-      init_phase_right => init_phase_right,
+      reset_gate_click => reset_gate_click,
       ACK_N	       => right_N,
       REQ_N	       => left_N)
     port map (

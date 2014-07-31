@@ -28,8 +28,8 @@ entity click is
   generic (
     -- reset value for the state register
     init_phase : std_logic := '1';
-    init_phase_left: std_logic := 'X';
-    init_phase_right: std_logic := 'X';
+    -- reset gate the click
+    reset_gate_click: boolean := true;
     -- number of acknowledge inputs
     ACK_N       : integer   := 1;
     -- number of request inputs
@@ -72,15 +72,14 @@ begin  -- architecture behav
   end process comb;
 
   -- in case reset click gating is needed
-  --click_reset_gated: if resolve_neighbor_phases(init_phase_left, init_phase, init_phase_right) generate
-    click_int <= click_pre_gating;
-      --(click_pre_gating and not reset);
-  --end generate click_reset_gated;
-  -- otherwise just pass through
-  --click_reset_not_gated: if not resolve_neighbor_phases(init_phase_left, init_phase, init_phase_right) generate
-    --click_int <= click_pre_gating;
-  --end generate click_reset_not_gated;
+  reset_gate: if reset_gate_click generate
+    click_int <= (click_pre_gating and not reset);
+  end generate reset_gate;
   
+  not_reset_gate: if not reset_gate_click generate
+    click_int <= click_pre_gating;
+  end generate not_reset_gate;
+    
 
   -- assign outputs
   ack_i <= transport req after delay;

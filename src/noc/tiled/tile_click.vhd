@@ -240,6 +240,7 @@ begin  -- fake_tile
     generic map (
       N				 => 1,	-- 1
       init_phase		 => "1",
+      reset_gate_click		 => "0",
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
       GENERATE_ACKNOWLEDGE_DELAY => 1	--1
       )
@@ -255,6 +256,7 @@ begin  -- fake_tile
     generic map (
       N				 => 2,	-- 2
       init_phase		 => "10",
+      reset_gate_click		 => "00",
       GENERATE_REQUEST_DELAY	 => 1,	-- 1
       GENERATE_ACKNOWLEDGE_DELAY => 1	--1
       )

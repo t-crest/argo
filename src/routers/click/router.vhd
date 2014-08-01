@@ -67,10 +67,11 @@ use work.delays.all;
 
 entity router is
   generic (
-    --						   local port		 all other ports
-    in_phase  : std_logic_vector(ARITY - 1 downto 0) := "1" & (ARITY - 2 downto 0 => '1');
-    hpu_phase : std_logic_vector(ARITY - 1 downto 0) := "1" & (ARITY - 2 downto 0 => '0');
-    out_phase : std_logic_vector(ARITY - 1 downto 0) := "1" & (ARITY - 2 downto 0 => '1'));
+    --					                   network           local
+    --					                    ports            port
+    in_phase  : std_logic_vector(0 to ARITY - 1) := (0 to ARITY - 2 => '1') & "1"; 
+    hpu_phase : std_logic_vector(0 to ARITY - 1) := (0 to ARITY - 2 => '0') & "1";
+    out_phase : std_logic_vector(0 to ARITY - 1) := (0 to ARITY - 2 => '1') & "1");
   port (
     preset	  : in	std_logic;
     -- Input ports

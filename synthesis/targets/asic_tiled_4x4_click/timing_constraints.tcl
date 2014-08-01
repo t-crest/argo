@@ -68,14 +68,17 @@ foreach controller [get_object_name [get_cells -hierarchical controller]] {
     # constraint the reset to first release on the flops and afterwards on 
     # the click feedback loop
     set reset_logic [get_cells -of_objects [get_net $controller/reset] -filter "is_hierarchical==false && is_sequential==false"]
-    set_min_delay -from $controller/reset -to [get_pins -of_objects $reset_logic -filter pin_direction==out] 0.1 \
-	-comment "ensure that the reset on the logic is held until it is leavered at the flop"
-    set_max_delay -from $controller/reset -to $controller/req_reg/preset 0 \
-	-comment "ensure that the reset on the logic is held until it is leavered at the flop"
-
+    if {[llength [get_object_name $reset_logic]] > 0} {
+	set_min_delay -from $controller/reset -to [get_pins -of_objects $reset_logic -filter pin_direction==out] 0.1 \
+	    -comment "ensure that the reset on the logic is held until it is leavered at the flop"
+	set_max_delay -from $controller/reset -to $controller/req_reg/preset 0 \
+	    -comment "ensure that the reset on the logic is held until it is leavered at the flop"
+	set_disable_timing [get_pins -of_objects $reset_logic -filter pin_direction==out] 
+    }
     set reg_clock_in [get_pins $controller/req_reg/clocked_on]
-    set_disable_timing [get_pins -of_objects $reset_logic -filter pin_direction==out] 
-
+    set click [get_cells -of_objects [get_net -of_objects [get_pin $controller/req_reg/clocked_on]] -filter "is_hierarchical==false && is_sequential==false"]
+    set_min_delay -from $click -to $reg_clock_in 0.1 \
+    -comment "ensure a minimum pulse width for the click"
     set_disable_timing [get_pins $controller/req_o] 
     # -comment "disable timing to next stage"
 }

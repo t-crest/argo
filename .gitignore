@@ -4,3 +4,4 @@ transcript
 work/
 sched.xml
 .prj
+*.dbg

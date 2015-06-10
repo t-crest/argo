@@ -1,3 +1,14 @@
+#10/06/16 [16:15]
+- OCP IO ported. Passes custom test bench.
+- Still in phase HijackNA
+- Still todo:
+	1. Proper todo list.
+	2. Clean all dependencies on custom packages
+	3. Move CCI into NA
+
+#09/06/15 [16:45]
+Initila time plan done
+
 #09/06/15 [16:15]
 - Multicore platform (4 core) + toolchain running
 - Bootstrap process proposal:

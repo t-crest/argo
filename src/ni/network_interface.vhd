@@ -66,7 +66,7 @@ architecture struct of network_interface is
 --------------------------------------------------------------------------------
 component TDM_controller is
 	generic (
-		MAX_MC : natural
+		MAX_MODE_CHANGE : natural
 	);
 	port (
 		clk		: in std_logic;
@@ -107,6 +107,7 @@ component dma_table is
 		config : in mem_if_master;
 		sel 	: in std_logic;
 		config_slv : out mem_if_slave;
+		config_dword : in std_logic;
 		dma_num : in dma_idx_t;
 		pkt_data_addr : out dma_read_addr_t;
 		pkt_header_field : out header_field_t
@@ -184,8 +185,10 @@ component config_bus is
 		reset 	: in std_logic;
 		ocp_config_m : in ocp_io_m;
 		ocp_config_s : out ocp_io_s;
+		supervisor : in std_logic;
 		config_unit : in mem_if_master;
 		config : out mem_if_master;
+		config_dword : out std_logic;
 		TDM_ctrl : in mem_if_slave;
 		TDM_ctrl_sel : out std_logic;
 		sched_tbl : in mem_if_slave;
@@ -212,6 +215,7 @@ component spm_bus is
 end component;
 
 signal config : mem_if_master;
+signal config_dword : std_logic;
 signal TDM_ctrl, sched_tbl, DMA_tbl : mem_if_slave;
 signal TDM_ctrl_sel, sched_tbl_sel, DMA_tbl_sel : std_logic;
 signal stbl_idx : stbl_idx_t;
@@ -240,7 +244,7 @@ begin
 -- TX pipeline instantiations
 	TDMctrl : TDM_controller
 	generic map (
-		MAX_MC => 1
+		MAX_MODE_CHANGE => 1
 	)
 	port map(
 		clk => clk,
@@ -280,6 +284,7 @@ begin
 		config => config,
 		sel => DMA_tbl_sel,
 		config_slv => DMA_tbl,
+		config_dword => config_dword,
 		dma_num => dma_num,
 		pkt_data_addr => pkt_data_addr,
 		pkt_header_field => pkt_header_field
@@ -374,8 +379,10 @@ begin
 			reset => reset,
 			ocp_config_m => ocp_config_m,
 			ocp_config_s => ocp_config_s,
+			supervisor => supervisor,
 			config_unit => config_unit_master,
 			config => config,
+			config_dword => config_dword,
 			TDM_ctrl => TDM_ctrl,
 			TDM_ctrl_sel => TDM_ctrl_sel,
 			sched_tbl => sched_tbl,

@@ -53,11 +53,26 @@ package argo_types is
     -- Configuration packet constants and types
     constant CPKT_BANK_WIDTH : integer := 3;
     constant CPKT_ADDR_WIDTH : integer := HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - CPKT_BANK_WIDTH;
+    subtype config_bank_t is unsigned(CPKT_BANK_WIDTH-1 downto 0);
+    subtype config_addr_t is unsigned(CPKT_ADDR_WIDTH-1 downto 0);
+
+    constant DMA_BANK       : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "000";
+    constant SCHED_BANK     : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "001";
+    constant TDM_BANK       : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "010";
+    constant CLOCK_BANK     : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "011";
+    constant IRQ_BANK       : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "100";
+    constant IRQ_DATA_BANK  : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "101";
+    constant ERROR_BANK     : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "110";
+    constant PERF_BANK      : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "111";
+
     -- Interrupt packet constants and types
     constant IPKT_SRC_ID_WIDTH : integer := 6; -- TODO: calculate from maximum number of cores in the platform
     constant IPKT_IRQ_ID_WIDTH : integer := HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - IPKT_SRC_ID_WIDTH;
     subtype src_id_t is unsigned(IPKT_SRC_ID_WIDTH-1 downto 0);
     subtype irq_id_t is unsigned(IPKT_IRQ_ID_WIDTH-1 downto 0);
+
+    -- TDM controller constants and types
+    constant TDM_S_CNT_WIDTH : integer := 10;
 
     -- Schedule table constants and types
     constant STBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
@@ -80,7 +95,7 @@ package argo_types is
 
     -- Memory interface records
     type mem_if_master is record
-        addr : unsigned(HEADER_FIELD_WIDTH-1 downto 0);
+        addr : unsigned(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto 0);
         en : std_logic;
         wr : std_logic;
         wdata : std_logic_vector((2*WORD_WIDTH)-1 downto 0);

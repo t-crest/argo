@@ -56,6 +56,7 @@ port (
 -- DMA Configuration Port - OCP
 	proc_in		: in ocp_io_m;
 	proc_out	: out ocp_io_s;
+ 
 
 -- SPM Data Port - OCP?
 	spm_in		: in spm_slave;
@@ -162,7 +163,16 @@ signal mop              : std_logic;
 signal eop              : std_logic;
 signal clear_buf        : std_logic;
 
+---Temporary for sync test---
 
+signal 	proc_in_synchronized	: ocp_io_m; --proc_in	: in ocp_io_m;
+signal	proc_out_synchronized	: ocp_io_s;	--	proc_out	: out ocp_io_s;
+ 
+
+
+
+
+-------------------------------
 -------------------------------- Components declarations --------------------------------
 component counter
 	generic (
@@ -211,6 +221,18 @@ end component bram;
 begin
 
 -- component instantiations ------------------------------------------------------------
+
+---Temporary for sync test---
+
+--Map input signal onto synchronized signal until cci has been implemented
+proc_in_synchronized <= proc_in;
+proc_out <= proc_out_synchronized;
+
+
+
+-----------------------------
+
+
 -- Slot Counter
 	slt_cnt : counter
 		generic map ( WIDTH=>ADDR_SLT_WIDTH )
@@ -229,7 +251,7 @@ begin
 		);
 
 
-	slt_en <= '1' when config=ST_ACCESS and ocp_cmd_write='1'--proc_in.MCmd(0)='1'
+	slt_en <= '1' when config=ST_ACCESS and ocp_cmd_write='1'--proc_in_synchronized.MCmd(0)='1'
 			else '0';
 -- Slot Table
 	slt_table : bram
@@ -237,8 +259,8 @@ begin
 		port map (clk => na_clk,
                         reset => na_reset,
 			rd_addr => slt_index,
-			wr_addr => proc_in.MAddr(ADDR_SLT_WIDTH+1 downto 2),
-			wr_data => proc_in.MData(DMA_IND_WIDTH+2 downto 0),
+			wr_addr => proc_in_synchronized.MAddr(ADDR_SLT_WIDTH+1 downto 2),
+			wr_data => proc_in_synchronized.MData(DMA_IND_WIDTH+2 downto 0),
 			wr_ena => slt_en,
 			rd_data => slt_entry
 		);
@@ -250,20 +272,20 @@ begin
 -- configuration interface --------------------------------------------------------------------
 -- decode inputs -------------------------------------
 -- address map decoding
-	ocp_decode : process (proc_in.MAddr) begin
+	ocp_decode : process (proc_in_synchronized.MAddr) begin
 		config <= CNULL;
 		-- ST configuration
-		if proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=ST_MASK then
+		if proc_in_synchronized.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=ST_MASK then
 			config <= ST_ACCESS;
 		-- DMA 3/route configuration
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_P_MASK then
+		elsif proc_in_synchronized.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_P_MASK then
 			config <= DMA_R_ACCESS;
 		-- DMA 1,2 configuration
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
-				and proc_in.MAddr(2)='0' then
+		elsif proc_in_synchronized.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
+				and proc_in_synchronized.MAddr(2)='0' then
 			config <= DMA_H_ACCESS;
-		elsif proc_in.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
-				and proc_in.MAddr(2)='1' then
+		elsif proc_in_synchronized.MAddr(OCP_ADDR_WIDTH-1 downto OCP_ADDR_WIDTH-ADDR_MASK_W)=DMA_MASK
+				and proc_in_synchronized.MAddr(2)='1' then
 			config <= DMA_L_ACCESS;
 		-- not configuration
 		else
@@ -272,17 +294,17 @@ begin
 	end process;
 
 -- ocp command decoding
-	ocp_cmd_valid <= '0' when proc_in.MCmd="000" else '1';
-	ocp_cmd_read <= '1' when proc_in.MCmd="010" else '0';
-	ocp_cmd_write <= '1' when proc_in.MCmd="001" else '0';
+	ocp_cmd_valid <= '0' when proc_in_synchronized.MCmd="000" else '1';
+	ocp_cmd_read <= '1' when proc_in_synchronized.MCmd="010" else '0';
+	ocp_cmd_write <= '1' when proc_in_synchronized.MCmd="001" else '0';
 
 -- build outputs -------------------------------------
 
 	ocp_read_control <= '1' when (state_cnt="00" or state_cnt="01") and (config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS)) and read_cmd_reg='1' else '0';
 	ocp_write_control <= '1' when (((state_cnt="00" or state_cnt="01") and (config=DMA_R_ACCESS or config=DMA_H_ACCESS or config=DMA_L_ACCESS or config=ST_ACCESS)) or (state_cnt="10" and config=ST_ACCESS)) and ocp_cmd_write='1' else '0';
-	resp_ld <= '1' when (ocp_read_control='1' or ocp_write_control='1' or proc_in.MRespAccept='1') else '0';
+	resp_ld <= '1' when (ocp_read_control='1' or ocp_write_control='1' or proc_in_synchronized.MRespAccept='1') else '0';
 
-	response_ld_control <= '1' when ((ocp_read_control='1' or ocp_write_control='1') and proc_in.MRespAccept='0') else '0';
+	response_ld_control <= '1' when ((ocp_read_control='1' or ocp_write_control='1') and proc_in_synchronized.MRespAccept='0') else '0';
 
 	response_ld : process (response_ld_control, dma_rdata) begin
 		ocp_dataresp <= (others=>'0');
@@ -301,21 +323,21 @@ begin
 
 	-- ocp data response
 	ocp_response_output : process ( ocp_read_control, ocp_write_control, dma_rdata, ocp_dataresp_reg, ocp_response_reg ) begin
-		proc_out.SData <= (others=>'0');
-		proc_out.SResp <= OCP_RESP_NULL;
+		proc_out_synchronized.SData <= (others=>'0');
+		proc_out_synchronized.SResp <= OCP_RESP_NULL;
 
 		case ocp_read_control is
 		when '1' =>
-			proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
+			proc_out_synchronized.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
 		when others =>
-			proc_out.SData <= ocp_dataresp_reg;
+			proc_out_synchronized.SData <= ocp_dataresp_reg;
 		end case;
 
 		case( ocp_read_control or ocp_write_control ) is
 		when '1' =>
-			proc_out.SResp <= OCP_RESP_DVA;
+			proc_out_synchronized.SResp <= OCP_RESP_DVA;
 		when others =>
-			proc_out.SResp <= ocp_response_reg;
+			proc_out_synchronized.SResp <= ocp_response_reg;
 		end case ;
 
 
@@ -325,23 +347,23 @@ begin
 
 --	-- ocp data response
 --	ocp_response : process ( state_cnt, config_reg, dma_rdata) begin
---		proc_out.SData <= (others=>'0');
---		proc_out.SResp <= '0';
+--		proc_out_synchronized.SData <= (others=>'0');
+--		proc_out_synchronized.SResp <= '0';
 --
 --		case state_cnt is
 --		when "00" =>
 --			if config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS) then
---				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
---				proc_out.SResp <= '1';
+--				proc_out_synchronized.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
+--				proc_out_synchronized.SResp <= '1';
 --			end if;
 --		when "01" =>
 --			if config_reg=('1' & DMA_R_ACCESS) or config_reg=('1' & DMA_H_ACCESS) or config_reg=('1' & DMA_L_ACCESS) then
---				proc_out.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
---				proc_out.SResp <= '1';
+--				proc_out_synchronized.SData <= dma_rdata(OCP_DATA_WIDTH-1 downto 0);
+--				proc_out_synchronized.SResp <= '1';
 --			end if;
 --		when others =>
---			proc_out.SData <= (others=>'0');
---			proc_out.SResp <= '0';
+--			proc_out_synchronized.SData <= (others=>'0');
+--			proc_out_synchronized.SResp <= '0';
 --		end case;
 --	end process;
 
@@ -470,74 +492,74 @@ begin
         end process;
 
 -- DMA signals --------------------------------------------------------------------------------
-	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in, dma_ctrl, dma_index, dma_entry_updated, dma_rdata, vld_slt) begin
+	dma_state_control : process (state_cnt, config, ocp_cmd_write, ocp_cmd_read, proc_in_synchronized, dma_ctrl, dma_index, dma_entry_updated, dma_rdata, vld_slt) begin
 		dma_waddr <= (others => '0');
 		dma_wdata <= (others => '0');
 		dma_wen <= (others => '0');
 		dma_raddr <= (others => '0');
 		dma_ren <= (others => '0');
-		proc_out.SCmdAccept <= '0';
+		proc_out_synchronized.SCmdAccept <= '0';
 		--dma_entry <= (others => '0');
 		case state_cnt is
 		when "00" =>
 			-- configuration write
-			--if proc_in.MCmd(0)='1' then
+			--if proc_in_synchronized.MCmd(0)='1' then
 			if ocp_cmd_write='1' then
 				if config=DMA_R_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2);
-					dma_wdata <= x"00000000" & proc_in.MData;
+					dma_waddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+1 downto 2);
+					dma_wdata <= x"00000000" & proc_in_synchronized.MData;
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
-					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";
+					dma_waddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+2 downto 3);
+					dma_wdata <= proc_in_synchronized.MData(BANK0_W-1 downto 0) & x"000000000000";
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=DMA_L_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
-					dma_wdata <= x"0000" & proc_in.MData & x"0000";
+					dma_waddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+2 downto 3);
+					dma_wdata <= x"0000" & proc_in_synchronized.MData & x"0000";
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=ST_ACCESS then
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				end if;
 
 			--configuration read or no read
 			elsif ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2);
+					dma_raddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+1 downto 2);
 					dma_ren <= config(2 downto 0);
 					--build ocp slave signals
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS or config=DMA_L_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
+					dma_raddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_ren <= config(2 downto 0);
 					--build ocp read data
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				end if;
 			end if;
 			--dma_entry <= (others=>'0');
 
 		when "01" =>
---			if proc_in.MCmd(0)='1' then
+--			if proc_in_synchronized.MCmd(0)='1' then
 			if ocp_cmd_write='1' then
 				if config=DMA_R_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2);
-					dma_wdata <= x"00000000" & proc_in.MData;
+					dma_waddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+1 downto 2);
+					dma_wdata <= x"00000000" & proc_in_synchronized.MData;
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
-					dma_wdata <= proc_in.MData(BANK0_W-1 downto 0) & x"000000000000";
+					dma_waddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+2 downto 3);
+					dma_wdata <= proc_in_synchronized.MData(BANK0_W-1 downto 0) & x"000000000000";
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=DMA_L_ACCESS then
-					dma_waddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
-					dma_wdata <= x"0000" & proc_in.MData & x"0000";
+					dma_waddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+2 downto 3);
+					dma_wdata <= x"0000" & proc_in_synchronized.MData & x"0000";
 					dma_wen <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=ST_ACCESS then
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				end if;
 			end if;
 			dma_raddr <= dma_index;
@@ -554,19 +576,19 @@ begin
 			end if;
 
 			-- configuration read
-			--if proc_in.MCmd(0)='0' then
+			--if proc_in_synchronized.MCmd(0)='0' then
 			if ocp_cmd_read='1' then
 				if config=DMA_R_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+1 downto 2);
+					dma_raddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+1 downto 2);
 					dma_ren <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				elsif config=DMA_H_ACCESS or config=DMA_L_ACCESS then
-					dma_raddr <= proc_in.MAddr(DMA_IND_WIDTH+2 downto 3);
+					dma_raddr <= proc_in_synchronized.MAddr(DMA_IND_WIDTH+2 downto 3);
 					dma_ren <= config(2 downto 0);
-					proc_out.SCmdAccept <= '1';
+					proc_out_synchronized.SCmdAccept <= '1';
 				end if;
 			elsif ocp_cmd_write='1' and config=ST_ACCESS then
-				proc_out.SCmdAccept <= '1';
+				proc_out_synchronized.SCmdAccept <= '1';
 			end if;
 
 
@@ -582,7 +604,7 @@ begin
 			dma_wen <= (others => '0');
 			dma_raddr <= (others => '0');
 			dma_ren <= (others => '0');
-			proc_out.SCmdAccept <= '0';
+			proc_out_synchronized.SCmdAccept <= '0';
                  	--dma_entry <= (others => '0');
 
 		end case;
@@ -713,7 +735,7 @@ begin
             phitOut0 <= phit_togo after PDELAY;
             phitOut1 <= phitOut0 after PDELAY;
             phitOut2 <= phitOut1 after PDELAY;
-			config_reg <= proc_in.MCmd(1) & config after PDELAY;
+			config_reg <= proc_in_synchronized.MCmd(1) & config after PDELAY;
 			read_cmd_reg <= ocp_cmd_read after PDELAY;
 
 			if resp_ld='1' then

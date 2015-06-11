@@ -46,14 +46,14 @@ ARCHITECTURE Buffered OF OCPIOCCI_A IS
 
 BEGIN
 
-	asyncOut.req <= req_next;
+	asyncOut.req <= req;--req_next;
 	asyncOut.data	<= masterData WHEN writeEnable = '0' ELSE syncIn;
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,req)
     BEGIN
         state_next		<= state;
         syncOut			<= OCPIOSlaveIdle_c;
 		writeEnable		<= '0';
-		req_next <= req;
+		req_next 		<= req;
 
 		CASE state IS
             WHEN IDLE_state =>

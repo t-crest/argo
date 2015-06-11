@@ -23,14 +23,14 @@ PACKAGE OCPIOCCI_types IS
         rst_A	: std_logic;
         clk_B	: std_logic;
         rst_B	: std_logic;
-        ocpio_A	: ocp_io_s;
-        ocpio_B	: ocp_io_m;
+        ocpio_B	: ocp_io_s;
+        ocpio_A	: ocp_io_m;
     END RECORD;
 
     TYPE OCPIOCCIOut_r IS
     RECORD
-        ocpio_A	: ocp_io_m;
-        ocpio_B	: ocp_io_s;
+        ocpio_A	: ocp_io_s;
+        ocpio_B	: ocp_io_m;
     END RECORD;
 
     TYPE asyncIO_A_r IS

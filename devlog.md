@@ -1,4 +1,12 @@
-#10/06/16 [16:15]
+#11/06/15 [17:06]
+- OCP IO inserted into dma.
+- Buffered design changed to a moore type design. Glitches occurred when changing MCmd.
+- Still todo:
+	1. Code still needs a bit of clean up. There are dead code remnants, and some naming conventions that needs updating.
+	2. Needs to be tested using some different (hacked) clocks, ie. 180 phase shift.
+
+
+#10/06/15 [16:15]
 - OCP IO ported. Passes custom test bench.
 - Still in phase HijackNA
 - Still todo:

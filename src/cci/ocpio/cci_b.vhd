@@ -49,7 +49,7 @@ BEGIN
 
 		asyncOut.data <= slaveData WHEN loadEnable = '0' ELSE syncIn;
 
-	asyncOut.ack	<= ack_next;
+	asyncOut.ack	<= ack;--ack_next;
     FSM : PROCESS(state, syncIn, asyncIn, req, req_prev,ack)
     BEGIN
         state_next	<= state;

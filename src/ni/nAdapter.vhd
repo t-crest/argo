@@ -43,7 +43,8 @@ use work.config.all;
 use work.noc_defs.all;
 use work.noc_interface.all;
 use work.ocp.all;
-
+use work.OCPInterface.all;
+use work.OCPIOCCI_types.all;
 
 entity nAdapter is
 
@@ -170,6 +171,10 @@ signal	proc_out_synchronized	: ocp_io_s;	--	proc_out	: out ocp_io_s;
  
 
 
+    SIGNAL CCIIn    : OCPIOCCIIn_r;
+    SIGNAL CCIOut   : OCPIOCCIOut_r;
+
+
 
 
 -------------------------------
@@ -217,16 +222,37 @@ component bram is
     wr_ena  : in  std_logic;
     rd_data : out std_logic_vector(DATA-1 downto 0));
 end component bram;
+---Temp for cci test---
+    COMPONENT OCPIOCCI IS
+        PORT(   input   : IN    OCPIOCCIIn_r;
+                output  : OUT   OCPIOCCIOut_r
+        );
+    END COMPONENT OCPIOCCI;
+---
+
+
 
 begin
 
 -- component instantiations ------------------------------------------------------------
 
 ---Temporary for sync test---
+ 	CCI    :    OCPIOCCI
+    PORT MAP(CCIIn,CCIOut);
+    CCIIn.clk_A		<= na_clk;
+    CCIIn.clk_B		<= na_clk;
+    CCIIn.rst_A		<= na_reset;
+    CCIIn.rst_B		<= na_reset;
+    CCIIn.ocpio_B	<= proc_out_synchronized;
+    CCIIn.ocpio_A	<= proc_in;
+	
+	
+
+
 
 --Map input signal onto synchronized signal until cci has been implemented
-proc_in_synchronized <= proc_in;
-proc_out <= proc_out_synchronized;
+proc_in_synchronized <= CCIOut.ocpio_B;
+proc_out <= CCIOut.ocpio_A;
 
 
 

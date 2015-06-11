@@ -98,6 +98,9 @@ mem: noc_defs
 ni_common: noc_defs mem
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/counter.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/dma.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/cci/common/OCPInterface.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/cci/common/OCPIOClockCrossingInterface_types.vhd
+	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/cci/ocpio/cci.vhd
 
 ni_sync: ni_common mem
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/nAdapter.vhd

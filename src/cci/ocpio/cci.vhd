@@ -58,16 +58,16 @@ BEGIN
 	CCI_A  : entity work.OCPIOCCI_A(Buffered)
 	PORT MAP(input.clk_A,
 	input.rst_A,
-	input.ocpio_B,
-	output.ocpio_B,
+	input.ocpio_A,
+	output.ocpio_A,
 	async_A,
 	asyncSlave);
 
-	CCISlave   : entity work.OCPIOCCI_B(Buffered)
+	CCI_B   : entity work.OCPIOCCI_B(Buffered)
 	PORT MAP(input.clk_B,
 	input.rst_B,
-	input.ocpio_a,
-	output.OCPIO_A,
+	input.ocpio_B,
+	output.OCPIO_B,
 	asyncSlave,
 	async_A);
 

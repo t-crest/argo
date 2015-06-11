@@ -5,3 +5,6 @@ work/
 sched.xml
 .prj
 *.dbg
+
+#VIM
+*.swp

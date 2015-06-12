@@ -1,3 +1,9 @@
+#12/06/15 [16:20]
+- CCI tested synchronously on board in hijacked version of NA: success
+- todo:
+	1. Still need to clean up code
+	2. Prep for merge back into cdc branch
+
 #11/06/15 [17:06]
 - OCP IO inserted into dma.
 - Buffered design changed to a moore type design. Glitches occurred when changing MCmd.

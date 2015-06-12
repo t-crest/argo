@@ -1,4 +1,18 @@
-#10/06/16 [16:15]
+#12/06/15 [16:20]
+- CCI tested synchronously on board in hijacked version of NA: success
+- todo:
+	1. Still need to clean up code
+	2. Prep for merge back into cdc branch
+
+#11/06/15 [17:06]
+- OCP IO inserted into dma.
+- Buffered design changed to a moore type design. Glitches occurred when changing MCmd.
+- Still todo:
+	1. Code still needs a bit of clean up. There are dead code remnants, and some naming conventions that needs updating.
+	2. Needs to be tested using some different (hacked) clocks, ie. 180 phase shift.
+
+
+#10/06/15 [16:15]
 - OCP IO ported. Passes custom test bench.
 - Still in phase HijackNA
 - Still todo:

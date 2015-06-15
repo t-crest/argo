@@ -91,7 +91,8 @@ architecture rtl of TDM_controller is
   signal STBL_MIN_reg, STBL_MAXP1_reg, STBL_IDX_reg : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal STBL_MIN_next, STBL_MAXP1_next, STBL_IDX_next : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal TIME2NEXT_reg : unsigned(STBL_T2N_WIDTH-1 downto 0);
-  signal CLOCK_CNT_reg, CLOCK_CNT_next : unsigned((2*WORD_WIDTH)-1 downto 0);
+  signal CLOCK_CNT_HI_reg : unsigned((WORD_WIDTH)-1 downto 0);
+  signal CLOCK_CNT_LO_reg : unsigned((WORD_WIDTH)-1 downto 0);
 
   signal MASTER_RUN_REG, MASTER_RUN_NEXT : std_logic_vector(0 downto 0);
 
@@ -106,7 +107,7 @@ architecture rtl of TDM_controller is
   signal MODE_CHANGES_reg, MODE_CHANGES_next : mc_array;
 
   signal read_reg, read_next : unsigned(WORD_WIDTH-1 downto 0);
-  signal clock_delay_reg, clock_delay_next : unsigned(WORD_WIDTH-1 downto 0);
+  signal clock_delay_reg : unsigned(WORD_WIDTH-1 downto 0);
 
   signal period_boundary, latch_hi_clock, mode_change_idx_changed : std_logic;
   signal STBL_IDX_RESET, STBL_IDX_EN_sig, T2N_ld_reg : std_logic;
@@ -132,13 +133,15 @@ begin
 -- Configuration access to the registers
 --------------------------------------------------------------------------------
 
-  config_slv.rdata <= (others=> '0');
-  config_slv.rdata(WORD_WIDTH-1 downto 0) <= std_logic_vector(read_reg);
+  
   process (all)
   begin
-    clock_delay_next <= CLOCK_CNT_reg((2*WORD_WIDTH)-1 downto WORD_WIDTH);
+    config_slv.rdata <= (others=> '0');
+    config_slv.rdata(WORD_WIDTH-1 downto 0) <= std_logic_vector(read_reg);
     read_next <= (others=> '0');
     latch_hi_clock <= '0';
+    MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
+    MODE_CHANGES_next <= MODE_CHANGES_reg;
     mode_change_idx_changed <= '0';
     MASTER_RUN_NEXT <= MASTER_RUN_REG;
     if config.en = '1' then
@@ -152,10 +155,10 @@ begin
           when to_unsigned(2,CPKT_ADDR_WIDTH-2) =>
             read_next <= clock_delay_reg;
           when to_unsigned(3,CPKT_ADDR_WIDTH-2) =>
-            read_next <= CLOCK_CNT_reg(WORD_WIDTH-1 downto 0);
+            read_next <= CLOCK_CNT_LO_reg(WORD_WIDTH-1 downto 0);
             latch_hi_clock <= '1';
           when to_unsigned(4,CPKT_ADDR_WIDTH-2) =>
-            read_next <= MODE_CHANGE_IDX_reg;
+            read_next(log2up(MAX_MODE_CHANGE)-1 downto 0) <= unsigned(MODE_CHANGE_IDX_reg);
           when to_unsigned(128,CPKT_ADDR_WIDTH-2) =>
             read_next(0 downto 0) <= unsigned(MASTER_RUN_REG);
           when others =>
@@ -235,8 +238,7 @@ begin
       if reset = '1' then
         read_reg <= (others => '0');  
         MODE_CHANGES_reg <= (others => (others => (others =>'0')));
-        CLOCK_CNT_reg <= (others => '0');
-        MODE_CHANGE_IDX_reg <= (others => '0');
+        --CLOCK_CNT_reg <= (others => '0');
         MASTER_RUN_REG <= (others => '0');
         -- T2N_ld_reg should be initialized such that the TIME2NEXT register
         -- will load a zero. Zero will give the longest time to STBL_IDX_EN\
@@ -246,14 +248,32 @@ begin
         read_reg <= read_next;
         MODE_CHANGES_reg <= MODE_CHANGES_next;
         T2N_ld_reg <= STBL_IDX_EN_sig;
-        MODE_CHANGE_IDX_reg <= MODE_CHANGE_IDX_next;
         MASTER_RUN_REG <= MASTER_RUN_NEXT;
         -- Clock counter
-        CLOCK_CNT_reg <= CLOCK_CNT_reg + 1;
+        --CLOCK_CNT_reg <= CLOCK_CNT_reg + 1;
       end if ;
     end if ;
     
   end process ; -- regs
+
+
+  -- TDM slot counter, incremented every clock cycle and
+  -- reset on a period boundary
+  CLOCK_CNT_reg_PROC : process( clk )
+  begin
+    if rising_edge(clk) then
+      if reset = '1' then
+        CLOCK_CNT_LO_reg <= (others => '0');
+        CLOCK_CNT_HI_reg <= (others => '0');
+      else
+        CLOCK_CNT_LO_reg <= CLOCK_CNT_LO_reg + 1;
+        if CLOCK_CNT_LO_reg = x"FFFFFFFF" then
+          CLOCK_CNT_HI_reg <= CLOCK_CNT_HI_reg + 1;  
+        end if ;
+      end if ;
+    end if ;
+    
+  end process ; -- CLOCK_CNT_reg_PROC
 
   -- TDM slot counter, incremented every clock cycle and
   -- reset on a period boundary
@@ -330,7 +350,7 @@ begin
         clock_delay_reg <= (others => '0');
       else
         if latch_hi_clock = '1' then
-          clock_delay_reg <= clock_delay_next;  
+          clock_delay_reg <= CLOCK_CNT_HI_reg;  
         end if ;
       end if ;
     end if ;

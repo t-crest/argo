@@ -120,6 +120,7 @@ component dma_table is
 		config_dword : in std_logic;
 		dma_num : in dma_idx_t;
 		dma_en : in std_logic;
+		pkt_en : out std_logic;
 		pkt_data_addr : out dma_read_addr_t;
 		pkt_header_field : out header_field_t
 

@@ -103,6 +103,7 @@ package argo_types is
 
     type mem_if_slave is record
         rdata : std_logic_vector((2*WORD_WIDTH)-1 downto 0);
+        error : std_logic;
     end record;
 
     -- Link constants

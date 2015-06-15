@@ -44,10 +44,14 @@ use work.argo_types.all;
 use work.ocp.all;
 
 entity network_interface is
-
+generic (
+	MASTER : boolean := false
+	);
 port (
 	clk 		: in std_logic;
 	reset 		: in std_logic;
+	run 		: in std_logic;
+	master_run	: out std_logic;
 	supervisor	: in std_logic;
 	ocp_config_m : in ocp_io_m;
 	ocp_config_s : out ocp_io_s;
@@ -66,15 +70,19 @@ architecture struct of network_interface is
 --------------------------------------------------------------------------------
 component TDM_controller is
 	generic (
-		MAX_MODE_CHANGE : natural
+		MAX_MODE_CHANGE : natural;
+		MASTER : boolean := false
 	);
 	port (
 		clk		: in std_logic;
 		reset 	: in std_logic;
+		run		: in std_logic;
+		master_run : out std_logic;
 		config  : in mem_if_master;
 		sel 	: in std_logic;
 		config_slv : out mem_if_slave;
 		stbl_idx	: out stbl_idx_t;
+		stbl_idx_en : out std_logic;
 		t2n 	: in stbl_t2n_t
 	);
 end component;
@@ -90,10 +98,12 @@ component schedule_table is
 		sel 	: in std_logic;
 		config_slv : out mem_if_slave;
 		stbl_idx	: in stbl_idx_t;
+		stbl_idx_en : in std_logic;
 		route : out route_t;
 		pkt_len : out stbl_pkt_len_t;
 		t2n : out stbl_t2n_t;
-		dma_num : out dma_idx_t
+		dma_num : out dma_idx_t;
+		dma_en : out std_logic
 		);
 end component;
 
@@ -109,6 +119,7 @@ component dma_table is
 		config_slv : out mem_if_slave;
 		config_dword : in std_logic;
 		dma_num : in dma_idx_t;
+		dma_en : in std_logic;
 		pkt_data_addr : out dma_read_addr_t;
 		pkt_header_field : out header_field_t
 
@@ -219,11 +230,13 @@ signal config_dword : std_logic;
 signal TDM_ctrl, sched_tbl, DMA_tbl : mem_if_slave;
 signal TDM_ctrl_sel, sched_tbl_sel, DMA_tbl_sel : std_logic;
 signal stbl_idx : stbl_idx_t;
+signal stbl_idx_en : std_logic;
 signal t2n : stbl_t2n_t;
 
 signal route : route_t;
 signal pkt_len : stbl_pkt_len_t;
 signal dma_num : dma_idx_t;
+signal dma_en : std_logic;
 
 signal pkt_data_addr : dma_read_addr_t;
 signal pkt_header_field : header_field_t;
@@ -244,15 +257,19 @@ begin
 -- TX pipeline instantiations
 	TDMctrl : TDM_controller
 	generic map (
-		MAX_MODE_CHANGE => 1
+		MAX_MODE_CHANGE => 1,
+		MASTER => MASTER
 	)
 	port map(
 		clk => clk,
 		reset => reset,
+		run => run,
+		master_run => master_run,
 		config => config,
 		sel => TDM_ctrl_sel,
 		config_slv => TDM_ctrl,
 		stbl_idx => stbl_idx,
+		stbl_idx_en => stbl_idx_en,
 		t2n => t2n
 	);
 
@@ -268,10 +285,12 @@ begin
 		sel => sched_tbl_sel,
 		config_slv => sched_tbl,
 		stbl_idx => stbl_idx,
+		stbl_idx_en => stbl_idx_en,
 		route => route,
 		pkt_len => pkt_len,
 		t2n => t2n,
-		dma_num => dma_num
+		dma_num => dma_num,
+		dma_en => dma_en
 	);
 
 	dmatbl : dma_table
@@ -286,6 +305,7 @@ begin
 		config_slv => DMA_tbl,
 		config_dword => config_dword,
 		dma_num => dma_num,
+		dma_en => dma_en,
 		pkt_data_addr => pkt_data_addr,
 		pkt_header_field => pkt_header_field
 	);

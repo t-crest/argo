@@ -41,11 +41,8 @@ use ieee.numeric_std.all;
 use work.argo_types.all;
 
 entity schedule_table is
-  generic (
-    ENTRIES : natural
-  );
   port (
-    -- Clock reset and run
+    -- Clock reset
     clk   : in std_logic;
     reset   : in std_logic;
     -- Read write interface from config bus
@@ -94,7 +91,7 @@ stbl : entity work.tdp_ram
   port map(
     a_clk   => clk,
     a_wr    => config.wr and sel,
-    a_addr  => config.addr(STBL_IDX_WIDTH+1 downto 2),
+    a_addr  => config.addr(STBL_IDX_WIDTH-1 downto 0),
     a_din   => config.wdata,
     a_dout  => config_slv.rdata,
     b_clk   => clk,
@@ -106,10 +103,10 @@ stbl : entity work.tdp_ram
 
 
 -- Address out of bound
-error_handler_proc : process( config.addr )
+error_handler_proc : process( config.addr, sel )
 begin
   config_slv_error_next <= '0';
-  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto STBL_IDX_WIDTH+2) /= 0  then
+  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto STBL_IDX_WIDTH) /= 0  then
     config_slv_error_next <= '1';
   end if ;
 end process ; -- error_handler_proc

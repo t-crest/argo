@@ -43,75 +43,34 @@ use work.argo_types.all;
 use work.ocp.all;
 
 entity spm_bus is
-	port (
-		clk		: in std_logic;
-		reset 	: in std_logic;
-		spm_slv : in mem_if_slave;
-		spm : out mem_if_master;
+	port(
+		clk        : in  std_logic;
+		reset      : in  std_logic;
+		spm_slv    : in  mem_if_slave;
+		spm        : out mem_if_master;
 		tx_spm_slv : out mem_if_slave;
-		tx_spm : in mem_if_master;
-		rx_spm : in mem_if_master
+		tx_spm     : in  mem_if_master;
+		rx_spm     : in  mem_if_master
 	);
 end spm_bus;
 
 architecture rtl of spm_bus is
---	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt_en, new_data_pkt, lst_pkt: std_logic;
---	signal addr : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
---	type state_type is (IDLE, W_LOW, W_HIGH, CONTINUE, DONE);
---	signal state, next_state : state_type;
-
-signal rx_spm_buff : mem_if_master;
+	signal rx_spm_buff : mem_if_master;
 
 begin
+	tx_spm_slv <= spm_slv;
 
-tx_spm_slv <= spm_slv;
-
---
---	--The signal new_data_pkt is high when a new data packet is incoming in the pkt_in port
---	new_data_pkt <= pkt_in(LINK_WIDTH - 1) and pkt_in(LINK_WIDTH - 2) and (not pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1));
---
---	--General assignments
---	irq_fifo_data_valid <= lst_pkt and pkt_in(LINK_WIDTH - 3);
---
---	spm.addr      <= addr;
---	irq_fifo_data <= addr;
-
-	--Control Moore FSM		
-	process(tx_spm )
+	process(tx_spm, rx_spm, rx_spm.en, rx_spm_buff, rx_spm_buff.en)
 	begin
-		spm <= tx_spm;
-		case state is
-			when IDLE =>
-				addr_load <= '1';
-				if (new_data_pkt = '1') then
-					next_state <= W_HIGH;
-				end if;
-			when W_HIGH =>
-				wdata_high_en <= '1';
-				next_state    <= W_LOW;
-			when W_LOW =>
-				wdata_low_en <= '1';
-				if (pkt_in(LINK_WIDTH - 3) = '0') then
-					next_state <= CONTINUE;
-				else
-					next_state <= DONE;
-				end if;
-			when CONTINUE =>
-				addr_cnt_en   <= '1';
-				wdata_high_en <= '1';
-				spm.en        <= '1';
-				spm.wr        <= '1';
-				next_state    <= W_LOW;
-			when DONE =>
-				addr_load     <= '1';
-				spm.en        <= '1';
-				spm.wr        <= '1';
-				if (new_data_pkt = '1') then
-					next_state <= W_HIGH;
-				else
-					next_state <= IDLE;
-				end if;
-		end case;
+		if (tx_spm.en = '1') then
+			spm <= tx_spm;
+		elsif (rx_spm_buff.en = '1') then
+			spm <= rx_spm_buff;
+		elsif (rx_spm.en = '1') then
+			spm <= rx_spm;
+		else
+			spm <= tx_spm;
+		end if;
 	end process;
 
 	-- Register with enable
@@ -119,11 +78,12 @@ tx_spm_slv <= spm_slv;
 	begin
 		if rising_edge(clk) then
 			if (reset = '1') then
+				rx_spm_buff.en <= '0';
 			else
-				rx_spm_buff <= rx_spm;
-				rx_addr <= rx_spm.addr;
-				rx_wr <= rx_spm.wr;
-				rx_en <= rx_spm.en and tx_spm.en;
+				rx_spm_buff.en    <= rx_spm.en and tx_spm.en;
+				rx_spm_buff.wr    <= rx_spm.wr;
+				rx_spm_buff.addr  <= rx_spm.addr;
+				rx_spm_buff.wdata <= rx_spm.wdata;
 			end if;
 		end if;
 	end process;

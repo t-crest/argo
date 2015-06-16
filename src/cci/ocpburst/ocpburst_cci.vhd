@@ -16,7 +16,7 @@ USE ieee.std_logic_1164.all;
 LIBRARY work;
 USE work.OCPInterface.all;
 USE work.OCPBurstCCI_types.all;
-
+USE work.ocp.all;
 ENTITY OCPBurstCCI IS
 	PORT(   input   : IN	OCPBurstCCIIn_r;
 			output  : OUT   OCPBurstCCIOut_r
@@ -25,28 +25,28 @@ END ENTITY OCPBurstCCI;
 
 ARCHITECTURE rtl OF OCPBurstCCI IS
 
-	COMPONENT OCPBurstCCIMaster IS
+	COMPONENT OCPBurstCCI_A IS
 	    PORT(   clk         : IN    std_logic;
 	            rst         : IN    std_logic;
-	            syncIn      : IN    OCPBurstMaster_r;
-	            syncOut     : OUT   OCPBurstSlave_r;
-	            asyncOut    : OUT   AsyncBurstMaster_r;
-	            asyncIn     : IN    AsyncBurstSlave_r
+	            syncIn      : IN    ocp_burst_m;
+	            syncOut     : OUT   ocp_burst_s;
+	            asyncOut    : OUT   AsyncBurst_A_r;
+	            asyncIn     : IN    AsyncBurst_B_r
 	    );
-	END COMPONENT OCPBurstCCIMaster;
+	END COMPONENT OCPBurstCCI_A;
 
-	COMPONENT OCPBurstCCISlave IS
+	COMPONENT OCPBurstCCI_B IS
 	    PORT(   clk         : IN    std_logic;
 	            rst         : IN    std_logic;
-	            syncIn      : IN    OCPBurstSlave_r;
-	            syncOut     : OUT   OCPBurstMaster_r;
-	            asyncOut    : OUT   AsyncBurstSlave_r;
-	            asyncIn     : IN    AsyncBurstMaster_r
-	    );
-	END COMPONENT OCPBurstCCISlave;
+	   		 	syncIn      : IN    ocp_burst_s;
+	            syncOut     : OUT   ocp_burst_m;
+	            asyncOut    : OUT   AsyncBurst_B_r;
+	            asyncIn     : IN    AsyncBurst_A_r
+	     );
+	END COMPONENT OCPBurstCCI_B;
 
-	SIGNAL asyncMaster  : AsyncBurstMaster_r;
-	SIGNAL asyncSlave   : AsyncBurstSlave_r;
+	SIGNAL async_A : AsyncBurst_A_r;
+	SIGNAL async_B : AsyncBurst_B_r;
 
 BEGIN
 
@@ -54,20 +54,20 @@ BEGIN
 --	output.OCPBSlave	<= input.OCPBMaster;
 
 
-	Master  : OCPBurstCCIMaster
-	PORT MAP(input.clkMaster,
-	input.rstMaster,
-	input.OCPBSlave,
-	output.OCPBSlave,
-	asyncMaster,
-	asyncSlave);
+	CCI_A  : OCPBurstCCI_A
+	PORT MAP(input.clk_A,
+	input.rst_A,
+	input.OCPB_master,
+	output.OCPB_B,
+	async_A,
+	async_B);
 
-	Slave   : OCPBurstCCISlave
-	PORT MAP(input.clkSlave,
-	input.rstSlave,
-	input.OCPBMaster,
-	output.OCPBMaster,
-	asyncSlave,
-	asyncMaster);
+	CCI_B   : OCPBurstCCI_B
+	PORT MAP(input.clk_B,
+	input.rst_B,
+	input.OCPB_slave,
+	output.OCPB_A,
+	async_B,
+	async_A);
 
 END ARCHITECTURE rtl;

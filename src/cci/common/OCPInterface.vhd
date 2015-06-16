@@ -22,27 +22,27 @@ PACKAGE OCPInterface IS
 	TYPE OCPCmd_t	 IS (Idle, ReadBlock, WriteBlock, ReadWord, WriteWord);
 	TYPE OCPResp_t	IS (Idle, VDA1, VDA2, VDA3, VDA4);
 
-	TYPE OCPBurstMaster_r IS
-	RECORD
-		cmd		 	:	OCPCmd_t;
-		addr		:	std_logic_vector(addrw-1 downto 0);
-		data		:	std_logic_vector(dataw-1 downto 0);
-		dataByteEn  :	std_logic_vector(3 downto 0);
-		dataValid   :	std_logic;
-	END RECORD;
+--	TYPE OCPBurstMaster_r IS
+--	RECORD
+--		cmd		 	:	OCPCmd_t;
+--		addr		:	std_logic_vector(addrw-1 downto 0);
+--		data		:	std_logic_vector(dataw-1 downto 0);
+--		dataByteEn  :	std_logic_vector(3 downto 0);
+--		dataValid   :	std_logic;
+--	END RECORD;
 	CONSTANT OCPBurstMasterIdle_c : ocp_burst_m := (OCP_CMD_IDLE,
 												   (OTHERS => '0'),
 												   (OTHERS => '0'),
 												   (OTHERS => '0'),
 												   '0');
 
-	TYPE OCPBurstSlave_r IS
-	RECORD
-		resp		:	OCPResp_t;
-		data		:	std_logic_vector(dataw-1 downto 0);
-		cmdAccept   :	std_logic;
-		dataAccept  :	std_logic;
-	END RECORD;
+--	TYPE OCPBurstSlave_r IS
+--	RECORD
+--		resp		:	OCPResp_t;
+--		data		:	std_logic_vector(dataw-1 downto 0);
+--		cmdAccept   :	std_logic;
+--		dataAccept  :	std_logic;
+--	END RECORD;
 	CONSTANT OCPBurstSlaveIdle_c : ocp_burst_s := (OCP_RESP_NULL,
 												  (OTHERS => '0'),
 												  '0',

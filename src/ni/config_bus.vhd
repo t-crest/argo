@@ -125,7 +125,7 @@ begin
 		-- OCP transaction is completed in the next clock cycle
 		next_ocp_resp <= OCP_RESP_DVA;
 		ocp_config_s.SCmdAccept <= '1';
-		config.wdata(WORD_WIDTH-1 downto 0) <= ocp_config_m.MData;
+		config.wdata(WORD_WIDTH-1 downto 0) <= unsigned(ocp_config_m.MData);
 
 		-- Only 32-bit are written through the OCP interface
 		config_dword <= '0';
@@ -185,17 +185,17 @@ begin
 
 	case( prev_bank_id ) is	
 		when DMA_BANK =>
-			ocp_config_s.SData <= DMA_tbl.rdata(WORD_WIDTH-1 downto 0);
+			ocp_config_s.SData <= std_logic_vector(DMA_tbl.rdata(WORD_WIDTH-1 downto 0));
 		when SCHED_BANK =>
-			ocp_config_s.SData <= sched_tbl.rdata(WORD_WIDTH-1 downto 0);
+			ocp_config_s.SData <= std_logic_vector(sched_tbl.rdata(WORD_WIDTH-1 downto 0));
 		when TDM_BANK =>
-			ocp_config_s.SData <= TDM_ctrl.rdata(WORD_WIDTH-1 downto 0);
+			ocp_config_s.SData <= std_logic_vector(TDM_ctrl.rdata(WORD_WIDTH-1 downto 0));
 		when CLOCK_BANK =>
-			ocp_config_s.SData <= TDM_ctrl.rdata(WORD_WIDTH-1 downto 0);
+			ocp_config_s.SData <= std_logic_vector(TDM_ctrl.rdata(WORD_WIDTH-1 downto 0));
 		when IRQ_BANK =>
-			ocp_config_s.SData <= irq_unit_fifo.rdata(WORD_WIDTH-1 downto 0);
+			ocp_config_s.SData <= std_logic_vector(irq_unit_fifo.rdata(WORD_WIDTH-1 downto 0));
 		when IRQ_DATA_BANK =>
-			ocp_config_s.SData <= irq_data_fifo.rdata(WORD_WIDTH-1 downto 0);
+			ocp_config_s.SData <= std_logic_vector(irq_data_fifo.rdata(WORD_WIDTH-1 downto 0));
 		when ERROR_BANK =>
 			ocp_config_s.SData <= (others => '0');
 		when PERF_BANK =>

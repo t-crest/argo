@@ -86,15 +86,15 @@ architecture rtl of TDM_controller is
 --------------------------------------------------------------------------------
   
   signal TDM_S_CNT_reg, TDM_S_CNT_next : unsigned(TDM_S_CNT_WIDTH-1 downto 0);
-  signal TDM_P_CNT_reg, TDM_P_CNT_next : unsigned(WORD_WIDTH-1 downto 0);
+  signal TDM_P_CNT_reg, TDM_P_CNT_next : word_t;
     
   signal STBL_MIN_reg, STBL_MAXP1_reg, STBL_IDX_reg : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal STBL_MIN_next, STBL_MAXP1_next, STBL_IDX_next : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal TIME2NEXT_reg : unsigned(STBL_T2N_WIDTH-1 downto 0);
-  signal CLOCK_CNT_HI_reg : unsigned((WORD_WIDTH)-1 downto 0);
-  signal CLOCK_CNT_LO_reg : unsigned((WORD_WIDTH)-1 downto 0);
+  signal CLOCK_CNT_HI_reg : word_t;
+  signal CLOCK_CNT_LO_reg : word_t;
 
-  signal MASTER_RUN_REG, MASTER_RUN_NEXT : std_logic_vector(0 downto 0);
+  signal MASTER_RUN_REG, MASTER_RUN_NEXT : unsigned(0 downto 0);
 
   signal P_CNT_reg, P_CNT_next : unsigned(1 downto 0);
 
@@ -106,8 +106,8 @@ architecture rtl of TDM_controller is
   type mc_array is array (log2up(MAX_MODE_CHANGE)-1 downto 0) of mode_change_t;
   signal MODE_CHANGES_reg, MODE_CHANGES_next : mc_array;
 
-  signal read_reg, read_next : unsigned(WORD_WIDTH-1 downto 0);
-  signal clock_delay_reg : unsigned(WORD_WIDTH-1 downto 0);
+  signal read_reg, read_next : word_t;
+  signal clock_delay_reg : word_t;
 
   signal period_boundary, latch_hi_clock, mode_change_idx_changed : std_logic;
   signal STBL_IDX_RESET, STBL_IDX_EN_sig, T2N_ld_reg : std_logic;
@@ -137,7 +137,7 @@ begin
   process (all)
   begin
     config_slv.rdata <= (others=> '0');
-    config_slv.rdata(WORD_WIDTH-1 downto 0) <= std_logic_vector(read_reg);
+    config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
     read_next <= (others=> '0');
     latch_hi_clock <= '0';
     MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;

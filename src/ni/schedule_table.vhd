@@ -78,7 +78,7 @@ architecture rtl of schedule_table is
 constant STBL_DATA_WIDTH : natural := HEADER_ROUTE_WIDTH + DMATBL_IDX_WIDTH +
                                       STBL_PKT_LEN_WIDTH + STBL_T2N_WIDTH;
 
-signal stbl_data : std_logic_vector(STBL_DATA_WIDTH-1 downto 0);
+signal stbl_data : unsigned(STBL_DATA_WIDTH-1 downto 0);
 
 signal stbl_idx_en_reg : std_logic;
 

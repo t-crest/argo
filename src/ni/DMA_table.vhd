@@ -63,51 +63,81 @@ end dma_table;
 
 architecture rtl of dma_table is
 --------------------------------------------------------------------------------
--- Fields of schedule table (All fields are writable only)
+-- Fields of DMA table (All fields are writable only)
 -- Bits     | Name
 --------------------------------------------------------------------------------
--- 16       | Route
---  8       | DMA#
---  3       | Pkt len
---  5       | Time to next
+--  1       | Active
+-- 14       | Count
+-- 14       | Read ptr
+-- 16       | Header field
+--------------------------------------------------------------------------------
+-- The active bit is implemented in registers such that the active bit can be
+-- reset in case of an interrupt slot (1 clock cycle)
 --------------------------------------------------------------------------------
 
-constant DMATBL_DATA_WIDTH : natural := HEADER_FIELD_WIDTH + DMATBL_COUNT_WIDTH +
-                                                          DMATBL_READ_PTR_WIDTH;
+constant DMATBL_DATA_WIDTH : natural := DMATBL_COUNT_WIDTH + HEADER_FIELD_WIDTH
+                                                        + DMATBL_READ_PTR_WIDTH;
 
-signal dmatbl_data : std_logic_vector(DMATBL_DATA_WIDTH-1 downto 0);
+signal dmatbl_data : unsigned(DMATBL_COUNT_WIDTH + HEADER_FIELD_WIDTH +
+                                              DMATBL_READ_PTR_WIDTH-1 downto 0);
 
 signal dma_en_reg : std_logic;
 
-signal wdata : std_logic_vector((2*WORD_WIDTH)-1 downto 0);
+signal config_wdata : dword_t;
+signal config_rdata : dword_t;
+
+type active_t is array (2 ** DMATBL_IDX_WIDTH downto 0) of std_logic;
+
+signal active_reg, active_next : active_t;
 
 begin
+
 
 dword_config : process( config_dword, config.wdata, config.addr )
 begin
-  wdata <= config.wdata;
+  config_wdata <= config.wdata;
   if config_dword = '0' and config.addr(2) = '1' then
-    wdata((2*WORD_WIDTH)-1 downto WORD_WIDTH) <= config.wdata(WORD_WIDTH-1 downto 0);
+    config_wdata((2*WORD_WIDTH)-1 downto WORD_WIDTH) <= config.wdata(
+                                                        WORD_WIDTH-1 downto 0);
   end if ;
 end process ; -- dword_config
 
 
-dmatbl : entity work.tdp_ram
+dmatbl1 : entity work.tdp_ram
   generic map(
-    DATA  =>  DMATBL_DATA_WIDTH,
+    DATA  =>  DMATBL_COUNT_WIDTH,
+    ADDR  =>  DMATBL_IDX_WIDTH
+  )
+  port map(
+    a_clk   => clk,
+    a_wr    => config.wr and sel,
+    a_addr  => config.addr(DMATBL_IDX_WIDTH+2 downto 3),
+    a_din   => config_wdata,
+    a_dout  => config_rdata,
+    b_clk   => clk,
+    b_wr    => '0',
+    b_addr  => dma_num,
+    b_din   => (others => '0'),
+    b_dout  => dmatbl_data(DMATBL_DATA_WIDTH-1 downto
+                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
+  );
+
+  dmatbl2 : entity work.tdp_ram
+  generic map(
+    DATA  =>  HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH,
     ADDR  =>  DMATBL_IDX_WIDTH
   )
   port map(
     a_clk   => clk,
     a_wr    => config.wr and sel,
     a_addr  => config.addr,
-    a_din   => wdata,
-    a_dout  => config_slv.rdata,
+    a_din   => config_wdata,
+    a_dout  => config_rdata,
     b_clk   => clk,
     b_wr    => '0',
     b_addr  => dma_num,
     b_din   => (others => '0'),
-    b_dout  => dmatbl_data
+    b_dout  => dmatbl_data(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
   );
 
 config_slv.error <= '0';
@@ -123,6 +153,17 @@ begin
     end if;
   end if ;
 end process ; -- dma_en_reg
+
+active_reg_proc : process( clk )
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      active_reg <= (others => '0');
+    else
+      active_reg <= active_next;
+    end if ;
+  end if ;
+end process ; -- active_reg_proc
 
 pkt_en <= dma_en_reg;
 

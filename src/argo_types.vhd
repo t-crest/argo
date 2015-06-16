@@ -42,12 +42,14 @@ use work.ocp.all;
 
 package argo_types is
     constant WORD_WIDTH : integer := 32;
+    subtype word_t is unsigned(WORD_WIDTH-1 downto 0);
+    subtype dword_t is unsigned((2*WORD_WIDTH)-1 downto 0);
     -- General header packet constants and types
     constant HEADER_ROUTE_WIDTH : integer := 16;
     constant HEADER_FIELD_WIDTH : integer := 16;
     constant HEADER_CTRL_WIDTH : integer := 2;
-    subtype route_t is std_logic_vector(HEADER_ROUTE_WIDTH-1 downto 0);
-    subtype header_field_t is std_logic_vector(HEADER_FIELD_WIDTH-1 downto 0);
+    subtype route_t is unsigned(HEADER_ROUTE_WIDTH-1 downto 0);
+    subtype header_field_t is unsigned(HEADER_FIELD_WIDTH-1 downto 0);
     -- Data packet constants and types
     constant DPKT_WRITE_ADDR_WIDTH : integer := HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH;
     -- Configuration packet constants and types
@@ -98,11 +100,11 @@ package argo_types is
         addr : unsigned(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto 0);
         en : std_logic;
         wr : std_logic;
-        wdata : std_logic_vector((2*WORD_WIDTH)-1 downto 0);
+        wdata : dword_t;
     end record;
 
     type mem_if_slave is record
-        rdata : std_logic_vector((2*WORD_WIDTH)-1 downto 0);
+        rdata : word_t;
         error : std_logic;
     end record;
 

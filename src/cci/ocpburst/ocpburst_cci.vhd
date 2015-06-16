@@ -58,7 +58,7 @@ BEGIN
 	PORT MAP(input.clk_A,
 	input.rst_A,
 	input.OCPB_master,
-	output.OCPB_B,
+	output.OCPB_A,
 	async_A,
 	async_B);
 
@@ -66,7 +66,7 @@ BEGIN
 	PORT MAP(input.clk_B,
 	input.rst_B,
 	input.OCPB_slave,
-	output.OCPB_A,
+	output.OCPB_B,
 	async_B,
 	async_A);
 

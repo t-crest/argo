@@ -52,7 +52,7 @@ BEGIN
     asyncOut.data	<= slaveData(to_integer(unsigned(asyncIn.DataInSel)));
     asyncOut.ack	<= ack;
 
-    FSM : PROCESS(state, syncIn, asyncIn, req, req_prev)
+    FSM : PROCESS(state, syncIn, asyncIn, req, req_prev,wordCnt)
     BEGIN
         state_next 	<= state;
         loadEnable 	<= '0';
@@ -127,7 +127,7 @@ BEGIN
     END PROCESS FSM;
 
 
-    DataRegMux    : PROCESS(loadEnable, syncIn)
+    DataRegMux    : PROCESS(loadEnable, syncIn, wordCnt)
     BEGIN
         slaveData_next <= slaveData;
         IF loadEnable = '1' THEN

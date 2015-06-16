@@ -30,8 +30,8 @@ PACKAGE OCPBurstCCI_types IS
 
     TYPE OCPBurstCCIOut_r IS
     RECORD
-        OCPB_A	: ocp_burst_m;
-        OCPB_B	: ocp_burst_s;
+        OCPB_A	: ocp_burst_s;
+        OCPB_B	: ocp_burst_m;
     END RECORD;
 
     TYPE AsyncBurst_A_r IS

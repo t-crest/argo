@@ -43,264 +43,231 @@ use work.argo_types.all;
 use work.ocp.all;
 
 entity irq_fifo is
-	port (
-		clk		: in std_logic;
-		reset 	: in std_logic;
-		config : in mem_if_master;
-		sel 	: in std_logic;
-		config_slv : out mem_if_slave;
-		
-		irq_irq_sig : out std_logic;
-		irq_irq_fifo_data : in std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH-1 downto 0);
-		irq_irq_fifo_data_valid : in std_logic;
-		
-		irq_data_sig : out std_logic;
-		irq_data_fifo_data : in std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH-1 downto 0);
-		irq_data_fifo_data_valid : in std_logic
-		
+	port(
+		clk                      : in  std_logic;
+		reset                    : in  std_logic;
+		config                   : in  mem_if_master;
+		sel                      : in  std_logic;
+		config_slv               : out mem_if_slave;
+
+		irq_irq_sig              : out std_logic;
+		irq_irq_fifo_data        : in  unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
+		irq_irq_fifo_data_valid  : in  std_logic;
+
+		irq_data_sig             : out std_logic;
+		irq_data_fifo_data       : in  unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
+		irq_data_fifo_data_valid : in  std_logic
 	);
 end irq_fifo;
 
 architecture rtl of irq_fifo is
---------------------------------------------------------------------------------
--- Addresses of readable/writable registers
--- Address  | Access  | Name
---------------------------------------------------------------------------------
--- 0x00     | R       | Top of the IRQ FIFO queue
--- 0x04     | R       | Top of the Data FIFO queue
--- 0x08     | W       | Size of the IRQ FIFO queue
--- 0x0C     | W       | Size of the Data FIFO queue
---------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------
+	-- Addresses of readable/writable registers
+	-- Address  | Access  | Name
+	--------------------------------------------------------------------------------
+	-- 0x00     | R       | Top of the IRQ FIFO queue
+	-- 0x04     | R       | Top of the Data FIFO queue
+	-- 0x08     | W       | Size of the IRQ FIFO queue
+	-- 0x0C     | W       | Size of the Data FIFO queue
+	--------------------------------------------------------------------------------
 
-component tdp_ram is
+	component tdp_ram is
+		generic(
+			DATA : integer := 32;
+			ADDR : integer := 14
+		);
 
-generic (
-    DATA    : integer := 32;
-    ADDR    : integer := 14
-);
+		port(
+			-- Port A
+			a_clk  : in  std_logic;
+			a_wr   : in  std_logic;
+			a_addr : in  unsigned(ADDR - 1 downto 0);
+			a_din  : in  unsigned(DATA - 1 downto 0);
+			a_dout : out unsigned(DATA - 1 downto 0);
 
-port (
--- Port A
-    a_clk   : in  std_logic;
-    a_wr    : in  std_logic;
-    a_addr  : in  unsigned(ADDR-1 downto 0);
-    a_din   : in  std_logic_vector(DATA-1 downto 0);
-    a_dout  : out std_logic_vector(DATA-1 downto 0);
+			-- Port B
+			b_clk  : in  std_logic;
+			b_wr   : in  std_logic;
+			b_addr : in  unsigned(ADDR - 1 downto 0);
+			b_din  : in  unsigned(DATA - 1 downto 0);
+			b_dout : out unsigned(DATA - 1 downto 0)
+		);
+	end component;
 
--- Port B
-    b_clk   : in  std_logic;
-    b_wr    : in  std_logic;
-    b_addr  : in  unsigned(ADDR-1 downto 0);
-    b_din   : in  std_logic_vector(DATA-1 downto 0);
-    b_dout  : out std_logic_vector(DATA-1 downto 0)
-);
-end component;
-
-signal irq_not_empty, data_not_empty, data_fifo_min_en, irq_fifo_max_en, next_error : std_logic;
-
-
---	signal addr : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
---	type state_type is (IDLE, W_LOW, W_HIGH, CONTINUE, DONE);
---	signal state, next_state : state_type;
-
+	signal irq_not_empty, data_not_empty, data_fifo_min_en, irq_fifo_max_en, next_error, irq_read, data_read : std_logic;
 	signal data_w_ptr, data_r_ptr, irq_w_ptr, irq_r_ptr, w_ptr, r_ptr, irq_fifo_max, data_fifo_min : unsigned(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
-	signal w_data : std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH -1 downto 0);
-
+	signal w_data : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
 
 begin
---General assignments
-irq_irq_sig  <= irq_not_empty;
-irq_data_sig <= data_not_empty; 
+	--General assignments
+	irq_irq_sig  <= irq_not_empty;
+	irq_data_sig <= data_not_empty;
 
-config_slv.rdata((2*WORD_WIDTH) -1 downto HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH) <= (others  => '0');
+	config_slv.rdata((2 * WORD_WIDTH) - 1 downto HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH) <= (others => '0');
 
---Detectors for the state of the two FIFOs
-irq_not_empty <= '0' when irq_w_ptr = irq_r_ptr else '1';
-data_not_empty <= '0' when data_w_ptr = data_r_ptr else '1';
+	--Detectors for the state of the two FIFOs
+	irq_not_empty  <= '0' when irq_w_ptr = irq_r_ptr else '1';
+	data_not_empty <= '0' when data_w_ptr = data_r_ptr else '1';
 
---Multiplexer to write into the FIFO
-w_ptr <= irq_w_ptr when irq_data_fifo_data_valid = '1' else data_w_ptr;
-w_data <= irq_irq_fifo_data when irq_data_fifo_data_valid = '1' else irq_data_fifo_data;
+	--Multiplexer to write into the FIFO
+	w_ptr  <= irq_w_ptr when irq_data_fifo_data_valid = '1' else data_w_ptr;
+	w_data <= irq_irq_fifo_data when irq_data_fifo_data_valid = '1' else irq_data_fifo_data;
 
---Multiplexer to read into the FIFO
-r_ptr <= irq_r_ptr when (((sel and config.en and (not config.wr)) = '1') and (config.addr(CPKT_ADDR_WIDTH-1 downto 2)=to_unsigned(0,CPKT_ADDR_WIDTH-2))) else data_r_ptr;
-
-process(sel, config.en, config.wr, config.addr)
+	--Address decoding
+	process(sel, config.en, config.wr, config.addr, data_r_ptr, irq_r_ptr)
 	begin
-if (sel = '1' and config.en = '1') then
-      -- Read registers
-      if config.wr = '0' then
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 2) ) is
-          when to_unsigned(0,CPKT_ADDR_WIDTH-2) =>
-            --read_next(TDM_S_CNT_WIDTH-1 downto 0) <= TDM_S_CNT_reg;
-          when to_unsigned(1,CPKT_ADDR_WIDTH-2) =>
-            --read_next <= TDM_P_CNT_reg;
-           when others =>
-            next_error <= '1';
-        end case ;
-    else
-    	--Write registers
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 2) ) is
-          when to_unsigned(2,CPKT_ADDR_WIDTH-2) =>
-            irq_fifo_max_en <= '1';
-          when to_unsigned(3,CPKT_ADDR_WIDTH-2) =>
-            data_fifo_min_en <= '1';
-          when others =>
-            next_error <= '1';
-    end case;
-    end if;
+		irq_fifo_max_en  <= '0';
+		data_fifo_min_en <= '0';
+		next_error       <= '0';
+		r_ptr            <= data_r_ptr;
+		irq_read         <= '0';
+		data_read        <= '0';
+		if (sel = '1' and config.en = '1') then
+			-- Read registers
+			if config.wr = '0' then
+				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 2)) is
+					when to_unsigned(0, CPKT_ADDR_WIDTH - 2) =>
+						r_ptr    <= irq_r_ptr;
+						irq_read <= '1';
+					when to_unsigned(1, CPKT_ADDR_WIDTH - 2) =>
+						r_ptr     <= data_r_ptr;
+						data_read <= '1';
+					when others =>
+						next_error <= '1';
+				end case;
+			else
+				--Write registers
+				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 2)) is
+					when to_unsigned(2, CPKT_ADDR_WIDTH - 2) =>
+						irq_fifo_max_en <= '1';
+					when to_unsigned(3, CPKT_ADDR_WIDTH - 2) =>
+						data_fifo_min_en <= '1';
+					when others =>
+						next_error <= '1';
+				end case;
+			end if;
+		end if;
 
-end process;
+	end process;
 
+	tdpram : tdp_ram
+		generic map(
+			DATA => HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH,
+			ADDR => IRQ_FIFO_IDX_WIDTH
+		)
+		port map(
+			-- Port A (write only)
+			a_clk  => clk,
+			a_wr   => irq_irq_fifo_data_valid or irq_data_fifo_data_valid,
+			a_addr => w_ptr,
+			a_din  => w_data,
+			a_dout => open,
 
+			-- Port B (read only)
+			b_clk  => clk,
+			b_wr   => '0',
+			b_addr => r_ptr,
+			b_din  => (others => '0'),
+			b_dout => config_slv.rdata(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0)
+		);
 
+	--UP Counter with load and count enable for the address + 1
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if ((reset = '1') or (irq_fifo_max_en = '1')) then
+				irq_w_ptr <= (others => '0');
+			elsif (irq_irq_fifo_data_valid = '1') then
+				if (irq_w_ptr = irq_fifo_max) then
+					irq_w_ptr <= (others => '0');
+				else
+					irq_w_ptr <= irq_w_ptr + 1;
+				end if;
+			end if;
+		end if;
+	end process;
 
+	--DOWN Counter with load and count enable for the address + 1
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if ((reset = '1') or (data_fifo_min_en = '1')) then
+				data_w_ptr <= (others => '1');
+			elsif (irq_data_fifo_data_valid = '1') then
+				if (data_w_ptr = data_fifo_min) then
+					data_w_ptr <= (others => '1');
+				else
+					data_w_ptr <= data_w_ptr - 1;
+				end if;
+			end if;
+		end if;
+	end process;
 
+	--UP Counter with load and count enable for the address + 1
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if ((reset = '1') or (irq_fifo_max_en = '1')) then
+				irq_r_ptr <= (others => '0');
+			elsif ((irq_read = '1') and (irq_not_empty = '1')) then
+				if (irq_r_ptr = irq_fifo_max) then
+					irq_r_ptr <= (others => '0');
+				else
+					irq_r_ptr <= irq_r_ptr + 1;
+				end if;
+			end if;
+		end if;
+	end process;
 
-
-
-
-
-
-
-
-tdpram : tdp_ram
-generic map (
-    DATA => HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH,
-    ADDR => IRQ_FIFO_IDX_WIDTH
-)
-port map (
--- Port A (write only)
-    a_clk =>  clk,
-    a_wr => irq_irq_fifo_data_valid or irq_data_fifo_data_valid,
-    a_addr => w_ptr,
-    a_din => w_data,
-    a_dout => open,
-
--- Port B (read only)
-    b_clk =>  clk,
-    b_wr => '0',
-    b_addr => r_ptr,
-    b_din =>  (others => '0'),
-    b_dout => config_slv.rdata(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH -1 downto 0)
-);
-
-----UP Counter with load and count enable for the address + 1
---	process(clk)
---	begin
---		if rising_edge(clk) then
---			if (reset = '1') then
---				irq_w_ptr <= (others  => '0');
---			else
---				
---				if (addr_load = '1') then
---					irq_w_pointer <= unsigned(pkt_in(HEADER_ROUTE_WIDTH + HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto HEADER_ROUTE_WIDTH));
---				elsif (increment_condition_true) then
---					irq_w_ptr <= irq_w_ptr + 1;
---				end if;
---			end if;
---		end if;
---	end process;
+	--DOWN Counter with load and count enable for the address + 1
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if ((reset = '1') or (data_fifo_min_en = '1')) then
+				data_r_ptr <= (others => '1');
+			elsif ((data_read = '1') and (data_not_empty = '1')) then
+				if (data_r_ptr = data_fifo_min) then
+					data_r_ptr <= (others => '1');
+				else
+					data_r_ptr <= data_r_ptr - 1;
+				end if;
+			end if;
+		end if;
+	end process;
 
 	-- Register with enable	
 	process(clk)
 	begin
 		if rising_edge(clk) then
 			if (reset = '1') then
-				irq_fifo_max <= to_unsigned((2**(IRQ_FIFO_IDX_WIDTH-1))-1, IRQ_FIFO_IDX_WIDTH);
+				irq_fifo_max <= to_unsigned((2 ** (IRQ_FIFO_IDX_WIDTH - 1)) - 1, IRQ_FIFO_IDX_WIDTH);
 			elsif (irq_fifo_max_en = '1') then
-				irq_fifo_max <= unsigned(config.wdata(IRQ_FIFO_IDX_WIDTH-1 downto 0));
+				irq_fifo_max <= config.wdata(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
 			end if;
 		end if;
 	end process;
-	
+
 	-- Register with enable	
 	process(clk)
 	begin
 		if rising_edge(clk) then
 			if (reset = '1') then
-				data_fifo_min <= to_unsigned((2**(IRQ_FIFO_IDX_WIDTH-1)), IRQ_FIFO_IDX_WIDTH);
+				data_fifo_min <= to_unsigned((2 ** (IRQ_FIFO_IDX_WIDTH - 1)), IRQ_FIFO_IDX_WIDTH);
 			elsif (data_fifo_min_en = '1') then
-				data_fifo_min <= unsigned(config.wdata(IRQ_FIFO_IDX_WIDTH-1 downto 0));
+				data_fifo_min <= config.wdata(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
 			end if;
 		end if;
 	end process;
 
---	-- General pourpose registers
---	process(clk)
---	begin
---		if rising_edge(clk) then
---			if (reset = '1') then
---				state <= IDLE;
---			else
---				state <= next_state;
---			end if;
---		end if;
---	end process;
---
---	-- DFF with synchronous set and reset that holds the info of the last packet	
---	process(clk)
---	begin
---		if rising_edge(clk) then
---			if ((reset = '1') or (((not (new_data_pkt and pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2))) and pkt_in(LINK_WIDTH - 3)) = '1')) then
---				lst_pkt <= '0';         --reset
---			elsif ((new_data_pkt and pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2)) = '1') then
---				lst_pkt <= '1';         --set if it is an new data paket and if the last pkt bit is 1
---			end if;
---		end if;
---	end process;
-
---	--The signal new_data_pkt is high when a new data packet is incoming in the pkt_in port
---	new_data_pkt <= pkt_in(LINK_WIDTH - 1) and pkt_in(LINK_WIDTH - 2) and (not pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1));
---
---	--General assignments
---	irq_fifo_data_valid <= lst_pkt and pkt_in(LINK_WIDTH - 3);
---
---	spm.addr      <= addr;
---	irq_fifo_data <= std_logic_vector(addr);
---
---	--Control Moore FSM		
---	process(state, new_data_pkt, pkt_in(LINK_WIDTH - 3))
---	begin
---		next_state    <= state;
---		addr_load     <= '0';
---		wdata_low_en  <= '0';
---		wdata_high_en <= '0';
---		addr_cnt_en   <= '0';
---		spm.en        <= '0';
---		spm.wr        <= '0';
---		case state is
---			when IDLE =>
---				addr_load <= '1';
---				if (new_data_pkt = '1') then
---					next_state <= W_HIGH;
---				end if;
---			when W_HIGH =>
---				wdata_high_en <= '1';
---				next_state    <= W_LOW;
---			when W_LOW =>
---				wdata_low_en <= '1';
---				if (pkt_in(LINK_WIDTH - 3) = '0') then
---					next_state <= CONTINUE;
---				else
---					next_state <= DONE;
---				end if;
---			when CONTINUE =>
---				addr_cnt_en   <= '1';
---				wdata_high_en <= '1';
---				spm.en        <= '1';
---				spm.wr        <= '1';
---				next_state    <= W_LOW;
---			when DONE =>
---				addr_load     <= '1';
---				spm.en        <= '1';
---				spm.wr        <= '1';
---				if (new_data_pkt = '1') then
---					next_state <= W_HIGH;
---				else
---					next_state <= IDLE;
---				end if;
---		end case;
---	end process;
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if ((reset = '1')) then
+				config_slv.error <= '0';
+			else
+				config_slv.error <= next_error;
+			end if;
+		end if;
+	end process;
 
 end rtl;

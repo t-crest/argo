@@ -114,7 +114,7 @@ begin
 	begin
 		if rising_edge(clk) then
 			if (wcdata_high_en = '1') then
-				config.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= pkt_in(WORD_WIDTH - 1 downto 0);
+				config.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
 			end if;
 		end if;
 	end process;
@@ -124,7 +124,7 @@ begin
 	begin
 		if rising_edge(clk) then
 			if (wcdata_low_en = '1') then
-				config.wdata(WORD_WIDTH - 1 downto 0) <= pkt_in(WORD_WIDTH - 1 downto 0);
+				config.wdata(WORD_WIDTH - 1 downto 0) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
 			end if;
 		end if;
 

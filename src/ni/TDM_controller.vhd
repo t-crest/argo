@@ -248,6 +248,7 @@ begin
         read_reg <= read_next;
         MODE_CHANGES_reg <= MODE_CHANGES_next;
         T2N_ld_reg <= STBL_IDX_EN_sig;
+        MODE_CHANGE_IDX_reg <= MODE_CHANGE_IDX_next;
         MASTER_RUN_REG <= MASTER_RUN_NEXT;
         -- Clock counter
         --CLOCK_CNT_reg <= CLOCK_CNT_reg + 1;

@@ -76,6 +76,9 @@ package argo_types is
     -- TDM controller constants and types
     constant TDM_S_CNT_WIDTH : integer := 10;
 
+	-- IRQ FIFO constants and types
+	constant IRQ_FIFO_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
+	
     -- Schedule table constants and types
     constant STBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
     constant STBL_T2N_WIDTH : integer := 5;

@@ -62,13 +62,13 @@ end irq_fifo;
 
 architecture rtl of irq_fifo is
 	--------------------------------------------------------------------------------
-	-- Addresses of readable/writable registers
+	-- Addresses of readable/writable registers (Word based addresses inside the NI)
 	-- Address  | Access  | Name
 	--------------------------------------------------------------------------------
 	-- 0x00     | R       | Top of the IRQ FIFO queue
-	-- 0x04     | R       | Top of the Data FIFO queue
-	-- 0x08     | W       | Size of the IRQ FIFO queue
-	-- 0x0C     | W       | Size of the Data FIFO queue
+	-- 0x01     | R       | Top of the Data FIFO queue
+	-- 0x02     | W       | Size of the IRQ FIFO queue
+	-- 0x03     | W       | Size of the Data FIFO queue
 	--------------------------------------------------------------------------------
 
 	component tdp_ram is
@@ -125,11 +125,11 @@ begin
 		if (sel = '1' and config.en = '1') then
 			-- Read registers
 			if config.wr = '0' then
-				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 2)) is
-					when to_unsigned(0, CPKT_ADDR_WIDTH - 2) =>
+				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 0)) is
+					when to_unsigned(0, CPKT_ADDR_WIDTH) =>
 						r_ptr    <= irq_r_ptr;
 						irq_read <= '1';
-					when to_unsigned(1, CPKT_ADDR_WIDTH - 2) =>
+					when to_unsigned(1, CPKT_ADDR_WIDTH) =>
 						r_ptr     <= data_r_ptr;
 						data_read <= '1';
 					when others =>
@@ -137,10 +137,10 @@ begin
 				end case;
 			else
 				--Write registers
-				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 2)) is
-					when to_unsigned(2, CPKT_ADDR_WIDTH - 2) =>
+				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 0)) is
+					when to_unsigned(2, CPKT_ADDR_WIDTH) =>
 						irq_fifo_max_en <= '1';
-					when to_unsigned(3, CPKT_ADDR_WIDTH - 2) =>
+					when to_unsigned(3, CPKT_ADDR_WIDTH) =>
 						data_fifo_min_en <= '1';
 					when others =>
 						next_error <= '1';

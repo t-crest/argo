@@ -68,25 +68,25 @@ end TDM_controller;
 
 architecture rtl of TDM_controller is
 --------------------------------------------------------------------------------
--- Addresses of readable/writable registers
+-- Addresses of readable/writable registers (Word based addresses inside the NI)
 -- Address  | Access  | Name
 --------------------------------------------------------------------------------
 -- 0x00     | R       | TDM_S_CNT
--- 0x04     | R       | TDM_P_CNT
--- 0x08     | R       | CLOCK_CNT_HIGH
--- 0x0C     | R       | CLOCK_CNT_LOW
--- 0x10     | WR      | MODE_CHANGE_IDX
+-- 0x01     | R       | TDM_P_CNT
+-- 0x02     | R       | CLOCK_CNT_HIGH
+-- 0x03     | R       | CLOCK_CNT_LOW
+-- 0x04     | WR      | MODE_CHANGE_IDX
 -- ...      |         | ...
--- 0x20     | WR      | MODE_CHANGES(1)
--- 0x24     | WR      | MODE_CHANGES(2)
--- 0x28     | WR      | MODE_CHANGES(3)
+-- 0x08     | WR      | MODE_CHANGES(1)
+-- 0x09     | WR      | MODE_CHANGES(2)
+-- 0x0A     | WR      | MODE_CHANGES(3)
 -- ...      |         | ...
--- 0x80     | WR      | Master run
+-- 0x20     | WR      | Master run
 -- ...      |         | ...
 --------------------------------------------------------------------------------
   
-  signal TDM_S_CNT_reg, TDM_S_CNT_next : unsigned(TDM_S_CNT_WIDTH-1 downto 0);
-  signal TDM_P_CNT_reg, TDM_P_CNT_next : word_t;
+  signal TDM_S_CNT_reg : unsigned(TDM_S_CNT_WIDTH-1 downto 0);
+  signal TDM_P_CNT_reg : word_t;
     
   signal STBL_MIN_reg, STBL_MAXP1_reg, STBL_IDX_reg : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal STBL_MIN_next, STBL_MAXP1_next, STBL_IDX_next : unsigned(STBL_IDX_WIDTH-1 downto 0);
@@ -96,7 +96,7 @@ architecture rtl of TDM_controller is
 
   signal MASTER_RUN_REG, MASTER_RUN_NEXT : unsigned(0 downto 0);
 
-  signal P_CNT_reg, P_CNT_next : unsigned(1 downto 0);
+  signal P_CNT_reg : unsigned(1 downto 0);
 
   signal MODE_CHANGE_IDX_reg, MODE_CHANGE_IDX_next : unsigned(log2up(MAX_MODE_CHANGE)-1 downto 0);
   type mode_change_t is record 
@@ -147,22 +147,22 @@ begin
     MODE_CHANGES_next <= MODE_CHANGES_reg;
     mode_change_idx_changed <= '0';
     MASTER_RUN_NEXT <= MASTER_RUN_REG;
-    if config.en = '1' then
+    if (sel = '1' and config.en = '1') then
       -- Read registers
       if config.wr = '0' then
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 2) ) is
-          when to_unsigned(0,CPKT_ADDR_WIDTH-2) =>
+        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
+          when to_unsigned(0,CPKT_ADDR_WIDTH) =>
             read_next(TDM_S_CNT_WIDTH-1 downto 0) <= TDM_S_CNT_reg;
-          when to_unsigned(1,CPKT_ADDR_WIDTH-2) =>
+          when to_unsigned(1,CPKT_ADDR_WIDTH) =>
             read_next <= TDM_P_CNT_reg;
-          when to_unsigned(2,CPKT_ADDR_WIDTH-2) =>
+          when to_unsigned(2,CPKT_ADDR_WIDTH) =>
             read_next <= clock_delay_reg;
-          when to_unsigned(3,CPKT_ADDR_WIDTH-2) =>
+          when to_unsigned(3,CPKT_ADDR_WIDTH) =>
             read_next <= CLOCK_CNT_LO_reg(WORD_WIDTH-1 downto 0);
             latch_hi_clock <= '1';
-          when to_unsigned(4,CPKT_ADDR_WIDTH-2) =>
+          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
             read_next(log2up(MAX_MODE_CHANGE)-1 downto 0) <= unsigned(MODE_CHANGE_IDX_reg);
-          when to_unsigned(128,CPKT_ADDR_WIDTH-2) =>
+          when to_unsigned(128,CPKT_ADDR_WIDTH) =>
             read_next(0 downto 0) <= unsigned(MASTER_RUN_REG);
           when others =>
             read_next <= (others => '0');
@@ -170,18 +170,18 @@ begin
         end case ;
         -- Read mode change registers
         for i in 0 to MAX_MODE_CHANGE-1 loop
-          if config.addr(CPKT_ADDR_WIDTH-1 downto 2) = i + 8 then
+          if config.addr(CPKT_ADDR_WIDTH-1 downto 0) = i + 8 then
             read_next((2*STBL_IDX_WIDTH)-1 downto 0) <=
               MODE_CHANGES_reg(i).max & MODE_CHANGES_reg(i).min;
             config_slv_error_next <= '0';
           end if;
         end loop ;
       else -- Write register
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 2) ) is
-          when to_unsigned(4,CPKT_ADDR_WIDTH-2) =>
+        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
+          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
             MODE_CHANGE_IDX_next <= unsigned(config.wdata(log2up(MAX_MODE_CHANGE)-1 downto 0));
             mode_change_idx_changed <= '1';
-          when to_unsigned(128,CPKT_ADDR_WIDTH-2) =>
+          when to_unsigned(128,CPKT_ADDR_WIDTH) =>
             if MASTER then
               MASTER_RUN_NEXT <= config.wdata(0 downto 0);
             end if ;
@@ -191,7 +191,7 @@ begin
 
         -- Write mode change registers
         for i in 0 to MAX_MODE_CHANGE-1 loop
-          if config.addr(CPKT_ADDR_WIDTH-1 downto 2) = i + 8 then
+          if config.addr(CPKT_ADDR_WIDTH-1 downto 0) = i + 8 then
             MODE_CHANGES_next(i).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
             MODE_CHANGES_next(i).max <= unsigned(config.wdata((2*STBL_IDX_WIDTH)-1 downto STBL_IDX_WIDTH));
             config_slv_error_next <= '0';

@@ -127,10 +127,10 @@ begin
     config_dword <= '0';
 
     bank_id <= unsigned(ocp_config_m.MAddr(HEADER_FIELD_WIDTH-
-                                  HEADER_CTRL_WIDTH-1 downto HEADER_FIELD_WIDTH-
-                                            HEADER_CTRL_WIDTH-CPKT_BANK_WIDTH));
+                                  HEADER_CTRL_WIDTH+2-1 downto HEADER_FIELD_WIDTH-
+                                            HEADER_CTRL_WIDTH-CPKT_BANK_WIDTH+2));
     config.addr <= unsigned(ocp_config_m.MAddr(HEADER_FIELD_WIDTH-
-                                                HEADER_CTRL_WIDTH-1 downto 0));
+                                                HEADER_CTRL_WIDTH+2-1 downto 2));
     config.en <= '1';
     -- If OCP request is a write and the processor is in supervisor mode
     if ocp_config_m.MCmd = OCP_CMD_WR and supervisor = '1' then
@@ -151,7 +151,7 @@ begin
     next_ocp_resp <= OCP_RESP_NULL;
   end if;
 
-  if TDM_ctrl.error or sched_tbl.error or DMA_tbl.error or irq_unit_fifo.error then
+  if (TDM_ctrl.error or sched_tbl.error or DMA_tbl.error or irq_unit_fifo.error) = '1' then
     ocp_config_s.SResp <= OCP_RESP_ERR;
   end if ;
 

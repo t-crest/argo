@@ -88,9 +88,6 @@ component TDM_controller is
 end component;
 
 component schedule_table is
-	generic (
-		ENTRIES : natural
-	);
 	port (
 		clk		: in std_logic;
 		reset 	: in std_logic;
@@ -108,9 +105,6 @@ component schedule_table is
 end component;
 
 component dma_table is
-	generic (
-		ENTRIES : natural
-	);
 	port (
 		clk		: in std_logic;
 		reset 	: in std_logic;
@@ -274,9 +268,6 @@ begin
 
 
 	schedtbl : schedule_table
-	generic map (
-		ENTRIES => 128
-	)
 	port map(
 		clk => clk,
 		reset => reset,
@@ -293,9 +284,6 @@ begin
 	);
 
 	dmatbl : dma_table
-	generic map (
-		ENTRIES => 128
-	)
 	port map (
 		clk => clk,
 		reset => reset,

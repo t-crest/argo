@@ -41,9 +41,6 @@ use ieee.numeric_std.all;
 use work.argo_types.all;
 
 entity dma_table is
-  generic (
-    ENTRIES : natural
-  );
   port (
     -- Clock reset and run
     clk   : in std_logic;
@@ -83,10 +80,7 @@ signal dmatbl_data : unsigned(DMATBL_COUNT_WIDTH + HEADER_FIELD_WIDTH +
 
 signal dma_en_reg : std_logic;
 
-signal config_wdata : dword_t;
-signal config_rdata : dword_t;
-
-type active_t is array (2 ** DMATBL_IDX_WIDTH downto 0) of std_logic;
+type active_t is array ((2 ** DMATBL_IDX_WIDTH) -1 downto 0) of std_logic;
 
 signal active_reg, active_next : active_t;
 
@@ -112,11 +106,11 @@ signal config_slv_error_next : std_logic;
 
 begin
 
-port_a_input_mux : process( config_dword, config.wdata, config.addr  )
+port_a_input_mux : process( config_dword, config.wdata, config.addr, config.wr, hi_lo_reg, port_a_dout, sel  )
 begin
   port_a_wr_hi <= '0';
   port_a_wr_lo <= '0';
-  port_a_addr <= config.addr(DMATBL_IDX_WIDTH+2 downto 3);
+  port_a_addr <= config.addr(DMATBL_IDX_WIDTH downto 1);
   if config_dword = '1' then
     port_a_din(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
             <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH-1 downto WORD_WIDTH);
@@ -124,17 +118,17 @@ begin
         <= config.wdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
     port_a_wr_lo <= config.wr and sel;
-  elsif config.addr(2) = '1' then
+  elsif config.addr(0) = '1' then
     port_a_din(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
                                 <= config.wdata(DMATBL_COUNT_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
-  elsif config.addr(2) = '0' then
+  elsif config.addr(0) = '0' then
     port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
         <= config.wdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0);
     port_a_wr_lo <= config.wr and sel;
   end if ;
   
-  hi_lo_next <= config.addr(2);
+  hi_lo_next <= config.addr(0);
   if hi_lo_reg = '1' then
     config_slv.rdata(DMATBL_COUNT_WIDTH-1 downto 0) <= port_a_dout(
               DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH);
@@ -146,7 +140,7 @@ begin
   
 end process ; -- port_a_input_mux
 
-port_b_input_mux : process( dma_en )
+port_b_input_mux : process( dma_en, DMA_update_addr, DMA_update_data, DMA_update_en, dma_num, port_b_dout )
 begin
   dmatbl_data <= port_b_dout;
   port_b_din <= DMA_update_data;
@@ -200,10 +194,10 @@ dmatbl1 : entity work.tdp_ram
     b_dout  => port_b_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
   );
 
-error_handler_proc : process( config.addr )
+error_handler_proc : process( config.addr, sel )
 begin
   config_slv_error_next <= '0';
-  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto DMATBL_IDX_WIDTH+3) /= 0  then
+  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto DMATBL_IDX_WIDTH+1) /= 0  then
     config_slv_error_next <= '1';
   end if ;
 end process ; -- error_handler_proc

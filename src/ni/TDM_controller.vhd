@@ -115,6 +115,8 @@ architecture rtl of TDM_controller is
 
   constant RUN_LOAD_VAL : stbl_t2n_t := (others => '1');
   signal t2n_run : stbl_t2n_t;
+
+  signal config_slv_error_next : std_logic;
 begin
 
 --------------------------------------------------------------------------------
@@ -138,6 +140,7 @@ begin
   begin
     config_slv.rdata <= (others=> '0');
     config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
+    config_slv_error_next <= '0';
     read_next <= (others=> '0');
     latch_hi_clock <= '0';
     MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
@@ -163,12 +166,14 @@ begin
             read_next(0 downto 0) <= unsigned(MASTER_RUN_REG);
           when others =>
             read_next <= (others => '0');
+            config_slv_error_next <= '1';
         end case ;
         -- Read mode change registers
         for i in 0 to MAX_MODE_CHANGE-1 loop
           if config.addr(CPKT_ADDR_WIDTH-1 downto 2) = i + 8 then
             read_next((2*STBL_IDX_WIDTH)-1 downto 0) <=
               MODE_CHANGES_reg(i).max & MODE_CHANGES_reg(i).min;
+            config_slv_error_next <= '0';
           end if;
         end loop ;
       else -- Write register
@@ -181,13 +186,15 @@ begin
               MASTER_RUN_NEXT <= config.wdata(0 downto 0);
             end if ;
           when others =>
-        
+            config_slv_error_next <= '1';
         end case ;
+
         -- Write mode change registers
         for i in 0 to MAX_MODE_CHANGE-1 loop
           if config.addr(CPKT_ADDR_WIDTH-1 downto 2) = i + 8 then
             MODE_CHANGES_next(i).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
             MODE_CHANGES_next(i).max <= unsigned(config.wdata((2*STBL_IDX_WIDTH)-1 downto STBL_IDX_WIDTH));
+            config_slv_error_next <= '0';
           end if;
         end loop ;
       end if ;
@@ -238,7 +245,7 @@ begin
       if reset = '1' then
         read_reg <= (others => '0');  
         MODE_CHANGES_reg <= (others => (others => (others =>'0')));
-        --CLOCK_CNT_reg <= (others => '0');
+        config_slv.error <= '0';
         MASTER_RUN_REG <= (others => '0');
         -- T2N_ld_reg should be initialized such that the TIME2NEXT register
         -- will load a zero. Zero will give the longest time to STBL_IDX_EN\
@@ -250,6 +257,7 @@ begin
         T2N_ld_reg <= STBL_IDX_EN_sig;
         MODE_CHANGE_IDX_reg <= MODE_CHANGE_IDX_next;
         MASTER_RUN_REG <= MASTER_RUN_NEXT;
+        config_slv.error <= config_slv_error_next;
         -- Clock counter
         --CLOCK_CNT_reg <= CLOCK_CNT_reg + 1;
       end if ;

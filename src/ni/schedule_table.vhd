@@ -82,6 +82,8 @@ signal stbl_data : unsigned(STBL_DATA_WIDTH-1 downto 0);
 
 signal stbl_idx_en_reg : std_logic;
 
+signal config_slv_error_next : std_logic;
+
 begin
 
 stbl : entity work.tdp_ram
@@ -92,7 +94,7 @@ stbl : entity work.tdp_ram
   port map(
     a_clk   => clk,
     a_wr    => config.wr and sel,
-    a_addr  => config.addr,
+    a_addr  => config.addr(STBL_IDX_WIDTH+1 downto 2),
     a_din   => config.wdata,
     a_dout  => config_slv.rdata,
     b_clk   => clk,
@@ -102,7 +104,15 @@ stbl : entity work.tdp_ram
     b_dout  => stbl_data
   );
 
-config_slv.error <= '0';
+
+-- Address out of bound
+error_handler_proc : process( config.addr )
+begin
+  config_slv_error_next <= '0';
+  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto STBL_IDX_WIDTH+2) /= 0  then
+    config_slv_error_next <= '1';
+  end if ;
+end process ; -- error_handler_proc
 
 route   <= stbl_data(STBL_DATA_WIDTH - 1 downto STBL_DATA_WIDTH -
                                                             HEADER_ROUTE_WIDTH);
@@ -125,5 +135,16 @@ begin
 end process ; -- stbl_idx_en_reg
 
 dma_en <= stbl_idx_en_reg;
+
+config_slv_error_reg_proc : process( clk )
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      config_slv.error <= '0';
+    else
+      config_slv.error <= config_slv_error_next;
+    end if;
+  end if ;
+end process ; -- config_slv_error_reg_proc
 
 end rtl;

@@ -207,8 +207,6 @@ component config_bus is
 		sched_tbl_sel : out std_logic;
 		DMA_tbl : in mem_if_slave;
 		DMA_tbl_sel : out std_logic;
-		irq_data_fifo : in mem_if_slave;
-		irq_data_fifo_sel : out std_logic;
 		irq_unit_fifo : in mem_if_slave;
 		irq_unit_fifo_sel : out std_logic
 	);
@@ -394,8 +392,6 @@ begin
 			sched_tbl_sel => sched_tbl_sel,
 			DMA_tbl => DMA_tbl,
 			DMA_tbl_sel => DMA_tbl_sel,
-			irq_data_fifo => open,--not needed anymore
-			irq_data_fifo_sel => open,--not needed anymore
 			irq_unit_fifo => irq_if_fifo,
 			irq_unit_fifo_sel => irq_if_fifo_sel
 			);

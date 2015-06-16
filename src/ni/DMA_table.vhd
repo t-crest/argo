@@ -90,17 +90,74 @@ type active_t is array (2 ** DMATBL_IDX_WIDTH downto 0) of std_logic;
 
 signal active_reg, active_next : active_t;
 
+signal hi_lo_next : std_logic;
+signal hi_lo_reg : std_logic;
+
+signal port_b_wr : std_logic;
+signal port_b_addr  : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
+signal port_b_din   : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+signal port_b_dout  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+
+signal DMA_update_en : std_logic;
+signal DMA_update_addr  : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
+signal DMA_update_data  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+
+signal port_a_wr_hi : std_logic;
+signal port_a_wr_lo : std_logic;
+signal port_a_addr  : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
+signal port_a_din   : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+signal port_a_dout  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+
+signal config_slv_error_next : std_logic;
+
 begin
 
-
-dword_config : process( config_dword, config.wdata, config.addr )
+port_a_input_mux : process( config_dword, config.wdata, config.addr  )
 begin
-  config_wdata <= config.wdata;
-  if config_dword = '0' and config.addr(2) = '1' then
-    config_wdata((2*WORD_WIDTH)-1 downto WORD_WIDTH) <= config.wdata(
-                                                        WORD_WIDTH-1 downto 0);
+  port_a_wr_hi <= '0';
+  port_a_wr_lo <= '0';
+  port_a_addr <= config.addr(DMATBL_IDX_WIDTH+2 downto 3);
+  if config_dword = '1' then
+    port_a_din(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
+            <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH-1 downto WORD_WIDTH);
+    port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
+        <= config.wdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0);
+    port_a_wr_hi <= config.wr and sel;
+    port_a_wr_lo <= config.wr and sel;
+  elsif config.addr(2) = '1' then
+    port_a_din(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
+                                <= config.wdata(DMATBL_COUNT_WIDTH-1 downto 0);
+    port_a_wr_hi <= config.wr and sel;
+  elsif config.addr(2) = '0' then
+    port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
+        <= config.wdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0);
+    port_a_wr_lo <= config.wr and sel;
   end if ;
-end process ; -- dword_config
+  
+  hi_lo_next <= config.addr(2);
+  if hi_lo_reg = '1' then
+    config_slv.rdata(DMATBL_COUNT_WIDTH-1 downto 0) <= port_a_dout(
+              DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH);
+  else
+    config_slv.rdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0) 
+                <= port_a_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0);
+  end if ;
+  
+  
+end process ; -- port_a_input_mux
+
+port_b_input_mux : process( dma_en )
+begin
+  dmatbl_data <= port_b_dout;
+  port_b_din <= DMA_update_data;
+  if dma_en = '1' then
+    port_b_wr <= '0';
+    port_b_addr <= dma_num;
+  else
+    port_b_wr <= DMA_update_en;
+    port_b_addr <= DMA_update_addr;
+  end if ;
+end process ; -- port_b_input_mux
 
 
 dmatbl1 : entity work.tdp_ram
@@ -110,15 +167,18 @@ dmatbl1 : entity work.tdp_ram
   )
   port map(
     a_clk   => clk,
-    a_wr    => config.wr and sel,
-    a_addr  => config.addr(DMATBL_IDX_WIDTH+2 downto 3),
-    a_din   => config_wdata,
-    a_dout  => config_rdata,
+    a_wr    => port_a_wr_hi,
+    a_addr  => port_a_addr,
+    a_din   => port_a_din(DMATBL_DATA_WIDTH-1 downto
+                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH),
+    a_dout  => port_a_dout(DMATBL_DATA_WIDTH-1 downto
+                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH),
     b_clk   => clk,
-    b_wr    => '0',
-    b_addr  => dma_num,
-    b_din   => (others => '0'),
-    b_dout  => dmatbl_data(DMATBL_DATA_WIDTH-1 downto
+    b_wr    => port_b_wr,
+    b_addr  => port_b_addr,
+    b_din   => port_b_din(DMATBL_DATA_WIDTH-1 downto
+                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH),
+    b_dout  => port_b_dout(DMATBL_DATA_WIDTH-1 downto
                                           DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
   );
 
@@ -129,18 +189,24 @@ dmatbl1 : entity work.tdp_ram
   )
   port map(
     a_clk   => clk,
-    a_wr    => config.wr and sel,
-    a_addr  => config.addr,
-    a_din   => config_wdata,
-    a_dout  => config_rdata,
+    a_wr    => port_a_wr_lo,
+    a_addr  => port_a_addr,
+    a_din   => port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0),
+    a_dout  => port_a_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0),
     b_clk   => clk,
-    b_wr    => '0',
-    b_addr  => dma_num,
-    b_din   => (others => '0'),
-    b_dout  => dmatbl_data(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
+    b_wr    => port_b_wr,
+    b_addr  => port_b_addr,
+    b_din   => port_b_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0),
+    b_dout  => port_b_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
   );
 
-config_slv.error <= '0';
+error_handler_proc : process( config.addr )
+begin
+  config_slv_error_next <= '0';
+  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto DMATBL_IDX_WIDTH+3) /= 0  then
+    config_slv_error_next <= '1';
+  end if ;
+end process ; -- error_handler_proc
 
 
 dma_en_reg_proc : process( clk )
@@ -166,5 +232,29 @@ begin
 end process ; -- active_reg_proc
 
 pkt_en <= dma_en_reg;
+
+hi_lo_reg_proc : process( clk )
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      hi_lo_reg <= '0';
+    else
+      hi_lo_reg <= hi_lo_next;
+    end if ;
+  end if ;
+end process ; -- hi_lo_reg_proc
+
+config_slv_error_reg_proc : process( clk )
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      config_slv.error <= '0';
+    else
+      config_slv.error <= config_slv_error_next;
+    end if;
+  end if ;
+end process ; -- config_slv_error_reg_proc
+
+
 
 end rtl;

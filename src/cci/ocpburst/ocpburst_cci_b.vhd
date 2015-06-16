@@ -21,7 +21,7 @@ USE work.ocp.all;
 USE work.OCPInterface.all;
 USE work.OCPBurstCCI_types.all;
 
-ENTITY OCPBurstCCISlave IS
+ENTITY OCPBurstCCI_B IS
     GENERIC(burstSize : INTEGER := 4);
     PORT(   clk         : IN    std_logic;
             rst         : IN    std_logic;
@@ -30,9 +30,9 @@ ENTITY OCPBurstCCISlave IS
             asyncOut    : OUT   AsyncBurst_B_r;
             asyncIn     : IN    AsyncBurst_A_r
     );
-END ENTITY OCPBurstCCISlave;
+END ENTITY OCPBurstCCI_B;
 
-ARCHITECTURE behaviour OF OCPBurstCCISlave IS
+ARCHITECTURE behaviour OF OCPBurstCCI_B IS
     TYPE fsm_states_t IS (	IDLE_state, ReadBlock, ReadBlockWait,
 							WriteBlock, WriteBlockWait,WriteBlockFinal);
     SIGNAL state, state_next    :    fsm_states_t;

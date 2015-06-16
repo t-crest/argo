@@ -41,7 +41,7 @@ PACKAGE OCPBurstCCI_types IS
         DataInSel   : std_logic_vector(1 downto 0);
     END RECORD;
 
-    TYPE AsyncBurst_A_r IS
+    TYPE AsyncBurst_B_r IS
     RECORD
         ack         : std_logic;
         Data		: ocp_burst_s;

@@ -30,9 +30,11 @@ PACKAGE OCPInterface IS
 		dataByteEn  :	std_logic_vector(3 downto 0);
 		dataValid   :	std_logic;
 	END RECORD;
-	CONSTANT OCPBurstMasterIdle_c : OCPBurstMaster_r :=	(Idle,(OTHERS => '0'),
-														(OTHERS => '0'),
-														(OTHERS => '0'),'0');
+	CONSTANT OCPBurstMasterIdle_c : ocp_burst_m := (OCP_CMD_IDLE,
+												   (OTHERS => '0'),
+												   (OTHERS => '0'),
+												   (OTHERS => '0'),
+												   '0');
 
 	TYPE OCPBurstSlave_r IS
 	RECORD
@@ -41,8 +43,10 @@ PACKAGE OCPInterface IS
 		cmdAccept   :	std_logic;
 		dataAccept  :	std_logic;
 	END RECORD;
-	CONSTANT OCPBurstSlaveIdle_c : OCPBurstSlave_r :=	(Idle,(OTHERS => '0'),
-														'0','0');
+	CONSTANT OCPBurstSlaveIdle_c : ocp_burst_s := (OCP_RESP_NULL,
+												  (OTHERS => '0'),
+												  '0',
+												  '0');
 	
 --	TYPE OCPCoreMaster_r IS
 --	RECORD

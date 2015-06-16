@@ -96,7 +96,7 @@ package argo_types is
 
     -- Interrupt fifo constants and types
     constant IRQ_DATA_WIDTH : integer := HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH;
-    subtype irq_data_t is std_logic_vector(IRQ_DATA_WIDTH-1 downto 0);
+    subtype irq_data_t is unsigned(IRQ_DATA_WIDTH-1 downto 0);
 
     -- Memory interface records
     type mem_if_master is record

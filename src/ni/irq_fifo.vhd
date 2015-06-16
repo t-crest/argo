@@ -51,11 +51,11 @@ entity irq_fifo is
 		config_slv               : out mem_if_slave;
 
 		irq_irq_sig              : out std_logic;
-		irq_irq_fifo_data        : in  unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
+		irq_irq_fifo_data        : in  irq_data_t;
 		irq_irq_fifo_data_valid  : in  std_logic;
 
 		irq_data_sig             : out std_logic;
-		irq_data_fifo_data       : in  unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
+		irq_data_fifo_data       : in  irq_data_t;
 		irq_data_fifo_data_valid : in  std_logic
 	);
 end irq_fifo;

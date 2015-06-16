@@ -46,7 +46,7 @@ entity irq_unit is
 	port(
 		clk                 : in  std_logic;
 		reset               : in  std_logic;
-		irq_fifo_data       : out std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
+		irq_fifo_data       : out irq_data_t;
 		irq_fifo_data_valid : out std_logic;
 		pkt_in              : in  link_t
 	);
@@ -60,7 +60,7 @@ begin
 	irq_fifo_data_valid <= pkt_in(LINK_WIDTH - 1) and pkt_in(LINK_WIDTH - 2) and pkt_in(LINK_WIDTH - 3) and pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1) and pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2);
 
 	--General assignments
-	irq_fifo_data <= pkt_in(HEADER_ROUTE_WIDTH + HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto HEADER_ROUTE_WIDTH);
+	irq_fifo_data <= unsigned(pkt_in(HEADER_ROUTE_WIDTH + HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto HEADER_ROUTE_WIDTH));
 
 end rtl;
 

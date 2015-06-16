@@ -147,7 +147,7 @@ component data_unit is
 		clk		: in std_logic;
 		reset 	: in std_logic;
 		spm : out mem_if_master;
-		irq_fifo_data : out std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH-1 downto 0);
+		irq_fifo_data : out irq_data_t;
 		irq_fifo_data_valid : out std_logic;
 		pkt_in : in link_t
 	);
@@ -166,25 +166,25 @@ component irq_unit is
 	port (
 		clk		: in std_logic;
 		reset 	: in std_logic;
-		irq_fifo_data : out std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH-1 downto 0);
+		irq_fifo_data : out irq_data_t;
 		irq_fifo_data_valid : out std_logic;
 		pkt_in : in link_t
 	);
 end component;
 
 component irq_fifo is
-	generic (
-		DEPTH : natural
-	);
-	port (
-		clk		: in std_logic;
-		reset 	: in std_logic;
-		config : in mem_if_master;
-		sel 	: in std_logic;
-		config_slv : out mem_if_slave;
-		irq_sig : out std_logic;
-		irq_fifo_data : in std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH-1 downto 0);
-		irq_fifo_data_valid : in std_logic
+	port(
+		clk                      : in  std_logic;
+		reset                    : in  std_logic;
+		config                   : in  mem_if_master;
+		sel                      : in  std_logic;
+		config_slv               : out mem_if_slave;
+		irq_irq_sig              : out std_logic;
+		irq_irq_fifo_data        : in  irq_data_t;
+		irq_irq_fifo_data_valid  : in  std_logic;
+		irq_data_sig             : out std_logic;
+		irq_data_fifo_data       : in  irq_data_t;
+		irq_data_fifo_data_valid : in  std_logic
 	);
 end component;
 
@@ -249,8 +249,8 @@ signal irq_data, irq_unit_data : irq_data_t;
 signal irq_data_valid, irq_unit_data_valid : std_logic;
 
 signal config_unit_master : mem_if_master;
-signal irq_unit_fifo, irq_data_fifo : mem_if_slave;
-signal irq_unit_fifo_sel, irq_data_fifo_sel : std_logic;
+signal irq_if_fifo : mem_if_slave;
+signal irq_if_fifo_sel : std_logic;
 
 
 begin
@@ -351,36 +351,20 @@ begin
 		pkt_in => pkt_in
 	);
 
-	irqunitfifo : irq_fifo
-	generic map(
-		DEPTH => 128
-	)
-	port map (
-		clk => clk,
-		reset => reset,
-		config => config,
-		sel => irq_unit_fifo_sel,
-		config_slv => irq_unit_fifo,
-		irq_sig => config_irq,
-		irq_fifo_data => irq_unit_data,
-		irq_fifo_data_valid => irq_unit_data_valid
-	);
-
-	irqdatafifo : irq_fifo
-	generic map(
-		DEPTH => 128
-	)
+	irqfifo : irq_fifo
 	port map(
 		clk => clk,
 		reset => reset,
 		config => config,
-		sel => irq_data_fifo_sel,
-		config_slv => irq_data_fifo,
-		irq_sig => data_irq,
-		irq_fifo_data => irq_data,
-		irq_fifo_data_valid => irq_data_valid
+		sel => irq_if_fifo_sel,
+		config_slv => irq_if_fifo,
+		irq_irq_sig => config_irq,
+		irq_irq_fifo_data  => irq_unit_data,
+		irq_irq_fifo_data_valid => irq_unit_data_valid,
+		irq_data_sig  => data_irq,
+		irq_data_fifo_data  => irq_data,
+		irq_data_fifo_data_valid => irq_data_valid
 	);
-
 
 -- Instantiations of common components
 	spmbus : spm_bus
@@ -410,10 +394,10 @@ begin
 			sched_tbl_sel => sched_tbl_sel,
 			DMA_tbl => DMA_tbl,
 			DMA_tbl_sel => DMA_tbl_sel,
-			irq_data_fifo => irq_data_fifo,
-			irq_data_fifo_sel => irq_data_fifo_sel,
-			irq_unit_fifo => irq_unit_fifo,
-			irq_unit_fifo_sel => irq_unit_fifo_sel
+			irq_data_fifo => open,--not needed anymore
+			irq_data_fifo_sel => open,--not needed anymore
+			irq_unit_fifo => irq_if_fifo,
+			irq_unit_fifo_sel => irq_if_fifo_sel
 			);
 
 end struct;

@@ -47,7 +47,7 @@ entity data_unit is
 		clk                 : in  std_logic;
 		reset               : in  std_logic;
 		spm                 : out mem_if_master;
-		irq_fifo_data       : out std_logic_vector(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
+		irq_fifo_data       : out irq_data_t;
 		irq_fifo_data_valid : out std_logic;
 		pkt_in              : in  link_t
 	);
@@ -68,7 +68,7 @@ begin
 	irq_fifo_data_valid <= lst_pkt and pkt_in(LINK_WIDTH - 3);
 
 	spm.addr      <= addr;
-	irq_fifo_data <= std_logic_vector(addr);
+	irq_fifo_data <= addr;
 
 	--Control Moore FSM		
 	process(state, new_data_pkt, pkt_in(LINK_WIDTH - 3))

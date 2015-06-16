@@ -69,9 +69,9 @@ BEGIN
                         END IF;
                     ElSIF asyncIn.data.MCmd = OCP_CMD_WR AND asyncIn.data.MDataValid = '1' THEN
                         state_next			<= WriteBlockWait;
-						syncOut.MCmd         <= WriteBlock;
-						syncOut.dataValid   <= '1';
-						IF syncIn.SCmdAccept = '1' AND syncIn.dataAccept = '1' THEN
+						syncOut.MCmd         <= OCP_CMD_WR;
+						syncOut.MDataValid   <= '1';
+						IF syncIn.SCmdAccept = '1' AND syncIn.SDataAccept = '1' THEN
 							syncOut.MDataByteEn	<= asyncIn.data.MDataByteEn;
 							syncOut.MAddr 		<= asyncIn.data.MAddr;
 							syncOut.MData 		<= asyncIn.data.MData;
@@ -82,12 +82,12 @@ BEGIN
                 END IF;
 			-- READ BLOCK
             WHEN ReadBlockWait =>
-                syncOut.MCmd <= ReadBlock;
+                syncOut.MCmd <= OCP_CMD_RD;
                 IF syncIn.SCmdAccept = '1' THEN
                     state_next <= ReadBlock;
                 END IF;
             WHEN ReadBlock =>
-				IF syncIn.resp /= Idle THEN
+				IF syncIn.SResp /= OCP_RESP_NULL THEN
 					loadEnable <= '1';
 					wordCnt_next <= wordCnt + to_unsigned(1, wordCnt'LENGTH);
 					IF wordCnt = to_unsigned(burstSize-1,wordCnt'LENGTH) THEN
@@ -97,21 +97,21 @@ BEGIN
 				END IF;
             -- WRITE BLOCK
             WHEN WriteBlockWait => 
-                syncOut.MCmd         	<= WriteBlock;
-                syncOut.dataValid   	<= '1';
-                IF syncIn.SCmdAccept = '1' AND syncIn.dataAccept = '1' THEN
+                syncOut.MCmd	   <= OCP_CMD_WR;
+                syncOut.MDataValid <= '1';
+                IF syncIn.SCmdAccept = '1' AND syncIn.SDataAccept = '1' THEN
 					syncOut.MDataByteEn	<= asyncIn.data.MDataByteEn;
 					syncOut.MAddr 		<= asyncIn.data.MAddr;
-					syncOut.MData 		<= asyncIn.data.data;
-					wordCnt_next		<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
-					state_next 			<= WriteBlock;
+					syncOut.MData 		<= asyncIn.data.MData;
+					wordCnt_next <= wordCnt + to_unsigned(1,wordCnt'LENGTH);
+					state_next 	 <= WriteBlock;
                 END IF; 
             WHEN WriteBlock =>
                 -- Sync Data Signals
-				syncOut.dataValid	<= '1';
+				syncOut.MDataValid	<= '1';
 				syncOut.MDataByteEn	<= asyncIn.data.MDataByteEn;
 				syncOut.MAddr		<= asyncIn.data.MAddr;
-				syncOut.MData		<= asyncIn.data.data;
+				syncOut.MData		<= asyncIn.data.MData;
                 wordCnt_next		<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
                 IF wordCnt = to_unsigned(burstSize-1, wordCnt'LENGTH) THEN
 					state_next <= WriteBlockFinal;

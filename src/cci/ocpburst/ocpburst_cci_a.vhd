@@ -21,30 +21,33 @@ USE work.ocp.all;
 USE work.OCPInterface.all;
 USE work.OCPBurstCCI_types.all;
 
-ENTITY OCPBurstCCIMaster IS
+ENTITY OCPBurstCCI_A IS
     GENERIC(burstSize : INTEGER := 4);
     PORT(   clk         : IN    std_logic;
             rst         : IN    std_logic;
-            syncIn      : IN    OCPBurstMaster_r;
-            syncOut     : OUT   OCPBurstSlave_r;
-            asyncOut    : OUT   AsyncBurstMaster_r;
-            asyncIn     : IN    AsyncBurstSlave_r
+            syncIn      : IN    ocp_burst_m;
+            syncOut     : OUT   ocp_burst_s;
+            asyncOut    : OUT   AsyncBurst_A_r;
+            asyncIn     : IN    AsyncBurst_B_r
     );
-END ENTITY OCPBurstCCIMaster;
+END ENTITY OCPBurstCCI_A;
 
-ARCHITECTURE behaviour OF OCPBurstCCIMaster IS
+ARCHITECTURE behaviour OF OCPBurstCCI_A IS
     TYPE fsm_states_t IS (	IDLE_state, ReadBlock, ReadBlockWait,
-   							WriteBlockLoadFirstWord, WriteBlockLoad, WriteBlockWait);
+   							--WriteBlockLoadFirstWord, 
+							WriteBlockLoad, WriteBlockWait);
     SIGNAL state, state_next    :    fsm_states_t;
 
     SIGNAL ack_prev, ack, ack_next	: std_logic := '0';
     SIGNAL req, req_next			: std_logic := '0';
     SIGNAL wordCnt, wordCnt_next	: unsigned(1 downto 0) := (others => '0');
 
-    TYPE MasterDataArray IS ARRAY (burstSize-1 downto 0) OF OCPBurstMaster_r;
+    TYPE MasterDataArray IS ARRAY (burstSize-1 downto 0) OF ocp_burst_m;
     
     SIGNAL masterData, masterData_next  : MasterDataArray;
     SIGNAL writeEnable              	: std_logic := '0';
+	ALIAS o_async IS asyncOut;
+	ALIAS i_async IS asyncIn;
 BEGIN
 
     asyncOut.req		<= req;
@@ -52,28 +55,28 @@ BEGIN
 
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,wordCnt)
     BEGIN
-        state_next  					<= state;
-        syncOut     					<= OCPBurstSlaveIdle_c;
-		writeEnable         			<= '0';
+        state_next  	<= state;
+        syncOut     	<= OCPBurstSlaveIdle_c;
+		writeEnable     <= '0';
         CASE state IS
             WHEN IDLE_state =>
-				IF syncIn.cmd = ReadBlock THEN
-                    asyncOut.data  <= syncIn;
-                    req_next          <= NOT (req);
-                    state_next        <= ReadBlockWait;
-                ELSIF syncIn.cmd = WriteBlock AND syncIn.dataValid = '1' THEN
-					syncOut.cmdAccept   <= '1';
-					syncOut.dataAccept  <= '1';
-					writeEnable         <= '1';
-					wordCnt_next        <= wordCnt + to_unsigned(1,wordCnt'LENGTH);
-					state_next          <= WriteBlockLoad;
+				IF syncIn.Mcmd = OCP_CMD_RD THEN
+                    asyncOut.data	<= syncIn;
+                    req_next		<= NOT (req);
+                    state_next      <= ReadBlockWait;
+                ELSIF syncIn.Mcmd = OCP_CMD_WR AND syncIn.MDataValid = '1' THEN
+					syncOut.SCmdAccept	<= '1';
+					syncOut.SDataAccept	<= '1';
+					writeEnable		<= '1';
+					wordCnt_next	<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
+					state_next      <= WriteBlockLoad;
                 END IF;
 			-- READ BLOCK
             WHEN ReadBlockWait =>
-                asyncOut.data      <= syncIn;
+                asyncOut.data <= syncIn;
                 IF ack = NOT(ack_prev) THEN
-                    state_next        <= ReadBlock;
-                    syncOut.cmdAccept <= '1';
+                    state_next			<= ReadBlock;
+                    syncOut.SCmdAccept	<= '1';
                 END IF; 
             WHEN ReadBlock =>
                 asyncOut.data	<= syncIn;
@@ -84,21 +87,24 @@ BEGIN
                 END IF;
 			-- WRITE BLOCK
             WHEN WriteBlockLoad => 
-                syncOut.dataAccept  <= '1';
+                syncOut.SDataAccept  <= '1';
                 writeEnable         <= '1';
                 wordCnt_next		<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
                 IF wordCnt = to_unsigned(burstSize-1, wordCnt'LENGTH) THEN
-                    req_next				<= NOT (req);
-                    asyncOut.data.cmd		<= WriteBlock;
-                    asyncOut.data.dataValid	<= '1';
-                    state_next				<= WriteBlockWait;
+                    req_next					<= NOT (req);
+                    asyncOut.data.Mcmd			<= OCP_CMD_WR;
+                    asyncOut.data.MDataValid	<= '1';
+                    state_next					<= WriteBlockWait;
                 END IF;
             WHEN WriteBlockWait =>
-                asyncOut.data.data			<= masterData(to_integer(unsigned(asyncIn.DataInSel))).data;
-				asyncOut.data.addr			<= masterData(to_integer(unsigned(asyncIn.DataInSel))).addr;
-				asyncOut.data.dataByteEn	<= masterData(to_integer(unsigned(asyncIn.DataInSel))).dataByteEn;
+                asyncOut.data.MData			<= 
+					masterData(to_integer(unsigned(i_async.DataInSel))).MData;
+				asyncOut.data.MAddr			<=
+			   		masterData(to_integer(unsigned(i_async.DataInSel))).MAddr;
+				asyncOut.data.MDataByteEn	<= 
+					masterData(to_integer(unsigned(i_async.DataInSel))).MDataByteEn;
                 IF ack = NOT(ack_prev) THEN
-                    syncOut.resp	<= asyncIn.data.resp;
+                    syncOut.Sresp	<= asyncIn.data.Sresp;
                     state_next		<= IDLE_state;
                 END IF;
             WHEN OTHERS =>
@@ -119,7 +125,7 @@ BEGIN
         IF rst = '1' THEN
             state 		<= IDLE_state;
             req         <= '0';
-            ack_prev    <= '0';
+            ack_prev	<= '0';
             ack			<= '0';
             ack_next	<= '0';
             wordCnt		<= (others=>'0');
@@ -129,7 +135,7 @@ BEGIN
             ack_prev    <= ack;
             ack         <= ack_next;
             ack_next    <= asyncIn.ack;
-            wordCnt      <= wordCnt_next;
+            wordCnt     <= wordCnt_next;
             masterData  <= masterData_next;
         END IF;
     END PROCESS Registers;

@@ -54,7 +54,7 @@ entity data_unit is
 end data_unit;
 
 architecture rtl of data_unit is
-	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt_en, new_data_pkt, lst_pkt: std_logic;
+	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt_en, new_data_pkt, lst_pkt, irq_fifo_data_valid_next: std_logic;
 	signal addr : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
 	type state_type is (IDLE, W_LOW, W_HIGH, CONTINUE, DONE);
 	signal state, next_state : state_type;
@@ -65,7 +65,7 @@ begin
 	new_data_pkt <= pkt_in(LINK_WIDTH - 1) and pkt_in(LINK_WIDTH - 2) and (not pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1));
 
 	--General assignments
-	irq_fifo_data_valid <= lst_pkt and pkt_in(LINK_WIDTH - 3);
+	irq_fifo_data_valid_next <= lst_pkt and pkt_in(LINK_WIDTH - 3); -- The IRQ FIFO push is delayed in order to happen with the last spm wr/en
 
 	spm.addr      <= addr;
 	irq_fifo_data <= addr;
@@ -153,8 +153,10 @@ begin
 		if rising_edge(clk) then
 			if (reset = '1') then
 				state <= IDLE;
+				irq_fifo_data_valid <= '0';
 			else
 				state <= next_state;
+				irq_fifo_data_valid <= irq_fifo_data_valid_next;
 			end if;
 		end if;
 	end process;

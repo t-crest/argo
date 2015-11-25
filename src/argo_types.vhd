@@ -39,9 +39,11 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.ocp.all;
+use work.config.all;
 
 package argo_types is
     constant WORD_WIDTH : integer := 32;
+    constant HALF_WORD_WIDTH : integer := WORD_WIDTH/2;
     subtype word_t is unsigned(WORD_WIDTH-1 downto 0);
     subtype dword_t is unsigned((2*WORD_WIDTH)-1 downto 0);
     -- General header packet constants and types
@@ -107,9 +109,13 @@ package argo_types is
     end record;
 
     type mem_if_slave is record
-        rdata : word_t;
+        rdata : dword_t;
         error : std_logic;
     end record;
+
+    --arrays
+    type mem_if_masters is array(0 to (N*M)-1) of mem_if_master;
+    type mem_if_slaves is array(0 to (N*M)-1) of mem_if_slave;
 
     -- Link constants
     constant LINK_DATA_WIDTH : integer := WORD_WIDTH;
@@ -117,6 +123,16 @@ package argo_types is
     constant LINK_WIDTH : integer := LINK_DATA_WIDTH + LINK_CTRL;
 
     subtype link_t is std_logic_vector(LINK_WIDTH-1 downto 0);
+
+    -- Channels for bundled-data communication
+    type channel_forward is record
+    req  : std_logic;
+    data : link_t;
+    end record channel_forward;
+
+    type channel_backward is record
+    ack : std_logic;
+    end record channel_backward;
 
 end package ; -- argo_types
 

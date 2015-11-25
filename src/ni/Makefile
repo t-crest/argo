@@ -9,8 +9,10 @@ comp:
 	vcom -quiet ../argo_types.vhd
 	vcom -quiet ../mem/tdp_ram.vhd
 	vcom -quiet ../util/math_util.vhd
+	vcom -quiet ../util/test.vhd
 	vcom -quiet -2008 config_bus.vhd
 	vcom -quiet -2008 TDM_controller.vhd schedule_table.vhd DMA_table.vhd
+	vcom -quiet test/tx_tb.vhd
 	vcom -quiet config_unit.vhd data_unit.vhd irq_unit.vhd 
 	vcom -quiet network_interface.vhd
 

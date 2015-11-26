@@ -11,7 +11,7 @@ comp:
 	vcom -quiet ../util/math_util.vhd
 	vcom -quiet -2008 config_bus.vhd
 	vcom -quiet -2008 TDM_controller.vhd schedule_table.vhd DMA_table.vhd
-	vcom -quiet config_unit.vhd data_unit.vhd irq_unit.vhd 
+	vcom -quiet config_unit.vhd data_unit.vhd irq_unit.vhd irq_fifo.vhd 
 	vcom -quiet network_interface.vhd
 
 #./comp/%.o: %.vhd work

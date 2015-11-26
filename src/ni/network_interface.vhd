@@ -70,7 +70,6 @@ architecture struct of network_interface is
 --------------------------------------------------------------------------------
 component TDM_controller is
 	generic (
-		MAX_MODE_CHANGE : natural;
 		MASTER : boolean := false
 	);
 	port (
@@ -83,8 +82,30 @@ component TDM_controller is
 		config_slv : out mem_if_slave;
 		stbl_idx	: out stbl_idx_t;
 		stbl_idx_en : out std_logic;
-		t2n 	: in stbl_t2n_t
+		t2n 	: in stbl_t2n_t;
+		period_boundary : out std_logic;
+		stbl_min : in unsigned(STBL_IDX_WIDTH-1 downto 0);
+		stbl_maxp1 : in unsigned(STBL_IDX_WIDTH-1 downto 0)
 	);
+end component;
+
+component MC_controller is
+  generic (
+	MAX_MODE_CHANGE : natural := 1;
+	MASTER : boolean := true
+  );
+  port (
+	clk   : in std_logic;
+	reset   : in std_logic;
+	run     : in std_logic;
+	config  : in mem_if_master;
+	sel   : in std_logic;
+	config_slv : out mem_if_slave;
+	period_boundary : in std_logic;
+	stbl_min : out unsigned(STBL_IDX_WIDTH-1 downto 0);
+	stbl_maxp1 : out unsigned(STBL_IDX_WIDTH-1 downto 0);
+	md_chg : out std_logic
+  );
 end component;
 
 component schedule_table is
@@ -104,7 +125,7 @@ component schedule_table is
 		);
 end component;
 
-component dma_table is
+component packet_manager is
 	port (
 		clk		: in std_logic;
 		reset 	: in std_logic;
@@ -112,23 +133,13 @@ component dma_table is
 		sel 	: in std_logic;
 		config_slv : out mem_if_slave;
 		config_dword : in std_logic;
-		dma_num : in dma_idx_t;
-		dma_en : in std_logic;
-		pkt_en : out std_logic;
-		pkt_data_addr : out dma_read_addr_t;
-		pkt_header_field : out header_field_t
-
-	);
-end component;
-
-component pkt_assembly is
-	port (
-		clk		: in std_logic;
-		reset 	: in std_logic;
-		route : in route_t;
-		pkt_header_field : in header_field_t;
 		spm 	: out mem_if_master;
 		spm_slv : in mem_if_slave;
+		dma_num : in dma_idx_t;
+		dma_en : in std_logic;
+		route : in route_t;
+		md_chg : in std_logic;
+		pkt_len : in stbl_pkt_len_t;
 		pkt_out : out link_t
 	);
 end component;
@@ -201,6 +212,8 @@ component config_bus is
 		sched_tbl_sel : out std_logic;
 		DMA_tbl : in mem_if_slave;
 		DMA_tbl_sel : out std_logic;
+		MC_ctrl : in mem_if_slave;
+		MC_ctrl_sel : out std_logic;
 		irq_unit_fifo : in mem_if_slave;
 		irq_unit_fifo_sel : out std_logic
 	);
@@ -220,8 +233,8 @@ end component;
 
 signal config : mem_if_master;
 signal config_dword : std_logic;
-signal TDM_ctrl, sched_tbl, DMA_tbl : mem_if_slave;
-signal TDM_ctrl_sel, sched_tbl_sel, DMA_tbl_sel : std_logic;
+signal TDM_ctrl, sched_tbl, DMA_tbl, MC_ctrl : mem_if_slave;
+signal TDM_ctrl_sel, sched_tbl_sel, DMA_tbl_sel, MC_ctrl_sel : std_logic;
 signal stbl_idx : stbl_idx_t;
 signal stbl_idx_en : std_logic;
 signal t2n : stbl_t2n_t;
@@ -231,8 +244,9 @@ signal pkt_len : stbl_pkt_len_t;
 signal dma_num : dma_idx_t;
 signal dma_en : std_logic;
 
-signal pkt_data_addr : dma_read_addr_t;
-signal pkt_header_field : header_field_t;
+signal md_chg, period_boundary : std_logic;
+signal stbl_min : unsigned(STBL_IDX_WIDTH-1 downto 0);
+signal stbl_maxp1 : unsigned(STBL_IDX_WIDTH-1 downto 0);
 
 signal tx_spm, rx_spm : mem_if_master;
 signal tx_spm_slv : mem_if_slave;
@@ -250,7 +264,6 @@ begin
 -- TX pipeline instantiations
 	TDMctrl : TDM_controller
 	generic map (
-		MAX_MODE_CHANGE => 1,
 		MASTER => MASTER
 	)
 	port map(
@@ -263,7 +276,28 @@ begin
 		config_slv => TDM_ctrl,
 		stbl_idx => stbl_idx,
 		stbl_idx_en => stbl_idx_en,
-		t2n => t2n
+		t2n => t2n,
+		period_boundary => period_boundary,
+		stbl_min => stbl_min,
+		stbl_maxp1 => stbl_maxp1
+	);
+
+	MCctrl : MC_controller
+	generic map (
+		MAX_MODE_CHANGE => 2,
+		MASTER => MASTER
+	)
+	port map (
+		clk => clk,
+		reset => reset,
+		run => run,
+		config => config,
+		sel => MC_ctrl_sel,
+		config_slv => MC_ctrl,
+		period_boundary => period_boundary,
+		stbl_min => stbl_min,
+		stbl_maxp1 => stbl_maxp1,
+		md_chg => md_chg
 	);
 
 
@@ -283,7 +317,7 @@ begin
 		dma_en => dma_en
 	);
 
-	dmatbl : dma_table
+	pktman : packet_manager
 	port map (
 		clk => clk,
 		reset => reset,
@@ -291,23 +325,15 @@ begin
 		sel => DMA_tbl_sel,
 		config_slv => DMA_tbl,
 		config_dword => config_dword,
+		spm => spm, 
+		spm_slv => spm_slv, 
 		dma_num => dma_num,
 		dma_en => dma_en,
-		pkt_data_addr => pkt_data_addr,
-		pkt_header_field => pkt_header_field
-	);
-
-	pktasm : pkt_assembly
-	port map (
-		clk => clk,
-		reset => reset,
-		route => route,
-		pkt_header_field => pkt_header_field,
-		spm => tx_spm,
-		spm_slv => tx_spm_slv,
+		route => route, 
+		md_chg => md_chg, 
+		pkt_len => pkt_len,
 		pkt_out => pkt_out
 	);
-
 
 -- RX pipeline instantiations
 	datunit : data_unit
@@ -380,6 +406,8 @@ begin
 			sched_tbl_sel => sched_tbl_sel,
 			DMA_tbl => DMA_tbl,
 			DMA_tbl_sel => DMA_tbl_sel,
+			MC_ctrl => MC_ctrl,
+			MC_ctrl_sel => MC_ctrl_sel,
 			irq_unit_fifo => irq_if_fifo,
 			irq_unit_fifo_sel => irq_if_fifo_sel
 			);

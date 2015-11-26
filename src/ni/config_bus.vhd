@@ -60,6 +60,8 @@ entity config_bus is
     sched_tbl_sel : out std_logic;
     DMA_tbl : in mem_if_slave;
     DMA_tbl_sel : out std_logic;
+    MC_ctrl : in mem_if_slave;
+    MC_ctrl_sel : out std_logic;
     irq_unit_fifo : in mem_if_slave;
     irq_unit_fifo_sel : out std_logic
   );
@@ -86,7 +88,7 @@ architecture rtl of config_bus is
 --------------------------------------------------------------------------------
 signal next_ocp_resp, ocp_resp_reg : std_logic_vector(OCP_RESP_WIDTH-1 downto 0);
 signal bank_id, prev_bank_id : config_bank_t;
-signal config_addr : config_addr_t;
+--signal config_addr : config_addr_t;
 
 
 begin
@@ -157,6 +159,7 @@ begin
 
   -- Default select no bank
   TDM_ctrl_sel <= '0';
+  MC_ctrl_sel <= '0';
   sched_tbl_sel <= '0';
   DMA_tbl_sel <= '0';
   irq_unit_fifo_sel <= '0';
@@ -168,11 +171,10 @@ begin
       sched_tbl_sel <= '1';
     when TDM_BANK =>
       TDM_ctrl_sel <= '1';
-    when CLOCK_BANK =>
-      TDM_ctrl_sel <= '1';
+    when MC_BANK =>
+      MC_ctrl_sel <= '1';
     when IRQ_BANK =>
       irq_unit_fifo_sel <= '1';
-    when ERROR_BANK =>
     when PERF_BANK =>
     when others =>
   end case ;
@@ -185,12 +187,10 @@ begin
       ocp_config_s.SData <= std_logic_vector(sched_tbl.rdata(WORD_WIDTH-1 downto 0));
     when TDM_BANK =>
       ocp_config_s.SData <= std_logic_vector(TDM_ctrl.rdata(WORD_WIDTH-1 downto 0));
-    when CLOCK_BANK =>
-      ocp_config_s.SData <= std_logic_vector(TDM_ctrl.rdata(WORD_WIDTH-1 downto 0));
+    when MC_BANK =>
+      ocp_config_s.SData <= std_logic_vector(MC_ctrl.rdata(WORD_WIDTH-1 downto 0));
     when IRQ_BANK =>
       ocp_config_s.SData <= std_logic_vector(irq_unit_fifo.rdata(WORD_WIDTH-1 downto 0));
-    when ERROR_BANK =>
-      ocp_config_s.SData <= (others => '0');
     when PERF_BANK =>
       ocp_config_s.SData <= (others => '0');
     when others =>

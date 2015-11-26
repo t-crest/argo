@@ -63,10 +63,8 @@ package argo_types is
     constant DMA_BANK       : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "000";
     constant SCHED_BANK     : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "001";
     constant TDM_BANK       : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "010";
-    constant CLOCK_BANK     : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "011";
+    constant MC_BANK        : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "011";
     constant IRQ_BANK       : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "100";
-    constant IRQ_DATA_BANK  : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "101";
-    constant ERROR_BANK     : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "110";
     constant PERF_BANK      : unsigned(CPKT_BANK_WIDTH-1 downto 0) := "111";
 
     -- Interrupt packet constants and types

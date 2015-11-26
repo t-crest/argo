@@ -30,7 +30,7 @@
 
 
 --------------------------------------------------------------------------------
--- Argo 2.0 Network Interface: The DMA table component of the NI
+-- Argo 2.0 Network Interface: The packet manager component of the NI
 --
 -- Author: Rasmus Bo Soerensen (rasmus@rbscloud.dk)
 --------------------------------------------------------------------------------
@@ -40,25 +40,26 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.argo_types.all;
 
-entity dma_table is
+entity packet_manager is
   port (
-    -- Clock reset and run
     clk   : in std_logic;
     reset   : in std_logic;
-    -- Read write interface from config bus
-    config  : in mem_if_master;
+    config : in mem_if_master;
     sel   : in std_logic;
     config_slv : out mem_if_slave;
     config_dword : in std_logic;
+    spm   : out mem_if_master;
+    spm_slv : in mem_if_slave;
     dma_num : in dma_idx_t;
     dma_en : in std_logic;
-    pkt_en : out std_logic;
-    pkt_data_addr : out dma_read_addr_t;
-    pkt_header_field : out header_field_t
+    route : in route_t;
+    md_chg : in std_logic;
+    pkt_len : in stbl_pkt_len_t;
+    pkt_out : out link_t
   );
-end dma_table;
+end packet_manager;
 
-architecture rtl of dma_table is
+architecture rtl of packet_manager is
 --------------------------------------------------------------------------------
 -- Fields of DMA table (All fields are writable only)
 -- Bits     | Name
@@ -71,12 +72,25 @@ architecture rtl of dma_table is
 -- The active bit is implemented in registers such that the active bit can be
 -- reset in case of an interrupt slot (1 clock cycle)
 --------------------------------------------------------------------------------
+type state_type is (IDLE, DATA1, DATA2, CONFIG1, CONFIG2);
+signal state, next_state : state_type;
 
 constant DMATBL_DATA_WIDTH : natural := DMATBL_COUNT_WIDTH + HEADER_FIELD_WIDTH
                                                         + DMATBL_READ_PTR_WIDTH;
 
-signal dmatbl_data : unsigned(DMATBL_COUNT_WIDTH + HEADER_FIELD_WIDTH +
-                                              DMATBL_READ_PTR_WIDTH-1 downto 0);
+signal dmatbl_data : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+
+alias dmatbl_header : unsigned(HEADER_FIELD_WIDTH-1 downto 0)
+                                 is dmatbl_data(HEADER_FIELD_WIDTH-1 downto 0);
+
+alias dmatbl_count : unsigned(DMATBL_COUNT_WIDTH-1 downto 0) is
+  dmatbl_data(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH);
+
+alias dmatbl_read_ptr : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0) is
+ dmatbl_data(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto HEADER_FIELD_WIDTH);
+
+alias pkt_type : unsigned(1 downto 0)
+            is dmatbl_header(HEADER_FIELD_WIDTH-1 downto HEADER_FIELD_WIDTH-2);
 
 signal dma_en_reg : std_logic;
 
@@ -104,37 +118,75 @@ signal port_a_dout  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
 
 signal config_slv_error_next : std_logic;
 
+signal pkt_len_reg : stbl_pkt_len_t;
+
 begin
+
+fsm : process( state, pkt_type, pkt_len_reg )
+begin
+  case( state ) is
+  
+    when IDLE =>
+      if pkt_type = "00" then
+        next_state <= DATA1;
+      elsif pkt_type = "10" then
+        next_state <= CONFIG1;
+      elsif pkt_type = "11" then
+        next_state <= IDLE;
+      end if ;
+    
+    when DATA1 =>
+      next_state <= DATA2;
+
+    when DATA2 =>
+      if pkt_len_reg > 0 then
+        next_state <= DATA1;
+      elsif pkt_len_reg = 0 then
+        next_state <= IDLE;
+      end if ;
+
+    when CONFIG1 =>
+      next_state <= CONFIG2;
+
+    when CONFIG2 =>
+      next_state <= IDLE;
+
+    when others =>
+      next_state <= IDLE;
+  end case ;
+end process ; -- fsm
 
 port_a_input_mux : process( config_dword, config.wdata, config.addr, config.wr, hi_lo_reg, port_a_dout, sel  )
 begin
   port_a_wr_hi <= '0';
   port_a_wr_lo <= '0';
   port_a_addr <= config.addr(DMATBL_IDX_WIDTH downto 1);
+  config_slv.rdata <= (others => '0');
   if config_dword = '1' then
-    port_a_din(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
-            <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH-1 downto WORD_WIDTH);
-    port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
-        <= config.wdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0);
+    port_a_din(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH)
+          <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1
+                                                            downto WORD_WIDTH);
+    port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
+                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
     port_a_wr_lo <= config.wr and sel;
   elsif config.addr(0) = '1' then
-    port_a_din(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
-                                <= config.wdata(DMATBL_COUNT_WIDTH-1 downto 0);
+    port_a_din(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH)
+          <= config.wdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
   elsif config.addr(0) = '0' then
-    port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
-        <= config.wdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0);
+    port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
+                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
     port_a_wr_lo <= config.wr and sel;
   end if ;
   
   hi_lo_next <= config.addr(0);
   if hi_lo_reg = '1' then
-    config_slv.rdata(DMATBL_COUNT_WIDTH-1 downto 0) <= port_a_dout(
-              DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH);
+    config_slv.rdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0)
+                 <= port_a_dout(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH);
   else
-    config_slv.rdata(HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH-1 downto 0) 
-                <= port_a_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0);
+    config_slv.rdata(HEADER_FIELD_WIDTH-1 downto 0) 
+                                 <= port_a_dout(HEADER_FIELD_WIDTH-1 downto 0);
   end if ;
   
   
@@ -154,44 +206,42 @@ begin
 end process ; -- port_b_input_mux
 
 
+-- Table storing count and read_ptr
 dmatbl1 : entity work.tdp_ram
   generic map(
-    DATA  =>  DMATBL_COUNT_WIDTH,
+    DATA  =>  DMATBL_COUNT_WIDTH + DMATBL_READ_PTR_WIDTH,
     ADDR  =>  DMATBL_IDX_WIDTH
   )
   port map(
     a_clk   => clk,
     a_wr    => port_a_wr_hi,
     a_addr  => port_a_addr,
-    a_din   => port_a_din(DMATBL_DATA_WIDTH-1 downto
-                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH),
-    a_dout  => port_a_dout(DMATBL_DATA_WIDTH-1 downto
-                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH),
+    a_din   => port_a_din(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH),
+    a_dout  => port_a_dout(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH),
     b_clk   => clk,
     b_wr    => port_b_wr,
     b_addr  => port_b_addr,
-    b_din   => port_b_din(DMATBL_DATA_WIDTH-1 downto
-                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH),
-    b_dout  => port_b_dout(DMATBL_DATA_WIDTH-1 downto
-                                          DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH)
+    b_din   => port_b_din(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH),
+    b_dout  => port_b_dout(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH)
   );
 
+  -- Table storing Header field
   dmatbl2 : entity work.tdp_ram
   generic map(
-    DATA  =>  HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH,
+    DATA  =>  HEADER_FIELD_WIDTH,
     ADDR  =>  DMATBL_IDX_WIDTH
   )
   port map(
     a_clk   => clk,
     a_wr    => port_a_wr_lo,
     a_addr  => port_a_addr,
-    a_din   => port_a_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0),
-    a_dout  => port_a_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0),
+    a_din   => port_a_din(HEADER_FIELD_WIDTH-1 downto 0),
+    a_dout  => port_a_dout(HEADER_FIELD_WIDTH-1 downto 0),
     b_clk   => clk,
     b_wr    => port_b_wr,
     b_addr  => port_b_addr,
-    b_din   => port_b_din(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0),
-    b_dout  => port_b_dout(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto 0)
+    b_din   => port_b_din(HEADER_FIELD_WIDTH-1 downto 0),
+    b_dout  => port_b_dout(HEADER_FIELD_WIDTH-1 downto 0)
   );
 
 error_handler_proc : process( config.addr, sel )
@@ -225,7 +275,6 @@ begin
   end if ;
 end process ; -- active_reg_proc
 
-pkt_en <= dma_en_reg;
 
 hi_lo_reg_proc : process( clk )
 begin
@@ -248,6 +297,17 @@ begin
     end if;
   end if ;
 end process ; -- config_slv_error_reg_proc
+
+pkt_len_reg_proc : process( clk )
+begin
+  if rising_edge(clk) then
+    if reset = '1' then
+      pkt_len_reg <= (others => '0');
+    else
+      pkt_len_reg <= pkt_len;
+    end if ;
+  end if ;
+end process ; -- pkt_len_reg_proc
 
 
 

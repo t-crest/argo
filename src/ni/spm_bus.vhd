@@ -60,16 +60,20 @@ architecture rtl of spm_bus is
 begin
 	tx_spm_slv <= spm_slv;
 
-	process(tx_spm, rx_spm, rx_spm.en, rx_spm_buff, rx_spm_buff.en)
+	process(tx_spm, rx_spm, rx_spm_buff)
 	begin
 		if (tx_spm.en = '1') then
 			spm <= tx_spm;
-		elsif (rx_spm_buff.en = '1') then
-			spm <= rx_spm_buff;
-		elsif (rx_spm.en = '1') then
-			spm <= rx_spm;
 		else
-			spm <= tx_spm;
+			if (rx_spm_buff.en = '1') then
+				spm <= rx_spm_buff;
+			else
+				if (rx_spm.en = '1') then
+					spm <= rx_spm;
+				else
+					spm <= tx_spm;
+				end if;
+			end if;
 		end if;
 	end process;
 

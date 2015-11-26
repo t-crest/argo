@@ -103,7 +103,7 @@ begin
 	irq_irq_sig  <= irq_not_empty;
 	irq_data_sig <= data_not_empty;
 
-	config_slv.rdata((2 * WORD_WIDTH) - 1 downto HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH) <= (others => '0');
+	config_slv.rdata(WORD_WIDTH - 1 downto HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH) <= (others => '0');
 
 	--Detectors for the state of the two FIFOs
 	irq_not_empty  <= '0' when irq_w_ptr = irq_r_ptr else '1';

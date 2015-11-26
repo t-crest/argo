@@ -147,7 +147,7 @@ begin
   -- Hold the OCP response signal valid until the response accept from the
   -- master
   -- TODO: Hold the read data as well
-  if ocp_config_m.MRespAccept = '1' then
+  if (ocp_resp_reg /= OCP_RESP_NULL) and (ocp_config_m.MRespAccept = '1') then
     next_ocp_resp <= OCP_RESP_NULL;
   end if;
 

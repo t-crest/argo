@@ -39,7 +39,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.noc_defs.all;
+--use work.noc_defs.all;
+use work.argo_types.all;
 
 entity HPU is
 	port(

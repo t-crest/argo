@@ -90,11 +90,11 @@ architecture rtl of TDM_controller is
     
   signal STBL_MIN_reg, STBL_MAXP1_reg, STBL_IDX_reg : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal STBL_MIN_next, STBL_MAXP1_next, STBL_IDX_next : unsigned(STBL_IDX_WIDTH-1 downto 0);
-  signal TIME2NEXT_reg : unsigned(STBL_T2N_WIDTH-1 downto 0);
+  signal TIME2NEXT_reg, TIME2NEXT_init_reg : unsigned(STBL_T2N_WIDTH-1 downto 0);
   signal CLOCK_CNT_HI_reg : word_t;
   signal CLOCK_CNT_LO_reg : word_t;
 
-  signal MASTER_RUN_REG, MASTER_RUN_NEXT : unsigned(0 downto 0);
+  signal MASTER_RUN_NEXT : std_logic_vector(0 downto 0);
 
   signal P_CNT_reg : unsigned(1 downto 0);
 
@@ -117,18 +117,32 @@ architecture rtl of TDM_controller is
   signal t2n_run : stbl_t2n_t;
 
   signal config_slv_error_next : std_logic;
+
+  constant MASTER_RUN_PIPE_DEPTH : natural := 3;
+  signal master_run_reg : std_logic_vector(MASTER_RUN_PIPE_DEPTH-1 downto 0);
+
+  signal run_reg : std_logic;
 begin
 
 --------------------------------------------------------------------------------
 -- Master/Slave run signals
 --------------------------------------------------------------------------------
   master_config : if MASTER generate
-    master_run <= std_logic(MASTER_RUN_REG(0));
+    master_run <= master_run_reg(master_run_reg'high);
+    process(clk)
+    begin
+      if rising_edge(clk) then
+        if reset = '1' then
+          master_run_reg <= (others => '0');
+        else
+          master_run_reg <= master_run_reg(master_run_reg'high-1 downto 0) & MASTER_RUN_NEXT;
+        end if ;
+      end if ;
+    end process ;
   end generate ;
 
   slave_config : if not MASTER generate
     master_run <= '0';
-    MASTER_RUN_NEXT(0) <= run;
   end generate ;
 
 --------------------------------------------------------------------------------
@@ -146,7 +160,7 @@ begin
     MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
     MODE_CHANGES_next <= MODE_CHANGES_reg;
     mode_change_idx_changed <= '0';
-    MASTER_RUN_NEXT <= MASTER_RUN_REG;
+    MASTER_RUN_NEXT(0) <= master_run_reg(0);
     if (sel = '1' and config.en = '1') then
       -- Read registers
       if config.wr = '0' then
@@ -163,16 +177,16 @@ begin
           when to_unsigned(4,CPKT_ADDR_WIDTH) =>
             read_next(log2up(MAX_MODE_CHANGE)-1 downto 0) <= unsigned(MODE_CHANGE_IDX_reg);
           when to_unsigned(128,CPKT_ADDR_WIDTH) =>
-            read_next(0 downto 0) <= unsigned(MASTER_RUN_REG);
+            read_next(0) <= run;
           when others =>
             read_next <= (others => '0');
             config_slv_error_next <= '1';
         end case ;
-        -- Read mode change registers
+        -- Read mode-change registers
         for i in 0 to MAX_MODE_CHANGE-1 loop
           if config.addr(CPKT_ADDR_WIDTH-1 downto 0) = i + 8 then
-            read_next((2*STBL_IDX_WIDTH)-1 downto 0) <=
-              MODE_CHANGES_reg(i).max & MODE_CHANGES_reg(i).min;
+            read_next(STBL_IDX_WIDTH-1 downto 0) <= MODE_CHANGES_reg(i).min;
+            read_next(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH) <= MODE_CHANGES_reg(i).max;
             config_slv_error_next <= '0';
           end if;
         end loop ;
@@ -183,7 +197,7 @@ begin
             mode_change_idx_changed <= '1';
           when to_unsigned(128,CPKT_ADDR_WIDTH) =>
             if MASTER then
-              MASTER_RUN_NEXT <= config.wdata(0 downto 0);
+              MASTER_RUN_NEXT <= std_logic_vector(config.wdata(0 downto 0));
             end if ;
           when others =>
             config_slv_error_next <= '1';
@@ -193,7 +207,7 @@ begin
         for i in 0 to MAX_MODE_CHANGE-1 loop
           if config.addr(CPKT_ADDR_WIDTH-1 downto 0) = i + 8 then
             MODE_CHANGES_next(i).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
-            MODE_CHANGES_next(i).max <= unsigned(config.wdata((2*STBL_IDX_WIDTH)-1 downto STBL_IDX_WIDTH));
+            MODE_CHANGES_next(i).max <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
             config_slv_error_next <= '0';
           end if;
         end loop ;
@@ -206,16 +220,16 @@ begin
 --------------------------------------------------------------------------------
   -- In case the NI is in run state, load the t2n val from the schedule table
   -- otherwise load the defined constant RUN_LOAD_VAL
-  t2n_run <= t2n when run = '1' else RUN_LOAD_VAL;
+  --t2n_run <= t2n when run = '1' else RUN_LOAD_VAL;
   -- The adder to increment the schedule table index  
   STBL_IDX_INC <= STBL_IDX_reg + 1;
-  -- When index reaches the end of the schedule in the current mode
-  -- reset the index
-  STBL_IDX_RESET <= '1' when STBL_IDX_INC = STBL_MAXP1_reg else '0';
   -- The schedule table index registers shall be enabled,
   -- when time2next (read directly from the SBTL) is one or
   -- when time2next (decremented in the counter) becomes one
-  STBL_IDX_EN_sig <= '1' when (TIME2NEXT_reg = 1) or (t2n_run = 0) else '0';
+  STBL_IDX_EN_sig <= '1' when (((TIME2NEXT_reg = 1) or (((TIME2NEXT_reg = 0) or (TIME2NEXT_reg = "11111")) and (t2n = 0))) or ( run /= run_reg))  else '0';
+  -- When index reaches the end of the schedule in the current mode
+  -- reset the index
+  STBL_IDX_RESET <= '1' when ((STBL_IDX_INC = STBL_MAXP1_reg) or ( run /= run_reg)) else '0';
   -- Detect period boundary
   -- period_boundary is high in the last clock cycle of a TDM period
   -- This is when the STBL index wrapps around and the STBL index is enabled
@@ -246,20 +260,16 @@ begin
         read_reg <= (others => '0');  
         MODE_CHANGES_reg <= (others => (others => (others =>'0')));
         config_slv.error <= '0';
-        MASTER_RUN_REG <= (others => '0');
         -- T2N_ld_reg should be initialized such that the TIME2NEXT register
-        -- will load a zero. Zero will give the longest time to STBL_IDX_EN\
+        -- will load a zero. Zero will give the longest time to STBL_IDX_EN
         -- goes high.
         T2N_ld_reg <= '1';
       else
+        run_reg <= run;
         read_reg <= read_next;
         MODE_CHANGES_reg <= MODE_CHANGES_next;
         T2N_ld_reg <= STBL_IDX_EN_sig;
-        MODE_CHANGE_IDX_reg <= MODE_CHANGE_IDX_next;
-        MASTER_RUN_REG <= MASTER_RUN_NEXT;
         config_slv.error <= config_slv_error_next;
-        -- Clock counter
-        --CLOCK_CNT_reg <= CLOCK_CNT_reg + 1;
       end if ;
     end if ;
     
@@ -268,6 +278,7 @@ begin
 
   -- TDM slot counter, incremented every clock cycle and
   -- reset on a period boundary
+  -- A single 64 bit counter is to slow
   CLOCK_CNT_reg_PROC : process( clk )
   begin
     if rising_edge(clk) then
@@ -339,9 +350,11 @@ begin
     if rising_edge(clk) then
       if reset = '1' then
         TIME2NEXT_reg <= (others => '0');
+        TIME2NEXT_init_reg <= (others => '0');
       else -- TIME2NEXT counter
         if T2N_ld_reg = '1' then
-          TIME2NEXT_reg <= t2n_run;
+          TIME2NEXT_reg <= t2n;
+          TIME2NEXT_init_reg <= t2n;
         else
           TIME2NEXT_reg <= TIME2NEXT_reg - 1; 
         end if ;

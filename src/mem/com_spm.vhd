@@ -38,10 +38,11 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use work.ocp.all;
 use work.config_types.all;
 use work.config.all;
-use work.noc_defs.all;
+use work.argo_types.all;
 use work.noc_interface.all;
 
 entity com_spm is
@@ -55,13 +56,13 @@ entity com_spm is
     reset : in std_logic;
     ocp_core_m : in ocp_core_m;
     ocp_core_s : out ocp_core_s;
-    spm_m      : in spm_master;
-    spm_s      : out spm_slave
-  ) ;
+    spm_m    : in mem_if_master;
+    spm_s   : out mem_if_slave
+  );
 end entity ; -- com_spm
 
 architecture arch of com_spm is
---    component bram_tdp is
+--    component tdp_ram is
 --        generic (
 --            DATA    : integer := 32;
 --            ADDR    : integer := SPM_IDX_SIZE
@@ -84,7 +85,7 @@ architecture arch of com_spm is
 --    end component;
 
     signal wr_h, wr_l : std_logic;
-    signal Sdata_h, Sdata_l : std_logic_vector(DATA_WIDTH-1 downto 0);
+    signal Sdata_h, Sdata_l : unsigned(WORD_WIDTH-1 downto 0);
     signal select_low, select_low_reg : std_logic;
     signal select_high, select_high_reg : std_logic;
 
@@ -125,9 +126,9 @@ begin
         ocp_core_s.SResp <= OCP_RESP_NULL;
         if MCmd(1) = '1' then
             if select_high_reg = '1' then
-                ocp_core_s.SData <= SData_h;
+                ocp_core_s.SData <= std_logic_vector(SData_h);
             elsif select_low_reg = '1' then
-                ocp_core_s.SData <= SData_l;
+                ocp_core_s.SData <= std_logic_vector(SData_l);
             end if ;
             ocp_core_s.SResp <= OCP_RESP_DVA;
         end if ;
@@ -165,115 +166,115 @@ l_2_en <= ocp_core_m.MByteEn(2) and wr_l;
 l_3_en <= ocp_core_m.MByteEn(3) and wr_l;
 
 -- High SPM instance 0
-spm_h_0 : entity work.bram_tdp
-generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_h_0 : entity work.tdp_ram
+generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_0_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(7 downto 0),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(7 downto 0)),
     a_dout => SData_h(7 downto 0),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(39 downto 32),
-    b_dout => spm_s.SData(39 downto 32));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(39 downto 32),
+    b_dout => spm_s.rdata(39 downto 32));
 
 -- High SPM instance 1
-spm_h_1 : entity work.bram_tdp
-generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_h_1 : entity work.tdp_ram
+generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_1_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(15 downto 8),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(15 downto 8)),
     a_dout => SData_h(15 downto 8),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(47 downto 40),
-    b_dout => spm_s.SData(47 downto 40));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(47 downto 40),
+    b_dout => spm_s.rdata(47 downto 40));
 
 -- High SPM instance 2
-spm_h_2 : entity work.bram_tdp
-generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_h_2 : entity work.tdp_ram
+generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_2_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(23 downto 16),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(23 downto 16)),
     a_dout => SData_h(23 downto 16),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(55 downto 48),
-    b_dout => spm_s.SData(55 downto 48));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(55 downto 48),
+    b_dout => spm_s.rdata(55 downto 48));
 
 -- High SPM instance 3
-spm_h_3 : entity work.bram_tdp
-generic map (DATA=>DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_h_3 : entity work.tdp_ram
+generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_3_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(31 downto 24),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(31 downto 24)),
     a_dout => SData_h(31 downto 24),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(63 downto 56),
-    b_dout => spm_s.SData(63 downto 56));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(63 downto 56),
+    b_dout => spm_s.rdata(63 downto 56));
 
 -- Low SPM instance 0
-spm_l_0 : entity work.bram_tdp
-generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_l_0 : entity work.tdp_ram
+generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_0_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(7 downto 0),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(7 downto 0)),
     a_dout => SData_l(7 downto 0),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(7 downto 0),
-    b_dout => spm_s.SData(7 downto 0));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(7 downto 0),
+    b_dout => spm_s.rdata(7 downto 0));
 
 -- Low SPM instance 1
-spm_l_1 : entity work.bram_tdp
-generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_l_1 : entity work.tdp_ram
+generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_1_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(15 downto 8),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(15 downto 8)),
     a_dout => SData_l(15 downto 8),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(15 downto 8),
-    b_dout => spm_s.SData(15 downto 8));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(15 downto 8),
+    b_dout => spm_s.rdata(15 downto 8));
 
 -- Low SPM instance 2
-spm_l_2 : entity work.bram_tdp
-generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_l_2 : entity work.tdp_ram
+generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_2_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(23 downto 16),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(23 downto 16)),
     a_dout => SData_l(23 downto 16),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(23 downto 16),
-    b_dout => spm_s.SData(23 downto 16));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(23 downto 16),
+    b_dout => spm_s.rdata(23 downto 16));
 
 -- Low SPM instance 3
-spm_l_3 : entity work.bram_tdp
-generic map (DATA => DATA_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
+spm_l_3 : entity work.tdp_ram
+generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_3_en,
-    a_addr => ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3),
-    a_din => ocp_core_m.MData(31 downto 24),
+    a_addr => unsigned(ocp_core_m.MAddr(SPM_IDX_SIZE-1 downto 3)),
+    a_din => unsigned(ocp_core_m.MData(31 downto 24)),
     a_dout => SData_l(31 downto 24),
     b_clk => n_clk,
-    b_wr => spm_m.MCmd(0),
-    b_addr => spm_m.MAddr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.MData(31 downto 24),
-    b_dout => spm_s.SData(31 downto 24));
+    b_wr => spm_m.wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
+    b_din => spm_m.wdata(31 downto 24),
+    b_dout => spm_s.rdata(31 downto 24));
 
 end architecture ; -- arch

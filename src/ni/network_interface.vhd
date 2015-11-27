@@ -84,6 +84,7 @@ component TDM_controller is
 		stbl_idx_en : out std_logic;
 		t2n 	: in stbl_t2n_t;
 		period_boundary : out std_logic;
+    mc_p_cnt : out unsigned(1 downto 0);
 		stbl_min : in unsigned(STBL_IDX_WIDTH-1 downto 0);
 		stbl_maxp1 : in unsigned(STBL_IDX_WIDTH-1 downto 0)
 	);
@@ -91,7 +92,6 @@ end component;
 
 component MC_controller is
   generic (
-	MAX_MODE_CHANGE : natural := 1;
 	MASTER : boolean := true
   );
   port (
@@ -102,9 +102,11 @@ component MC_controller is
 	sel   : in std_logic;
 	config_slv : out mem_if_slave;
 	period_boundary : in std_logic;
+    mc_p_cnt : in unsigned(1 downto 0);
 	stbl_min : out unsigned(STBL_IDX_WIDTH-1 downto 0);
 	stbl_maxp1 : out unsigned(STBL_IDX_WIDTH-1 downto 0);
-	md_chg : out std_logic
+	mc : out std_logic;
+  mc_idx : out mctbl_idx_t
   );
 end component;
 
@@ -138,7 +140,8 @@ component packet_manager is
 		dma_num : in dma_idx_t;
 		dma_en : in std_logic;
 		route : in route_t;
-		md_chg : in std_logic;
+    mc : in std_logic;
+    mc_idx : in mctbl_idx_t;
 		pkt_len : in stbl_pkt_len_t;
 		pkt_out : out link_t
 	);
@@ -258,6 +261,10 @@ signal config_unit_master : mem_if_master;
 signal irq_if_fifo : mem_if_slave;
 signal irq_if_fifo_sel : std_logic;
 
+signal mc : std_logic;
+signal mc_idx : mctbl_idx_t;
+signal mc_p_cnt : unsigned(1 downto 0);
+
 
 begin
 
@@ -278,13 +285,13 @@ begin
 		stbl_idx_en => stbl_idx_en,
 		t2n => t2n,
 		period_boundary => period_boundary,
+		mc_p_cnt => mc_p_cnt,
 		stbl_min => stbl_min,
 		stbl_maxp1 => stbl_maxp1
 	);
 
 	MCctrl : MC_controller
 	generic map (
-		MAX_MODE_CHANGE => 2,
 		MASTER => MASTER
 	)
 	port map (
@@ -295,9 +302,11 @@ begin
 		sel => MC_ctrl_sel,
 		config_slv => MC_ctrl,
 		period_boundary => period_boundary,
+		mc_p_cnt => mc_p_cnt,
 		stbl_min => stbl_min,
 		stbl_maxp1 => stbl_maxp1,
-		md_chg => md_chg
+		mc => mc,
+		mc_idx => mc_idx
 	);
 
 
@@ -329,8 +338,9 @@ begin
 		spm_slv => tx_spm_slv, 
 		dma_num => dma_num,
 		dma_en => dma_en,
-		route => route, 
-		md_chg => md_chg, 
+		route => route,
+		mc => mc,
+		mc_idx => mc_idx,
 		pkt_len => pkt_len,
 		pkt_out => pkt_out
 	);

@@ -62,6 +62,7 @@ entity TDM_controller is
     t2n   : in stbl_t2n_t;
     -- Interface towards mode change controller
     period_boundary : out std_logic;
+    mc_p_cnt : out unsigned(1 downto 0);
     stbl_min : in unsigned(STBL_IDX_WIDTH-1 downto 0);
     stbl_maxp1 : in unsigned(STBL_IDX_WIDTH-1 downto 0)
   );
@@ -92,7 +93,7 @@ architecture rtl of TDM_controller is
 
   signal MASTER_RUN_NEXT : std_logic_vector(0 downto 0);
 
-  signal P_CNT_reg : unsigned(1 downto 0);
+  signal mc_p_cnt_reg : unsigned(1 downto 0);
 
 --  signal MODE_CHANGE_IDX_reg, MODE_CHANGE_IDX_next : unsigned(log2up(MAX_MODE_CHANGE)-1 downto 0);
 --  type mode_change_t is record 
@@ -195,10 +196,10 @@ begin
   -- The schedule table index registers shall be enabled,
   -- when time2next (read directly from the SBTL) is one or
   -- when time2next (decremented in the counter) becomes one
-  STBL_IDX_EN_sig <= '1' when (((TIME2NEXT_reg = 1) or (((TIME2NEXT_reg = 0) or (TIME2NEXT_reg = "11111")) and (t2n = 0))) or ( run /= run_reg))  else '0';
+  STBL_IDX_EN_sig <= '1' when ((((TIME2NEXT_reg = 1) or (((TIME2NEXT_reg = 0) or (TIME2NEXT_reg = "11111")) and (t2n = 0))) or ( run /= run_reg)) and (run = '1') )  else '0';
   -- When index reaches the end of the schedule in the current mode
   -- reset the index
-  STBL_IDX_RESET <= '1' when ((STBL_IDX_INC = stbl_maxp1) or ( run /= run_reg)) else '0';
+  STBL_IDX_RESET <= '1' when (((STBL_IDX_INC = stbl_maxp1) or ( run /= run_reg)) and (run = '1')) else '0';
   -- Detect period boundary
   -- period_boundary is high in the last clock cycle of a TDM period
   -- This is when the STBL index wrapps around and the STBL index is enabled
@@ -289,18 +290,19 @@ begin
 
   -- Period counter not accessible from the processor, only counts to 3
   -- Used for doing a mode change or synchronizing to a new schedule at boot up
-  P_CNT_reg_PROC : process( clk )
+  mc_p_cnt_reg_PROC : process( clk )
   begin
     if rising_edge(clk) then
       if reset = '1' then
-        P_CNT_reg <= (others => '0');
+        mc_p_cnt_reg <= (others => '0');
       else -- TDM_period_counters
         if period_boundary_sig = '1' then
-          P_CNT_reg <= P_CNT_reg + 1;
+          mc_p_cnt_reg <= mc_p_cnt_reg + 1;
         end if ;
       end if ;
     end if ;
   end process ; -- P_CNT_reg_PROC
+  mc_p_cnt <= mc_p_cnt_reg;
 
   -- The time until the next entry in the schedule table
   -- Is decremented in every clock cycle and loaded when it reaches 0

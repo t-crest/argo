@@ -53,7 +53,8 @@ entity packet_manager is
     dma_num : in dma_idx_t;
     dma_en : in std_logic;
     route : in route_t;
-    md_chg : in std_logic;
+    mc : in std_logic;
+    mc_idx : in mctbl_idx_t;
     pkt_len : in stbl_pkt_len_t;
     pkt_out : out link_t
   );
@@ -72,31 +73,33 @@ architecture rtl of packet_manager is
 -- The active bit is implemented in registers such that the active bit can be
 -- reset in case of an interrupt slot (1 clock cycle)
 --------------------------------------------------------------------------------
-type state_type is (IDLE, DATA1, DATA2, CONFIG1, CONFIG2);
+type state_type is (IDLE, SEND1, SEND2, MODE_CHANGE1, MODE_CHANGE2);
 signal state, next_state : state_type;
 
-constant DMATBL_DATA_WIDTH : natural := DMATBL_COUNT_WIDTH + HEADER_FIELD_WIDTH
-                                                        + DMATBL_READ_PTR_WIDTH;
+constant DMATBL_DATA_WIDTH : natural := ACTIVE_BIT + DMATBL_COUNT_WIDTH
+                                  + DMATBL_READ_PTR_WIDTH + HEADER_FIELD_WIDTH;
 
 signal dmatbl_data : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
 
-alias dmatbl_header : unsigned(HEADER_FIELD_WIDTH-1 downto 0)
-                                 is dmatbl_data(HEADER_FIELD_WIDTH-1 downto 0);
+alias header : unsigned(HEADER_FIELD_WIDTH-1 downto 0) is
+                                   dmatbl_data(HEADER_FIELD_WIDTH-1 downto 0);
 
-alias dmatbl_count : unsigned(DMATBL_COUNT_WIDTH-1 downto 0) is
-  dmatbl_data(DMATBL_DATA_WIDTH-1 downto DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH);
+alias read_ptr : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0) is
+ dmatbl_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-DMATBL_COUNT_WIDTH-1 downto HEADER_FIELD_WIDTH);
 
-alias dmatbl_read_ptr : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0) is
- dmatbl_data(DMATBL_DATA_WIDTH-DMATBL_COUNT_WIDTH-1 downto HEADER_FIELD_WIDTH);
+alias count : unsigned(DMATBL_COUNT_WIDTH-1 downto 0) is
+  dmatbl_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto DMATBL_READ_PTR_WIDTH+HEADER_FIELD_WIDTH);
 
-alias pkt_type : unsigned(1 downto 0)
-            is dmatbl_header(HEADER_FIELD_WIDTH-1 downto HEADER_FIELD_WIDTH-2);
+alias active : std_logic is dmatbl_data(DMATBL_DATA_WIDTH-1);
+
+alias dma_pkt_type : unsigned(1 downto 0)
+            is header(HEADER_FIELD_WIDTH-1 downto HEADER_FIELD_WIDTH-2);
+
+signal pkt_type : unsigned(1 downto 0);
 
 signal dma_en_reg : std_logic;
 
-type active_t is array ((2 ** DMATBL_IDX_WIDTH) -1 downto 0) of std_logic;
-
-signal active_reg, active_next : active_t;
+signal read_ptr_reg, read_ptr_next : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0);
 
 signal hi_lo_next : std_logic;
 signal hi_lo_reg : std_logic;
@@ -106,9 +109,21 @@ signal port_b_addr  : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
 signal port_b_din   : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
 signal port_b_dout  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
 
-signal DMA_update_en : std_logic;
-signal DMA_update_addr  : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
-signal DMA_update_data  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+signal dma_num_reg : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
+signal dma_update_en : std_logic;
+signal dma_update_addr  : unsigned(DMATBL_IDX_WIDTH-1 downto 0);
+signal dma_update_data  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
+
+alias update_header : unsigned(HEADER_FIELD_WIDTH-1 downto 0) is
+                                   dma_update_data(HEADER_FIELD_WIDTH-1 downto 0);
+
+alias update_read_ptr : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0) is
+ dma_update_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-DMATBL_COUNT_WIDTH-1 downto HEADER_FIELD_WIDTH);
+
+alias update_count : unsigned(DMATBL_COUNT_WIDTH-1 downto 0) is
+  dma_update_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto DMATBL_READ_PTR_WIDTH+HEADER_FIELD_WIDTH);
+
+alias update_active : std_logic is dma_update_data(DMATBL_DATA_WIDTH-1);
 
 signal port_a_wr_hi : std_logic;
 signal port_a_wr_lo : std_logic;
@@ -118,43 +133,104 @@ signal port_a_dout  : unsigned(DMATBL_DATA_WIDTH-1 downto 0);
 
 signal config_slv_error_next : std_logic;
 
-signal pkt_len_reg : stbl_pkt_len_t;
+signal pkt_len_reg, pkt_len_next : stbl_pkt_len_t;
+
+signal route_reg : route_t;
+
+constant VALID_SOP : unsigned(2 downto 0) := "110";
+constant VALID     : unsigned(2 downto 0) := "100";
+constant VALID_EOP : unsigned(2 downto 0) := "101";
+
+signal payload_data, payload_data_next : unsigned(WORD_WIDTH-1 downto 0);
 
 begin
 
-fsm : process( state, pkt_type, pkt_len_reg )
+  spm.wdata <= (others => '0');
+  spm.wr <= '0';
+
+fsm : process( all )
 begin
-  case( state ) is
-  
+  dma_update_data <= dmatbl_data;
+  dma_update_en <= '0';
+  dma_update_addr <= dma_num_reg;
+  update_active <= '0';
+  next_state <= state;
+  spm.en <= '0';
+  pkt_out <= (others => '0');
+  pkt_len_next <= pkt_len_reg;
+  if dma_en = '1' then
+    pkt_len_next <= pkt_len;
+  end if ;
+  pkt_type <= dma_pkt_type;
+  payload_data_next <= (others => '0');
+
+  case( state ) is  
     when IDLE =>
-      if pkt_type = "00" then
-        next_state <= DATA1;
-      elsif pkt_type = "10" then
-        next_state <= CONFIG1;
-      elsif pkt_type = "11" then
-        next_state <= IDLE;
-      end if ;
-    
-    when DATA1 =>
-      next_state <= DATA2;
+      if dma_en_reg = '1' then
+        if mc = '1' then
+          next_state <= MODE_CHANGE1;
+          if pkt_len_reg >= 1 then
+            pkt_type <= "01";
+          end if ;
+          pkt_out <= std_logic_vector(VALID_SOP & pkt_type & MC_BANK & to_unsigned(4,CPKT_ADDR_WIDTH) & route_reg);
+        elsif active = '1' then
+          next_state <= SEND1;
+          spm.en <= '1';
+          spm.addr <= read_ptr;
+          read_ptr_next <= read_ptr;
+          dma_update_en <= '1';
+          if count <= pkt_len_reg then
+            update_active <= '0';
+            if dma_pkt_type = "00" then
+              pkt_type <= "10";
+            end if ;
+          else
+            update_header(update_header'high-2 downto 0) <=
+                                      header(header'high-2 downto 0) + pkt_len_reg;
+            update_read_ptr <= read_ptr + pkt_len_reg;
+            update_count <= count - pkt_len_reg;
+            update_active <= '1';
+            if dma_pkt_type = "01" then
+              update_header(update_header'high-2 downto update_header'high-5) <=
+                                      header(header'high-2 downto header'high-5);
+            end if ;
+          end if ;
+          pkt_out <= std_logic_vector(VALID_SOP & pkt_type & header(header'high-2 downto 0) & route_reg);
+        end if ;
+      end if;
+      
+    when SEND1 =>
+      next_state <= SEND2;
+      pkt_out <= std_logic_vector(VALID & spm_slv.rdata((2*WORD_WIDTH)-1 downto WORD_WIDTH));
+      payload_data_next <= spm_slv.rdata(WORD_WIDTH-1 downto 0);
+      pkt_len_next <= pkt_len_reg - 1;
 
-    when DATA2 =>
+    when SEND2 =>
       if pkt_len_reg > 0 then
-        next_state <= DATA1;
+        next_state <= SEND1;
+        pkt_out <= std_logic_vector(VALID & payload_data);
+        spm.en <= '1';
+        read_ptr_next <= read_ptr_reg + 1;
+        spm.addr <= read_ptr_next;
       elsif pkt_len_reg = 0 then
         next_state <= IDLE;
+        pkt_out <= std_logic_vector(VALID_EOP & payload_data);
       end if ;
 
-    when CONFIG1 =>
-      next_state <= CONFIG2;
+    when MODE_CHANGE1 =>
+      next_state <= MODE_CHANGE2;
+      pkt_out <= std_logic_vector(VALID & x"00000000" );
+      payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_idx;
 
-    when CONFIG2 =>
+    when MODE_CHANGE2 =>
       next_state <= IDLE;
+      pkt_out <= std_logic_vector(VALID_EOP & payload_data);
 
     when others =>
       next_state <= IDLE;
   end case ;
 end process ; -- fsm
+
 
 port_a_input_mux : process( config_dword, config.wdata, config.addr, config.wr, hi_lo_reg, port_a_dout, sel  )
 begin
@@ -163,18 +239,26 @@ begin
   port_a_addr <= config.addr(DMATBL_IDX_WIDTH downto 1);
   config_slv.rdata <= (others => '0');
   if config_dword = '1' then
-    port_a_din(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH)
+    -- Active bit
+    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata((2*WORD_WIDTH)-1);
+    -- Count value and Read pointer
+    port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
           <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1
                                                             downto WORD_WIDTH);
+    -- Header field
     port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
                                 <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
     port_a_wr_lo <= config.wr and sel;
   elsif config.addr(0) = '1' then
-    port_a_din(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH)
+    -- Active 
+    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata(WORD_WIDTH-1);
+    -- Count value and Read pointer
+    port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
           <= config.wdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
   elsif config.addr(0) = '0' then
+    -- Header field
     port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
                                 <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
     port_a_wr_lo <= config.wr and sel;
@@ -182,8 +266,9 @@ begin
   
   hi_lo_next <= config.addr(0);
   if hi_lo_reg = '1' then
+    config_slv.rdata(WORD_WIDTH) <= port_a_dout(port_a_dout'high);
     config_slv.rdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0)
-                 <= port_a_dout(DMATBL_DATA_WIDTH-1 downto HEADER_FIELD_WIDTH);
+                 <= port_a_dout(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH);
   else
     config_slv.rdata(HEADER_FIELD_WIDTH-1 downto 0) 
                                  <= port_a_dout(HEADER_FIELD_WIDTH-1 downto 0);
@@ -192,16 +277,16 @@ begin
   
 end process ; -- port_a_input_mux
 
-port_b_input_mux : process( dma_en, DMA_update_addr, DMA_update_data, DMA_update_en, dma_num, port_b_dout )
+port_b_input_mux : process( dma_en, dma_update_addr, dma_update_data, dma_update_en, dma_num, port_b_dout )
 begin
   dmatbl_data <= port_b_dout;
-  port_b_din <= DMA_update_data;
+  port_b_din <= dma_update_data;
   if dma_en = '1' then
     port_b_wr <= '0';
     port_b_addr <= dma_num;
   else
-    port_b_wr <= DMA_update_en;
-    port_b_addr <= DMA_update_addr;
+    port_b_wr <= dma_update_en;
+    port_b_addr <= dma_update_addr;
   end if ;
 end process ; -- port_b_input_mux
 
@@ -209,7 +294,7 @@ end process ; -- port_b_input_mux
 -- Table storing count and read_ptr
 dmatbl1 : entity work.tdp_ram
   generic map(
-    DATA  =>  DMATBL_COUNT_WIDTH + DMATBL_READ_PTR_WIDTH,
+    DATA  =>  ACTIVE_BIT + DMATBL_COUNT_WIDTH + DMATBL_READ_PTR_WIDTH,
     ADDR  =>  DMATBL_IDX_WIDTH
   )
   port map(
@@ -264,18 +349,6 @@ begin
   end if ;
 end process ; -- dma_en_reg
 
-active_reg_proc : process( clk )
-begin
-  if rising_edge(clk) then
-    if reset = '1' then
-      active_reg <= (others => '0');
-    else
-      active_reg <= active_next;
-    end if ;
-  end if ;
-end process ; -- active_reg_proc
-
-
 hi_lo_reg_proc : process( clk )
 begin
   if rising_edge(clk) then
@@ -298,17 +371,27 @@ begin
   end if ;
 end process ; -- config_slv_error_reg_proc
 
-pkt_len_reg_proc : process( clk )
+state_reg_proc : process( clk )
 begin
   if rising_edge(clk) then
     if reset = '1' then
-      pkt_len_reg <= (others => '0');
+      state <= IDLE;
     else
-      pkt_len_reg <= pkt_len;
+      state <= next_state;
     end if ;
   end if ;
-end process ; -- pkt_len_reg_proc
+  
+end process ; -- state_reg_proc
 
-
+data_reg_proc : process( clk )
+begin
+  if rising_edge(clk) then
+    pkt_len_reg <= pkt_len_next;
+    route_reg <= route;
+    payload_data <= payload_data_next;
+    read_ptr_reg <= read_ptr_next;
+    dma_num_reg <= dma_num;
+  end if ;
+end process ; -- data_reg_proc
 
 end rtl;

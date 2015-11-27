@@ -50,6 +50,7 @@ package argo_types is
     constant HEADER_ROUTE_WIDTH : integer := 16;
     constant HEADER_FIELD_WIDTH : integer := 16;
     constant HEADER_CTRL_WIDTH : integer := 2;
+    constant ACTIVE_BIT : integer := 1;
     subtype route_t is unsigned(HEADER_ROUTE_WIDTH-1 downto 0);
     subtype header_field_t is unsigned(HEADER_FIELD_WIDTH-1 downto 0);
     -- Data packet constants and types
@@ -93,6 +94,15 @@ package argo_types is
     constant DMATBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 DMA entries
     subtype dma_idx_t is unsigned(DMATBL_IDX_WIDTH-1 downto 0);
     subtype dma_read_addr_t is unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0);
+
+    -- Mode change table constants and types
+    constant MCTBL_IDX_WIDTH : integer := 2; -- 2^2 = 4 mode entries
+    subtype mctbl_idx_t is unsigned(MCTBL_IDX_WIDTH-1 downto 0);
+    type mode_t is record 
+        min : stbl_idx_t;
+        max : stbl_idx_t;
+    end record;
+    type mode_array is array (2**MCTBL_IDX_WIDTH-1 downto 0) of mode_t;
 
     -- Interrupt fifo constants and types
     constant IRQ_DATA_WIDTH : integer := HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH;

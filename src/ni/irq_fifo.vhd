@@ -51,12 +51,11 @@ entity irq_fifo is
 		config_slv               : out mem_if_slave;
 
 		irq_irq_sig              : out std_logic;
-		irq_irq_fifo_data        : in  irq_data_t;
-		irq_irq_fifo_data_valid  : in  std_logic;
-
 		irq_data_sig             : out std_logic;
-		irq_data_fifo_data       : in  irq_data_t;
-		irq_data_fifo_data_valid : in  std_logic
+
+		irq_data_fifo_data_valid : in  std_logic;
+		irq_irq_fifo_data_valid  : in  std_logic;
+		irq_data_fifo_data       : in  irq_data_t
 	);
 end irq_fifo;
 
@@ -111,7 +110,7 @@ begin
 
 	--Multiplexer to write into the FIFO
 	w_ptr  <= irq_w_ptr when irq_data_fifo_data_valid = '1' else data_w_ptr;
-	w_data <= irq_irq_fifo_data when irq_data_fifo_data_valid = '1' else irq_data_fifo_data;
+	w_data <= irq_data_fifo_data;
 
 	--Address decoding
 	process(sel, config.en, config.wr, config.addr, data_r_ptr, irq_r_ptr)

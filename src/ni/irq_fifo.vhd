@@ -109,7 +109,7 @@ begin
 	data_not_empty <= '0' when data_w_ptr = data_r_ptr else '1';
 
 	--Multiplexer to write into the FIFO
-	w_ptr  <= irq_w_ptr when irq_data_fifo_data_valid = '1' else data_w_ptr;
+	w_ptr  <= irq_w_ptr when irq_data_fifo_data_valid = '0' else data_w_ptr;
 	w_data <= irq_data_fifo_data;
 
 	--Address decoding

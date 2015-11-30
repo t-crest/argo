@@ -247,7 +247,7 @@ signal pkt_len : stbl_pkt_len_t;
 signal dma_num : dma_idx_t;
 signal dma_en : std_logic;
 
-signal md_chg, period_boundary : std_logic;
+signal period_boundary : std_logic;
 signal stbl_min : unsigned(STBL_IDX_WIDTH-1 downto 0);
 signal stbl_maxp1 : unsigned(STBL_IDX_WIDTH-1 downto 0);
 

@@ -134,15 +134,15 @@ begin
     config.addr <= unsigned(ocp_config_m.MAddr(HEADER_FIELD_WIDTH-
                                                 HEADER_CTRL_WIDTH+2-1 downto 2));
     config.en <= '1';
+    config.wr <= '0';
     -- If OCP request is a write and the processor is in supervisor mode
-    if ocp_config_m.MCmd = OCP_CMD_WR and supervisor = '1' then
-      config.wr <= '1';
-    elsif ocp_config_m.MCmd = OCP_CMD_WR and supervisor = '0' then
-      next_ocp_resp <= OCP_RESP_ERR;
+    if ocp_config_m.MCmd /= OCP_CMD_IDLE and supervisor = '1' then
+      if ocp_config_m.MCmd = OCP_CMD_WR then
+        config.wr <= '1';
+      end if ;
     else
-      config.wr <= '0';
-    end if ;
-    
+      next_ocp_resp <= OCP_RESP_ERR;
+    end if;
     
   end if ;
 

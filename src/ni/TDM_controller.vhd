@@ -86,7 +86,7 @@ architecture rtl of TDM_controller is
     
   signal STBL_IDX_reg : unsigned(STBL_IDX_WIDTH-1 downto 0);
   signal STBL_IDX_next : unsigned(STBL_IDX_WIDTH-1 downto 0);
-  signal TIME2NEXT_reg, TIME2NEXT_init_reg : unsigned(STBL_T2N_WIDTH-1 downto 0);
+  signal TIME2NEXT_reg : unsigned(STBL_T2N_WIDTH-1 downto 0);
   signal CLOCK_CNT_HI_reg : word_t;
   signal CLOCK_CNT_LO_reg : word_t;
 
@@ -309,11 +309,9 @@ begin
     if rising_edge(clk) then
       if reset = '1' then
         TIME2NEXT_reg <= (others => '0');
-        TIME2NEXT_init_reg <= (others => '0');
       else -- TIME2NEXT counter
         if T2N_ld_reg = '1' then
           TIME2NEXT_reg <= t2n;
-          TIME2NEXT_init_reg <= t2n;
         else
           TIME2NEXT_reg <= TIME2NEXT_reg - 1; 
         end if ;

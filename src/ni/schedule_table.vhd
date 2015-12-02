@@ -81,6 +81,8 @@ signal stbl_idx_en_reg : std_logic;
 
 signal config_slv_error_next : std_logic;
 
+signal dma_num_sig : dma_idx_t;
+
 begin
 
 stbl : entity work.tdp_ram
@@ -113,8 +115,9 @@ end process ; -- error_handler_proc
 
 route   <= stbl_data(STBL_DATA_WIDTH - 1 downto STBL_DATA_WIDTH -
                                                             HEADER_ROUTE_WIDTH);
-dma_num <= unsigned(stbl_data(STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - 1 downto
+dma_num_sig <= unsigned(stbl_data(STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - 1 downto
                       STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - DMATBL_IDX_WIDTH));
+dma_num <= dma_num_sig;
 pkt_len <= unsigned(stbl_data(STBL_PKT_LEN_WIDTH + STBL_T2N_WIDTH - 1 downto
                                                               STBL_T2N_WIDTH));
 t2n     <= unsigned(stbl_data(STBL_T2N_WIDTH - 1 downto 0));
@@ -131,10 +134,10 @@ begin
   end if ;
 end process ; -- stbl_idx_en_reg
 
-dma_en_proc : process( dma_num,stbl_idx_en_reg )
+dma_en_proc : process( dma_num_sig, stbl_idx_en_reg )
 begin
   dma_en <= stbl_idx_en_reg;
-  if dma_num = (dma_num'range => '1') then
+  if dma_num_sig = (dma_num_sig'range => '1') then
     dma_en <= '0';
   end if ;
   

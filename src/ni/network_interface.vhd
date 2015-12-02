@@ -32,7 +32,8 @@
 --------------------------------------------------------------------------------
 -- Argo 2.0 Network Interface
 --
--- Author: Rasmus Bo Soerensen (rasmus@rbscloud.dk)
+-- Authors: Rasmus Bo Soerensen (rasmus@rbscloud.dk)
+--          Luca Pezzarossa (lpez@dtu.dk)
 --------------------------------------------------------------------------------
 
 library ieee;

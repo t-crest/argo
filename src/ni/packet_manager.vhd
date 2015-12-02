@@ -55,6 +55,7 @@ entity packet_manager is
     route : in route_t;
     mc : in std_logic;
     mc_idx : in mctbl_idx_t;
+    mc_p : in unsigned(1 downto 0);
     pkt_len : in stbl_pkt_len_t;
     pkt_out : out link_t
   );
@@ -173,6 +174,7 @@ begin
             pkt_type <= "01";
           end if ;
           pkt_out <= std_logic_vector(VALID_SOP & pkt_type & MC_BANK & to_unsigned(4,CPKT_ADDR_WIDTH) & route_reg);
+          payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_p;
         elsif active = '1' then
           next_state <= SEND1;
           spm.en <= '1';
@@ -219,7 +221,7 @@ begin
 
     when MODE_CHANGE1 =>
       next_state <= MODE_CHANGE2;
-      pkt_out <= std_logic_vector(VALID & x"00000000" );
+      pkt_out <= std_logic_vector(VALID & payload_data );
       payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_idx;
 
     when MODE_CHANGE2 =>

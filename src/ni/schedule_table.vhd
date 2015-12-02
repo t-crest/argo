@@ -131,7 +131,15 @@ begin
   end if ;
 end process ; -- stbl_idx_en_reg
 
-dma_en <= stbl_idx_en_reg;
+dma_en_proc : process( dma_num,stbl_idx_en_reg )
+begin
+  dma_en <= stbl_idx_en_reg;
+  if dma_num = (dma_num'range => '1') then
+    dma_en <= '0';
+  end if ;
+  
+end process ; -- dma_en_proc
+
 
 config_slv_error_reg_proc : process( clk )
 begin

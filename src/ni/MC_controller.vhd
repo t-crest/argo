@@ -64,7 +64,8 @@ entity MC_controller is
     stbl_maxp1 : out unsigned(STBL_IDX_WIDTH-1 downto 0);
     -- Interface towards packet manager
     mc : out std_logic;
-    mc_idx : out mctbl_idx_t
+    mc_idx : out mctbl_idx_t;
+    mc_p : out unsigned(1 downto 0)
   );
 end MC_controller;
 
@@ -113,6 +114,7 @@ begin
     mc <= mc_reg;
     mc_idx <= MODE_CHANGE_IDX_reg;
     mode_change_cnt_int <= mc_p_cnt + 3;
+    mc_p <= mode_change_cnt_reg;
 
     master : process( all )
     begin
@@ -133,12 +135,11 @@ begin
         when MODE_CHANGE1 =>
           if period_boundary = '1' then
             mc_next <= '0';
-            global_mode_change_idx <= '1';
             next_state <= MODE_CHANGE2;
           end if ;
         when MODE_CHANGE2 =>
           if period_boundary = '1' then
-            --global_mode_change_idx <= '1';
+            global_mode_change_idx <= '1';
             next_state <= IDLE;
           end if ;
         when others =>
@@ -152,6 +153,7 @@ begin
     mc <= '0';
     mc_idx <= (others => '0');
     mode_change_cnt_int <= unsigned(config.wdata(WORD_WIDTH+1 downto WORD_WIDTH)) + 3;
+    mc_p <= (others => '0');
 
     mode_changed_reg_proc : process( clk )
     begin
@@ -192,6 +194,7 @@ begin
     config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
     config_slv_error_next <= '0';
     MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
+    mode_change_cnt_next <= mode_change_cnt_reg;
     MODE_next <= MODE_reg;
     local_mode_change_idx <= '0';
     mc_tbl_addr <= config.addr(CPKT_ADDR_WIDTH-1 downto 0) - 8;
@@ -269,12 +272,14 @@ begin
         MODE_reg <= (others => (others => (others =>'0')));
         mc_reg <= '0';
         config_slv.error <= '0';
+        mode_change_cnt_reg <= (others => '0');
       else
         state <= next_state;
         read_reg <= read_next;
         MODE_reg <= MODE_next;
         mc_reg <= mc_next;
         config_slv.error <= config_slv_error_next;
+        mode_change_cnt_reg <= mode_change_cnt_next;
       end if ;
     end if ;
     

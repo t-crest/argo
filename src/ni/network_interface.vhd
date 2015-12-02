@@ -106,7 +106,8 @@ component MC_controller is
 	stbl_min : out unsigned(STBL_IDX_WIDTH-1 downto 0);
 	stbl_maxp1 : out unsigned(STBL_IDX_WIDTH-1 downto 0);
 	mc : out std_logic;
-  mc_idx : out mctbl_idx_t
+  mc_idx : out mctbl_idx_t;
+  mc_p : out unsigned(1 downto 0)
   );
 end component;
 
@@ -142,6 +143,7 @@ component packet_manager is
 		route : in route_t;
     mc : in std_logic;
     mc_idx : in mctbl_idx_t;
+    mc_p : in unsigned(1 downto 0);
 		pkt_len : in stbl_pkt_len_t;
 		pkt_out : out link_t
 	);
@@ -252,6 +254,7 @@ signal irq_if_fifo_sel : std_logic;
 signal mc : std_logic;
 signal mc_idx : mctbl_idx_t;
 signal mc_p_cnt : unsigned(1 downto 0);
+signal mc_p : unsigned(1 downto 0);
 
 
 begin
@@ -294,7 +297,8 @@ begin
 		stbl_min => stbl_min,
 		stbl_maxp1 => stbl_maxp1,
 		mc => mc,
-		mc_idx => mc_idx
+		mc_idx => mc_idx,
+		mc_p => mc_p
 	);
 
 
@@ -329,6 +333,7 @@ begin
 		route => route,
 		mc => mc,
 		mc_idx => mc_idx,
+		mc_p => mc_p,
 		pkt_len => pkt_len,
 		pkt_out => pkt_out
 	);

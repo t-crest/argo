@@ -195,6 +195,7 @@ begin
     MODE_next <= MODE_reg;
     local_mode_change_idx <= '0';
     mc_tbl_addr <= config.addr(CPKT_ADDR_WIDTH-1 downto 0) - 8;
+	 read_next <= read_reg; --Latch removal
     if (sel = '1' and config.en = '1') then
       -- Read registers
       if config.wr = '0' then

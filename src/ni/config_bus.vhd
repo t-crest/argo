@@ -103,7 +103,7 @@ begin
   -- Default values of signals
   -- The config unit is served as default
   ocp_config_s.SResp <= ocp_resp_reg;
-  ocp_config_s.SData <= (others => '0');
+  ocp_config_s.SData <= std_logic_vector(DMA_tbl.rdata(WORD_WIDTH-1 downto 0));
   ocp_config_s.SCmdAccept <= '0';
 
   bank_id <= config_unit.addr(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto
@@ -192,9 +192,8 @@ begin
     when IRQ_BANK =>
       ocp_config_s.SData <= std_logic_vector(irq_unit_fifo.rdata(WORD_WIDTH-1 downto 0));
     when PERF_BANK =>
-      ocp_config_s.SData <= (others => '0');
     when others =>
-      ocp_config_s.SData <= (others => '0');
+	 
   end case ;
 
   end process;

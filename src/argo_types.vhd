@@ -78,10 +78,10 @@ package argo_types is
     constant TDM_S_CNT_WIDTH : integer := 10;
 
 	-- IRQ FIFO constants and types
-	constant IRQ_FIFO_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
+	constant IRQ_FIFO_IDX_WIDTH : integer := 5; -- 2^8 = 256 schedule entries
 	
     -- Schedule table constants and types
-    constant STBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
+    constant STBL_IDX_WIDTH : integer := 6; -- 2^8 = 256 schedule entries
     constant STBL_T2N_WIDTH : integer := 5;
     constant STBL_PKT_LEN_WIDTH : integer := 3;
     subtype stbl_idx_t is unsigned(STBL_IDX_WIDTH-1 downto 0);
@@ -91,7 +91,7 @@ package argo_types is
     -- DMA table constants and types
     constant DMATBL_COUNT_WIDTH : integer := 14;
     constant DMATBL_READ_PTR_WIDTH : integer := 14;
-    constant DMATBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 DMA entries
+    constant DMATBL_IDX_WIDTH : integer := 6; -- 2^8 = 256 DMA entries
     subtype dma_idx_t is unsigned(DMATBL_IDX_WIDTH-1 downto 0);
     subtype dma_read_addr_t is unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0);
 

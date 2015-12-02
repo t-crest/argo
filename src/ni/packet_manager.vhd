@@ -158,11 +158,13 @@ begin
   spm.en <= '0';
   pkt_out <= (others => '0');
   pkt_len_next <= pkt_len_reg;
+  read_ptr_next <= read_ptr_reg;--Latch removal
+  spm.addr <= read_ptr;--Latch removal
   if dma_en = '1' then
     pkt_len_next <= pkt_len;
   end if ;
   pkt_type <= dma_pkt_type;
-  payload_data_next <= (others => '0');
+  payload_data_next <= spm_slv.rdata(WORD_WIDTH-1 downto 0);
 
   case( state ) is  
     when IDLE =>
@@ -238,6 +240,15 @@ begin
   port_a_wr_lo <= '0';
   port_a_addr <= config.addr(DMATBL_IDX_WIDTH downto 1);
   config_slv.rdata <= (others => '0');
+  -- Active bit
+    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata((2*WORD_WIDTH)-1);--Latch removal
+    -- Count value and Read pointer
+    port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
+          <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1
+                                                            downto WORD_WIDTH);--Latch removal
+    -- Header field
+    port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
+                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);--Latch removal
   if config_dword = '1' then
     -- Active bit
     port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata((2*WORD_WIDTH)-1);

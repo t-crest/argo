@@ -77,8 +77,7 @@ architecture rtl of TDM_controller is
 -- 0x01     | R       | TDM_P_CNT
 -- 0x02     | R       | CLOCK_CNT_HIGH
 -- 0x03     | R       | CLOCK_CNT_LOW
--- ...      |         | ...
--- 0x20     | WR      | Master run
+-- 0x04     | WR      | Master run
 -- ...      |         | ...
 --------------------------------------------------------------------------------
   
@@ -149,7 +148,7 @@ begin
     config_slv.rdata <= (others=> '0');
     config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
     config_slv_error_next <= '0';
-    read_next <= (others=> '0');
+    read_next <= TDM_P_CNT_reg;
     latch_hi_clock <= '0';
     MASTER_RUN_NEXT(0) <= master_run_reg(0);
     if (sel = '1' and config.en = '1') then
@@ -165,15 +164,14 @@ begin
           when to_unsigned(3,CPKT_ADDR_WIDTH) =>
             read_next <= CLOCK_CNT_LO_reg(WORD_WIDTH-1 downto 0);
             latch_hi_clock <= '1';
-          when to_unsigned(128,CPKT_ADDR_WIDTH) =>
+          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
             read_next(0) <= run;
           when others =>
-            read_next <= (others => '0');
             config_slv_error_next <= '1';
         end case ;
       else -- Write register
         case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
-          when to_unsigned(128,CPKT_ADDR_WIDTH) =>
+          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
             if MASTER then
               MASTER_RUN_NEXT <= std_logic_vector(config.wdata(0 downto 0));
             end if ;

@@ -44,6 +44,7 @@ use work.config.all;
 package argo_types is
     constant WORD_WIDTH : integer := 32;
     constant HALF_WORD_WIDTH : integer := WORD_WIDTH/2;
+    constant QUAD_WORD_WIDTH : integer := WORD_WIDTH/4;
     subtype word_t is unsigned(WORD_WIDTH-1 downto 0);
     subtype dword_t is unsigned((2*WORD_WIDTH)-1 downto 0);
     -- General header packet constants and types

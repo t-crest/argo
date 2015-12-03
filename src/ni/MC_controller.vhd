@@ -74,14 +74,11 @@ architecture rtl of MC_controller is
 -- Addresses of readable/writable registers (Word based addresses inside the NI)
 -- Address  | Access  | Name
 --------------------------------------------------------------------------------
--- 0x04     | WR      | MODE_CHANGE_IDX
+-- 0x00     | WR      | MODE_CHANGE_IDX
 -- ...      |         | ...
--- 0x08     | WR      | MODE(1)
--- 0x09     | WR      | MODE(2)
--- 0x0A     | WR      | MODE(3)
--- ...      |         | ...
--- 0x20     | WR      | Master run
--- ...      |         | ...
+-- 0x02     | WR      | MODE(1)
+-- 0x03     | WR      | MODE(2)
+-- 0x04     | WR      | MODE(3)
 --------------------------------------------------------------------------------
   type state_type is (IDLE, WAIT_MC, MODE_CHANGE1, MODE_CHANGE2);
   signal state, next_state : state_type;
@@ -106,6 +103,59 @@ architecture rtl of MC_controller is
   signal mc_tbl_addr : unsigned(CPKT_ADDR_WIDTH-1 downto 0);
 
 begin
+
+
+--------------------------------------------------------------------------------
+-- Configuration access to the registers
+--------------------------------------------------------------------------------
+
+  
+  process (all)
+  begin
+    config_slv.rdata <= (others=> '0');
+    config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
+    config_slv_error_next <= '0';
+    MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
+    mode_change_cnt_next <= mode_change_cnt_reg;
+    MODE_next <= MODE_reg;
+    local_mode_change_idx <= '0';
+    mc_tbl_addr <= config.addr(CPKT_ADDR_WIDTH-1 downto 0) - 2;
+    read_next <= read_reg; --Latch removal
+    if (sel = '1' and config.en = '1') then
+      -- Read registers
+      if config.wr = '0' then
+        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
+          when to_unsigned(0,CPKT_ADDR_WIDTH) =>
+            read_next(MCTBL_IDX_WIDTH-1 downto 0) <= unsigned(MODE_IDX_reg);
+          when others =>
+            config_slv_error_next <= '1';
+        end case ;
+        -- Read mode-change registers
+        --if mc_tbl_addr < (2**MCTBL_IDX_WIDTH) then
+        --  read_next(STBL_IDX_WIDTH-1 downto 0) <= MODE_reg(to_integer(mc_tbl_addr)).min;
+        --  read_next(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH) <= MODE_reg(to_integer(mc_tbl_addr)).max;
+        --  config_slv_error_next <= '0';
+        --end if ;
+      
+      else -- Write register
+        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
+          when to_unsigned(0,CPKT_ADDR_WIDTH) =>
+            MODE_CHANGE_IDX_next <= unsigned(config.wdata(MCTBL_IDX_WIDTH-1 downto 0));
+            mode_change_cnt_next <= mode_change_cnt_int;
+            local_mode_change_idx <= '1';
+          when others =>
+            config_slv_error_next <= '1';
+        end case ;
+
+        -- Write mode change registers
+        if mc_tbl_addr < (2**MCTBL_IDX_WIDTH) then
+          MODE_next(to_integer(mc_tbl_addr)).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
+          MODE_next(to_integer(mc_tbl_addr)).max <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
+          config_slv_error_next <= '0';
+        end if;
+      end if ;
+    end if ;
+  end process;
 
 --------------------------------------------------------------------------------
 -- Master/Slave run signals
@@ -182,67 +232,6 @@ begin
     end process ; -- slave
 
   end generate ;
-
---------------------------------------------------------------------------------
--- Configuration access to the registers
---------------------------------------------------------------------------------
-
-  
-  process (all)
-  begin
-    config_slv.rdata <= (others=> '0');
-    config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
-    config_slv_error_next <= '0';
-    MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
-    mode_change_cnt_next <= mode_change_cnt_reg;
-    MODE_next <= MODE_reg;
-    local_mode_change_idx <= '0';
-    mc_tbl_addr <= config.addr(CPKT_ADDR_WIDTH-1 downto 0) - 8;
-	 read_next <= read_reg; --Latch removal
-    if (sel = '1' and config.en = '1') then
-      -- Read registers
-      if config.wr = '0' then
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
-          when to_unsigned(0,CPKT_ADDR_WIDTH) =>
-            
-          when to_unsigned(1,CPKT_ADDR_WIDTH) =>
-            
-          when to_unsigned(2,CPKT_ADDR_WIDTH) =>
-            
-          when to_unsigned(3,CPKT_ADDR_WIDTH) =>
-            
-          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
-            read_next(MCTBL_IDX_WIDTH-1 downto 0) <= unsigned(MODE_IDX_reg);
-          when others =>
-            read_next <= (others => '0');
-            config_slv_error_next <= '1';
-        end case ;
-        -- Read mode-change registers
-        if mc_tbl_addr < (2**MCTBL_IDX_WIDTH) then
-          read_next(STBL_IDX_WIDTH-1 downto 0) <= MODE_reg(to_integer(mc_tbl_addr)).min;
-          read_next(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH) <= MODE_reg(to_integer(mc_tbl_addr)).max;
-          config_slv_error_next <= '0';
-        end if ;
-      
-      else -- Write register
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
-          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
-            MODE_CHANGE_IDX_next <= unsigned(config.wdata(MCTBL_IDX_WIDTH-1 downto 0));
-            mode_change_cnt_next <= mode_change_cnt_int;
-            local_mode_change_idx <= '1';
-          when others =>
-            config_slv_error_next <= '1';
-        end case ;
-
-        -- Write mode change registers
-        if mc_tbl_addr < (2**MCTBL_IDX_WIDTH) then
-          MODE_next(to_integer(mc_tbl_addr)).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
-          MODE_next(to_integer(mc_tbl_addr)).max <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
-          config_slv_error_next <= '0';
-        end if;
-      end if ;
-    end if ;
-  end process;
 
 --------------------------------------------------------------------------------
 -- Mode change circuitry

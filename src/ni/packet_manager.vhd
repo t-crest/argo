@@ -165,7 +165,8 @@ begin
     pkt_len_next <= pkt_len;
   end if ;
   pkt_type <= dma_pkt_type;
-  payload_data_next <= spm_slv.rdata(WORD_WIDTH-1 downto 0);
+  --payload_data_next <= spm_slv.rdata(WORD_WIDTH-1 downto 0);
+  payload_data_next <= (others => '0');
 
   case( state ) is  
     when IDLE =>
@@ -175,7 +176,7 @@ begin
           if pkt_len_reg >= 1 then
             pkt_type <= "01";
           end if ;
-          pkt_out <= std_logic_vector(VALID_SOP & pkt_type & MC_BANK & to_unsigned(4,CPKT_ADDR_WIDTH) & route_reg);
+          pkt_out <= std_logic_vector(VALID_SOP & pkt_type & MC_BANK & to_unsigned(0,CPKT_ADDR_WIDTH) & route_reg);
           payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_p;
         elsif active = '1' then
           next_state <= SEND1;

@@ -83,6 +83,8 @@ signal config_slv_error_next : std_logic;
 
 signal dma_num_sig : dma_idx_t;
 
+signal port_a_din, port_a_dout : unsigned(STBL_DATA_WIDTH-1 downto 0);
+
 begin
 
 stbl : entity work.tdp_ram
@@ -94,8 +96,8 @@ stbl : entity work.tdp_ram
     a_clk   => clk,
     a_wr    => config.wr and sel,
     a_addr  => config.addr(STBL_IDX_WIDTH-1 downto 0),
-    a_din   => config.wdata(STBL_DATA_WIDTH-1 downto 0),
-    a_dout  => config_slv.rdata(STBL_DATA_WIDTH-1 downto 0),
+    a_din   => port_a_din,
+    a_dout  => port_a_dout,
     b_clk   => clk,
     b_wr    => '0',
     b_addr  => stbl_idx,
@@ -103,6 +105,44 @@ stbl : entity work.tdp_ram
     b_dout  => stbl_data
   );
 
+  port_a : process( port_a_dout, config.wdata )
+  begin
+    -- Data out
+    config_slv.rdata <= (others => '0');
+    -- Route
+    config_slv.rdata(HALF_WORD_WIDTH+HEADER_ROUTE_WIDTH-1 downto  HALF_WORD_WIDTH)
+                  <= port_a_dout(STBL_DATA_WIDTH - 1 downto STBL_DATA_WIDTH -
+                                                              HEADER_ROUTE_WIDTH);
+    -- dma_num
+    config_slv.rdata(QUAD_WORD_WIDTH+DMATBL_IDX_WIDTH-1 downto QUAD_WORD_WIDTH)
+                  <= port_a_dout(STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - 1 downto
+                      STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - DMATBL_IDX_WIDTH);
+    -- packet length
+    config_slv.rdata(STBL_PKT_LEN_WIDTH + STBL_T2N_WIDTH - 1 downto STBL_T2N_WIDTH)
+                  <= port_a_dout(STBL_PKT_LEN_WIDTH + STBL_T2N_WIDTH - 1 downto
+                                                              STBL_T2N_WIDTH);
+    -- time 2 next
+    config_slv.rdata(STBL_T2N_WIDTH - 1 downto 0)
+                  <= port_a_dout(STBL_T2N_WIDTH - 1 downto 0);
+
+    -- Data in
+    port_a_din <= (others => '0');
+    -- Route
+    port_a_din(STBL_DATA_WIDTH - 1 downto STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH)
+                  <= config.wdata(HALF_WORD_WIDTH+HEADER_ROUTE_WIDTH-1 downto 
+                                                              HALF_WORD_WIDTH);
+    -- dma_num
+    port_a_din(STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - 1 downto
+                      STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - DMATBL_IDX_WIDTH)
+                  <= config.wdata(QUAD_WORD_WIDTH+DMATBL_IDX_WIDTH-1 downto QUAD_WORD_WIDTH);
+    -- packet length
+    port_a_din(STBL_PKT_LEN_WIDTH + STBL_T2N_WIDTH - 1 downto STBL_T2N_WIDTH)
+                  <= config.wdata(STBL_PKT_LEN_WIDTH + STBL_T2N_WIDTH - 1 downto STBL_T2N_WIDTH);
+    -- time 2 next
+    port_a_din(STBL_T2N_WIDTH - 1 downto 0)
+                  <= config.wdata(STBL_T2N_WIDTH - 1 downto 0);
+
+  end process ; -- port_a
 
 -- Address out of bound
 error_handler_proc : process( config.addr, sel )

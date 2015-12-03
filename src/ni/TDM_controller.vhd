@@ -165,6 +165,7 @@ begin
             read_next <= CLOCK_CNT_LO_reg(WORD_WIDTH-1 downto 0);
             latch_hi_clock <= '1';
           when to_unsigned(4,CPKT_ADDR_WIDTH) =>
+            read_next <= (others => '0');
             read_next(0) <= run;
           when others =>
             config_slv_error_next <= '1';

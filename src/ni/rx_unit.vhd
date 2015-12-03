@@ -98,7 +98,7 @@ begin
 	irq_fifo_data_valid_next <= lst_data_pkt and pkt_in(LINK_WIDTH - 3); 
 
 	--Control Moore FSM		
-	process(state, pkt_in(LINK_WIDTH - 3), new_data_pkt, new_config_pkt, new_irq_pkt)
+	process(state, new_config_pkt, new_data_pkt, new_irq_pkt, pkt_in)
 	begin
 		next_state    <= state;
 		addr_load     <= '0';

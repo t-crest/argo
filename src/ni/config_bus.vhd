@@ -98,7 +98,7 @@ begin
   -- the OCP port gets access.
   -- Starvation cannot happen since the config unit can only write once in
   -- three clock cycles
-  config_arbiter : process(all)
+  config_arbiter : process(ocp_resp_reg, DMA_tbl, MC_ctrl, TDM_ctrl, bank_id, config_unit, irq_unit_fifo, ocp_config_m, prev_bank_id, sched_tbl, supervisor)
   begin
   -- Default values of signals
   -- The config unit is served as default

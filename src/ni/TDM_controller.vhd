@@ -143,7 +143,7 @@ begin
 --------------------------------------------------------------------------------
 
   
-  process (all)
+  process (read_reg, CLOCK_CNT_LO_reg, TDM_P_CNT_reg, TDM_S_CNT_reg, clock_delay_reg, config.addr, config.en, config.wdata(0 downto 0), config.wr, master_run_reg(0), run, sel)
   begin
     config_slv.rdata <= (others=> '0');
     config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
@@ -154,25 +154,25 @@ begin
     if (sel = '1' and config.en = '1') then
       -- Read registers
       if config.wr = '0' then
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
-          when to_unsigned(0,CPKT_ADDR_WIDTH) =>
+        case( to_integer(config.addr(CPKT_ADDR_WIDTH-1 downto 0)) ) is
+          when 0 =>
             read_next(TDM_S_CNT_WIDTH-1 downto 0) <= TDM_S_CNT_reg;
-          when to_unsigned(1,CPKT_ADDR_WIDTH) =>
+          when 1 =>
             read_next <= TDM_P_CNT_reg;
-          when to_unsigned(2,CPKT_ADDR_WIDTH) =>
+          when 2 =>
             read_next <= clock_delay_reg;
-          when to_unsigned(3,CPKT_ADDR_WIDTH) =>
+          when 3 =>
             read_next <= CLOCK_CNT_LO_reg(WORD_WIDTH-1 downto 0);
             latch_hi_clock <= '1';
-          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
+          when 4 =>
             read_next <= (others => '0');
             read_next(0) <= run;
           when others =>
             config_slv_error_next <= '1';
         end case ;
       else -- Write register
-        case( config.addr(CPKT_ADDR_WIDTH-1 downto 0) ) is
-          when to_unsigned(4,CPKT_ADDR_WIDTH) =>
+        case( to_integer(config.addr(CPKT_ADDR_WIDTH-1 downto 0)) ) is
+          when 4 =>
             if MASTER then
               MASTER_RUN_NEXT <= std_logic_vector(config.wdata(0 downto 0));
             end if ;
@@ -234,9 +234,8 @@ begin
     
   end process ; -- regs
 
-
-  -- TDM slot counter, incremented every clock cycle and
-  -- reset on a period boundary
+clock_counter : if GENERATE_CLK_COUNTER generate
+  -- Clock counter, incremented every clock cycle
   -- A single 64 bit counter is to slow
   CLOCK_CNT_reg_PROC : process( clk )
   begin
@@ -250,10 +249,36 @@ begin
           CLOCK_CNT_HI_reg <= CLOCK_CNT_HI_reg + 1;  
         end if ;
       end if ;
+  end if ;
+
+end process ; -- CLOCK_CNT_reg_PROC
+
+
+  -- Register for storing the high word of the 64-bit clock counter.
+  -- The register is loaded when the low word of the clock counter is accessed.
+  CLOCK_DELAY_reg_PROC : process( clk )
+  begin
+    if rising_edge(clk) then
+      if reset = '1' then
+        clock_delay_reg <= (others => '0');
+      else
+        if latch_hi_clock = '1' then
+          clock_delay_reg <= CLOCK_CNT_HI_reg;  
+        end if ;
+      end if ;
     end if ;
     
-  end process ; -- CLOCK_CNT_reg_PROC
+  end process ; -- CLOCK_DELAY_reg_PROC
 
+end generate;
+
+no_clock_counter : if not GENERATE_CLK_COUNTER generate
+  CLOCK_CNT_LO_reg <= (others => '0');
+  CLOCK_CNT_HI_reg <= (others => '0');
+  clock_delay_reg <= (others => '0');
+end generate;
+ 
+slot_counter : if GENERATE_SLOT_COUNTER generate 
   -- TDM slot counter, incremented every clock cycle and
   -- reset on a period boundary
   TDM_S_CNT_reg_PROC : process( clk )
@@ -273,6 +298,13 @@ begin
     
   end process ; -- TDM_S_CNT_reg_PROC
 
+end generate;
+
+no_slot_counter : if not GENERATE_SLOT_COUNTER generate 
+	TDM_S_CNT_reg <= (others => '0');
+end generate;
+
+period_counter : if GENERATE_PERIOD_COUNTER generate 
   -- TDM period counter incremented on a period boundary
   TDM_P_CNT_reg_PROC : process( clk )
   begin
@@ -286,6 +318,11 @@ begin
       end if ;
     end if ;
   end process ; -- TDM_P_CNT_reg_PROC
+end generate;
+
+no_period_counter : if not GENERATE_PERIOD_COUNTER generate 
+	TDM_P_CNT_reg <= (others => '0');
+end generate;
 
   -- Period counter not accessible from the processor, only counts to 3
   -- Used for doing a mode change or synchronizing to a new schedule at boot up
@@ -320,22 +357,6 @@ begin
     end if ;
   end process ; -- TIME2NEXT_reg_PROC
 
-
-  -- Register for storing the high word of the 64-bit clock counter.
-  -- The register is loaded when the low word of the clock counter is accessed.
-  CLOCK_DELAY_reg_PROC : process( clk )
-  begin
-    if rising_edge(clk) then
-      if reset = '1' then
-        clock_delay_reg <= (others => '0');
-      else
-        if latch_hi_clock = '1' then
-          clock_delay_reg <= CLOCK_CNT_HI_reg;  
-        end if ;
-      end if ;
-    end if ;
-    
-  end process ; -- CLOCK_DELAY_reg_PROC
 
   -- The schedule table index register only loaded when time2next is 1
   STBL_IDX_reg_PROC : process( clk )

@@ -85,7 +85,7 @@ architecture rtl of MC_controller is
 
   signal STBL_MIN_next, STBL_MAXP1_next : stbl_idx_t;
   signal MODE_CHANGE_IDX_reg, MODE_CHANGE_IDX_next : mctbl_idx_t;
-  signal MODE_IDX_reg, MODE_IDX_next : mctbl_idx_t;
+  signal MODE_IDX_reg : mctbl_idx_t;
 
   signal mode_change_cnt_reg, mode_change_cnt_next, mode_change_cnt_int : unsigned(1 downto 0);
   
@@ -110,7 +110,7 @@ begin
 --------------------------------------------------------------------------------
 
   
-  process (all)
+  process (MODE_CHANGE_IDX_reg, MODE_IDX_reg, MODE_reg, config.addr, config.en, config.wdata, config.wr, mc_tbl_addr, mode_change_cnt_int, mode_change_cnt_reg, read_reg, sel )
   begin
     config_slv.rdata <= (others=> '0');
     config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;
@@ -149,8 +149,13 @@ begin
 
         -- Write mode change registers
         if mc_tbl_addr < (2**MCTBL_IDX_WIDTH) then
-          MODE_next(to_integer(mc_tbl_addr)).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
-          MODE_next(to_integer(mc_tbl_addr)).max <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
+          if GENERATE_MC_TABLE then
+            MODE_next(to_integer(mc_tbl_addr)).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
+            MODE_next(to_integer(mc_tbl_addr)).max <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
+          else
+          	STBL_MIN_next <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
+          	STBL_MAXP1_next <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
+          end if;
           config_slv_error_next <= '0';
         end if;
       end if ;
@@ -160,13 +165,14 @@ begin
 --------------------------------------------------------------------------------
 -- Master/Slave run signals
 --------------------------------------------------------------------------------
+mc_fsm : if GENERATE_MC_TABLE generate
   master_config : if MASTER generate
     mc <= mc_reg;
     mc_idx <= MODE_CHANGE_IDX_reg;
     mode_change_cnt_int <= mc_p_cnt + 3;
     mc_p <= mode_change_cnt_reg;
 
-    master : process( all )
+    master : process(local_mode_change_idx, mc_reg, period_boundary, state, run )
     begin
       next_state <= state;
       mc_next <= mc_reg;
@@ -174,7 +180,7 @@ begin
       case( state ) is
       
         when IDLE =>
-          if local_mode_change_idx = '1' then
+          if local_mode_change_idx = '1' and run = '1' then
             next_state <= WAIT_MC;
           end if;
         when WAIT_MC =>
@@ -192,8 +198,6 @@ begin
             global_mode_change_idx <= '1';
             next_state <= IDLE;
           end if ;
-        when others =>
-      
       end case ;
       
     end process ; -- master
@@ -221,7 +225,7 @@ begin
       
     end process ; -- mode_changed_reg_proc
 
-    slave : process( all )
+    slave : process(mc_p_cnt, mode_change_cnt_reg, mode_changed_reg, period_boundary)
     begin
       global_mode_change_idx <= '0';
       if mode_changed_reg = '1' and period_boundary = '1' then
@@ -231,16 +235,27 @@ begin
       end if ;
     end process ; -- slave
 
-  end generate ;
+end generate ;
 
+end generate;
+
+no_mc_fsm : if not GENERATE_MC_TABLE generate
+	mode_changed_reg <= '0';
+	mc <= '0';
+    mc_idx <= (others => '0');
+    mode_change_cnt_int <= (others => '0');
+    mc_p <= (others => '0');
+	global_mode_change_idx <= '0';
+end generate;
 --------------------------------------------------------------------------------
 -- Mode change circuitry
 --------------------------------------------------------------------------------
-  STBL_MIN_next <= MODE_reg(to_integer(MODE_IDX_reg)).min;
+  read_out : if GENERATE_MC_TABLE generate
+    STBL_MIN_next <= MODE_reg(to_integer(MODE_IDX_reg)).min;
+    STBL_MAXP1_next <= MODE_reg(to_integer(MODE_IDX_reg)).max;
+  end generate;
 
-  STBL_MAXP1_next <= MODE_reg(to_integer(MODE_IDX_reg)).max;
-
-  mode_change_mux : process( all )
+  mode_change_mux : process(STBL_MIN_next, period_boundary, stbl_min_reg )
   begin
     if period_boundary = '1' then
       stbl_min <= STBL_MIN_next;
@@ -252,21 +267,18 @@ begin
 --------------------------------------------------------------------------------
 -- Registers
 --------------------------------------------------------------------------------
-
   regs : process( clk )
   begin
     if rising_edge(clk) then
       if reset = '1' then
         state <= IDLE;
         read_reg <= (others => '0');  
-        MODE_reg <= (others => (others => (others =>'0')));
         mc_reg <= '0';
         config_slv.error <= '0';
         mode_change_cnt_reg <= (others => '0');
       else
         state <= next_state;
         read_reg <= read_next;
-        MODE_reg <= MODE_next;
         mc_reg <= mc_next;
         config_slv.error <= config_slv_error_next;
         mode_change_cnt_reg <= mode_change_cnt_next;
@@ -275,6 +287,24 @@ begin
     
   end process ; -- regs
 
+mc_table : if GENERATE_MC_TABLE generate
+  mc_reg : process( clk )
+  begin
+    if rising_edge(clk) then
+      if reset = '1' then
+        MODE_reg <= (others => (others => (others =>'0')));
+      else
+        MODE_reg <= MODE_next;
+      end if ;
+    end if ;
+    
+end process ; -- regs
+
+end generate;
+
+no_mc_table : if not GENERATE_MC_TABLE generate
+    MODE_reg <= (others => (others => (others =>'0')));
+end generate;
 
   -- The mode change index register
   mode_change_idx_PROC : process( clk )

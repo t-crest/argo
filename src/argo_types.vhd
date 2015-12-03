@@ -77,11 +77,14 @@ package argo_types is
 
     -- TDM controller constants and types
     constant TDM_S_CNT_WIDTH : integer := 10;
-
-	-- IRQ FIFO constants and types
+    constant GENERATE_CLK_COUNTER : boolean := false;
+    constant GENERATE_PERIOD_COUNTER : boolean := false;
+    constant GENERATE_SLOT_COUNTER : boolean := false;
+                                                     
+	-- IRQ FIFO constants and types                  
 	constant IRQ_FIFO_IDX_WIDTH : integer := 5; -- 2^8 = 256 schedule entries
-	
-    -- Schedule table constants and types
+	                                                 
+    -- Schedule table constants and types            
     constant STBL_IDX_WIDTH : integer := 6; -- 2^8 = 256 schedule entries
     constant STBL_T2N_WIDTH : integer := 5;
     constant STBL_PKT_LEN_WIDTH : integer := 3;
@@ -97,6 +100,7 @@ package argo_types is
     subtype dma_read_addr_t is unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0);
 
     -- Mode change table constants and types
+    constant GENERATE_MC_TABLE : boolean := false;
     constant MCTBL_IDX_WIDTH : integer := 2; -- 2^2 = 4 mode entries
     subtype mctbl_idx_t is unsigned(MCTBL_IDX_WIDTH-1 downto 0);
     type mode_t is record 

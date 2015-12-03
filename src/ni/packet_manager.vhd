@@ -149,7 +149,7 @@ begin
   spm.wdata <= (others => '0');
   spm.wr <= '0';
 
-fsm : process( all )
+fsm : process(dma_en, dma_en_reg, dma_num_reg, dmatbl_data, mc, mc_idx, mc_p, payload_data, pkt_len, pkt_len_reg, pkt_type, read_ptr_next, read_ptr_reg, route_reg, spm_slv.rdata, state)
 begin
   dma_update_data <= dmatbl_data;
   dma_update_en <= '0';
@@ -230,9 +230,6 @@ begin
     when MODE_CHANGE2 =>
       next_state <= IDLE;
       pkt_out <= std_logic_vector(VALID_EOP & payload_data);
-
-    when others =>
-      next_state <= IDLE;
   end case ;
 end process ; -- fsm
 

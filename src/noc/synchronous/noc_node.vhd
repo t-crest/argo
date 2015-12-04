@@ -51,9 +51,9 @@ generic (
 	MASTER : boolean := false
 	);
 port (
-	p_clk		: std_logic;
-	n_clk		: std_logic;
+	clk			: std_logic;
 	reset		: std_logic;
+	supervisor	: in std_logic;
 	run 		: in std_logic;
 	master_run	: out std_logic;
 
@@ -62,6 +62,7 @@ port (
 
 	spm_m		: out mem_if_master;
 	spm_s		: in mem_if_slave;
+	irq			: out std_logic_vector(1 downto 0);
 
 	    -- router ports
     north_in_f       : in channel_forward;
@@ -98,22 +99,22 @@ signal req, ack : std_logic;
 begin
 
 -- NA instance
-na : entity work.network_interface
+ni : entity work.network_interface
 generic map (
 	MASTER => MASTER)
 port map(
 	-- General
-	clk=>n_clk,
+	clk=>clk,
 	reset=>reset,
 	run=>run,
 	master_run=>master_run,
-	supervisor=> '1',
+	supervisor=> supervisor,
 	-- Processor Ports
 	-- DMA Configuration Port - OCP
 	ocp_config_m=>proc_m,
 	ocp_config_s=>proc_s,
-	data_irq=> open,
-	config_irq=>open,
+	data_irq=> irq(1),
+	config_irq=> irq(0),
 	-- SPM Data Port - OCP?
 	spm_slv=>spm_s,
 	spm=>spm_m,
@@ -129,7 +130,7 @@ port map(
 -- router instance
 r : entity work.router
 port map (
-	clk => n_clk,
+	clk => clk,
 	reset => reset,
 	inPort_f(0) => south_in_f,
 	inPort_f(1) => west_in_f,

@@ -100,7 +100,7 @@ package argo_types is
     subtype dma_read_addr_t is unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0);
 
     -- Mode change table constants and types
-    constant GENERATE_MC_TABLE : boolean := false;
+    constant GENERATE_MC_TABLE : boolean := true;
     constant MCTBL_IDX_WIDTH : integer := 2; -- 2^2 = 4 mode entries
     subtype mctbl_idx_t is unsigned(MCTBL_IDX_WIDTH-1 downto 0);
     type mode_t is record 

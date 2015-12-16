@@ -98,7 +98,7 @@ architecture rtl of MC_controller is
   signal read_reg, read_next : word_t;
 
   signal mc_reg, mc_next, mode_changed_reg : std_logic;
-  signal stbl_min_reg : unsigned(STBL_IDX_WIDTH-1 downto 0);
+  signal stbl_min_reg, stbl_maxp1_reg, MODE_min_next, MODE_max_next : unsigned(STBL_IDX_WIDTH-1 downto 0);
 
   signal mc_tbl_addr : unsigned(CPKT_ADDR_WIDTH-1 downto 0);
 
@@ -118,6 +118,8 @@ begin
     MODE_CHANGE_IDX_next <= MODE_CHANGE_IDX_reg;
     mode_change_cnt_next <= mode_change_cnt_reg;
     MODE_next <= MODE_reg;
+    MODE_min_next <= stbl_min_reg;
+    MODE_max_next <= stbl_maxp1_reg;
     local_mode_change_idx <= '0';
     mc_tbl_addr <= config.addr(CPKT_ADDR_WIDTH-1 downto 0) - 2;
     read_next <= read_reg; --Latch removal
@@ -153,8 +155,8 @@ begin
             MODE_next(to_integer(mc_tbl_addr)).min <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
             MODE_next(to_integer(mc_tbl_addr)).max <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
           else
-          	STBL_MIN_next <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
-          	STBL_MAXP1_next <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
+          	MODE_min_next <= unsigned(config.wdata(STBL_IDX_WIDTH-1 downto 0));
+          	MODE_max_next <= unsigned(config.wdata(STBL_IDX_WIDTH+HALF_WORD_WIDTH-1 downto HALF_WORD_WIDTH));
           end if;
           config_slv_error_next <= '0';
         end if;
@@ -250,9 +252,14 @@ end generate;
 --------------------------------------------------------------------------------
 -- Mode change circuitry
 --------------------------------------------------------------------------------
-  read_out : if GENERATE_MC_TABLE generate
+  read_out_tbl : if GENERATE_MC_TABLE generate
     STBL_MIN_next <= MODE_reg(to_integer(MODE_IDX_reg)).min;
     STBL_MAXP1_next <= MODE_reg(to_integer(MODE_IDX_reg)).max;
+  end generate;
+
+  read_out_reg : if not GENERATE_MC_TABLE generate
+    STBL_MIN_next <= MODE_min_next;
+    STBL_MAXP1_next <= MODE_max_next;
   end generate;
 
   mode_change_mux : process(STBL_MIN_next, period_boundary, stbl_min_reg )
@@ -341,9 +348,11 @@ end generate;
     if rising_edge(clk) then
       if reset = '1' then
         stbl_min_reg <= (others => '0');
+        stbl_maxp1_reg <= (others => '0');
       else
         if period_boundary = '1' then
-          stbl_min_reg <= STBL_MIN_next;  
+          stbl_min_reg <= STBL_MIN_next;
+          stbl_maxp1_reg <= STBL_MAXP1_next;
         end if ;
       end if ;
     end if ;

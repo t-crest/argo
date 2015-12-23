@@ -80,7 +80,7 @@ architecture rtl of MC_controller is
 -- 0x03     | WR      | MODE(2)
 -- 0x04     | WR      | MODE(3)
 --------------------------------------------------------------------------------
-  type state_type is (IDLE, WAIT_MC, MODE_CHANGE1, MODE_CHANGE2);
+  type state_type is (IDLE, WAIT_MC, MODE_CHANGE1);
   signal state, next_state : state_type;
 
   signal STBL_MIN_next, STBL_MAXP1_next : stbl_idx_t;
@@ -171,7 +171,7 @@ mc_fsm : if GENERATE_MC_TABLE generate
   master_config : if MASTER generate
     mc <= mc_reg;
     mc_idx <= MODE_CHANGE_IDX_reg;
-    mode_change_cnt_int <= mc_p_cnt + 3;
+    mode_change_cnt_int <= mc_p_cnt + 2;
     mc_p <= mode_change_cnt_reg;
 
     master : process(local_mode_change_idx, mc_reg, period_boundary, state, run )
@@ -193,10 +193,6 @@ mc_fsm : if GENERATE_MC_TABLE generate
         when MODE_CHANGE1 =>
           if period_boundary = '1' then
             mc_next <= '0';
-            next_state <= MODE_CHANGE2;
-          end if ;
-        when MODE_CHANGE2 =>
-          if period_boundary = '1' then
             global_mode_change_idx <= '1';
             next_state <= IDLE;
           end if ;
@@ -208,7 +204,7 @@ mc_fsm : if GENERATE_MC_TABLE generate
   slave_config : if not MASTER generate
     mc <= '0';
     mc_idx <= (others => '0');
-    mode_change_cnt_int <= unsigned(config.wdata(WORD_WIDTH+1 downto WORD_WIDTH)) + 3;
+    mode_change_cnt_int <= unsigned(config.wdata(WORD_WIDTH+1 downto WORD_WIDTH));
     mc_p <= (others => '0');
 
     mode_changed_reg_proc : process( clk )
@@ -230,7 +226,7 @@ mc_fsm : if GENERATE_MC_TABLE generate
     slave : process(mc_p_cnt, mode_change_cnt_reg, mode_changed_reg, period_boundary)
     begin
       global_mode_change_idx <= '0';
-      if mode_changed_reg = '1' and period_boundary = '1' then
+      if mode_changed_reg = '1' then
         if mode_change_cnt_reg = mc_p_cnt then
           global_mode_change_idx <= '1';
         end if;

@@ -46,9 +46,9 @@ entity irq_fifo is
 	port(
 		clk                      : in  std_logic;
 		reset                    : in  std_logic;
-		config                   : in  mem_if_master;
+		config                   : in  conf_if_master;
 		sel                      : in  std_logic;
-		config_slv               : out mem_if_slave;
+		config_slv               : out conf_if_slave;
 
 		irq_irq_sig              : out std_logic;
 		irq_data_sig             : out std_logic;

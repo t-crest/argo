@@ -85,7 +85,7 @@ package argo_types is
 	constant IRQ_FIFO_IDX_WIDTH : integer := 5; -- 2^8 = 256 schedule entries
 	                                                 
     -- Schedule table constants and types            
-    constant STBL_IDX_WIDTH : integer := 6; -- 2^8 = 256 schedule entries
+    constant STBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
     constant STBL_T2N_WIDTH : integer := 5;
     constant STBL_PKT_LEN_WIDTH : integer := 3;
     subtype stbl_idx_t is unsigned(STBL_IDX_WIDTH-1 downto 0);
@@ -123,6 +123,19 @@ package argo_types is
 
     type mem_if_slave is record
         rdata : dword_t;
+        error : std_logic;
+    end record;
+    
+        -- Memory interface records
+    type conf_if_master is record
+        addr : unsigned(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto 0);
+        en : std_logic;
+        wr : std_logic;
+        wdata : word_t;
+    end record;
+
+    type conf_if_slave is record
+        rdata : word_t;
         error : std_logic;
     end record;
 

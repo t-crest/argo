@@ -166,7 +166,7 @@ l_2_en <= ocp_core_m.MByteEn(2) and wr_l;
 l_3_en <= ocp_core_m.MByteEn(3) and wr_l;
 
 -- High SPM instance 0
-spm_h_0 : entity work.tdp_ram
+spm_h_0 : entity work.tdp_bram
 generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_0_en,
@@ -180,7 +180,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(39 downto 32));
 
 -- High SPM instance 1
-spm_h_1 : entity work.tdp_ram
+spm_h_1 : entity work.tdp_bram
 generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_1_en,
@@ -194,7 +194,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(47 downto 40));
 
 -- High SPM instance 2
-spm_h_2 : entity work.tdp_ram
+spm_h_2 : entity work.tdp_bram
 generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_2_en,
@@ -208,7 +208,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(55 downto 48));
 
 -- High SPM instance 3
-spm_h_3 : entity work.tdp_ram
+spm_h_3 : entity work.tdp_bram
 generic map (DATA=>WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => h_3_en,
@@ -222,7 +222,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(63 downto 56));
 
 -- Low SPM instance 0
-spm_l_0 : entity work.tdp_ram
+spm_l_0 : entity work.tdp_bram
 generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_0_en,
@@ -236,7 +236,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(7 downto 0));
 
 -- Low SPM instance 1
-spm_l_1 : entity work.tdp_ram
+spm_l_1 : entity work.tdp_bram
 generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_1_en,
@@ -250,7 +250,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(15 downto 8));
 
 -- Low SPM instance 2
-spm_l_2 : entity work.tdp_ram
+spm_l_2 : entity work.tdp_bram
 generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_2_en,
@@ -264,7 +264,7 @@ port map (a_clk => p_clk,
     b_dout => spm_s.rdata(23 downto 16));
 
 -- Low SPM instance 3
-spm_l_3 : entity work.tdp_ram
+spm_l_3 : entity work.tdp_bram
 generic map (DATA => WORD_WIDTH/4, ADDR => SPM_IDX_SIZE-3)
 port map (a_clk => p_clk,
     a_wr => l_3_en,

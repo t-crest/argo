@@ -46,9 +46,9 @@ entity schedule_table is
     clk   : in std_logic;
     reset   : in std_logic;
     -- Read write interface from config bus
-    config  : in mem_if_master;
+    config  : in conf_if_master;
     sel   : in std_logic;
-    config_slv : out mem_if_slave;
+    config_slv : out conf_if_slave;
     -- Interface to schedule table
     stbl_idx  : in stbl_idx_t;
     stbl_idx_en  : in std_logic;

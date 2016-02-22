@@ -44,10 +44,10 @@ entity packet_manager is
   port (
     clk   : in std_logic;
     reset   : in std_logic;
-    config : in mem_if_master;
+    config : in conf_if_master;
     sel   : in std_logic;
-    config_slv : out mem_if_slave;
-    config_dword : in std_logic;
+    config_slv : out conf_if_slave;
+    --config_dword : in std_logic;
     spm   : out mem_if_master;
     spm_slv : in mem_if_slave;
     dma_num : in dma_idx_t;
@@ -177,7 +177,8 @@ begin
             pkt_type <= "01";
           end if ;
           pkt_out <= std_logic_vector(VALID_SOP & pkt_type & MC_BANK & to_unsigned(0,CPKT_ADDR_WIDTH) & route_reg);
-          payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_p;
+          payload_data_next(WORD_WIDTH/2+1 downto WORD_WIDTH/2) <= mc_p;
+			 payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_idx;
         elsif active = '1' then
           next_state <= SEND1;
           spm.en <= '1';
@@ -225,8 +226,7 @@ begin
     when MODE_CHANGE1 =>
       next_state <= MODE_CHANGE2;
       pkt_out <= std_logic_vector(VALID & payload_data );
-      payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_idx;
-
+      
     when MODE_CHANGE2 =>
       next_state <= IDLE;
       pkt_out <= std_logic_vector(VALID_EOP & payload_data);
@@ -234,34 +234,19 @@ begin
 end process ; -- fsm
 
 
-port_a_input_mux : process( config_dword, config.wdata, config.addr, config.wr, hi_lo_reg, port_a_dout, sel  )
+port_a_input_mux : process( config.wdata, config.addr, config.wr, hi_lo_reg, port_a_dout, sel  )
 begin
   port_a_wr_hi <= '0';
   port_a_wr_lo <= '0';
   port_a_addr <= config.addr(DMATBL_IDX_WIDTH downto 1);
   config_slv.rdata <= (others => '0');
-  -- Active bit
-    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata((2*WORD_WIDTH)-1);--Latch removal
+  -- Active 
+    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata(WORD_WIDTH-1);
     -- Count value and Read pointer
     port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
-          <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1
-                                                            downto WORD_WIDTH);--Latch removal
-    -- Header field
-    port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
-                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);--Latch removal
-  if config_dword = '1' then
-    -- Active bit
-    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata((2*WORD_WIDTH)-1);
-    -- Count value and Read pointer
-    port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
-          <= config.wdata(WORD_WIDTH+DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1
-                                                            downto WORD_WIDTH);
-    -- Header field
-    port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
-                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
-    port_a_wr_hi <= config.wr and sel;
-    port_a_wr_lo <= config.wr and sel;
-  elsif config.addr(0) = '1' then
+          <= config.wdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0);
+			 
+  if config.addr(0) = '1' then
     -- Active 
     port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata(WORD_WIDTH-1);
     -- Count value and Read pointer
@@ -277,7 +262,7 @@ begin
   
   hi_lo_next <= config.addr(0);
   if hi_lo_reg = '1' then
-    config_slv.rdata(WORD_WIDTH) <= port_a_dout(port_a_dout'high);
+    config_slv.rdata(WORD_WIDTH-1) <= port_a_dout(port_a_dout'high);
     config_slv.rdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0)
                  <= port_a_dout(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH);
   else

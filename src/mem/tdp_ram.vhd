@@ -67,10 +67,14 @@ end tdp_ram;
 
 
 architecture rtl of tdp_ram is
+
+--	 attribute ram_style : string;
     
 -- Shared memory
     type mem_type is array ( (2**ADDR)-1 downto 0 ) of unsigned(DATA-1 downto 0);
     shared variable mem : mem_type := (others => (others => '0'));
+	
+--	 attribute ram_style of mem : variable is "distributed";
 
 begin
 

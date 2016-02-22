@@ -49,7 +49,7 @@ entity rx_unit is
 		-- To the SPM
 		spm                 : out mem_if_master;
 		-- To the internal MEM bus
-		config 				: out mem_if_master;
+		config 				: out conf_if_master;
 		-- To the IRQ fifo
 		irq_fifo_data       : out irq_data_t;
 		irq_fifo_data_valid : out std_logic;
@@ -61,13 +61,13 @@ end rx_unit;
 
 architecture rtl of rx_unit is
 	signal new_pkt, new_data_pkt, new_config_pkt, new_irq_pkt: std_logic;
-	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt_en,  lst_data_pkt, irq_fifo_data_valid_next: std_logic;
+	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt_en,  lst_data_pkt : std_logic;
 	signal addr : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
 
-signal wdata_high, wdata_low : unsigned(WORD_WIDTH - 1 downto 0);
+signal wdata_high : unsigned(WORD_WIDTH - 1 downto 0);
 
 
-	type state_type is (IDLE, DATA_W_LOW, DATA_W_HIGH, DATA_CONTINUE, DATA_DONE, CONFIG_W_LOW, CONFIG_W_HIGH, CONFIG_CONTINUE, CONFIG_DONE, IRQ_W_LOW, IRQ_W_HIGH, IRQ_DONE);
+	type state_type is (IDLE, DATA_W_LOW, DATA_W_HIGH, CONFIG_W_LOW, CONFIG_W_HIGH, IRQ_W_LOW, IRQ_W_HIGH);
 	signal state, next_state : state_type;
 
 begin
@@ -85,17 +85,16 @@ begin
 
 	--SPM and config output assignments
 	spm.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= wdata_high;
- 	spm.wdata(WORD_WIDTH - 1 downto 0) <= wdata_low;
+ 	spm.wdata(WORD_WIDTH - 1 downto 0) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
  	
-	config.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= wdata_high;
- 	config.wdata(WORD_WIDTH - 1 downto 0) <= wdata_low;
+ 	config.wdata(WORD_WIDTH - 1 downto 0) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
  	
 	spm.addr <= addr;
 	config.addr <= addr;
 	irq_fifo_data <= addr;
 
 	--Signal irq_fifo_data_valid assignment, the IRQ FIFO push is delayed in order to happen with the last spm wr/en
-	irq_fifo_data_valid_next <= lst_data_pkt and pkt_in(LINK_WIDTH - 3); 
+	irq_fifo_data_valid <= lst_data_pkt and pkt_in(LINK_WIDTH - 3); 
 
 	--Control Moore FSM		
 	process(state, new_config_pkt, new_data_pkt, new_irq_pkt, pkt_in)
@@ -126,91 +125,39 @@ begin
 				next_state    <= DATA_W_LOW;
 			
 			when DATA_W_LOW =>
-				wdata_low_en <= '1';
+				spm.en        <= '1';
+				spm.wr        <= '1';
+
 				if (pkt_in(LINK_WIDTH - 3) = '0') then
-					next_state <= DATA_CONTINUE;
-				else
-					next_state <= DATA_DONE;
-				end if;
-			
-			when DATA_CONTINUE =>
-				addr_cnt_en   <= '1';
-				wdata_high_en <= '1';
-				spm.en        <= '1';
-				spm.wr        <= '1';
-				next_state    <= DATA_W_LOW;
-			
-			when DATA_DONE =>
-				addr_load     <= '1';
-				spm.en        <= '1';
-				spm.wr        <= '1';
-				if (new_data_pkt = '1') then
+					addr_cnt_en   <= '1';
 					next_state <= DATA_W_HIGH;
-				elsif(new_config_pkt = '1')then
-					next_state <= CONFIG_W_HIGH;
-				elsif(new_irq_pkt = '1')then
-					next_state <= IRQ_W_HIGH;
 				else
 					next_state <= IDLE;
 				end if;
 				
 		   --Config pkt manager
 			when CONFIG_W_HIGH =>
-				wdata_high_en <= '1';
+				config.en        <= '1';
+				config.wr        <= '1';
+				addr_cnt_en   <= '1';
 				next_state    <= CONFIG_W_LOW;
 			
 			when CONFIG_W_LOW =>
-				wdata_low_en <= '1';
-				if (pkt_in(LINK_WIDTH - 3) = '0') then
-					next_state <= CONFIG_CONTINUE;
-				else
-					next_state <= CONFIG_DONE;
-				end if;
-			
-			when CONFIG_CONTINUE =>
-				addr_cnt_en   <= '1';
-				wdata_high_en <= '1';
 				config.en        <= '1';
 				config.wr        <= '1';
-				next_state    <= CONFIG_W_LOW;
-			
-			when CONFIG_DONE =>
-				addr_load     <= '1';
-				config.en        <= '1';
-				config.wr        <= '1';
-				if (new_data_pkt = '1') then
-					next_state <= DATA_W_HIGH;
-				elsif(new_config_pkt = '1')then
-					next_state <= CONFIG_W_HIGH;
-				elsif(new_irq_pkt = '1')then
-					next_state <= IRQ_W_HIGH;
-				else
-					next_state <= IDLE;
-				end if;	
-			
+				next_state    <= IDLE;
+
 			--IRQ pkt manager
 			when IRQ_W_HIGH =>
 				wdata_high_en <= '1';
 				next_state    <= IRQ_W_LOW;
 			
 			when IRQ_W_LOW =>
-				wdata_low_en <= '1';
-				next_state <= IRQ_DONE;
-			
-			when IRQ_DONE =>
-				addr_load     <= '1';
-				irq_fifo_irq_valid <= '1';
 				spm.en        <= '1';
 				spm.wr        <= '1';
-				if (new_data_pkt = '1') then
-					next_state <= DATA_W_HIGH;
-				elsif(new_config_pkt = '1')then
-					next_state <= CONFIG_W_HIGH;
-				elsif(new_irq_pkt = '1')then
-					next_state <= IRQ_W_HIGH;
-				else
-					next_state <= IDLE;
-				end if;		
+				irq_fifo_irq_valid <= '1';
+				next_state <= IDLE;
+			
 		end case;
 	end process;
 
@@ -236,27 +183,16 @@ begin
 		end if;
 	end process;
 
-	-- Register with enable	
-	process(clk)
-	begin
-		if rising_edge(clk) then
-			if (wdata_low_en = '1') then
-				wdata_low <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
-			end if;
-		end if;
-
-	end process;
-
 	-- General pourpose registers
 	process(clk)
 	begin
 		if rising_edge(clk) then
 			if (reset = '1') then
 				state <= IDLE;
-				irq_fifo_data_valid <= '0';
+				--irq_fifo_data_valid <= '0';
 			else
 				state <= next_state;
-				irq_fifo_data_valid <= irq_fifo_data_valid_next;
+				--irq_fifo_data_valid <= irq_fifo_data_valid_next;
 			end if;
 		end if;
 	end process;

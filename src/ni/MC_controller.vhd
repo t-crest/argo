@@ -54,9 +54,9 @@ entity MC_controller is
     reset   : in std_logic;
     run     : in std_logic;
     -- Read write interface from config bus
-    config  : in mem_if_master;
+    config  : in conf_if_master;
     sel   : in std_logic;
-    config_slv : out mem_if_slave;
+    config_slv : out conf_if_slave;
     -- Interface towards TDM controller
     period_boundary : in std_logic;
     mc_p_cnt : in unsigned(1 downto 0);
@@ -145,6 +145,8 @@ begin
             MODE_CHANGE_IDX_next <= unsigned(config.wdata(MCTBL_IDX_WIDTH-1 downto 0));
             mode_change_cnt_next <= mode_change_cnt_int;
             local_mode_change_idx <= '1';
+			 when to_unsigned(1,CPKT_ADDR_WIDTH) =>
+            
           when others =>
             config_slv_error_next <= '1';
         end case ;
@@ -204,7 +206,7 @@ mc_fsm : if GENERATE_MC_TABLE generate
   slave_config : if not MASTER generate
     mc <= '0';
     mc_idx <= (others => '0');
-    mode_change_cnt_int <= unsigned(config.wdata(WORD_WIDTH+1 downto WORD_WIDTH));
+    mode_change_cnt_int <= unsigned(config.wdata(WORD_WIDTH/2+1 downto WORD_WIDTH/2));
     mc_p <= (others => '0');
 
     mode_changed_reg_proc : process( clk )

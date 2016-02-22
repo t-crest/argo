@@ -51,18 +51,17 @@ entity config_bus is
     ocp_config_m : in ocp_io_m;
     ocp_config_s : out ocp_io_s;
     supervisor : in std_logic;
-    config_unit : in mem_if_master;
-    config : out mem_if_master;
-    config_dword : out std_logic;
-    TDM_ctrl : in mem_if_slave;
+    config_unit : in conf_if_master;
+    config : out conf_if_master;
+    TDM_ctrl : in conf_if_slave;
     TDM_ctrl_sel : out std_logic;
-    sched_tbl : in mem_if_slave;
+    sched_tbl : in conf_if_slave;
     sched_tbl_sel : out std_logic;
-    DMA_tbl : in mem_if_slave;
+    DMA_tbl : in conf_if_slave;
     DMA_tbl_sel : out std_logic;
-    MC_ctrl : in mem_if_slave;
+    MC_ctrl : in conf_if_slave;
     MC_ctrl_sel : out std_logic;
-    irq_unit_fifo : in mem_if_slave;
+    irq_unit_fifo : in conf_if_slave;
     irq_unit_fifo_sel : out std_logic
   );
 end config_bus;
@@ -112,7 +111,6 @@ begin
   config.en <= config_unit.en;
   config.wr <= config_unit.wr;
   config.wdata <= config_unit.wdata;
-  config_dword <= '1';
 
   -- keep the value of the response register
   next_ocp_resp <= ocp_resp_reg;
@@ -124,9 +122,6 @@ begin
     next_ocp_resp <= OCP_RESP_DVA;
     ocp_config_s.SCmdAccept <= '1';
     config.wdata(WORD_WIDTH-1 downto 0) <= unsigned(ocp_config_m.MData);
-
-    -- Only 32-bit are written through the OCP interface
-    config_dword <= '0';
 
     bank_id <= unsigned(ocp_config_m.MAddr(HEADER_FIELD_WIDTH-
                                   HEADER_CTRL_WIDTH+2-1 downto HEADER_FIELD_WIDTH-

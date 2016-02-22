@@ -53,9 +53,9 @@ entity TDM_controller is
     run     : in std_logic;
     master_run : out std_logic;
     -- Read write interface from config bus
-    config  : in mem_if_master;
+    config  : in conf_if_master;
     sel   : in std_logic;
-    config_slv : out mem_if_slave;
+    config_slv : out conf_if_slave;
     -- Interface to schedule table
     stbl_idx  : out stbl_idx_t;
     stbl_idx_en  : out std_logic;

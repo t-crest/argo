@@ -47,7 +47,7 @@ ARCHITECTURE Buffered OF OCPIOCCI_A IS
 BEGIN
 
 	asyncOut.req <= req;--req_next;
-	asyncOut.data	<= masterData WHEN writeEnable = '0' ELSE syncIn;
+	asyncOut.data	<= masterData;-- WHEN writeEnable = '0' ELSE syncIn;
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,req)
     BEGIN
         state_next		<= state;

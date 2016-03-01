@@ -1,16 +1,11 @@
 --------------------------------------------------------------------------------
--- Title		: OCPBurst Clock Crossing Interface Slave
+-- Title		: OCPburst Clock Crossing Interface Slave
 -- Type			: Entity
--- Created		: 2014/05/26 14:30 UTC+2
--- Edited		: 2014/06/02 23:00 UTC+2 (Christian Poulsen)
--- Developers	: Mathias Herlev (Creator)(Lead)
---				: Christian Poulsen
---
--- Description	: Slave Interface for the OCP clock crossing. Connects to a
+-- Developers	: Mathias Herlev (Lead) - s103060@student.dtu.dk
+--				: Christian Poulsen     - s103050@student.dtu.dk
+-- Description	: Slave Interface for the OCPburst clock crossing. Connects to a
 --				: master
---
 -- TODO			:
---
 --------------------------------------------------------------------------------
 
 LIBRARY ieee;
@@ -35,7 +30,6 @@ END ENTITY OCPBurstCCI_A;
 
 ARCHITECTURE behaviour OF OCPBurstCCI_A IS
     TYPE fsm_states_t IS (	IDLE_state, ReadBlock, ReadBlockWait,
-							--WriteBlockLoadFirstWord, 
 							WriteBlockLoad, WriteBlockWait);
     SIGNAL state, state_next    :    fsm_states_t;
 
@@ -43,7 +37,6 @@ ARCHITECTURE behaviour OF OCPBurstCCI_A IS
     SIGNAL req, req_next			: std_logic := '0';
     SIGNAL wordCnt, wordCnt_next	: unsigned(1 downto 0) := (others => '0');
 
---    TYPE MasterDataArray IS ARRAY (burstSize-1 downto 0) OF ocp_burst_m;
 	TYPE DataArray_t	IS 
 		ARRAY (burstSize-1 downto 0) OF
 		std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
@@ -52,12 +45,13 @@ ARCHITECTURE behaviour OF OCPBurstCCI_A IS
 		std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
 
 
-	SIGNAL cmd, cmd_next		: std_logic_vector(OCP_CMD_WIDTH-1 downto 0) := OCP_CMD_IDLE;
-	SIGNAL addr, addr_next		: std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0) := (others => '0');
+	SIGNAL cmd, cmd_next	: std_logic_vector(OCP_CMD_WIDTH-1 downto 0)
+		   					:= OCP_CMD_IDLE;
+	SIGNAL addr, addr_next	: std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0)
+							:= (others => '0');
 	SIGNAL data_arr	: DataArray_t;
     SIGNAL byteEn_arr	: ByteEn_Array_t;
 
---	SIGNAL masterData, masterData_next  : MasterDataArray;
     SIGNAL writeEnable					: std_logic := '0';
 	
 	ALIAS o_async IS asyncOut;
@@ -65,7 +59,6 @@ ARCHITECTURE behaviour OF OCPBurstCCI_A IS
 BEGIN
 
     asyncOut.req		<= req;
---    asyncOut.DataInSel	<= std_logic_vector(wordCnt);
 
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,wordCnt, req, cmd, addr)
     BEGIN
@@ -76,7 +69,7 @@ BEGIN
 		cmd_next <= cmd;
 		addr_next <= addr;
 		wordCnt_next <= wordCnt;
-		asyncOut.DataInSel	<= (others => '0');--std_logic_vector(wordCnt);
+		asyncOut.DataInSel	<= (others => '0');
 		asyncOut.data.MDataValid <= '0';
 		syncOut.SCmdAccept <= '0';
 		syncOut.SDataAccept <= '0';
@@ -85,7 +78,6 @@ BEGIN
 				IF syncIn.Mcmd = OCP_CMD_RD THEN
                     cmd_next <= syncIn.MCmd;
 					addr_next <= syncIn.MAddr;
---					asyncOut.data	<= syncIn;
                     req_next		<= NOT (req);
                     state_next      <= ReadBlockWait;
                 ELSIF syncIn.Mcmd = OCP_CMD_WR AND syncIn.MDataValid = '1' THEN
@@ -99,13 +91,11 @@ BEGIN
                 END IF;
 			-- READ BLOCK
             WHEN ReadBlockWait =>
-
                 IF ack = NOT(ack_prev) THEN
                     state_next			<= ReadBlock;
                     syncOut.SCmdAccept	<= '1';
                 END IF; 
             WHEN ReadBlock =>
-
 				asyncOut.DataInSel	<= std_logic_vector(wordCnt);
                 syncOut			<= asyncIn.data;
                 wordCnt_next	<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
@@ -133,25 +123,13 @@ BEGIN
 				state_next	<= IDLE_state;
         END CASE;
     END PROCESS FSM;
-	asyncOut.data.MCmd			<= cmd;	
-	asyncOut.data.MData			<= 
---		masterData(to_integer(unsigned(i_async.DataInSel))).MData;
-		data_arr(to_integer(unsigned(i_async.DataInSel)));
-	asyncOut.data.MAddr			<=
---		masterData(to_integer(unsigned(i_async.DataInSel))).MAddr;
-		addr;
-	asyncOut.data.MDataByteEn	<= 
---		masterData(to_integer(unsigned(i_async.DataInSel))).MDataByteEn;
-		byteEn_arr(to_integer(unsigned(i_async.DataInSel)));
-	
---    DataRegMux : PROCESS(writeEnable,syncIn)
---      BEGIN
---          masterData_next <= masterData;
---          IF writeEnable = '1' THEN
---              masterData_next(to_integer(wordCnt)) <= syncIn;
---          END IF;
---      END PROCESS DataRegMux;
-    
+
+	asyncOut.data.MCmd	<= cmd;	
+	asyncOut.data.MData	<= data_arr(to_integer(unsigned(i_async.DataInSel)));
+	asyncOut.data.MAddr	<= addr;
+	asyncOut.data.MDataByteEn <= 
+						byteEn_arr(to_integer(unsigned(i_async.DataInSel)));
+
     Registers : PROCESS(clk,rst)
     BEGIN
         IF rst = '1' THEN
@@ -170,7 +148,6 @@ BEGIN
             ack         <= ack_next;
             ack_next    <= asyncIn.ack;
             wordCnt     <= wordCnt_next;
---            masterData  <= masterData_next;
 			cmd			<= cmd_next;
 			addr		<= addr_next;
         END IF;

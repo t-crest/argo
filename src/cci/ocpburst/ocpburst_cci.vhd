@@ -1,14 +1,10 @@
 --------------------------------------------------------------------------------
 -- Title   	: OCPBurst Clock Crossing Interface
 -- Type		: Entity
--- Created 	: 2014/05/25 (20:00 UTC+2)
--- Edited  	:
--- Developers  :
---
--- Description :
---
+-- Developers  : Mathias Herlev (Lead) - s103060@student.dtu.dk
+--				 Christian Poulsen     - s103050@student.dtu.dk
+-- Description : Top level for Clock Domain Crossing interface
 -- TODO	:
---
 --------------------------------------------------------------------------------
 
 LIBRARY ieee;
@@ -49,10 +45,6 @@ ARCHITECTURE rtl OF OCPBurstCCI IS
 	SIGNAL async_B : AsyncBurst_B_r;
 
 BEGIN
-
---	output.OCPBMaster   <= input.OCPBSlave;
---	output.OCPBSlave	<= input.OCPBMaster;
-
 
 	CCI_A  : OCPBurstCCI_A
 	PORT MAP(input.clk_A,

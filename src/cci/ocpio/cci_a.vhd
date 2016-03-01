@@ -46,8 +46,8 @@ ARCHITECTURE Buffered OF OCPIOCCI_A IS
 
 BEGIN
 
-	asyncOut.req <= req;--req_next;
-	asyncOut.data	<= masterData;-- WHEN writeEnable = '0' ELSE syncIn;
+	asyncOut.req <= req;
+	asyncOut.data	<= masterData;
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,req)
     BEGIN
         state_next		<= state;
@@ -58,23 +58,17 @@ BEGIN
 		CASE state IS
             WHEN IDLE_state =>
 				IF syncIn.MCmd /= OCP_CMD_IDLE THEN
---					req_next <= NOT (req);
---					state_next <= ReadWord_state;
---					writeEnable <= '1';
---				ELSIF syncIn.cmd = WriteWord THEN
 					req_next <= NOT(req);
 					state_next <= WriteWord_state;
 					writeEnable <= '1';
 				END IF;
 			WHEN ReadWord_state =>
-				--asyncOut.data <= syncIn;
 				IF ack = NOT (ack_prev) THEN
 					syncOut <= asyncIn.data;
 					syncOut.SCmdAccept <= '1';
 					state_next <= IDLE_state;
 				END IF;
 			WHEN WriteWord_state =>
-				--asyncOut.data <= syncIn;
 				IF ack = NOT (ack_prev) THEN
 					state_next <= WriteWordFinal_state;
 					syncOut <= asyncIn.data;
@@ -165,7 +159,6 @@ BEGIN
 				syncOut <= asyncIn.data;
 				syncOut.SCmdAccept <= '0';
 				IF syncIn.MRespAccept = '1' THEN
---					req <= '0';
 					state_next <= Idle_state;
 				END IF;
 			WHEN HandshakeFinal_state =>

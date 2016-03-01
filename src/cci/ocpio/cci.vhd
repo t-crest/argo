@@ -1,14 +1,9 @@
 --------------------------------------------------------------------------------
 -- Title   	: OCPIO Clock Crossing Interface
 -- Type		: Entity
--- Created 	: 2014/05/25 (20:00 UTC+2)
--- Edited  	:
--- Developers  :
---
+-- Developers  : Mathias Herlev (Creator Lead)
 -- Description :
---
 -- TODO	:
---
 --------------------------------------------------------------------------------
 
 LIBRARY ieee;
@@ -50,9 +45,6 @@ ARCHITECTURE rtl OF OCPIOCCI IS
 	SIGNAL asyncSlave   : asyncIO_B_r;
 
 BEGIN
-
---	output.OCPB_A   <= input.OCPBSlave;
---	output.OCPBSlave	<= input.OCPB_A;
 
 
 	CCI_A  : entity work.OCPIOCCI_A(Buffered)

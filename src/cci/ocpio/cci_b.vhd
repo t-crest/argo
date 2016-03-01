@@ -1,16 +1,12 @@
 --------------------------------------------------------------------------------
 -- Title		: OCPIO Clock Crossing Interface Slave
 -- Type			: Entity
--- Created		: 2014/05/26 14:30 UTC+2
--- Edited		: 2014/06/02 23:00 UTC+2 (Christian Poulsen)
 -- Developers	: Mathias Herlev (Creator)(Lead)
---				: Christian Poulsen
 --
--- Description	: Slave Interface for the OCP clock crossing. Connects to a
--- 				: master
---
+-- Description	: Master Interface for the OCP clock crossing. Connects to a 
+--				  Slave
+-- 				: 
 -- TODO			:
---
 --------------------------------------------------------------------------------
 
 LIBRARY ieee;
@@ -45,9 +41,8 @@ ARCHITECTURE Buffered OF OCPIOCCI_B IS
     SIGNAL loadEnable   : std_logic;
 
 BEGIN
-	-- Async Data Signals
 
-		asyncOut.data <= slaveData WHEN loadEnable = '0' ELSE syncIn;
+	asyncOut.data <= slaveData WHEN loadEnable = '0' ELSE syncIn;
 
 	asyncOut.ack	<= ack;--ack_next;
     FSM : PROCESS(state, syncIn, asyncIn, req, req_prev,ack)
@@ -56,7 +51,6 @@ BEGIN
         loadEnable	<= '0';
 		syncOut		<= OCPIOMasterIdle_c;
 		ack_next	<= ack;
-	
 	
         CASE state IS
             WHEN IDLE_state =>

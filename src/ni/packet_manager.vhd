@@ -245,18 +245,20 @@ begin
     -- Count value and Read pointer
     port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
           <= config.wdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0);
-			 
+	 port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
+                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
+	
   if config.addr(0) = '1' then
     -- Active 
-    port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata(WORD_WIDTH-1);
+    --port_a_din(DMATBL_DATA_WIDTH-1) <= config.wdata(WORD_WIDTH-1);
     -- Count value and Read pointer
-    port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
-          <= config.wdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0);
+    --port_a_din(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto HEADER_FIELD_WIDTH)
+    --      <= config.wdata(DMATBL_COUNT_WIDTH+DMATBL_READ_PTR_WIDTH-1 downto 0);
     port_a_wr_hi <= config.wr and sel;
   elsif config.addr(0) = '0' then
     -- Header field
-    port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
-                                <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
+    --port_a_din(HEADER_FIELD_WIDTH-1 downto 0)
+    --                            <= config.wdata(HEADER_FIELD_WIDTH-1 downto 0);
     port_a_wr_lo <= config.wr and sel;
   end if ;
   

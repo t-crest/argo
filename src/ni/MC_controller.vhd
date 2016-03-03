@@ -110,7 +110,7 @@ begin
 --------------------------------------------------------------------------------
 
   
-  process (MODE_CHANGE_IDX_reg, MODE_IDX_reg, MODE_reg, config.addr, config.en, config.wdata, config.wr, mc_tbl_addr, mode_change_cnt_int, mode_change_cnt_reg, read_reg, sel )
+  process (MODE_CHANGE_IDX_reg, MODE_IDX_reg, MODE_reg, config.addr, config.en, config.wdata, config.wr, mc_tbl_addr, mode_change_cnt_int, mode_change_cnt_reg, read_reg, sel, stbl_min_reg, stbl_maxp1_reg )
   begin
     config_slv.rdata <= (others=> '0');
     config_slv.rdata(WORD_WIDTH-1 downto 0) <= read_reg;

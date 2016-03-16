@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title		: OCPIO Clock Crossing Interface Slave
 -- Type			: Entity
 -- Created		: 2014/05/26 14:30 UTC+2

@@ -1,7 +1,9 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title		: OCPburst Clock Crossing Interface Slave
 -- Type			: Entity
--- Developers	: Mathias Herlev (Lead) - s103060@student.dtu.dk
+-- Developer(s)	: Mathias Herlev (Lead) - s103060@student.dtu.dk
 --				: Christian Poulsen     - s103050@student.dtu.dk
 -- Description	: Slave Interface for the OCPburst clock crossing. Connects to a
 --				: master
@@ -29,39 +31,50 @@ ENTITY OCPBurstCCI_A IS
 END ENTITY OCPBurstCCI_A;
 
 ARCHITECTURE behaviour OF OCPBurstCCI_A IS
-    TYPE fsm_states_t IS (	IDLE_state, ReadBlock, ReadBlockWait,
-							WriteBlockLoad, WriteBlockWait);
-    SIGNAL state, state_next    :    fsm_states_t;
-
-    SIGNAL ack_prev, ack, ack_next	: std_logic := '0';
-    SIGNAL req, req_next			: std_logic := '0';
-    SIGNAL wordCnt, wordCnt_next	: unsigned(1 downto 0) := (others => '0');
-
-	TYPE DataArray_t	IS 
-		ARRAY (burstSize-1 downto 0) OF
-		std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
-	TYPE ByteEn_Array_t IS
-		ARRAY (burstSize downto 0) OF
-		std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
-
-
+	----------------------------------------------------------------------------
+	-- FSM Signal Declarations
+	----------------------------------------------------------------------------
+    TYPE fsm_states_t IS (	IDLE_state, ReadBlock, ReadBlockWait,              
+							WriteBlockLoad, WriteBlockWait);                     
+    SIGNAL state, state_next    :    fsm_states_t;                             
+	----------------------------------------------------------------------------
+	-- Data Registers
+	----------------------------------------------------------------------------
 	SIGNAL cmd, cmd_next	: std_logic_vector(OCP_CMD_WIDTH-1 downto 0)
 		   					:= OCP_CMD_IDLE;
 	SIGNAL addr, addr_next	: std_logic_vector(OCP_BURST_ADDR_WIDTH-1 downto 0)
 							:= (others => '0');
+
+	TYPE DataArray_t	IS 
+		ARRAY (burstSize-1 downto 0) OF
+		std_logic_vector(OCP_DATA_WIDTH-1 downto 0);
 	SIGNAL data_arr	: DataArray_t;
+
+	TYPE ByteEn_Array_t IS
+		ARRAY (burstSize downto 0) OF
+		std_logic_vector(OCP_BYTE_WIDTH-1 downto 0);
     SIGNAL byteEn_arr	: ByteEn_Array_t;
 
     SIGNAL writeEnable					: std_logic := '0';
 	
+    SIGNAL wordCnt, wordCnt_next	: unsigned(1 downto 0) := (others => '0');
+	----------------------------------------------------------------------------
+	-- Asynchronous signals
+	----------------------------------------------------------------------------
 	ALIAS o_async IS asyncOut;
 	ALIAS i_async IS asyncIn;
+
+    SIGNAL ack_prev, ack, ack_next	: std_logic := '0';
+    SIGNAL req, req_next			: std_logic := '0';
+
 BEGIN
 
-    asyncOut.req		<= req;
 
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,wordCnt, req, cmd, addr)
     BEGIN
+		------------------------------------------------------------------------
+		-- Default Assignments
+		------------------------------------------------------------------------
         state_next		<= state;
         syncOut			<= OCPBurstSlaveIdle_c;
 		writeEnable     <= '0';
@@ -73,10 +86,11 @@ BEGIN
 		asyncOut.data.MDataValid <= '0';
 		syncOut.SCmdAccept <= '0';
 		syncOut.SDataAccept <= '0';
+
 		CASE state IS
             WHEN IDLE_state =>
 				IF syncIn.Mcmd = OCP_CMD_RD THEN
-                    cmd_next <= syncIn.MCmd;
+					cmd_next <= syncIn.MCmd;                                  
 					addr_next <= syncIn.MAddr;
                     req_next		<= NOT (req);
                     state_next      <= ReadBlockWait;
@@ -124,12 +138,19 @@ BEGIN
         END CASE;
     END PROCESS FSM;
 
+	----------------------------------------------------------------------------
+	-- Output Map
+	----------------------------------------------------------------------------
 	asyncOut.data.MCmd	<= cmd;	
 	asyncOut.data.MData	<= data_arr(to_integer(unsigned(i_async.DataInSel)));
 	asyncOut.data.MAddr	<= addr;
 	asyncOut.data.MDataByteEn <= 
 						byteEn_arr(to_integer(unsigned(i_async.DataInSel)));
+    asyncOut.req		<= req;
 
+	----------------------------------------------------------------------------
+	-- Register Processes
+	----------------------------------------------------------------------------
     Registers : PROCESS(clk,rst)
     BEGIN
         IF rst = '1' THEN

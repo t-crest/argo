@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title		: OCPBurst Clock Crossing Interface Slave
 -- Type			: Entity
 -- Developers	: Mathias Herlev (Creator)(Lead)
@@ -28,12 +30,15 @@ ENTITY OCPBurstCCI_B IS
 END ENTITY OCPBurstCCI_B;
 
 ARCHITECTURE behaviour OF OCPBurstCCI_B IS
+	----------------------------------------------------------------------------
+	-- FSM signals
+	----------------------------------------------------------------------------
 	TYPE fsm_states_t IS (	IDLE_state, ReadBlock, ReadBlockWait,
 							WriteBlock, WriteBlockWait,WriteBlockFinal);
 	SIGNAL state, state_next	:	 fsm_states_t;
-
-	SIGNAL req_prev, req, req_next	: std_logic := '0';
-	SIGNAL ack, ack_next			: std_logic := '0';
+	----------------------------------------------------------------------------
+	-- Register signals
+	----------------------------------------------------------------------------
 	SIGNAL wordCnt, wordCnt_next	: unsigned(1 downto 0) := (others => '0');
 
 	TYPE DataArray_t IS
@@ -47,14 +52,21 @@ ARCHITECTURE behaviour OF OCPBurstCCI_B IS
 	SIGNAL resp_arr	: RespArray_t;
 
 	SIGNAL loadEnable	: std_logic;
+	----------------------------------------------------------------------------
+	-- Async signals
+	----------------------------------------------------------------------------
+
+	SIGNAL req_prev, req, req_next	: std_logic := '0';
+	SIGNAL ack, ack_next			: std_logic := '0';
 
 BEGIN
 	asyncOut.ack	<= ack;
 	asyncOut.data.SResp <= resp_arr(to_integer(unsigned(asyncIn.DataInSel)));
 	asyncOut.data.SData <= data_arr(to_integer(unsigned(asyncIn.DataInSel)));
 
-
-
+	----------------------------------------------------------------------------
+	-- FSM
+	----------------------------------------------------------------------------
 	FSM : PROCESS(state, syncIn, asyncIn, req, req_prev,wordCnt, ack)
 	BEGIN
 		state_next	<= state;
@@ -142,7 +154,9 @@ BEGIN
 			END CASE;
 	END PROCESS FSM;
 	
-
+	----------------------------------------------------------------------------
+	-- Registers
+	----------------------------------------------------------------------------
 	Registers	 : PROCESS(clk,rst)
 	BEGIN
 		IF rst = '1' THEN
@@ -171,7 +185,6 @@ BEGIN
 		END IF;
 	END PROCESS DataRam;
 
-
 	RespRam : PROCESS(clk)
 	BEGIN
 		IF rising_edge(clk) THEN
@@ -180,7 +193,5 @@ BEGIN
 			END IF;
 		END IF;
 	END PROCESS RespRam;
-
-
 
 END ARCHITECTURE behaviour;

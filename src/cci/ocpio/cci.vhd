@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title   	: OCPIO Clock Crossing Interface
 -- Type		: Entity
 -- Developers  : Mathias Herlev (Creator Lead)

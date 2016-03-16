@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title		: OCPBurst Interface Types
 -- Type		 : Type Package
 -- Created	  : 2014/05/17
@@ -8,7 +10,6 @@
 -- Description  :
 --
 -- TODO	:
---
 --------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
@@ -47,14 +48,3 @@ PACKAGE OCPIOCCI_types IS
 
 
 END OCPIOCCI_types;
-
-
---PACKAGE BODY PACKAGE_NAME IS
-     -- DEFINITION OF PREVIOUSLY DECLARED
-        -- CONSTANTS
-        -- SUBPROGRAMS
-     -- DECLARATION/DEFINITION OF ADDITIONAL
-        -- TYPES AND SUBTYPES
-        -- SUBPROGRAMS
-        -- CONSTANTS, SIGNALS AND SHARED VARIABLES
---END PACKAGE_NAME;

@@ -1,14 +1,15 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title		: OCPBurst Interface Types
 -- Type		 	: Type Package
 -- Created	  	: 2014/05/17
 -- Edited	   	: 2014/05/17
 -- Developers	: Mathias Herlev (Creator)
 --
--- Description  : Testbench for read operations
+-- Description  : 
 --
 -- TODO	:
---
 --------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
@@ -48,14 +49,3 @@ PACKAGE OCPBurstCCI_types IS
         DataInSel   : std_logic_vector(1 downto 0);
     END RECORD;
 END OCPBurstCCI_types;
-
-
---PACKAGE BODY PACKAGE_NAME IS
-     -- DEFINITION OF PREVIOUSLY DECLARED
-        -- CONSTANTS
-        -- SUBPROGRAMS
-     -- DECLARATION/DEFINITION OF ADDITIONAL
-        -- TYPES AND SUBTYPES
-        -- SUBPROGRAMS
-        -- CONSTANTS, SIGNALS AND SHARED VARIABLES
---END PACKAGE_NAME;

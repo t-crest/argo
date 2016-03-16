@@ -1,4 +1,6 @@
 --------------------------------------------------------------------------------
+-- License: MIT License - Copyright (c) 2016 Mathias Herlev
+--------------------------------------------------------------------------------
 -- Title   	: OCPBurst Clock Crossing Interface
 -- Type		: Entity
 -- Developers  : Mathias Herlev (Lead) - s103060@student.dtu.dk

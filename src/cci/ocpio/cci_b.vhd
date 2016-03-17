@@ -10,7 +10,6 @@
 -- 				: 
 -- TODO			:
 --------------------------------------------------------------------------------
-
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
@@ -30,23 +29,35 @@ ENTITY OCPIOCCI_B IS
     );
 END ENTITY OCPIOCCI_B;
 
+--------------------------------------------------------------------------------
+-- Buffered Architecture
+--------------------------------------------------------------------------------
 ARCHITECTURE Buffered OF OCPIOCCI_B IS
-    TYPE fsm_states_t IS	(IDLE_state, ReadWordWait_state, ReadWord_state,
-							WriteWordWait_state, WriteWord_state);
+	----------------------------------------------------------------------------
+	-- FSM signals
+	----------------------------------------------------------------------------
+    TYPE fsm_states_t IS	(IDLE_state, CmdAcceptWait_state, RespWait_state);
     SIGNAL state, state_next    :    fsm_states_t;
-
+	----------------------------------------------------------------------------
+	-- Async signals
+	----------------------------------------------------------------------------
     SIGNAL req_prev, req, req_next  : std_logic := '0';
     SIGNAL ack, ack_next            : std_logic := '0';
 
-
+	----------------------------------------------------------------------------
+	-- Register signals
+	----------------------------------------------------------------------------
     SIGNAL slaveData, slaveData_next  : ocp_io_s;
     SIGNAL loadEnable   : std_logic;
 
 BEGIN
 
 	asyncOut.data <= slaveData WHEN loadEnable = '0' ELSE syncIn;
+	asyncOut.ack	<= ack;
 
-	asyncOut.ack	<= ack;--ack_next;
+	----------------------------------------------------------------------------
+	-- FSM
+	----------------------------------------------------------------------------
     FSM : PROCESS(state, syncIn, asyncIn, req, req_prev,ack)
     BEGIN
         state_next	<= state;
@@ -57,70 +68,40 @@ BEGIN
         CASE state IS
             WHEN IDLE_state =>
                 IF req = NOT (req_prev) THEN
-                    IF (asyncIn.data.MCmd = OCP_CMD_RD) THEN
+                    IF (asyncIn.data.MCmd /= OCP_CMD_IDLE) THEN
 						syncOut <= asyncIn.data;
-						state_next <= ReadWordWait_state;
+						state_next <= CmdAcceptWait_state;
 						IF syncIn.SCmdAccept = '1' THEN
-							state_next <= ReadWord_state;
+							state_next <= RespWait_state;
 							IF syncIn.SResp /= OCP_RESP_NULL THEN
-								loadEnable <= '1';
 								state_next <= IDLE_state;
+								loadEnable <= '1';
 								ack_next <= NOT (ack);
 								syncOut.MRespAccept <= '1';
-							END IF;
-						END IF;
-                    ElSIF (asyncIn.data.MCmd = OCP_CMD_WR) THEN
-						syncOut <= asyncIn.data;
-						state_next <= WriteWordWait_state;
-						IF syncIn.SCmdAccept = '1' THEN
-							state_next <= WriteWord_state;
-							IF syncIn.SResp /= OCP_RESP_NULL THEN
-								ack_next <= NOT (ack);
-								loadEnable <= '1';
-								syncOut.MRespAccept <= '1';
-								state_next <= IDLE_state;
 							END IF;
 						END IF;
                     END IF;
                 END IF;
 			-- READ BLOCK
-			WHEN ReadWordWait_state =>
+			WHEN CmdAcceptWait_state =>
 				syncOut <= asyncIn.data;
 				IF syncIn.SCmdAccept = '1' THEN
-					state_next <= ReadWord_state;
+					state_next <= RespWait_state;
 					IF syncIn.SResp /= OCP_RESP_NULL THEN
-						loadEnable <= '1';
-						ack_next <= NOT (ack);
 						state_next <= IDLE_state;
+						ack_next <= NOT (ack);
+						loadEnable <= '1';
 						syncOut.MRespAccept <= '1';					
 					END IF;
 				END IF;
-			WHEN ReadWord_state =>	
+			WHEN RespWait_state =>	
 				IF syncIn.SResp /= OCP_RESP_NULL THEN
 					state_next <= IDLE_state;
-					loadEnable <= '1';
 					ack_next <= NOT (ack);
+					loadEnable <= '1';
 					syncOut.MRespAccept <= '1';					
 				END IF;
-			WHEN WriteWordWait_state =>
-				syncOut <= asyncIn.data;
-				IF syncIn.SCmdAccept = '1' THEN
-					state_next <= WriteWord_state;
-					IF syncIn.SResp /= OCP_RESP_NULL THEN
-						ack_next 		<= NOT (ack);
-						loadEnable		<= '1';
-						syncOut.MRespAccept <= '1';
-						state_next <= IDLE_state;
-					END IF;
-				END IF;
-			WHEN WriteWord_state =>
-					IF syncIn.SResp /= OCP_RESP_NULL THEN
-						loadEnable		<= '1';
-						state_next		<= IDLE_state;
-						ack_next		<= NOT (ack);
-						syncOut.MRespAccept <= '1';
-					END IF;
-            WHEN OTHERS =>
+			WHEN OTHERS =>
 				state_next <= IDLE_state;
 		END CASE;
 	END PROCESS FSM;
@@ -156,7 +137,9 @@ BEGIN
 
 END ARCHITECTURE Buffered;
 
-
+--------------------------------------------------------------------------------
+-- Unbuffered architecture
+--------------------------------------------------------------------------------
 ARCHITECTURE NonBuffered OF OCPIOCCI_B IS
     TYPE fsm_states_t IS	(Idle_state, CmdAcceptWait_state, RespWait_state,
 							ReqWait_state);

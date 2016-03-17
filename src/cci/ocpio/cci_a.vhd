@@ -33,16 +33,25 @@ ENTITY OCPIOCCI_A IS
 			asyncIn     : IN    asyncIO_B_r
     );
 END ENTITY OCPIOCCI_A;
-
+--------------------------------------------------------------------------------
+-- Buffered Architecture
+--------------------------------------------------------------------------------
 ARCHITECTURE Buffered OF OCPIOCCI_A IS
-    TYPE fsm_states_t IS	(IDLE_state, 
-							ReadWord_state,
-							WriteWord_state, WriteWordFinal_state);
+	----------------------------------------------------------------------------
+	-- FSM signals
+	----------------------------------------------------------------------------
+    TYPE fsm_states_t IS	(IDLE_state, AckWait_state, RespAcceptWait_state);
     SIGNAL state, state_next    :    fsm_states_t;
 
-    SIGNAL ack_prev, ack, ack_next	: std_logic := '0';
+   	----------------------------------------------------------------------------
+	-- Async signals
+	----------------------------------------------------------------------------
+	SIGNAL ack_prev, ack, ack_next	: std_logic := '0';
     SIGNAL req, req_next            : std_logic := '0';
     
+	----------------------------------------------------------------------------
+	-- Registers
+	----------------------------------------------------------------------------
     SIGNAL masterData, masterData_next  : ocp_io_m;
     SIGNAL writeEnable	: std_logic := '0';
 
@@ -50,6 +59,10 @@ BEGIN
 
 	asyncOut.req <= req;
 	asyncOut.data	<= masterData;
+
+	----------------------------------------------------------------------------
+	-- FSM
+	----------------------------------------------------------------------------
     FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,req)
     BEGIN
         state_next		<= state;
@@ -59,27 +72,29 @@ BEGIN
 
 		CASE state IS
             WHEN IDLE_state =>
+				--If command is different from idle
 				IF syncIn.MCmd /= OCP_CMD_IDLE THEN
+					--Signal the B side
 					req_next <= NOT(req);
-					state_next <= WriteWord_state;
+					state_next <= AckWait_state;
+					--Buffer the command, address, and data
 					writeEnable <= '1';
 				END IF;
-			WHEN ReadWord_state =>
+			WHEN AckWait_state =>
+				--If the slave has acknowledged
 				IF ack = NOT (ack_prev) THEN
-					syncOut <= asyncIn.data;
-					syncOut.SCmdAccept <= '1';
-					state_next <= IDLE_state;
-				END IF;
-			WHEN WriteWord_state =>
-				IF ack = NOT (ack_prev) THEN
-					state_next <= WriteWordFinal_state;
+					-- Then signal the master
+					state_next <= RespAcceptWait_state;
 					syncOut <= asyncIn.data;
 					syncOut.SCmdAccept <= '1';
 					IF syncIn.MRespAccept = '1'THEN
+						--If the master accepts, go to idle
 						state_next <= IDLE_state;
 					END IF;
+				-- Else go to WriteWordFinal
 				END IF;
-			WHEN WriteWordFinal_state =>
+			WHEN RespAcceptWait_state =>
+				-- When OCP master accepts, go to idle
 				syncOut <= asyncIn.data;
 				IF syncIn.MRespAccept = '1'THEN
 					state_next <= IDLE_state;
@@ -89,6 +104,9 @@ BEGIN
       END CASE;
     END PROCESS FSM;
 
+	----------------------------------------------------------------------------
+	-- Registers
+	----------------------------------------------------------------------------
     DataRegMux : PROCESS(writeEnable,syncIn)
     BEGIN
         masterData_next <= masterData;

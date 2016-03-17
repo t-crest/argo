@@ -67,23 +67,29 @@ BEGIN
 	
         CASE state IS
             WHEN IDLE_state =>
+				--If a new request is available
                 IF req = NOT (req_prev) THEN
                     IF (asyncIn.data.MCmd /= OCP_CMD_IDLE) THEN
+						--Relay the command to the OCP slave
 						syncOut <= asyncIn.data;
 						state_next <= CmdAcceptWait_state;
+						-- If the command is accepted
 						IF syncIn.SCmdAccept = '1' THEN
 							state_next <= RespWait_state;
+							--And a response is ready
 							IF syncIn.SResp /= OCP_RESP_NULL THEN
 								state_next <= IDLE_state;
 								loadEnable <= '1';
+								-- Signal the A side
 								ack_next <= NOT (ack);
 								syncOut.MRespAccept <= '1';
 							END IF;
 						END IF;
                     END IF;
                 END IF;
-			-- READ BLOCK
 			WHEN CmdAcceptWait_state =>
+				-- If command has not been accepted, Command+data has not been
+				-- Registered in OCP Slave. Continue aserting command.
 				syncOut <= asyncIn.data;
 				IF syncIn.SCmdAccept = '1' THEN
 					state_next <= RespWait_state;

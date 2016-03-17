@@ -81,29 +81,36 @@ BEGIN
 		ack_next <= ack;
 		CASE state IS
 			WHEN IDLE_state =>
+				--Wait for request
 				IF req = NOT(req_prev) THEN
+					--If read command
 					IF asyncIn.data.MCmd = OCP_CMD_RD THEN
+						--Relay command to OCP slave and either go to wait state
+						--or commence buffering read data
 						state_next		<= ReadBlockWait;
 						syncOut.MCmd	<= OCP_CMD_RD;
 						IF syncIn.SCmdAccept = '1' THEN
 							state_next	<= ReadBlock;
 						END IF;
+					--If write command
 					ElSIF asyncIn.data.MCmd = OCP_CMD_WR THEN
 						state_next			<= WriteBlockWait;
 						syncOut.MCmd		 <= OCP_CMD_WR;
 						syncOut.MDataValid	 <= '1';
+						syncOut.MDataByteEn	<= asyncIn.data.MDataByteEn;
+						syncOut.MAddr		<= asyncIn.data.MAddr;
+						syncOut.MData		<= asyncIn.data.MData;
 						IF syncIn.SCmdAccept = '1' AND syncIn.SDataAccept = '1' 
 						THEN
-							syncOut.MDataByteEn	<= asyncIn.data.MDataByteEn;
-							syncOut.MAddr		<= asyncIn.data.MAddr;
-							syncOut.MData		<= asyncIn.data.MData;
 							wordCnt_next <= wordCnt + 
 											to_unsigned(1,wordCnt'LENGTH);
 							state_next	<= WriteBlock;
 						END IF; 
 					END IF;
 				END IF;
+			--------------------------------------------------------------------
 			-- READ BLOCK
+			--------------------------------------------------------------------
 			WHEN ReadBlockWait =>
 				syncOut.MCmd <= OCP_CMD_RD;
 				IF syncIn.SCmdAccept = '1' THEN

@@ -89,12 +89,18 @@ BEGIN
 
 		CASE state IS
             WHEN IDLE_state =>
+				--If command is read
 				IF syncIn.Mcmd = OCP_CMD_RD THEN
+					-- Register Command and addres (MData not valid)
 					cmd_next <= syncIn.MCmd;                                  
 					addr_next <= syncIn.MAddr;
+					-- Assert a request
                     req_next		<= NOT (req);
-                    state_next      <= ReadBlockWait;
+                    -- And go to ReadBlockWait, to await an acknowledge
+					state_next      <= ReadBlockWait;
+				--If command is write
                 ELSIF syncIn.Mcmd = OCP_CMD_WR AND syncIn.MDataValid = '1' THEN
+					--Start buffering MData + MCmd + MAddr
 					cmd_next <= syncIn.MCmd;
 					addr_next <= syncIn.MAddr;
 					syncOut.SCmdAccept	<= '1';
@@ -103,31 +109,41 @@ BEGIN
 					wordCnt_next	<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
 					state_next      <= WriteBlockLoad;
                 END IF;
+			--------------------------------------------------------------------
 			-- READ BLOCK
+			--------------------------------------------------------------------
             WHEN ReadBlockWait =>
+				-- Wait until acknowledge
                 IF ack = NOT(ack_prev) THEN
                     state_next			<= ReadBlock;
                     syncOut.SCmdAccept	<= '1';
                 END IF; 
             WHEN ReadBlock =>
+				-- Write each word in buffer back to OCP Master
 				asyncOut.DataInSel	<= std_logic_vector(wordCnt);
                 syncOut			<= asyncIn.data;
                 wordCnt_next	<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
                 IF wordCnt = to_unsigned(burstSize-1, wordCnt'LENGTH) THEN
 					state_next		<= IDLE_state;
                 END IF;
+			--------------------------------------------------------------------
 			-- WRITE BLOCK
+			--------------------------------------------------------------------
             WHEN WriteBlockLoad => 
+				-- Continue buffering MData
                 syncOut.SDataAccept  <= '1';
                 writeEnable         <= '1';
                 wordCnt_next		<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
                 IF wordCnt = to_unsigned(burstSize-1, wordCnt'LENGTH) THEN
+					-- And assert request once all words are buffered
                     req_next					<= NOT (req);
                     asyncOut.data.MDataValid	<= '1';
                     state_next					<= WriteBlockWait;
                 END IF;
             WHEN WriteBlockWait =>
-               IF ack = NOT(ack_prev) THEN
+				-- Wait until B side has acknowledged finishing transaction
+                IF ack = NOT(ack_prev) THEN
+					--And relay response to OCP Master
                     syncOut.Sresp	<= asyncIn.data.Sresp;
                     state_next		<= IDLE_state;
 					cmd_next <= OCP_CMD_IDLE;

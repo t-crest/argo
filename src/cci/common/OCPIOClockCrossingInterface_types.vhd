@@ -2,13 +2,9 @@
 -- License: MIT License - Copyright (c) 2016 Mathias Herlev
 --------------------------------------------------------------------------------
 -- Title		: OCPBurst Interface Types
--- Type		 : Type Package
--- Created	  : 2014/05/17
--- Edited	   : 2014/05/17
+-- Type		    : Type Package
 -- Developers   : Mathias Herlev (Creator)
---
--- Description  :
---
+-- Description  : Record types for OCPio CDC interface
 -- TODO	:
 --------------------------------------------------------------------------------
 LIBRARY ieee;

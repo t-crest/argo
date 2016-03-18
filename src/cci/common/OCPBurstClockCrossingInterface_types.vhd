@@ -3,12 +3,8 @@
 --------------------------------------------------------------------------------
 -- Title		: OCPBurst Interface Types
 -- Type		 	: Type Package
--- Created	  	: 2014/05/17
--- Edited	   	: 2014/05/17
 -- Developers	: Mathias Herlev (Creator)
---
--- Description  : 
---
+-- Description  : Record types for OCPburst CDC interface
 -- TODO	:
 --------------------------------------------------------------------------------
 LIBRARY ieee;

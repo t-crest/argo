@@ -57,7 +57,7 @@ ARCHITECTURE behaviour OF OCPBurstCCI_A IS
 
     SIGNAL writeEnable					: std_logic := '0';
 	
-    SIGNAL wordCnt, wordCnt_next	: unsigned(1 downto 0) := (others => '0');
+    SIGNAL RegAddr, RegAddr_next	: unsigned(1 downto 0) := (others => '0');
 	----------------------------------------------------------------------------
 	-- Asynchronous signals
 	----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ ARCHITECTURE behaviour OF OCPBurstCCI_A IS
 BEGIN
 
 
-    FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,wordCnt, req, cmd, addr)
+    FSM : PROCESS(state,syncIn,asyncIn,ack,ack_prev,RegAddr, req, cmd, addr)
     BEGIN
 		------------------------------------------------------------------------
 		-- Default Assignments
@@ -81,8 +81,8 @@ BEGIN
 		req_next <= req;
 		cmd_next <= cmd;
 		addr_next <= addr;
-		wordCnt_next <= wordCnt;
-		asyncOut.DataInSel	<= (others => '0');
+		RegAddr_next <= RegAddr;
+		asyncOut.RegAddr	<= (others => '0');
 		asyncOut.data.MDataValid <= '0';
 		syncOut.SCmdAccept <= '0';
 		syncOut.SDataAccept <= '0';
@@ -106,7 +106,7 @@ BEGIN
 					syncOut.SCmdAccept	<= '1';
 					syncOut.SDataAccept	<= '1';
 					writeEnable		<= '1';
-					wordCnt_next	<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
+					RegAddr_next	<= RegAddr + to_unsigned(1,RegAddr'LENGTH);
 					state_next      <= WriteBlockLoad;
                 END IF;
 			--------------------------------------------------------------------
@@ -120,10 +120,10 @@ BEGIN
                 END IF; 
             WHEN ReadBlock =>
 				-- Write each word in buffer back to OCP Master
-				asyncOut.DataInSel	<= std_logic_vector(wordCnt);
+				asyncOut.RegAddr	<= std_logic_vector(RegAddr);
                 syncOut			<= asyncIn.data;
-                wordCnt_next	<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
-                IF wordCnt = to_unsigned(burstSize-1, wordCnt'LENGTH) THEN
+                RegAddr_next	<= RegAddr + to_unsigned(1,RegAddr'LENGTH);
+                IF RegAddr = to_unsigned(burstSize-1, RegAddr'LENGTH) THEN
 					state_next		<= IDLE_state;
                 END IF;
 			--------------------------------------------------------------------
@@ -133,8 +133,8 @@ BEGIN
 				-- Continue buffering MData
                 syncOut.SDataAccept  <= '1';
                 writeEnable         <= '1';
-                wordCnt_next		<= wordCnt + to_unsigned(1,wordCnt'LENGTH);
-                IF wordCnt = to_unsigned(burstSize-1, wordCnt'LENGTH) THEN
+                RegAddr_next		<= RegAddr + to_unsigned(1,RegAddr'LENGTH);
+                IF RegAddr = to_unsigned(burstSize-1, RegAddr'LENGTH) THEN
 					-- And assert request once all words are buffered
                     req_next					<= NOT (req);
                     asyncOut.data.MDataValid	<= '1';
@@ -158,10 +158,10 @@ BEGIN
 	-- Output Map
 	----------------------------------------------------------------------------
 	asyncOut.data.MCmd	<= cmd;	
-	asyncOut.data.MData	<= data_arr(to_integer(unsigned(i_async.DataInSel)));
+	asyncOut.data.MData	<= data_arr(to_integer(unsigned(i_async.RegAddr)));
 	asyncOut.data.MAddr	<= addr;
 	asyncOut.data.MDataByteEn <= 
-						byteEn_arr(to_integer(unsigned(i_async.DataInSel)));
+						byteEn_arr(to_integer(unsigned(i_async.RegAddr)));
     asyncOut.req		<= req;
 
 	----------------------------------------------------------------------------
@@ -175,7 +175,7 @@ BEGIN
             ack_prev	<= '0';
             ack			<= '0';
             ack_next	<= '0';
-            wordCnt		<= (others=>'0');
+            RegAddr		<= (others=>'0');
 			cmd			<= OCP_CMD_IDLE;
 			addr		<= (others => '0');
 	ELSIF rising_edge(clk) THEN
@@ -184,7 +184,7 @@ BEGIN
             ack_prev    <= ack;
             ack         <= ack_next;
             ack_next    <= asyncIn.ack;
-            wordCnt     <= wordCnt_next;
+            RegAddr     <= RegAddr_next;
 			cmd			<= cmd_next;
 			addr		<= addr_next;
         END IF;
@@ -194,7 +194,7 @@ BEGIN
 	BEGIN 
 		IF rising_edge(clk) THEN
 			IF writeEnable = '1' THEN
-				data_arr(to_integer(wordCnt)) <= syncIn.MData;
+				data_arr(to_integer(RegAddr)) <= syncIn.MData;
 			END IF;
 		END IF;
 	END PROCESS DataRam;
@@ -203,7 +203,7 @@ BEGIN
 	BEGIN
 		IF rising_edge(clk) THEN
 			IF writeEnable = '1' THEN
-				byteEn_arr(to_integer(wordCnt)) <= syncIn.MDataByteEn;
+				byteEn_arr(to_integer(RegAddr)) <= syncIn.MDataByteEn;
 			END IF;
 		END IF;
 	END PROCESS ByteEnRam;

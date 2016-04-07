@@ -1,29 +1,41 @@
 --------------------------------------------------------------------------------
--- License: MIT License - Copyright (c) 2016 Mathias Herlev
+-- Copyright (c) 2016, Mathias Herlev
+-- All rights reserved.
+-- 
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are met:
+-- 
+-- 1. Redistributions of source code must retain the above copyright notice, 
+-- this list of conditions and the following disclaimer.
+-- 2. Redistributions in binary form must reproduce the above copyright notice,
+-- this list of conditions and the following disclaimer in the documentation
+-- and/or other materials provided with the distribution.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+-- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+-- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+-- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+-- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title		: OCPIO Clock Crossing Interface Slave
 -- Type			: Entity
--- Created		: 2014/05/26 14:30 UTC+2
--- Edited		: 2014/06/02 23:00 UTC+2 (Christian Poulsen)
--- Developers	: Mathias Herlev (Creator)(Lead)
---
---
 -- Description	: Slave Interface for the OCP clock crossing. Connects to a
 -- 				: master
---
--- TODO			:
---
 --------------------------------------------------------------------------------
-
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 USE ieee.numeric_std.all;
 LIBRARY work;
-USE work.OCPInterface.all;
-USE work.OCPIOCCI_types.all;
+USE work.OCPIOCDC_types.all;
 USE work.ocp.all;
 
-ENTITY OCPIOCCI_A IS
+ENTITY OCPIOCDC_A IS
 	GENERIC(IOSize : INTEGER := 1);
 	PORT(   clk         : IN    std_logic;
 			rst         : IN    std_logic;
@@ -32,11 +44,11 @@ ENTITY OCPIOCCI_A IS
 			asyncOut    : OUT   asyncIO_A_r;
 			asyncIn     : IN    asyncIO_B_r
     );
-END ENTITY OCPIOCCI_A;
+END ENTITY OCPIOCDC_A;
 --------------------------------------------------------------------------------
 -- Buffered Architecture
 --------------------------------------------------------------------------------
-ARCHITECTURE Buffered OF OCPIOCCI_A IS
+ARCHITECTURE Buffered OF OCPIOCDC_A IS
 	----------------------------------------------------------------------------
 	-- FSM signals
 	----------------------------------------------------------------------------
@@ -137,7 +149,7 @@ BEGIN
     
 END ARCHITECTURE Buffered;
 
-ARCHITECTURE NonBuffered OF OCPIOCCI_A IS
+ARCHITECTURE NonBuffered OF OCPIOCDC_A IS
     TYPE fsm_states_t IS	(IDLE_state, AckWait_state, RespAcceptWait_state,
 							HandshakeFinal_state);
     SIGNAL state, state_next    :    fsm_states_t;

@@ -1,29 +1,47 @@
 --------------------------------------------------------------------------------
--- License: MIT License - Copyright (c) 2016 Mathias Herlev
+-- Copyright (c) 2016, Mathias Herlev
+-- All rights reserved.
+-- 
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are met:
+-- 
+-- 1. Redistributions of source code must retain the above copyright notice, 
+-- this list of conditions and the following disclaimer.
+-- 2. Redistributions in binary form must reproduce the above copyright notice,
+-- this list of conditions and the following disclaimer in the documentation
+-- and/or other materials provided with the distribution.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+-- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+-- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+-- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+-- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title   	: OCPIO Clock Crossing Interface
 -- Type		: Entity
--- Developers  : Mathias Herlev (Creator Lead)
--- Description :
--- TODO	:
+-- Description : OCPio CDC wrapper
 --------------------------------------------------------------------------------
-
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 LIBRARY work;
-USE work.OCPInterface.all;
-USE work.OCPIOCCI_types.all;
+USE work.OCPIOCDC_types.all;
 USE work.ocp.all;
-ENTITY OCPIOCCI IS
-	PORT(   input   : IN	OCPIOCCIIn_r;
-		output  : OUT   OCPIOCCIOut_r
+ENTITY OCPIOCDC IS
+	PORT(   input   : IN	OCPIOCDCIn_r;
+		output  : OUT   OCPIOCDCOut_r
 	);
 
-END ENTITY OCPIOCCI;
+END ENTITY OCPIOCDC;
 
-ARCHITECTURE rtl OF OCPIOCCI IS
+ARCHITECTURE rtl OF OCPIOCDC IS
 
-	COMPONENT OCPIOCCI_A IS
+	COMPONENT OCPIOCDC_A IS
 	    PORT(   clk         : IN    std_logic;
 	            rst         : IN    std_logic;
 	            syncIn      : IN    ocp_io_m;
@@ -31,9 +49,9 @@ ARCHITECTURE rtl OF OCPIOCCI IS
 	            asyncOut    : OUT   asyncIO_A_r;
 	            asyncIn     : IN    asyncIO_B_r
 	    );
-	END COMPONENT OCPIOCCI_A;
+	END COMPONENT OCPIOCDC_A;
 
-	COMPONENT OCPIOCCI_B IS
+	COMPONENT OCPIOCDC_B IS
 	    PORT(   clk         : IN    std_logic;
 	            rst         : IN    std_logic;
 	            syncIn      : IN    ocp_io_s;
@@ -41,7 +59,7 @@ ARCHITECTURE rtl OF OCPIOCCI IS
 	            asyncOut    : OUT   asyncIO_B_r;
 	            asyncIn     : IN    asyncIO_A_r
 	    );
-	END COMPONENT OCPIOCCI_B;
+	END COMPONENT OCPIOCDC_B;
 
 	SIGNAL async_A  : asyncIO_A_r;
 	SIGNAL asyncSlave   : asyncIO_B_r;
@@ -49,7 +67,7 @@ ARCHITECTURE rtl OF OCPIOCCI IS
 BEGIN
 
 
-	CCI_A  : entity work.OCPIOCCI_A(Buffered)
+	CDC_A  : entity work.OCPIOCDC_A(Buffered)
 	PORT MAP(input.clk_A,
 	input.rst_A,
 	input.ocpio_A,
@@ -57,7 +75,7 @@ BEGIN
 	async_A,
 	asyncSlave);
 
-	CCI_B   : entity work.OCPIOCCI_B(Buffered)
+	CDC_B   : entity work.OCPIOCDC_B(Buffered)
 	PORT MAP(input.clk_B,
 	input.rst_B,
 	input.ocpio_B,

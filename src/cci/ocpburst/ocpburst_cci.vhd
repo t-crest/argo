@@ -1,29 +1,46 @@
 --------------------------------------------------------------------------------
--- License: MIT License - Copyright (c) 2016 Mathias Herlev
+-- Copyright (c) 2016, Mathias Herlev
+-- All rights reserved.
+-- 
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are met:
+-- 
+-- 1. Redistributions of source code must retain the above copyright notice, 
+-- this list of conditions and the following disclaimer.
+-- 2. Redistributions in binary form must reproduce the above copyright notice,
+-- this list of conditions and the following disclaimer in the documentation
+-- and/or other materials provided with the distribution.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+-- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+-- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+-- ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+-- LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+-- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+-- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+-- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+-- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+-- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+-- POSSIBILITY OF SUCH DAMAGE.
 --------------------------------------------------------------------------------
 -- Title   	: OCPBurst Clock Crossing Interface
 -- Type		: Entity
--- Developers  : Mathias Herlev (Lead) - s103060@student.dtu.dk
---				 Christian Poulsen     - s103050@student.dtu.dk
--- Description : Top level for Clock Domain Crossing interface
--- TODO	:
+-- Description : OCPburst CDC wrapper
 --------------------------------------------------------------------------------
-
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 LIBRARY work;
-USE work.OCPInterface.all;
-USE work.OCPBurstCCI_types.all;
+USE work.OCPBurstCDC_types.all;
 USE work.ocp.all;
-ENTITY OCPBurstCCI IS
-	PORT(   input   : IN	OCPBurstCCIIn_r;
-			output  : OUT   OCPBurstCCIOut_r
+ENTITY OCPBurstCDC IS
+	PORT(   input   : IN	OCPBurstCDCIn_r;
+			output  : OUT   OCPBurstCDCOut_r
 	);
-END ENTITY OCPBurstCCI;
+END ENTITY OCPBurstCDC;
 
-ARCHITECTURE rtl OF OCPBurstCCI IS
+ARCHITECTURE rtl OF OCPBurstCDC IS
 
-	COMPONENT OCPBurstCCI_A IS
+	COMPONENT OCPBurstCDC_A IS
 	    PORT(   clk         : IN    std_logic;
 	            rst         : IN    std_logic;
 	            syncIn      : IN    ocp_burst_m;
@@ -31,9 +48,9 @@ ARCHITECTURE rtl OF OCPBurstCCI IS
 	            asyncOut    : OUT   AsyncBurst_A_r;
 	            asyncIn     : IN    AsyncBurst_B_r
 	    );
-	END COMPONENT OCPBurstCCI_A;
+	END COMPONENT OCPBurstCDC_A;
 
-	COMPONENT OCPBurstCCI_B IS
+	COMPONENT OCPBurstCDC_B IS
 	    PORT(   clk         : IN    std_logic;
 	            rst         : IN    std_logic;
 	   		 	syncIn      : IN    ocp_burst_s;
@@ -41,14 +58,14 @@ ARCHITECTURE rtl OF OCPBurstCCI IS
 	            asyncOut    : OUT   AsyncBurst_B_r;
 	            asyncIn     : IN    AsyncBurst_A_r
 	     );
-	END COMPONENT OCPBurstCCI_B;
+	END COMPONENT OCPBurstCDC_B;
 
 	SIGNAL async_A : AsyncBurst_A_r;
 	SIGNAL async_B : AsyncBurst_B_r;
 
 BEGIN
 
-	CCI_A  : OCPBurstCCI_A
+	CDC_A  : OCPBurstCDC_A
 	PORT MAP(input.clk_A,
 	input.rst_A,
 	input.OCPB_master,
@@ -56,7 +73,7 @@ BEGIN
 	async_A,
 	async_B);
 
-	CCI_B   : OCPBurstCCI_B
+	CDC_B   : OCPBurstCDC_B
 	PORT MAP(input.clk_B,
 	input.rst_B,
 	input.OCPB_slave,

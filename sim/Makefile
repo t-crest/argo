@@ -13,6 +13,9 @@ TESTDIR=$(ARGO_PROJECT_DIR)/test
 
 export TESTDIR
 
+# Tests to be run by buildbot
+BUILDBOT_TESTS?=sync_test2_auto async_test2_auto test_tiled_4x4_pipelined_auto
+
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -73,7 +76,7 @@ help_prefix:
 ####################################################################
 # VHDL Compilation
 
-.PHONY: ocp noc_defs utils mem ni_common ni_sync ni_async router_sync router_async noc_sync noc_async tile noc_tiled noc_tiled_swap traffic_generators work autotest clean
+.PHONY: ocp noc_defs utils mem ni_common ni_sync ni_async router_sync router_async noc_sync noc_async tile noc_tiled noc_tiled_swap traffic_generators work autotest buildbot-test clean
 
 # structured groups, ordered to fulfil the dependencies in the vhdl code base 
 
@@ -98,9 +101,6 @@ mem: noc_defs
 ni_common: noc_defs mem
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/counter.vhd
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/dma.vhd
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/cci/common/OCPInterface.vhd
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/cci/common/OCPIOClockCrossingInterface_types.vhd
-	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/cci/ocpio/cci.vhd
 
 ni_sync: ni_common mem
 	$(PREFIX) vcom $(OPTIONS) $(SRCDIR)/ni/nAdapter.vhd
@@ -173,6 +173,11 @@ work:
 $(AUTO_TEST): clean
 
 autotest: $(AUTO_TEST)
+
+####################################################################
+# tests to be run by the buildbot
+buildbot-test:
+	for test in $(BUILDBOT_TESTS); do $(MAKE) $$test || exit 1; done
 
 ####################################################################
 # generate schedule from xml

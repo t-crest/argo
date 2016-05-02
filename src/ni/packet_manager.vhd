@@ -330,7 +330,7 @@ dmatbl1 : entity work.tdp_ram
 error_handler_proc : process( config.addr, sel )
 begin
   config_slv_error_next <= '0';
-  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto DMATBL_IDX_WIDTH+1) /= 0  then
+  if sel = '1' and config.addr(CPKT_ADDR_WIDTH-1 downto DMATBL_IDX_WIDTH+1) /= 0  then --TODO: CORRECT to config.addr(HEADER_FIELD_WIDTH - CPKT_BANK_WIDTH-1 downto DMATBL_IDX_WIDTH+1)
     config_slv_error_next <= '1';
   end if ;
 end process ; -- error_handler_proc

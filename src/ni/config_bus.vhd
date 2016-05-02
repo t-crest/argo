@@ -136,7 +136,8 @@ begin
         config.wr <= '1';
       end if ;
     else
-      next_ocp_resp <= OCP_RESP_ERR;
+      --PUT THIS BACK next_ocp_resp <= OCP_RESP_ERR;
+      next_ocp_resp <= OCP_RESP_DVA;
     end if;
     
   end if ;
@@ -149,7 +150,7 @@ begin
   end if;
 
   if (TDM_ctrl.error or sched_tbl.error or DMA_tbl.error or irq_unit_fifo.error) = '1' then
-    ocp_config_s.SResp <= OCP_RESP_ERR;
+    --PUT THIS BACK ocp_config_s.SResp <= OCP_RESP_ERR;
   end if ;
 
   -- Default select no bank

@@ -113,8 +113,8 @@ port map(
 	-- DMA Configuration Port - OCP
 	ocp_config_m=>proc_m,
 	ocp_config_s=>proc_s,
-	data_irq=> irq(1),
-	config_irq=> irq(0),
+	data_irq=> irq(0),
+	config_irq=> irq(1),
 	-- SPM Data Port - OCP?
 	spm_slv=>spm_s,
 	spm=>spm_m,

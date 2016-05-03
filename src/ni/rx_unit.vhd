@@ -61,7 +61,7 @@ end rx_unit;
 
 architecture rtl of rx_unit is
 	signal new_pkt, new_data_pkt, new_config_pkt, new_irq_pkt: std_logic;
-	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt_en,  lst_data_pkt : std_logic;
+	signal wdata_high_en, wdata_low_en, addr_load, addr_cnt1_en, addr_cnt2_en,  lst_data_pkt : std_logic;
 	signal addr : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
 
 signal wdata_high : unsigned(WORD_WIDTH - 1 downto 0);
@@ -89,8 +89,7 @@ begin
  	config.wdata(WORD_WIDTH - 1 downto 0) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
  	
 	spm.addr <= addr;
-	--Shifting the address one, to compensate for the unaligned addressing
-	config.addr <= "0" & addr(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 1);
+	config.addr <= addr;
 	irq_fifo_data <= addr;
 
 	--Signal irq_fifo_data_valid assignment, the IRQ FIFO push is delayed in order to happen with the last spm wr/en
@@ -104,7 +103,8 @@ begin
 		addr_load     <= '0';
 		wdata_low_en  <= '0';
 		wdata_high_en <= '0';
-		addr_cnt_en   <= '0';
+		addr_cnt1_en  <= '0';
+		addr_cnt2_en  <= '0';
 		spm.en        <= (others => '0');
 		spm.wr        <= '0';
 		config.en     <= '0';
@@ -137,7 +137,7 @@ begin
 				spm.wr        <= '1';
 
 				if (pkt_in(LINK_WIDTH - 3) = '0') then
-					addr_cnt_en   <= '1';
+					addr_cnt2_en   <= '1';
 					next_state <= DATA_W_HIGH;
 				else
 					next_state <= IDLE;
@@ -147,7 +147,7 @@ begin
 			when CONFIG_W_HIGH =>
 				config.en        <= '1';
 				config.wr        <= '1';
-				addr_cnt_en   <= '1';
+				addr_cnt1_en   <= '1';
 				next_state    <= CONFIG_W_LOW;
 			
 			when CONFIG_W_LOW =>
@@ -172,7 +172,9 @@ begin
 		if rising_edge(clk) then
 			if (addr_load = '1') then
 				addr <= unsigned(pkt_in(HEADER_ROUTE_WIDTH + HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto HEADER_ROUTE_WIDTH));
-			elsif (addr_cnt_en = '1') then
+			elsif (addr_cnt1_en = '1') then
+				addr <= addr + 1;
+			elsif (addr_cnt2_en = '1') then
 				addr <= addr + 2;
 			end if;
 		end if;

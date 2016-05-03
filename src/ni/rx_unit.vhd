@@ -67,7 +67,7 @@ architecture rtl of rx_unit is
 signal wdata_high : unsigned(WORD_WIDTH - 1 downto 0);
 
 
-	type state_type is (IDLE, DATA_W_LOW, DATA_W_HIGH, CONFIG_W_LOW, CONFIG_W_HIGH, IRQ_W_LOW, IRQ_W_HIGH);
+	type state_type is (IDLE, DATA_W_LOW, DATA_W_HIGH, CONFIG_W_LOW, CONFIG_W_HIGH, IRQ_W);
 	signal state, next_state : state_type;
 
 begin
@@ -84,13 +84,13 @@ begin
 	new_irq_pkt <= new_pkt and pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1) and pkt_in(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2);
 
 	--SPM and config output assignments
-	spm.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= wdata_high;
  	spm.wdata(WORD_WIDTH - 1 downto 0) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
  	
  	config.wdata(WORD_WIDTH - 1 downto 0) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
  	
 	spm.addr <= addr;
-	config.addr <= addr;
+	--Shifting the address one, to compensate for the unaligned addressing
+	config.addr <= "0" & addr(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 1);
 	irq_fifo_data <= addr;
 
 	--Signal irq_fifo_data_valid assignment, the IRQ FIFO push is delayed in order to happen with the last spm wr/en
@@ -99,12 +99,13 @@ begin
 	--Control Moore FSM		
 	process(state, new_config_pkt, new_data_pkt, new_irq_pkt, pkt_in)
 	begin
+		spm.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= wdata_high;
 		next_state    <= state;
 		addr_load     <= '0';
 		wdata_low_en  <= '0';
 		wdata_high_en <= '0';
 		addr_cnt_en   <= '0';
-		spm.en        <= '0';
+		spm.en        <= (others => '0');
 		spm.wr        <= '0';
 		config.en     <= '0';
 		config.wr     <= '0';
@@ -117,15 +118,22 @@ begin
 				elsif(new_config_pkt = '1')then
 					next_state <= CONFIG_W_HIGH;
 				elsif(new_irq_pkt = '1')then
-					next_state <= IRQ_W_HIGH;
+					next_state <= IRQ_W;
 				end if;
 		--Data pkt manager		
 			when DATA_W_HIGH =>
-				wdata_high_en <= '1';
-				next_state    <= DATA_W_LOW;
-			
+				if (pkt_in(LINK_WIDTH - 3) = '0') then
+					wdata_high_en <= '1';
+					next_state    <= DATA_W_LOW;
+				else	
+					spm.en(0)     <= '1';
+					spm.wr        <= '1';
+					spm.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
+					next_state <= IDLE;
+				end if;
+
 			when DATA_W_LOW =>
-				spm.en        <= '1';
+				spm.en        <= "11";
 				spm.wr        <= '1';
 
 				if (pkt_in(LINK_WIDTH - 3) = '0') then
@@ -148,16 +156,13 @@ begin
 				next_state    <= IDLE;
 
 			--IRQ pkt manager
-			when IRQ_W_HIGH =>
-				wdata_high_en <= '1';
-				next_state    <= IRQ_W_LOW;
-			
-			when IRQ_W_LOW =>
-				spm.en        <= '1';
+			when IRQ_W =>
+				spm.en(0)     <= '1';
 				spm.wr        <= '1';
 				irq_fifo_irq_valid <= '1';
+				spm.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= unsigned(pkt_in(WORD_WIDTH - 1 downto 0));
 				next_state <= IDLE;
-			
+		
 		end case;
 	end process;
 
@@ -168,7 +173,7 @@ begin
 			if (addr_load = '1') then
 				addr <= unsigned(pkt_in(HEADER_ROUTE_WIDTH + HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto HEADER_ROUTE_WIDTH));
 			elsif (addr_cnt_en = '1') then
-				addr <= addr + 1;
+				addr <= addr + 2;
 			end if;
 		end if;
 	end process;

@@ -84,6 +84,8 @@ architecture arch of com_spm is
 --        );
 --    end component;
 
+    -- Signals for processor side
+
     signal wr_h, wr_l : std_logic;
     signal Sdata_h, Sdata_l : unsigned(WORD_WIDTH-1 downto 0);
     signal select_low, select_low_reg : std_logic;
@@ -93,6 +95,15 @@ architecture arch of com_spm is
 
     signal h_0_en, h_1_en, h_2_en, h_3_en : std_logic;
     signal l_0_en, l_1_en, l_2_en, l_3_en : std_logic;
+
+    -- Signals for network side 
+
+    signal even_wr_word, odd_wr_word : unsigned(WORD_WIDTH-1 downto 0);
+    signal even_rd_word, odd_rd_word : unsigned(WORD_WIDTH-1 downto 0);
+    signal even_addr : unsigned(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto 0);
+    signal even_wr, odd_wr : std_logic;
+
+    signal addr_reg : std_logic;
 
 begin
 
@@ -174,10 +185,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(7 downto 0)),
     a_dout => SData_h(7 downto 0),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(39 downto 32),
-    b_dout => spm_s.rdata(39 downto 32));
+    b_wr => even_wr,
+    b_addr => even_addr,
+    b_din => even_wr_word(7 downto 0),
+    b_dout => even_rd_word(7 downto 0));
 
 -- High SPM instance 1
 spm_h_1 : entity work.tdp_bram
@@ -188,10 +199,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(15 downto 8)),
     a_dout => SData_h(15 downto 8),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(47 downto 40),
-    b_dout => spm_s.rdata(47 downto 40));
+    b_wr => even_wr,
+    b_addr => even_addr,
+    b_din => even_wr_word(15 downto 8),
+    b_dout => even_rd_word(15 downto 8));
 
 -- High SPM instance 2
 spm_h_2 : entity work.tdp_bram
@@ -202,10 +213,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(23 downto 16)),
     a_dout => SData_h(23 downto 16),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(55 downto 48),
-    b_dout => spm_s.rdata(55 downto 48));
+    b_wr => even_wr,
+    b_addr => even_addr,
+    b_din => even_wr_word(23 downto 16),
+    b_dout => even_rd_word(23 downto 16));
 
 -- High SPM instance 3
 spm_h_3 : entity work.tdp_bram
@@ -216,10 +227,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(31 downto 24)),
     a_dout => SData_h(31 downto 24),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(63 downto 56),
-    b_dout => spm_s.rdata(63 downto 56));
+    b_wr => even_wr,
+    b_addr => even_addr,
+    b_din => even_wr_word(31 downto 24),
+    b_dout => even_rd_word(31 downto 24));
 
 -- Low SPM instance 0
 spm_l_0 : entity work.tdp_bram
@@ -230,10 +241,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(7 downto 0)),
     a_dout => SData_l(7 downto 0),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(7 downto 0),
-    b_dout => spm_s.rdata(7 downto 0));
+    b_wr => odd_wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-3 downto 1),
+    b_din => odd_wr_word(7 downto 0),
+    b_dout => odd_rd_word(7 downto 0));
 
 -- Low SPM instance 1
 spm_l_1 : entity work.tdp_bram
@@ -244,10 +255,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(15 downto 8)),
     a_dout => SData_l(15 downto 8),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(15 downto 8),
-    b_dout => spm_s.rdata(15 downto 8));
+    b_wr => odd_wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-3 downto 1),
+    b_din => odd_wr_word(15 downto 8),
+    b_dout => odd_rd_word(15 downto 8));
 
 -- Low SPM instance 2
 spm_l_2 : entity work.tdp_bram
@@ -258,10 +269,10 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(23 downto 16)),
     a_dout => SData_l(23 downto 16),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(23 downto 16),
-    b_dout => spm_s.rdata(23 downto 16));
+    b_wr => odd_wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-3 downto 1),
+    b_din => odd_wr_word(23 downto 16),
+    b_dout => odd_rd_word(23 downto 16));
 
 -- Low SPM instance 3
 spm_l_3 : entity work.tdp_bram
@@ -272,9 +283,45 @@ port map (a_clk => p_clk,
     a_din => unsigned(ocp_core_m.MData(31 downto 24)),
     a_dout => SData_l(31 downto 24),
     b_clk => n_clk,
-    b_wr => spm_m.wr,
-    b_addr => spm_m.addr(SPM_IDX_SIZE-4 downto 0),
-    b_din => spm_m.wdata(31 downto 24),
-    b_dout => spm_s.rdata(31 downto 24));
+    b_wr => odd_wr,
+    b_addr => spm_m.addr(SPM_IDX_SIZE-3 downto 1),
+    b_din => odd_wr_word(31 downto 24),
+    b_dout => odd_rd_word(31 downto 24));
+
+
+slave_wr_mux : process( spm_m.addr(0) )
+begin
+    if spm_m.addr(0) = '0' then
+        even_addr <= spm_m.addr(SPM_IDX_SIZE-3 downto 1);
+        even_wr_word <= spm_m.wdata(2*WORD_WIDTH-1 downto WORD_WIDTH);
+        even_wr   <= spm_m.wr and spm_m.en(0);
+        odd_wr_word  <= spm_m.wdata(WORD_WIDTH-1 downto 0);
+        odd_wr    <= spm_m.wr and spm_m.en(1);
+    else
+        even_addr <= spm_m.addr(SPM_IDX_SIZE-3 downto 1) + 1;
+        even_wr_word <= spm_m.wdata(WORD_WIDTH-1 downto 0);
+        even_wr   <= spm_m.wr and spm_m.en(1);
+        odd_wr_word  <= spm_m.wdata(2*WORD_WIDTH-1 downto WORD_WIDTH);
+        odd_wr    <= spm_m.wr and spm_m.en(0);
+    end if ;
+end process ; -- slave_mux
+
+slave_rd_mux : process( addr_reg )
+begin
+    if addr_reg = '0' then
+        spm_s.rdata(2*WORD_WIDTH-1 downto WORD_WIDTH) <= even_rd_word;
+        spm_s.rdata(WORD_WIDTH-1 downto 0) <= odd_rd_word;
+    else
+        spm_s.rdata(2*WORD_WIDTH-1 downto WORD_WIDTH) <= odd_rd_word;
+        spm_s.rdata(WORD_WIDTH-1 downto 0) <= even_rd_word;
+    end if ;
+end process ; -- slave_rd_mux
+
+addr_reg_proc : process( n_clk )
+begin
+    if rising_edge(n_clk) then
+        addr_reg <= spm_m.addr(0);
+    end if ;
+end process ; -- addr_reg_proc
 
 end architecture ; -- arch

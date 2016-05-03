@@ -62,13 +62,13 @@ begin
 
 	process(tx_spm, rx_spm, rx_spm_buff)
 	begin
-		if (tx_spm.en = '1') then
+		if ((tx_spm.en(0) = '1') or (tx_spm.en(1) = '1')) then
 			spm <= tx_spm;
 		else
-			if (rx_spm_buff.en = '1') then
+			if ((rx_spm_buff.en(0) = '1') or (rx_spm_buff.en(1) = '1')) then
 				spm <= rx_spm_buff;
 			else
-				if (rx_spm.en = '1') then
+				if ((rx_spm.en(0) = '1') or (rx_spm.en(1) = '1')) then
 					spm <= rx_spm;
 				else
 					spm <= tx_spm;
@@ -82,9 +82,10 @@ begin
 	begin
 		if rising_edge(clk) then
 			if (reset = '1') then
-				rx_spm_buff.en <= '0';
+				rx_spm_buff.en <= (others => '0');
 			else
-				rx_spm_buff.en    <= rx_spm.en and tx_spm.en;
+				rx_spm_buff.en(0) <= rx_spm.en(0) and (tx_spm.en(0) or tx_spm.en(1));
+				rx_spm_buff.en(1) <= rx_spm.en(1) and (tx_spm.en(0) or tx_spm.en(1));
 				rx_spm_buff.wr    <= rx_spm.wr;
 				rx_spm_buff.addr  <= rx_spm.addr;
 				rx_spm_buff.wdata <= rx_spm.wdata;

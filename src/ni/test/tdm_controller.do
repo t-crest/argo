@@ -52,10 +52,10 @@ force tdm_controller/stbl_maxp1 10#2 10 ns
 
 run 100 ns
 
-when {tdm_controller/clk'event and tdm_controller/clk='1'} {
-	set stbl_idx [examine -binary tdm_controller/stbl_idx]
-	force schedule_table/stbl_idx [echo $stbl_idx]
-}
+#when {tdm_controller/clk'event and tdm_controller/clk='1'} {
+#	set stbl_idx [examine -binary tdm_controller/stbl_idx]
+#	force schedule_table/stbl_idx [echo $stbl_idx]
+#}
 
 run 200 ns
 

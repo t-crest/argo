@@ -156,7 +156,7 @@ begin
   dma_update_addr <= dma_num_reg;
   update_active <= '0';
   next_state <= state;
-  spm.en <= '0';
+  spm.en <= "00";
   pkt_out <= (others => '0');
   pkt_len_next <= pkt_len_reg;
   read_ptr_next <= read_ptr_reg;--Latch removal
@@ -178,10 +178,10 @@ begin
           end if ;
           pkt_out <= std_logic_vector(VALID_SOP & pkt_type & MC_BANK & to_unsigned(0,CPKT_ADDR_WIDTH) & route_reg);
           payload_data_next(WORD_WIDTH/2+1 downto WORD_WIDTH/2) <= mc_p;
-			 payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_idx;
+			    payload_data_next(MCTBL_IDX_WIDTH-1 downto 0) <= mc_idx;
         elsif active = '1' then
           next_state <= SEND1;
-          spm.en <= '1';
+          spm.en <= "11";
           spm.addr <= read_ptr;
           read_ptr_next <= read_ptr;
           dma_update_en <= '1';
@@ -206,16 +206,23 @@ begin
       end if;
       
     when SEND1 =>
-      next_state <= SEND2;
-      pkt_out <= std_logic_vector(VALID & spm_slv.rdata((2*WORD_WIDTH)-1 downto WORD_WIDTH));
       payload_data_next <= spm_slv.rdata(WORD_WIDTH-1 downto 0);
       pkt_len_next <= pkt_len_reg - 1;
+      if pkt_len_reg > 0 then
+        next_state <= SEND2;
+        pkt_out <= std_logic_vector(VALID & spm_slv.rdata((2*WORD_WIDTH)-1 downto WORD_WIDTH));
+        read_ptr_next <= read_ptr_reg + 1;
+      elsif pkt_len_reg = 0 then
+        next_state <= IDLE;
+        pkt_out <= std_logic_vector(VALID_EOP & spm_slv.rdata((2*WORD_WIDTH)-1 downto WORD_WIDTH));
+      end if ;
 
     when SEND2 =>
+      pkt_len_next <= pkt_len_reg - 1;
       if pkt_len_reg > 0 then
         next_state <= SEND1;
         pkt_out <= std_logic_vector(VALID & payload_data);
-        spm.en <= '1';
+        spm.en <= "11";
         read_ptr_next <= read_ptr_reg + 1;
         spm.addr <= read_ptr_next;
       elsif pkt_len_reg = 0 then

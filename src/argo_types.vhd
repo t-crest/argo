@@ -116,7 +116,7 @@ package argo_types is
     -- Memory interface records
     type mem_if_master is record
         addr : unsigned(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto 0);
-        en : std_logic;
+        en : std_logic_vector(1 downto 0);
         wr : std_logic;
         wdata : dword_t;
     end record;

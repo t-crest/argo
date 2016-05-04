@@ -13,6 +13,9 @@ TESTDIR=$(ARGO_PROJECT_DIR)/test
 
 export TESTDIR
 
+# Tests to be run by buildbot
+BUILDBOT_TESTS?=sync_test2_auto async_test2_auto test_tiled_4x4_pipelined_auto
+
 #OPTIONS=-93 -quiet -check_synthesis -lint -pedanticerrors
 OPTIONS=-93 -quiet
 
@@ -73,7 +76,7 @@ help_prefix:
 ####################################################################
 # VHDL Compilation
 
-.PHONY: ocp noc_defs utils mem ni_common ni_sync ni_async router_sync router_async noc_sync noc_async tile noc_tiled noc_tiled_swap traffic_generators work autotest clean
+.PHONY: ocp noc_defs utils mem ni_common ni_sync ni_async router_sync router_async noc_sync noc_async tile noc_tiled noc_tiled_swap traffic_generators work autotest buildbot-test clean
 
 # structured groups, ordered to fulfil the dependencies in the vhdl code base 
 
@@ -170,6 +173,11 @@ work:
 $(AUTO_TEST): clean
 
 autotest: $(AUTO_TEST)
+
+####################################################################
+# tests to be run by the buildbot
+buildbot-test:
+	for test in $(BUILDBOT_TESTS); do $(MAKE) $$test || exit 1; done
 
 ####################################################################
 # generate schedule from xml

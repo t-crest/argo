@@ -100,7 +100,7 @@ architecture arch of com_spm is
 
     signal even_wr_word, odd_wr_word : unsigned(WORD_WIDTH-1 downto 0);
     signal even_rd_word, odd_rd_word : unsigned(WORD_WIDTH-1 downto 0);
-    signal even_addr : unsigned(HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1 downto 0);
+    signal even_addr : unsigned(SPM_IDX_SIZE-3-1 downto 0);
     signal even_wr, odd_wr : std_logic;
 
     signal addr_reg : std_logic;
@@ -289,7 +289,7 @@ port map (a_clk => p_clk,
     b_dout => odd_rd_word(31 downto 24));
 
 
-slave_wr_mux : process( spm_m.addr(0) )
+slave_wr_mux : process( spm_m.addr(0), spm_m.addr, spm_m.en, spm_m.wr, spm_m.wdata )
 begin
     if spm_m.addr(0) = '0' then
         even_addr <= spm_m.addr(SPM_IDX_SIZE-3 downto 1);
@@ -306,7 +306,7 @@ begin
     end if ;
 end process ; -- slave_mux
 
-slave_rd_mux : process( addr_reg )
+slave_rd_mux : process( addr_reg, even_rd_word, odd_rd_word )
 begin
     if addr_reg = '0' then
         spm_s.rdata(2*WORD_WIDTH-1 downto WORD_WIDTH) <= even_rd_word;

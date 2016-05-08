@@ -201,6 +201,7 @@ begin
                                       header(header'high-2 downto header'high-5);
             end if ;
           end if ;
+          pkt_len_next <= pkt_len_reg - 1;
           pkt_out <= std_logic_vector(VALID_SOP & pkt_type & header(header'high-2 downto 0) & route_reg);
         end if ;
       end if;

@@ -96,7 +96,7 @@ begin
 	irq_fifo_data_valid <= lst_data_pkt and pkt_in(LINK_WIDTH - 3); 
 
 	--Control Moore FSM		
-	process(state, new_config_pkt, new_data_pkt, new_irq_pkt, pkt_in)
+	process(state, new_config_pkt, new_data_pkt, new_irq_pkt, pkt_in, wdata_high)
 	begin
 		spm.wdata(2 * WORD_WIDTH - 1 downto WORD_WIDTH) <= wdata_high;
 		next_state    <= state;

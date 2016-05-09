@@ -91,7 +91,7 @@ architecture rtl of irq_fifo is
 		);
 	end component;
 
-	signal irq_not_empty, data_not_empty, next_error, irq_read, data_read : std_logic;
+	signal irq_not_empty, data_not_empty, next_error, irq_read, data_read, irq_not_full, data_not_full: std_logic;
 	signal data_w_ptr, data_r_ptr, irq_w_ptr, irq_r_ptr, w_ptr, r_ptr : unsigned(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
 	signal w_data : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
 
@@ -105,7 +105,10 @@ begin
 	--Detectors for the state of the two FIFOs
 	irq_not_empty  <= '0' when irq_w_ptr = irq_r_ptr else '1';
 	data_not_empty <= '0' when data_w_ptr = data_r_ptr else '1';
-
+	
+	irq_not_full  <= '0' when ((irq_w_ptr = (irq_r_ptr-1)) or ((irq_w_ptr=(to_unsigned(IRQ_IRQ_FIFO_MAX, IRQ_FIFO_IDX_WIDTH))) and (irq_r_ptr=(to_unsigned(0, IRQ_FIFO_IDX_WIDTH))))) else '1';
+	data_not_full <= '0' when ((data_w_ptr = (data_r_ptr+1)) or ((data_w_ptr=(to_unsigned(IRQ_DATA_FIFO_MIN, IRQ_FIFO_IDX_WIDTH))) and (data_r_ptr=(to_unsigned((2 ** IRQ_FIFO_IDX_WIDTH)-1, IRQ_FIFO_IDX_WIDTH))))) else '1';
+	
 	--Multiplexer to write into the FIFO
 	w_ptr  <= irq_w_ptr when irq_data_fifo_data_valid = '0' else data_w_ptr;
 	w_data <= irq_data_fifo_data;
@@ -146,7 +149,7 @@ begin
 		port map(
 			-- Port A (write only)
 			a_clk  => clk,
-			a_wr   => irq_irq_fifo_data_valid or irq_data_fifo_data_valid,
+			a_wr   => (irq_irq_fifo_data_valid and irq_not_full)  or (irq_data_fifo_data_valid and data_not_full),
 			a_addr => w_ptr,
 			a_din  => w_data,
 			a_dout => open,
@@ -165,7 +168,7 @@ begin
 		if rising_edge(clk) then
 			if (reset = '1') then
 				irq_w_ptr <= (others => '0');
-			elsif (irq_irq_fifo_data_valid = '1') then
+			elsif ((irq_irq_fifo_data_valid and irq_not_full) = '1') then
 				if (irq_w_ptr = (to_unsigned(IRQ_IRQ_FIFO_MAX, IRQ_FIFO_IDX_WIDTH))) then
 					irq_w_ptr <= (others => '0');
 				else
@@ -181,7 +184,7 @@ begin
 		if rising_edge(clk) then
 			if (reset = '1') then
 				data_w_ptr <= (others => '1');
-			elsif (irq_data_fifo_data_valid = '1') then
+			elsif ((irq_data_fifo_data_valid and data_not_full) = '1') then
 				if (data_w_ptr = (to_unsigned(IRQ_DATA_FIFO_MIN, IRQ_FIFO_IDX_WIDTH))) then
 					data_w_ptr <= (others => '1');
 				else

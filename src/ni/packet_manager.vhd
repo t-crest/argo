@@ -91,6 +91,8 @@ alias read_ptr : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0) is
 alias count : unsigned(DMATBL_COUNT_WIDTH-1 downto 0) is
   dmatbl_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto DMATBL_READ_PTR_WIDTH+HEADER_FIELD_WIDTH);
 
+signal count_reg, count_next : unsigned(DMATBL_COUNT_WIDTH-1 downto 0);
+
 alias active : std_logic is dmatbl_data(DMATBL_DATA_WIDTH-1);
 
 alias dma_pkt_type : unsigned(1 downto 0)
@@ -149,7 +151,7 @@ begin
   spm.wdata <= (others => '0');
   spm.wr <= '0';
 
-fsm : process(dma_en, dma_en_reg, dma_num_reg, dmatbl_data, mc, mc_idx, mc_p, payload_data, pkt_len, pkt_len_reg, pkt_type, read_ptr_next, read_ptr_reg, route_reg, spm_slv.rdata, state)
+fsm : process(dma_en, dma_en_reg, dma_num_reg, dmatbl_data, mc, mc_idx, mc_p, payload_data, pkt_len, pkt_len_reg, pkt_type, read_ptr_next, read_ptr_reg, route_reg, spm_slv.rdata, state, count_reg)
 begin
   dma_update_data <= dmatbl_data;
   dma_update_en <= '0';
@@ -161,6 +163,7 @@ begin
   pkt_len_next <= pkt_len_reg;
   read_ptr_next <= read_ptr_reg;--Latch removal
   spm.addr <= read_ptr;--Latch removal
+  count_next <= count_reg;
   if dma_en = '1' then
     pkt_len_next <= pkt_len;
   end if ;
@@ -185,6 +188,7 @@ begin
           spm.addr <= read_ptr;
           read_ptr_next <= read_ptr;
           dma_update_en <= '1';
+          count_next <= count-1;
           if count > pkt_len_reg then
             if dma_pkt_type = "10" then
               pkt_type <= "00";
@@ -208,24 +212,26 @@ begin
     when SEND1 =>
       payload_data_next <= spm_slv.rdata(WORD_WIDTH-1 downto 0);
       pkt_len_next <= pkt_len_reg - 1;
-      if pkt_len_reg > 0 then
+      count_next <= count_reg - 1;
+      if pkt_len_reg > 0 and count_reg > 0 then
         next_state <= SEND2;
         pkt_out <= std_logic_vector(VALID & spm_slv.rdata((2*WORD_WIDTH)-1 downto WORD_WIDTH));
         read_ptr_next <= read_ptr_reg + 1;
-      elsif pkt_len_reg = 0 then
+      else
         next_state <= IDLE;
         pkt_out <= std_logic_vector(VALID_EOP & spm_slv.rdata((2*WORD_WIDTH)-1 downto WORD_WIDTH));
       end if ;
 
     when SEND2 =>
       pkt_len_next <= pkt_len_reg - 1;
-      if pkt_len_reg > 0 then
+      count_next <= count_reg - 1;
+      if pkt_len_reg > 0 and count_reg > 0 then
         next_state <= SEND1;
         pkt_out <= std_logic_vector(VALID & payload_data);
         spm.en <= "11";
         read_ptr_next <= read_ptr_reg + 1;
         spm.addr <= read_ptr_next;
-      elsif pkt_len_reg = 0 then
+      else
         next_state <= IDLE;
         pkt_out <= std_logic_vector(VALID_EOP & payload_data);
       end if ;
@@ -396,6 +402,7 @@ begin
     payload_data <= payload_data_next;
     read_ptr_reg <= read_ptr_next;
     dma_num_reg <= dma_num;
+    count_reg <= count_next;
   end if ;
 end process ; -- data_reg_proc
 

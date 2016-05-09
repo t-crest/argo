@@ -83,6 +83,8 @@ package argo_types is
                                                      
 	-- IRQ FIFO constants and types                  
 	constant IRQ_FIFO_IDX_WIDTH : integer := 5; -- 2^8 = 256 schedule entries
+	constant IRQ_DATA_FIFO_MIN : integer := (2 ** (IRQ_FIFO_IDX_WIDTH - 1));
+	constant IRQ_IRQ_FIFO_MAX : integer := (2 ** (IRQ_FIFO_IDX_WIDTH - 1)) - 1;
 	                                                 
     -- Schedule table constants and types            
     constant STBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries

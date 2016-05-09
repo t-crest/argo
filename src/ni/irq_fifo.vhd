@@ -66,8 +66,6 @@ architecture rtl of irq_fifo is
 	--------------------------------------------------------------------------------
 	-- 0x00     | R       | Top of the IRQ FIFO queue
 	-- 0x01     | R       | Top of the Data FIFO queue
-	-- 0x02     | W       | Size of the IRQ FIFO queue
-	-- 0x03     | W       | Size of the Data FIFO queue
 	--------------------------------------------------------------------------------
 
 	component tdp_ram is
@@ -93,8 +91,8 @@ architecture rtl of irq_fifo is
 		);
 	end component;
 
-	signal irq_not_empty, data_not_empty, data_fifo_min_en, irq_fifo_max_en, next_error, irq_read, data_read : std_logic;
-	signal data_w_ptr, data_r_ptr, irq_w_ptr, irq_r_ptr, w_ptr, r_ptr, irq_fifo_max, data_fifo_min : unsigned(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
+	signal irq_not_empty, data_not_empty, next_error, irq_read, data_read : std_logic;
+	signal data_w_ptr, data_r_ptr, irq_w_ptr, irq_r_ptr, w_ptr, r_ptr : unsigned(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
 	signal w_data : unsigned(HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - 1 downto 0);
 
 begin
@@ -115,8 +113,6 @@ begin
 	--Address decoding
 	process(sel, config.en, config.wr, config.addr, data_r_ptr, irq_r_ptr)
 	begin
-		irq_fifo_max_en  <= '0';
-		data_fifo_min_en <= '0';
 		next_error       <= '0';
 		r_ptr            <= data_r_ptr;
 		irq_read         <= '0';
@@ -135,15 +131,8 @@ begin
 						next_error <= '1';
 				end case;
 			else
-				--Write registers
-				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 0)) is
-					when to_unsigned(2, CPKT_ADDR_WIDTH) =>
-						irq_fifo_max_en <= '1';
-					when to_unsigned(3, CPKT_ADDR_WIDTH) =>
-						data_fifo_min_en <= '1';
-					when others =>
+				--Write registers gives error
 						next_error <= '1';
-				end case;
 			end if;
 		end if;
 
@@ -174,10 +163,10 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			if ((reset = '1') or (irq_fifo_max_en = '1')) then
+			if (reset = '1') then
 				irq_w_ptr <= (others => '0');
 			elsif (irq_irq_fifo_data_valid = '1') then
-				if (irq_w_ptr = irq_fifo_max) then
+				if (irq_w_ptr = (to_unsigned(IRQ_IRQ_FIFO_MAX, IRQ_FIFO_IDX_WIDTH))) then
 					irq_w_ptr <= (others => '0');
 				else
 					irq_w_ptr <= irq_w_ptr + 1;
@@ -190,10 +179,10 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			if ((reset = '1') or (data_fifo_min_en = '1')) then
+			if (reset = '1') then
 				data_w_ptr <= (others => '1');
 			elsif (irq_data_fifo_data_valid = '1') then
-				if (data_w_ptr = data_fifo_min) then
+				if (data_w_ptr = (to_unsigned(IRQ_DATA_FIFO_MIN, IRQ_FIFO_IDX_WIDTH))) then
 					data_w_ptr <= (others => '1');
 				else
 					data_w_ptr <= data_w_ptr - 1;
@@ -206,10 +195,10 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			if ((reset = '1') or (irq_fifo_max_en = '1')) then
+			if (reset = '1') then
 				irq_r_ptr <= (others => '0');
 			elsif ((irq_read = '1') and (irq_not_empty = '1')) then
-				if (irq_r_ptr = irq_fifo_max) then
+				if (irq_r_ptr = (to_unsigned(IRQ_IRQ_FIFO_MAX, IRQ_FIFO_IDX_WIDTH))) then
 					irq_r_ptr <= (others => '0');
 				else
 					irq_r_ptr <= irq_r_ptr + 1;
@@ -222,38 +211,14 @@ begin
 	process(clk)
 	begin
 		if rising_edge(clk) then
-			if ((reset = '1') or (data_fifo_min_en = '1')) then
+			if (reset = '1') then
 				data_r_ptr <= (others => '1');
 			elsif ((data_read = '1') and (data_not_empty = '1')) then
-				if (data_r_ptr = data_fifo_min) then
+				if (data_r_ptr = (to_unsigned(IRQ_DATA_FIFO_MIN, IRQ_FIFO_IDX_WIDTH))) then
 					data_r_ptr <= (others => '1');
 				else
 					data_r_ptr <= data_r_ptr - 1;
 				end if;
-			end if;
-		end if;
-	end process;
-
-	-- Register with enable	
-	process(clk)
-	begin
-		if rising_edge(clk) then
-			if (reset = '1') then
-				irq_fifo_max <= to_unsigned((2 ** (IRQ_FIFO_IDX_WIDTH - 1)) - 1, IRQ_FIFO_IDX_WIDTH);
-			elsif (irq_fifo_max_en = '1') then
-				irq_fifo_max <= config.wdata(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
-			end if;
-		end if;
-	end process;
-
-	-- Register with enable	
-	process(clk)
-	begin
-		if rising_edge(clk) then
-			if (reset = '1') then
-				data_fifo_min <= to_unsigned((2 ** (IRQ_FIFO_IDX_WIDTH - 1)), IRQ_FIFO_IDX_WIDTH);
-			elsif (data_fifo_min_en = '1') then
-				data_fifo_min <= config.wdata(IRQ_FIFO_IDX_WIDTH - 1 downto 0);
 			end if;
 		end if;
 	end process;

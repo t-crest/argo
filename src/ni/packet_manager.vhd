@@ -185,21 +185,20 @@ begin
           spm.addr <= read_ptr;
           read_ptr_next <= read_ptr;
           dma_update_en <= '1';
-          if count <= pkt_len_reg then
-            update_active <= '0';
-            if dma_pkt_type = "00" then
-              pkt_type <= "10";
+          if count > pkt_len_reg then
+            if dma_pkt_type = "10" then
+              pkt_type <= "00";
             end if ;
-          else
-            update_header(update_header'high-2 downto 0) <=
-                                      header(header'high-2 downto 0) + pkt_len_reg;
-            update_read_ptr <= read_ptr + pkt_len_reg;
-            update_count <= count - pkt_len_reg;
             update_active <= '1';
-            if dma_pkt_type = "01" then
-              update_header(update_header'high-2 downto update_header'high-5) <=
-                                      header(header'high-2 downto header'high-5);
-            end if ;
+          end if ;
+          update_header(update_header'high-2 downto 0) <=
+                                    header(header'high-2 downto 0) + pkt_len_reg;
+          update_read_ptr <= read_ptr + pkt_len_reg;
+          update_count <= count - pkt_len_reg;
+          if dma_pkt_type = "01" then
+            -- Make sure that the Bank ID is not incremented if we sent a configuration packet.
+            update_header(update_header'high-2 downto update_header'high-5) <=
+                                    header(header'high-2 downto header'high-5);
           end if ;
           pkt_len_next <= pkt_len_reg - 1;
           pkt_out <= std_logic_vector(VALID_SOP & pkt_type & header(header'high-2 downto 0) & route_reg);

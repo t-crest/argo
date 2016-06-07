@@ -236,11 +236,11 @@ begin
         pkt_out <= std_logic_vector(VALID_EOP & payload_data);
       end if ;
 
-    when MODE_CHANGE1 =>
-      next_state <= MODE_CHANGE2;
-      pkt_out <= std_logic_vector(VALID & payload_data );
+    --when MODE_CHANGE1 =>
+    --  next_state <= MODE_CHANGE2;
+    --  pkt_out <= std_logic_vector(VALID & payload_data );
       
-    when MODE_CHANGE2 =>
+    when MODE_CHANGE1 =>
       next_state <= IDLE;
       pkt_out <= std_logic_vector(VALID_EOP & payload_data);
   end case ;

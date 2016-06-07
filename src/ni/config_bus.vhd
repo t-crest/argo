@@ -95,7 +95,7 @@ begin
   -- Arbitrates access to the configuration ports on the memories.
   -- Priority is given to the config unit, if no request from the config unit
   -- the OCP port gets access.
-  -- Starvation cannot happen since the config unit can only write once in
+  -- Starvation cannot happen since the config unit can only write twice in
   -- three clock cycles
   config_arbiter : process(ocp_resp_reg, DMA_tbl, MC_ctrl, TDM_ctrl, bank_id, config_unit, irq_unit_fifo, ocp_config_m, prev_bank_id, sched_tbl, supervisor)
   begin
@@ -131,14 +131,21 @@ begin
     config.en <= '1';
     config.wr <= '0';
     -- If OCP request is a write and the processor is in supervisor mode
-    if ocp_config_m.MCmd /= OCP_CMD_IDLE and supervisor = '1' then
-      if ocp_config_m.MCmd = OCP_CMD_WR then
+    if ocp_config_m.MCmd = OCP_CMD_WR then
+      if supervisor = '0' then
+        next_ocp_resp <= OCP_RESP_ERR;
+      else
         config.wr <= '1';
       end if ;
-    else
-      --PUT THIS BACK next_ocp_resp <= OCP_RESP_ERR;
-      next_ocp_resp <= OCP_RESP_DVA;
-    end if;
+    end if ;
+    --if supervisor = '1' then
+    --  if ocp_config_m.MCmd = OCP_CMD_WR then
+    --    config.wr <= '1';
+    --  end if ;
+    --else
+    --  --PUT THIS BACK next_ocp_resp <= OCP_RESP_ERR;
+    --  next_ocp_resp <= OCP_RESP_DVA;
+    --end if;
     
   end if ;
 

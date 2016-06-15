@@ -230,7 +230,8 @@ begin
         pkt_out <= std_logic_vector(VALID & payload_data);
         spm.en <= "11";
         read_ptr_next <= read_ptr_reg + 1;
-        spm.addr <= read_ptr_next;
+        spm.addr <= read_ptr_reg + 1;
+        --spm.addr <= read_ptr_next;
       else
         next_state <= IDLE;
         pkt_out <= std_logic_vector(VALID_EOP & payload_data);

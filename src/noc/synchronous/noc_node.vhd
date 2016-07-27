@@ -41,21 +41,28 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
 use work.ocp.all;
-use work.noc_defs.all;
+use work.argo_types.all;
+--use work.noc_defs.all;
 use work.noc_interface.all;
 
 
 entity noc_node is
+generic (
+	MASTER : boolean := false
+	);
 port (
-	p_clk		: std_logic;
-	n_clk		: std_logic;
+	clk			: std_logic;
 	reset		: std_logic;
+	supervisor	: in std_logic;
+	run 		: in std_logic;
+	master_run	: out std_logic;
 
 	proc_m		: in ocp_io_m;
 	proc_s      : out ocp_io_s;
 
-	spm_m		: out spm_master;
-	spm_s		: in spm_slave;
+	spm_m		: out mem_if_master;
+	spm_s		: in mem_if_slave;
+	irq			: out std_logic_vector(1 downto 0);
 
 	    -- router ports
     north_in_f       : in channel_forward;
@@ -92,20 +99,25 @@ signal req, ack : std_logic;
 begin
 
 -- NA instance
-na : entity work.nAdapter
+ni : entity work.network_interface
+generic map (
+	MASTER => MASTER)
 port map(
 	-- General
-	na_clk=>n_clk,
-	na_reset=>reset,
-
+	clk=>clk,
+	reset=>reset,
+	run=>run,
+	master_run=>master_run,
+	supervisor=> supervisor,
 	-- Processor Ports
 	-- DMA Configuration Port - OCP
-	proc_in=>proc_m,
-	proc_out=>proc_s,
-
+	ocp_config_m=>proc_m,
+	ocp_config_s=>proc_s,
+	data_irq=> irq(0),
+	config_irq=> irq(1),
 	-- SPM Data Port - OCP?
-	spm_in=>spm_s,
-	spm_out=>spm_m,
+	spm_slv=>spm_s,
+	spm=>spm_m,
 
 	-- Network Ports
 	-- Incoming Port
@@ -118,7 +130,7 @@ port map(
 -- router instance
 r : entity work.router
 port map (
-	clk => n_clk,
+	clk => clk,
 	reset => reset,
 	inPort_f(0) => south_in_f,
 	inPort_f(1) => west_in_f,

@@ -41,9 +41,12 @@ use ieee.std_logic_1164.all;
 use work.config_types.all;
 use work.config.all;
 use work.ocp.all;
-use work.noc_defs.all;
+--use work.noc_defs.all;
+use work.argo_types.all;
 
 package noc_interface is
+    constant ARITY      : integer := 5;
+
 
     type ocp_core_m_a is array((N*M)-1 downto 0) of ocp_core_m;
     type ocp_core_s_a is array((N*M)-1 downto 0) of ocp_core_s;
@@ -54,20 +57,20 @@ package noc_interface is
     type ocp_burst_m_a is array((N*M)-1 downto 0) of ocp_burst_m;
     type ocp_burst_s_a is array((N*M)-1 downto 0) of ocp_burst_s;
 
-    type spm_master is record
-        MCmd        : std_logic_vector(SPM_CMD_WIDTH-1 downto 0);
-        MAddr       : std_logic_vector(SPM_ADDR_WIDTH-1 downto 0);
-        MData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
-    end record;
-
-    type spm_slave is record
-        SData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
-    end record;
-
-
-    --arrays
-    type spm_masters is array(0 to (N*M)-1) of spm_master;
-    type spm_slaves is array(0 to (N*M)-1) of spm_slave;
+--    type spm_master is record
+--        MCmd        : std_logic_vector(SPM_CMD_WIDTH-1 downto 0);
+--        MAddr       : std_logic_vector(SPM_ADDR_WIDTH-1 downto 0);
+--        MData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
+--    end record;
+--
+--    type spm_slave is record
+--        SData       : std_logic_vector(SPM_DATA_WIDTH-1 downto 0);
+--    end record;
+--
+--
+--    --arrays
+--    type spm_masters is array(0 to (N*M)-1) of spm_master;
+--    type spm_slaves is array(0 to (N*M)-1) of spm_slave;
 
 
     type link_n_f is array(0 to (N - 1)) of channel_forward;

@@ -68,7 +68,7 @@ architecture rtl of bram is
 
 begin
 
-  gen_fpga: if TARGET_ARCHITECTURE = FPGA generate
+--  gen_fpga: if TARGET_ARCHITECTURE = FPGA generate
     -- No reset for FPGA implementation
     process(clk)
     begin
@@ -79,22 +79,22 @@ begin
         rd_data <= mem(to_integer(unsigned(rd_addr)));
       end if;
     end process;
-  end generate gen_fpga;
+--  end generate gen_fpga;
 
-  gen_other: if TARGET_ARCHITECTURE /= FPGA generate
-    process(clk, reset)
-    begin
-      if reset = '1' then
-        mem <= (others => (others => '0'));
-        rd_data <= (others => '0');
-      elsif rising_edge(clk) then
-        if wr_ena = '1' then
-          mem(to_integer(unsigned(wr_addr))) <= wr_data;
-        end if;
-        rd_data <= mem(to_integer(unsigned(rd_addr)));
-      end if;
-    end process;
-  end generate gen_other;
+--  gen_other: if TARGET_ARCHITECTURE /= FPGA generate
+--    process(clk, reset)
+--    begin
+--     if reset = '1' then
+--        mem <= (others => (others => '0'));
+--        rd_data <= (others => '0');
+--      elsif rising_edge(clk) then
+--        if wr_ena = '1' then
+--          mem(to_integer(unsigned(wr_addr))) <= wr_data;
+--        end if;
+--        rd_data <= mem(to_integer(unsigned(rd_addr)));
+--      end if;
+--    end process;
+--  end generate gen_other;
   
 end rtl;
 

@@ -30,59 +30,83 @@
 
 
 --------------------------------------------------------------------------------
--- Crossbar for the NoC router.
+-- A parameterized, inferable, true dual-port, dual-clock block RAM.
 --
--- Author: Anders Bentzon
 -- Author: Evangelia Kasapaki
+-- Author: Rasmus Bo Soerensen (rasmus@rbscloud.dk)
 --------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
---use work.noc_defs.all;
-use work.argo_types.all;
-use work.noc_interface.all;
 
-entity Xbar is
-	port(
-			func	: in std_logic_vector(19 downto 0);
-			inPort	: in router_port_f;
-			outPort	: out router_port_f
-	);
-end Xbar;
 
--- Func format:
---	source port:  	   4    3    2    1    0
---	dest port:	3210 4210 3410 3240 3214
+entity tdp_bram is
 
-architecture structure of Xbar is
-	signal sel0, sel1, sel2, sel3, sel4:	std_logic_vector(3 downto 0);
+generic (
+    DATA    : integer := 32;
+    ADDR    : integer := 14
+);
+
+port (
+-- Port A
+    a_clk   : in  std_logic;
+    a_wr    : in  std_logic;
+    a_addr  : in  unsigned(ADDR-1 downto 0);
+    a_din   : in  unsigned(DATA-1 downto 0);
+    a_dout  : out unsigned(DATA-1 downto 0);
+
+-- Port B
+    b_clk   : in  std_logic;
+    b_wr    : in  std_logic;
+    b_addr  : in  unsigned(ADDR-1 downto 0);
+    b_din   : in  unsigned(DATA-1 downto 0);
+    b_dout  : out unsigned(DATA-1 downto 0)
+);
+end tdp_bram;
+
+
+architecture rtl of tdp_bram is
+    
+-- Shared memory
+
+    type mem_type is array ( (2**ADDR)-1 downto 0 ) of unsigned(DATA-1 downto 0);
+    shared variable mem : mem_type := (others => (others => '0'));
+
 begin
-	sel0 <= func(3 downto 0);
-	sel1 <= func(7 downto 4);
-	sel2 <= func(11 downto 8);
-	sel3 <= func(15 downto 12);
-	sel4 <= func(19 downto 16);
 
-	outPort(0).data <= (inPort(1).data and (link_t'range=>sel1(0))) or
-				  (inPort(2).data and (link_t'range=>sel2(0))) or
-				  (inPort(3).data and (link_t'range=>sel3(0))) or
-				  (inPort(4).data and (link_t'range=>sel4(0)));
-	outPort(1).data <= (inPort(0).data and (link_t'range=>sel0(1))) or
-				  (inPort(2).data and (link_t'range=>sel2(1))) or
-				  (inPort(3).data and (link_t'range=>sel3(1))) or
-				  (inPort(4).data and (link_t'range=>sel4(1)));
-	outPort(2).data <= (inPort(0).data and (link_t'range=>sel0(2))) or
-				  (inPort(1).data and (link_t'range=>sel1(2))) or
-				  (inPort(3).data and (link_t'range=>sel3(2))) or
-				  (inPort(4).data and (link_t'range=>sel4(2)));
-	outPort(3).data <= (inPort(0).data and (link_t'range=>sel0(3))) or
-				  (inPort(1).data and (link_t'range=>sel1(3))) or
-				  (inPort(2).data and (link_t'range=>sel2(3))) or
-				  (inPort(4).data and (link_t'range=>sel4(3)));
-	outPort(4).data <= (inPort(0).data and (link_t'range=>sel0(0))) or
-				  (inPort(1).data and (link_t'range=>sel1(1))) or
-				  (inPort(2).data and (link_t'range=>sel2(2))) or
-				  (inPort(3).data and (link_t'range=>sel3(3)));
+-- Port A
+porta : process(a_clk)
+begin
 
-end structure;
+    if( rising_edge(a_clk) ) then
+
+        if(a_wr='1') then
+            mem(to_integer(a_addr)) := a_din;
+        end if;
+
+        a_dout <= mem(to_integer(a_addr));
+    end if;
+
+end process;
+
+
+-- Port B
+portb : process(b_clk)
+begin
+
+    if( rising_edge(b_clk) ) then
+
+        if(b_wr='1') then
+            mem(to_integer(b_addr)) := b_din;
+        end if;
+
+        b_dout <= mem(to_integer(b_addr));
+
+    end if;
+
+end process;
+
+
+end rtl;
+

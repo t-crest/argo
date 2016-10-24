@@ -74,7 +74,7 @@ architecture rtl of packet_manager is
 -- The active bit is implemented in registers such that the active bit can be
 -- reset in case of an interrupt slot (1 clock cycle)
 --------------------------------------------------------------------------------
-type state_type is (IDLE, SEND1, SEND2, MODE_CHANGE1);
+type state_type is (IDLE, SEND1, SEND2, MODE_CHANGE1, MODE_CHANGE2);
 signal state, next_state : state_type;
 
 constant DMATBL_DATA_WIDTH : natural := ACTIVE_BIT + DMATBL_COUNT_WIDTH
@@ -230,18 +230,19 @@ begin
         pkt_out <= std_logic_vector(VALID & payload_data);
         spm.en <= "11";
         read_ptr_next <= read_ptr_reg + 1;
-        spm.addr <= read_ptr_reg + 1;
-        --spm.addr <= read_ptr_next;
+	spm.addr <= read_ptr_next;
+--        spm.addr <= read_ptr_reg + 1;
+--        --spm.addr <= read_ptr_next;
       else
         next_state <= IDLE;
         pkt_out <= std_logic_vector(VALID_EOP & payload_data);
       end if ;
 
-    --when MODE_CHANGE1 =>
-    --  next_state <= MODE_CHANGE2;
-    --  pkt_out <= std_logic_vector(VALID & payload_data );
-      
     when MODE_CHANGE1 =>
+      next_state <= MODE_CHANGE2;
+      pkt_out <= std_logic_vector(VALID & payload_data );
+      
+    when MODE_CHANGE2 =>
       next_state <= IDLE;
       pkt_out <= std_logic_vector(VALID_EOP & payload_data);
   end case ;

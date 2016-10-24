@@ -131,21 +131,27 @@ begin
     config.en <= '1';
     config.wr <= '0';
     -- If OCP request is a write and the processor is in supervisor mode
+    if ocp_config_m.MCmd /= OCP_CMD_IDLE and supervisor = '1' then
     if ocp_config_m.MCmd = OCP_CMD_WR then
-      if supervisor = '0' then
-        next_ocp_resp <= OCP_RESP_ERR;
-      else
+--    if ocp_config_m.MCmd = OCP_CMD_WR then
+--      if supervisor = '0' then
+--        next_ocp_resp <= OCP_RESP_ERR;
+--      else
         config.wr <= '1';
       end if ;
-    end if ;
-    --if supervisor = '1' then
-    --  if ocp_config_m.MCmd = OCP_CMD_WR then
-    --    config.wr <= '1';
-    --  end if ;
-    --else
-    --  --PUT THIS BACK next_ocp_resp <= OCP_RESP_ERR;
-    --  next_ocp_resp <= OCP_RESP_DVA;
-    --end if;
+    else
+      --PUT THIS BACK next_ocp_resp <= OCP_RESP_ERR;
+      next_ocp_resp <= OCP_RESP_DVA;
+    end if;
+--    end if ;
+--    --if supervisor = '1' then
+--    --  if ocp_config_m.MCmd = OCP_CMD_WR then
+--    --    config.wr <= '1';
+--    --  end if ;
+--    --else
+--    --  --PUT THIS BACK next_ocp_resp <= OCP_RESP_ERR;
+--    --  next_ocp_resp <= OCP_RESP_DVA;
+--    --end if;
     
   end if ;
 

@@ -61,7 +61,7 @@ package noc_defs is
   constant ADDR_SLT_WIDTH : integer := log2up(PRD_LENGTH-1);
   --constant PRD_LENGTH : integer := 2**ADDR_SLT_WIDTH; -- 2^6 = 64 -- 2^3 = 8
 
-  constant MAX_PERIOD : integer := 512;
+  constant MAX_PERIOD : integer := 256;
 
   -- DMA
   constant DMA_IND_WIDTH : integer := log2up(NODES-1);

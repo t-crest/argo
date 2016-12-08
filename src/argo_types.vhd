@@ -88,8 +88,8 @@ package argo_types is
 	                                                 
     -- Schedule table constants and types            
     constant STBL_IDX_WIDTH : integer := 8; -- 2^8 = 256 schedule entries
-    constant STBL_T2N_WIDTH : integer := 5;
-    constant STBL_PKT_LEN_WIDTH : integer := 3;
+    constant STBL_T2N_WIDTH : integer := 4;
+    constant STBL_PKT_LEN_WIDTH : integer := 4;
     subtype stbl_idx_t is unsigned(STBL_IDX_WIDTH-1 downto 0);
     subtype stbl_t2n_t is unsigned(STBL_T2N_WIDTH-1 downto 0);
     subtype stbl_pkt_len_t is unsigned(STBL_PKT_LEN_WIDTH-1 downto 0);

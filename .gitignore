@@ -34,3 +34,11 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+# SBT and IntelliJ generated stuff
+target/
+project/project
+project/target
+.bsp
+.idea

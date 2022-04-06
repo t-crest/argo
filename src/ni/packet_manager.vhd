@@ -121,7 +121,7 @@ alias update_header : unsigned(HEADER_FIELD_WIDTH-1 downto 0) is
                                    dma_update_data(HEADER_FIELD_WIDTH-1 downto 0);
 
 alias update_read_ptr : unsigned(DMATBL_READ_PTR_WIDTH-1 downto 0) is
- dma_update_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-DMATBL_COUNT_WIDTH-1 downto HEADER_FIELD_WIDTH);
+ dma_update_data(DMATBL_DATA_WIDTH - ACTIVE_BIT - DMATBL_COUNT_WIDTH-1 downto HEADER_FIELD_WIDTH);
 
 alias update_count : unsigned(DMATBL_COUNT_WIDTH-1 downto 0) is
   dma_update_data(DMATBL_DATA_WIDTH-ACTIVE_BIT-1 downto DMATBL_READ_PTR_WIDTH+HEADER_FIELD_WIDTH);

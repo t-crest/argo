@@ -48,10 +48,9 @@ class RxUnit extends Module {
   //End of packet   (EOP): Uppermost bits are 101
 
   //2 uppermost bits of the 32-bit field are used for packet control
-  //Data packet: bit 30 is 0
-  //Config packet: bit 31 is 0, bit 30 is 1
-  //IRQ packet: bit 31 is 1, bit 30 is 1
-
+  //Data packet  (10/00): bit 30 is 0
+  //Config packet(01): bit 31 is 0, bit 30 is 1
+  //IRQ packet   (11): bit 31 is 1, bit 30 is 1
 
   /* Assignment */
   //Default value assignments

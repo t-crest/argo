@@ -5,5 +5,5 @@ import blackbox._
 
 
 object Top extends App {
-  (new ChiselStage).emitVerilog(new TdmController, Array("-td", "gen"))
+  (new ChiselStage).emitVerilog(new PacketManager, Array("-td", "gen"))
 }

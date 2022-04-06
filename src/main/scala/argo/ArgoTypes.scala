@@ -14,6 +14,10 @@ object ArgoTypes {
   val HEADER_FIELD_WIDTH = 16
   val HEADER_CTRL_WIDTH =  2
 
+  val SOP = 0x6
+  val VLD = 0x4
+  val EOP = 0x5
+
   /* Interrupt FIFO constants */
   val IRQ_FIFO_IDX_WIDTH = 5
   val IRQ_DATA_FIFO_MAX = (math.pow(2,IRQ_FIFO_IDX_WIDTH)-1).toInt
@@ -26,7 +30,9 @@ object ArgoTypes {
   val DMATBL_COUNT_WIDTH = 14
   val DMATBL_READ_PTR_WIDTH = 14
   val DMATBL_IDX_WIDTH = 6 //2^6=64 entries
-  val DMATBL_DATA_WIDTH = HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH + DMATBL_COUNT_WIDTH + 1
+  val ACTIVE_BIT = 1
+  val DMATBL_DATA_WIDTH = HEADER_FIELD_WIDTH + DMATBL_READ_PTR_WIDTH + DMATBL_COUNT_WIDTH + ACTIVE_BIT
+
 
   /* Mode change table constants and types */
   val GENERATE_MC_TABLE = true

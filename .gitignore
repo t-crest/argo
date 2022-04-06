@@ -44,3 +44,5 @@ project/target
 .bsp
 .idea
 gen
+*.cf
+test_run_dir

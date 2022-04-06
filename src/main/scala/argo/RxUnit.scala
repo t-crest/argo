@@ -21,7 +21,7 @@ class RxUnit extends Module {
     /** Outputs to internal MEM bus */
     val config = Output(new ConfigIfMaster)
     /** Signals to IRQ FIFO */
-    val irq = Flipped(new IrqFifoInput)
+    val irq = Output(new IrqFifoInput)
   })
   /* Registers */
   val sIdle :: sDataWLow :: sDataWHigh :: sConfigWLow :: sConfigWHigh :: sIrqW :: Nil = Enum(6)
@@ -40,8 +40,18 @@ class RxUnit extends Module {
   val wrData = WireDefault(VecInit(Seq.fill(2)(0.U(WORD_WIDTH.W))))
   val newPacket = io.pkt(LINK_WIDTH-1) && io.pkt(LINK_WIDTH-2) && !io.pkt(LINK_WIDTH-3)
   val newDataPacket = newPacket && !io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2)
-  val newConfigPacket = newPacket && !io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1)&& io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2)
+  val newConfigPacket = newPacket && !io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1) && io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2)
   val newIrqPacket = newPacket && io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 1) && io.pkt(HEADER_FIELD_WIDTH + HEADER_ROUTE_WIDTH - 2)
+
+  //Start of packet (SOP): uppermost bits are 110
+  //Valid packet         : Uppermost bits are 100
+  //End of packet   (EOP): Uppermost bits are 101
+
+  //2 uppermost bits of the 32-bit field are used for packet control
+  //Data packet: bit 30 is 0
+  //Config packet: bit 31 is 0, bit 30 is 1
+  //IRQ packet: bit 31 is 1, bit 30 is 1
+
 
   /* Assignment */
   //Default value assignments
@@ -79,6 +89,7 @@ class RxUnit extends Module {
     is(sIdle) {
       //Fetch in new address fields, wait for new packet
       intAddr := io.pkt(HEADER_ROUTE_WIDTH+HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1, HEADER_ROUTE_WIDTH)
+      addr := io.pkt(HEADER_ROUTE_WIDTH+HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-1, HEADER_ROUTE_WIDTH)
       when(newDataPacket) {
         state := sDataWHigh
       } .elsewhen(newConfigPacket) {

@@ -16,8 +16,10 @@ object ArgoTypes {
 
   /* Interrupt FIFO constants */
   val IRQ_FIFO_IDX_WIDTH = 5
+  val IRQ_DATA_FIFO_MAX = (math.pow(2,IRQ_FIFO_IDX_WIDTH)-1).toInt
   val IRQ_DATA_FIFO_MIN = math.pow(2,IRQ_FIFO_IDX_WIDTH-1).toInt
   val IRQ_IRQ_FIFO_MAX = math.pow(2,IRQ_FIFO_IDX_WIDTH-1).toInt-1
+  val IRQ_IRQ_FIFO_MIN = 0
   val IRQ_DATA_WIDTH = HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH
 
   /* DMA table constants and types*/

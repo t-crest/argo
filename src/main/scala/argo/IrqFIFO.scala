@@ -7,7 +7,8 @@ import chisel3.util._
 
 /**
  * Argo 2.0 IRQ FIFO
- * Functionality: TBD
+ * Functionality: Stores IRQ packets received from RX Unit until config bus retrieves these
+ * Sends out signals [[IrqFifoOutput.irqSig]] and [[IrqFifoOutput.dataSig]] whenever new data/irq packet is available
  *
  * @author Kasper Hesse, s183735@student.dtu.dk
  */
@@ -22,7 +23,7 @@ class IrqFIFO extends Module {
     val sel = Input(Bool())
   })
   /*
-  Adresses of readable/writeable registers (word-based addresses inside NI)
+  Adresses of readable/writeable registers
   Address | Access | Name
   ------------------------
   0x00    | R      | Top of the IRQ FIFO
@@ -35,12 +36,14 @@ class IrqFIFO extends Module {
   val tdpram = Module(new DualPortRam(addrWidth, dataWidth))
 
   /* Registers */
+  //irq write and read both operate on the same RAM block
+  //irq is in the lower half of the RAM, data in the upper half
   //Write pointers count up
-  val irqWrPtr = RegInit(0.U(IRQ_FIFO_IDX_WIDTH.W))
-  val irqRdPtr = RegInit(0.U(IRQ_FIFO_IDX_WIDTH.W))
+  val irqWrPtr = RegInit(IRQ_IRQ_FIFO_MIN.U(IRQ_FIFO_IDX_WIDTH.W))
+  val irqRdPtr = RegInit(IRQ_IRQ_FIFO_MIN.U(IRQ_FIFO_IDX_WIDTH.W))
   //Data pointers count down. Initialize to maximum value
-  val dataWrPtr = RegInit(((1 << IRQ_FIFO_IDX_WIDTH)-1).U(IRQ_FIFO_IDX_WIDTH.W))
-  val dataRdPtr = RegInit(((1 << IRQ_FIFO_IDX_WIDTH)-1).U(IRQ_FIFO_IDX_WIDTH.W))
+  val dataWrPtr = RegInit(IRQ_DATA_FIFO_MAX.U(IRQ_FIFO_IDX_WIDTH.W))
+  val dataRdPtr = RegInit(IRQ_DATA_FIFO_MAX.U(IRQ_FIFO_IDX_WIDTH.W))
 
   /** Error register if invalid operation occurred */
   val error = RegInit(false.B)
@@ -52,12 +55,12 @@ class IrqFIFO extends Module {
   val port2 = Wire(new RamPort(addrWidth, dataWidth))
 
   //IRQ and data fifo state
-  val irqEmpty = irqWrPtr === irqRdPtr
+  val dataFull = (dataWrPtr === (dataRdPtr+1.U)) || ((dataWrPtr === IRQ_DATA_FIFO_MIN.U) && (dataRdPtr === IRQ_DATA_FIFO_MAX.U))
   val dataEmpty = dataWrPtr === dataRdPtr
-  val irqFull = (irqWrPtr === (irqRdPtr-1.U)) || ((irqWrPtr === IRQ_IRQ_FIFO_MAX.U) && (irqRdPtr === 0.U))
-  val dataFull = (dataWrPtr === (dataRdPtr+1.U)) || ((dataWrPtr === IRQ_DATA_FIFO_MIN.U) && (dataRdPtr === math.pow(2, IRQ_FIFO_IDX_WIDTH-1).toInt.U))
+  val irqFull = (irqWrPtr === (irqRdPtr-1.U)) || ((irqWrPtr === IRQ_IRQ_FIFO_MAX.U) && (irqRdPtr === IRQ_IRQ_FIFO_MIN.U))
+  val irqEmpty = irqWrPtr === irqRdPtr
 
-  /* Assignments */
+  /* Default assignments */
   error := false.B
 
   //Port 1 is write only
@@ -77,7 +80,6 @@ class IrqFIFO extends Module {
   //Outputs
   io.config.s.error := error
   io.config.s.rdData := Cat(0.U((WORD_WIDTH - dataWidth).W), port2.rdData)
-  //Gets auto-expanded up to the correct width, zero
   io.irqOut.irqSig := !irqEmpty
   io.irqOut.dataSig := !dataEmpty
 
@@ -99,30 +101,31 @@ class IrqFIFO extends Module {
     }
   }
 
+  //Write into irq
   when(io.irqIn.irqValid && !irqFull) {
     when(irqWrPtr === IRQ_IRQ_FIFO_MAX.U) {
-      irqWrPtr := 0.U
+      irqWrPtr := IRQ_IRQ_FIFO_MIN.U
     } .otherwise {
       irqWrPtr := irqWrPtr + 1.U
     }
   }
   when(irqRead && !irqEmpty) {
     when(irqRdPtr === IRQ_IRQ_FIFO_MAX.U) {
-      irqRdPtr := 0.U
+      irqRdPtr := IRQ_IRQ_FIFO_MIN.U
     } .otherwise {
       irqRdPtr := irqRdPtr + 1.U
     }
   }
   when(io.irqIn.dataValid && !dataFull) {
     when(dataWrPtr === IRQ_DATA_FIFO_MIN.U) {
-      dataWrPtr := (-1).S.asUInt
+      dataWrPtr := IRQ_DATA_FIFO_MAX.U
     } .otherwise {
       dataWrPtr := dataWrPtr - 1.U
     }
   }
   when(dataRead && !dataEmpty) {
     when(dataRdPtr === IRQ_DATA_FIFO_MIN.U) {
-      dataRdPtr := (-1).S.asUInt
+      dataRdPtr := IRQ_DATA_FIFO_MAX.U
     } .otherwise {
       dataRdPtr := dataRdPtr - 1.U
     }

@@ -8,7 +8,7 @@ import chisel3.util.HasBlackBoxResource
 /**
  * A blackbox around the Verilog version of rx_unit.vhd generated with GHDL
  */
-class RxUnitBlackbox extends BlackBox with HasBlackBoxResource {
+class rx_unit extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle {
     val clk = Input(Bool())
     val reset = Input(Bool())

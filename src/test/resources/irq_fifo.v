@@ -65,7 +65,6 @@ module tdp_ram_14_5
   /* mem/tdp_ram.vhd:88:17  */
   /* mem/tdp_ram.vhd:103:9  */
 endmodule
-
 module irq_fifo
   (input  clk,
    input  reset,

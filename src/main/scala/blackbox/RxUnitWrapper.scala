@@ -33,7 +33,7 @@ class RxUnitWrapper extends Module {
   })
 
   val Chisel = Module(new RxUnit)
-  val Verilog = Module(new RxUnitBlackbox)
+  val Verilog = Module(new rx_unit)
   Chisel.io.pkt := io.in.pkt
 
   io.chisel.spm := Chisel.io.spm

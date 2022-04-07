@@ -54,8 +54,6 @@ object ArgoBundles {
   class RamPort(addrWidth: Int, dataWidth: Int) extends Bundle {
     /** Clock signal */
     val clk = Input(Clock())
-    /** Reset signal */
-    val reset = Input(Bool())
     /** Write enable */
     val we = Input(Bool())
     /** Read/write access */

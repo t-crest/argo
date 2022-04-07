@@ -3,7 +3,7 @@ package argo
 import ArgoBundles._
 import ArgoTypes._
 import chisel3._
-import chisel3.util.{is, switch}
+import chisel3.util._
 
 /**
  * Argo 2.0 IRQ FIFO
@@ -60,18 +60,26 @@ class IrqFIFO extends Module {
   /* Assignments */
   error := false.B
 
+  //Port 1 is write only
   port1.clk := this.clock
   port1.we := (io.irqIn.irqValid && !irqFull) || (io.irqIn.dataValid && !dataFull)
   port1.addr := Mux(io.irqIn.dataValid, dataWrPtr, irqWrPtr)
   port1.wrData := io.irqIn.data
+  port1 <> tdpram.io.port1
 
+  //Port 2 is read only
   port2.clk := this.clock
   port2.we := false.B
   port2.wrData := 0.U
   port2.addr := dataRdPtr //Default assignment, may be changed below
+  port2 <> tdpram.io.port2
 
   //Outputs
   io.config.s.error := error
+  io.config.s.rdData := Cat(0.U((WORD_WIDTH - dataWidth).W), port2.rdData)
+  //Gets auto-expanded up to the correct width, zero
+  io.irqOut.irqSig := !irqEmpty
+  io.irqOut.dataSig := !dataEmpty
 
   //Address decode logic
   when(io.sel && io.config.m.en) {

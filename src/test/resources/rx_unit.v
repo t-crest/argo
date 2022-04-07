@@ -1,4 +1,4 @@
-module RxUnitBlackbox
+module rx_unit
   (input  clk,
    input  reset,
    input  [34:0] pkt_in,

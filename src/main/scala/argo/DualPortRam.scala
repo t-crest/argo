@@ -6,15 +6,15 @@ import ArgoBundles._
 /**
  * A dual-ported RAM module
  * @param addrWidth Width in bits of the address line
- * @param dataWidth Width in bits of data stored in the RAM
+ * @param dataType The type of data stored in the table
  */
-class DualPortRam(addrWidth: Int, dataWidth: Int) extends RawModule {
+class DualPortRam[T<: Data](addrWidth: Int, dataType: T) extends RawModule {
   val io = IO(new Bundle {
-    val port1 = new RamPort(addrWidth, dataWidth)
-    val port2 = new RamPort(addrWidth, dataWidth)
+    val port1 = new RamPort(addrWidth, dataType)
+    val port2 = new RamPort(addrWidth, dataType)
   })
 
-  val mem = withClock(io.port1.clk) {SyncReadMem(math.pow(2,addrWidth).toInt, UInt(dataWidth.W))}
+  val mem = withClock(io.port1.clk) {SyncReadMem(math.pow(2,addrWidth).toInt, dataType)}
 
   when(io.port1.we) {
     mem(io.port1.addr, io.port1.clk) := io.port1.wrData

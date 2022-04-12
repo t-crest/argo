@@ -5,5 +5,5 @@ import blackbox._
 
 
 object Top extends App {
-  (new ChiselStage).emitVerilog(new IrqFifoWrapper, Array("-td", "gen"))
+  (new ChiselStage).emitVerilog(new ScheduleTable, Array("-td", "gen"))
 }

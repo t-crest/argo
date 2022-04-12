@@ -23,6 +23,27 @@ object ArgoBundles {
     val dataSig = Bool()
   }
 
+  /**
+   * Data signal between [[ScheduleTable]] and packet manager
+   * Use as-is in Schedule table, use Flipped() in Packet Manager
+   */
+  class SchedTblPacketManIO extends Bundle {
+    val route = Output(UInt(HEADER_ROUTE_WIDTH.W))
+    val pktLen = Output(UInt(STBL_PKT_LEN_WIDTH.W))
+    val dmaNum = Output(UInt(DMATBL_IDX_WIDTH.W))
+    val dmaEn = Output(Bool())
+    val t2n = Output(UInt(STBL_T2N_WIDTH.W))
+  }
+
+  /**
+   * Data signals between TDM controller and [[ScheduleTable]]
+   * Use as-is in TDM controller, use Flipped() Schedule Table
+   */
+  class TdmControlSchedTblIO extends Bundle {
+    val stblIdx = Output(UInt(STBL_IDX_WIDTH.W))
+    val stblEn = Output(Bool())
+  }
+
   class ConfigIfSlave extends Bundle {
     val rdData = UInt(WORD_WIDTH.W)
     val error = Bool()
@@ -51,7 +72,7 @@ object ArgoBundles {
     val error = Bool()
   }
 
-  class RamPort(addrWidth: Int, dataWidth: Int) extends Bundle {
+  class RamPort[T <: Data](addrWidth: Int, dataType: T) extends Bundle {
     /** Clock signal */
     val clk = Input(Clock())
     /** Write enable */
@@ -59,9 +80,9 @@ object ArgoBundles {
     /** Read/write access */
     val addr = Input(UInt(addrWidth.W))
     /** Write data */
-    val wrData = Input(UInt(dataWidth.W))
+    val wrData = Input(dataType)
     /** Read data */
-    val rdData = Output(UInt(dataWidth.W))
+    val rdData = Output(dataType)
   }
 
   class DmaTableData extends Bundle {
@@ -69,5 +90,12 @@ object ArgoBundles {
     val count = UInt(DMATBL_COUNT_WIDTH.W) //44:30
     val readPtr = UInt(DMATBL_READ_PTR_WIDTH.W) //29:16
     val header = UInt(HEADER_FIELD_WIDTH.W) //15:0
+  }
+
+  class SchedTableContents extends Bundle {
+    val route  = UInt(HEADER_ROUTE_WIDTH.W)
+    val dma    = UInt(DMATBL_IDX_WIDTH.W)
+    val pktLen = UInt(STBL_PKT_LEN_WIDTH.W)
+    val t2n    = UInt(STBL_T2N_WIDTH.W) //t2n = time 2 next
   }
 }

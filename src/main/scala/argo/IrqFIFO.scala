@@ -28,12 +28,15 @@ class IrqFIFO extends Module {
   ------------------------
   0x00    | R      | Top of the IRQ FIFO
   0x01    | R      | Top of the Data FIFO
+
+  When dataSig=true, there is valid data at the head of the data fifo
+  When irqSiq=true, there is valid data at the head of the irq fifo
    */
 
   /* Modules */
   val dataWidth = HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH
   val addrWidth = IRQ_FIFO_IDX_WIDTH
-  val tdpram = Module(new DualPortRam(addrWidth, dataWidth))
+  val tdpram = Module(new DualPortRam(addrWidth, UInt(dataWidth.W)))
 
   /* Registers */
   //irq write and read both operate on the same RAM block
@@ -51,8 +54,8 @@ class IrqFIFO extends Module {
   /* Wires and signals */
   val irqRead = WireDefault(false.B)
   val dataRead = WireDefault(false.B)
-  val port1 = Wire(new RamPort(addrWidth, dataWidth))
-  val port2 = Wire(new RamPort(addrWidth, dataWidth))
+  val port1 = Wire(new RamPort(addrWidth, UInt(dataWidth.W)))
+  val port2 = Wire(new RamPort(addrWidth, UInt(dataWidth.W)))
 
   //IRQ and data fifo state
   val dataFull = (dataWrPtr === (dataRdPtr+1.U)) || ((dataWrPtr === IRQ_DATA_FIFO_MIN.U) && (dataRdPtr === IRQ_DATA_FIFO_MAX.U))

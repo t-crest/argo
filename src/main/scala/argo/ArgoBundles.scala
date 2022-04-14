@@ -32,16 +32,27 @@ object ArgoBundles {
     val pktLen = Output(UInt(STBL_PKT_LEN_WIDTH.W))
     val dmaNum = Output(UInt(DMATBL_IDX_WIDTH.W))
     val dmaEn = Output(Bool())
-    val t2n = Output(UInt(STBL_T2N_WIDTH.W))
   }
 
   /**
-   * Data signals between TDM controller and [[ScheduleTable]]
-   * Use as-is in TDM controller, use Flipped() Schedule Table
+   * Data signals between [[TdmController]] and [[ScheduleTable]]
+   * Use as-is in TDM controller, use Flipped() in Schedule Table
    */
   class TdmControlSchedTblIO extends Bundle {
-    val stblIdx = Output(UInt(STBL_IDX_WIDTH.W))
-    val stblEn = Output(Bool())
+    val idx = Output(UInt(STBL_IDX_WIDTH.W))
+    val en = Output(Bool())
+    val t2n = Input(UInt(STBL_T2N_WIDTH.W))
+  }
+
+  /**
+   * Data signals between the [[TdmController]] and Mode Change Controller.
+   * Use as-is in the TDM controller, use Flipped() in Mode Change Controller
+   */
+  class TdmControlModeChangeIO extends Bundle {
+    val periodBoundary = Output(Bool())
+    val periodCnt = Output(UInt(2.W))
+    val stblMin = Input(UInt(STBL_IDX_WIDTH.W))
+    val stblMaxp1 = Input(UInt(STBL_IDX_WIDTH.W))
   }
 
   class ConfigIfSlave extends Bundle {

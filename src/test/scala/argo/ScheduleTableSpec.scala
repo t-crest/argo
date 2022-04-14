@@ -17,6 +17,7 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
 
     cio.config.expect(vio.config.peek())
     cio.pktman.expect(vio.pktman.peek())
+    cio.t2n.expect(vio.t2n.peek())
   }
 
   it should "change stbl output when data is written in on the config bus" in {
@@ -43,8 +44,8 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
       //but the packet manager outputs should not have changed
       dut.io.chisel.pktman.dmaNum.expect(0.U)
 
-      dut.io.in.tdm.stblEn.poke(true.B)
-      dut.io.in.tdm.stblIdx.poke(4.U)
+      dut.io.in.tdm.en.poke(true.B)
+      dut.io.in.tdm.idx.poke(4.U)
       dut.clock.step()
       //Now the stbl outputs should also have changed
       compareOutputs(dut)
@@ -55,7 +56,32 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
   }
 
   it should "set pktman.en=false when current dma value is all ones when tdmEn=true" in {
-    test(new ScheduleTableWrapper).withAnnotations(Seq(WriteVcdAnnotation)) {dut =>
+    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+      dut.io.in.tdm.en.poke(true.B)
+
+      dut.clock.step()
+      compareOutputs(dut)
+      dut.io.chisel.pktman.dmaEn.expect(true.B) //should be true because tdm.en was true on previous cc
+
+      //Write in some data where dma number is all 1's
+      val wrData = (new SchedTableContents).Lit(
+        _.route -> 0.U, _.dma -> ((1 << DMATBL_IDX_WIDTH)-1).U, _.t2n -> 2.U, _.pktLen -> 3.U
+      ).litValue
+      dut.io.in.sel.poke(true.B)
+      dut.io.in.config.en.poke(true.B)
+      dut.io.in.config.wr.poke(true.B)
+      dut.io.in.config.wrData.poke(wrData.U)
+
+      dut.clock.step()
+      dut.io.in.sel.poke(false.B)
+      dut.io.in.config.en.poke(false.B)
+
+      dut.clock.step(1)
+      //At this point we should see some outputs on the slave bus
+      compareOutputs(dut)
+      //Now, dma read should be all 1's, causing dma en to be false
+      dut.io.chisel.pktman.dmaEn.expect(false.B)
+      dut.clock.step()
 
     }
   }

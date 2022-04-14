@@ -38,7 +38,7 @@ class ScheduleTable extends Module {
    */
   //Registers
   val error = RegInit(false.B)
-  val stblIdxEn = RegNext(io.tdm.stblEn, false.B)
+  val stblIdxEn = RegNext(io.tdm.en, false.B)
 
   //Modules
   val schedTable = Module(new DualPortRam(STBL_IDX_WIDTH, new SchedTableContents))
@@ -56,7 +56,7 @@ class ScheduleTable extends Module {
 
   port2.clk := this.clock
   port2.we := false.B
-  port2.addr := io.tdm.stblIdx
+  port2.addr := io.tdm.idx
   port2.wrData := DontCare
 
   schedTable.io.port1 <> port1
@@ -67,9 +67,10 @@ class ScheduleTable extends Module {
   //outputs
   io.pktman.route := port2.rdData.route
   io.pktman.pktLen := port2.rdData.pktLen
-  io.pktman.t2n := port2.rdData.t2n
   io.pktman.dmaNum := port2.rdData.dma
   io.pktman.dmaEn := Mux(port2.rdData.dma === VecInit(Seq.fill(DMATBL_IDX_WIDTH)(true.B)).asUInt, false.B, stblIdxEn)
+
+  io.tdm.t2n := port2.rdData.t2n
 
   io.config.s.rdData := Cat(port1.rdData.route, port1.rdData.dma, port1.rdData.pktLen, port1.rdData.t2n)
   io.config.s.error := error

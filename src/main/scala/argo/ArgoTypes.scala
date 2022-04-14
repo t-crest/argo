@@ -37,8 +37,6 @@ object ArgoTypes {
   val STBL_T2N_WIDTH = 4
   val STBL_PKT_LEN_WIDTH = 4
 
-
-
   val MEM_ADDR_WIDTH = HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH
 
   /* Configuration packet constants and types */
@@ -48,6 +46,12 @@ object ArgoTypes {
   val LINK_DATA_WIDTH = WORD_WIDTH
   val LINK_CTRL_WIDTH = 3
   val LINK_WIDTH = LINK_DATA_WIDTH + LINK_CTRL_WIDTH
+
+  /* TDM Controller constants and types */
+  val TDM_S_CNT_WIDTH = 10
+  val GENERATE_CLK_COUNTER = false
+  val GENERATE_PERIOD_COUNTER = false
+  val GENERATE_SLOT_COUNTER = false
 
 
   /* General constants */

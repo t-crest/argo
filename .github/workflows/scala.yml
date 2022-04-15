@@ -20,20 +20,20 @@ jobs:
       uses: actions/cache@v2
       id:   cache-verilator
       with:
-        path: verilator-4.103
-        key: ${{ runner.os }}-verilator-4.103
+        path: verilator-4.108
+        key: ${{ runner.os }}-verilator-4.108
     - name: Compile Verilator
       if: steps.cache-verilator.outputs.cache-hit != 'true'
       run: |
-        wget https://github.com/verilator/verilator/archive/refs/tags/v4.103.zip
-        unzip v4.103.zip
-        cd verilator-4.103
+        wget https://github.com/verilator/verilator/archive/refs/tags/v4.108.zip
+        unzip v4.108.zip
+        cd verilator-4.108
         autoconf
         ./configure
         make
     - name: Install Verilator
       run: |
-        cd verilator-4.103
+        cd verilator-4.108
         sudo make install
         verilator --version
     - name: Setup Scala

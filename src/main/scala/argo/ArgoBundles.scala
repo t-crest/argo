@@ -45,7 +45,7 @@ object ArgoBundles {
   }
 
   /**
-   * Data signals between the [[TdmController]] and Mode Change Controller.
+   * Data signals between the [[TdmController]] and [[McController]].
    * Use as-is in the TDM controller, use Flipped() in Mode Change Controller
    */
   class TdmControlModeChangeIO extends Bundle {
@@ -53,6 +53,16 @@ object ArgoBundles {
     val periodCnt = Output(UInt(2.W))
     val stblMin = Input(UInt(STBL_IDX_WIDTH.W))
     val stblMaxp1 = Input(UInt(STBL_IDX_WIDTH.W))
+  }
+
+  /**
+   * Data signals between the [[McController]] and [[PacketManager]].
+   * Use as-is in Mode Change Controller, use Flipped() in Packet Manager
+   */
+  class ModeChangePacketManIO extends Bundle {
+    val mc = Output(Bool())
+    val mcIdx = Output(UInt(MCTBL_IDX_WIDTH.W))
+    val mcP = Output(UInt(2.W))
   }
 
   class ConfigIfSlave extends Bundle {
@@ -108,5 +118,10 @@ object ArgoBundles {
     val dma    = UInt(DMATBL_IDX_WIDTH.W)
     val pktLen = UInt(STBL_PKT_LEN_WIDTH.W)
     val t2n    = UInt(STBL_T2N_WIDTH.W) //t2n = time 2 next
+  }
+
+  class ModeArrayContents extends Bundle {
+    val min = UInt(STBL_IDX_WIDTH.W)
+    val max = UInt(STBL_IDX_WIDTH.W)
   }
 }

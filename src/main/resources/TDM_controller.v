@@ -231,6 +231,7 @@ module TDM_controller
       5'b00100: n48_o <= n45_o;
       5'b00010: n48_o <= n44_o;
       5'b00001: n48_o <= n43_o;
+      default: n48_o <= n47_o;
     endcase
   assign n49_o = tdm_s_cnt_reg[9:1];
   assign n50_o = tdm_p_cnt_reg[9:1];
@@ -246,6 +247,7 @@ module TDM_controller
       5'b00100: n55_o <= n51_o;
       5'b00010: n55_o <= n50_o;
       5'b00001: n55_o <= n49_o;
+      default: n55_o <= n54_o;
     endcase
   assign n56_o = tdm_p_cnt_reg[31:10];
   assign n57_o = clock_delay_reg[31:10];
@@ -260,6 +262,7 @@ module TDM_controller
       5'b00100: n61_o <= n57_o;
       5'b00010: n61_o <= n56_o;
       5'b00001: n61_o <= n60_o;
+      default: n61_o <= n60_o;
     endcase
   /* ni/TDM_controller.vhd:157:9  */
   always @*
@@ -269,6 +272,7 @@ module TDM_controller
       5'b00100: n67_o <= 1'b0;
       5'b00010: n67_o <= 1'b0;
       5'b00001: n67_o <= 1'b0;
+      default: n67_o <= 1'b1;
     endcase
   /* ni/TDM_controller.vhd:174:37  */
   assign n68_o = n1_o[10:0];
@@ -282,11 +286,13 @@ module TDM_controller
   always @*
     case (n72_o)
       1'b1: n73_o <= n70_o;
+      default: n73_o <= n23_o;
     endcase
   /* ni/TDM_controller.vhd:174:9  */
   always @*
     case (n72_o)
       1'b1: n76_o <= 1'b0;
+      default: n76_o <= 1'b1;
     endcase
   /* ni/TDM_controller.vhd:156:7  */
   assign n77_o = n27_o ? n23_o : n73_o;

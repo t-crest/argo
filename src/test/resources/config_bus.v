@@ -228,6 +228,7 @@ module config_bus
       6'b000100: n86_o <= 1'b1;
       6'b000010: n86_o <= 1'b0;
       6'b000001: n86_o <= 1'b0;
+      default: n86_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -238,6 +239,7 @@ module config_bus
       6'b000100: n90_o <= 1'b0;
       6'b000010: n90_o <= 1'b1;
       6'b000001: n90_o <= 1'b0;
+      default: n90_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -248,6 +250,7 @@ module config_bus
       6'b000100: n94_o <= 1'b0;
       6'b000010: n94_o <= 1'b0;
       6'b000001: n94_o <= 1'b1;
+      default: n94_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -258,6 +261,7 @@ module config_bus
       6'b000100: n98_o <= 1'b0;
       6'b000010: n98_o <= 1'b0;
       6'b000001: n98_o <= 1'b0;
+      default: n98_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -268,6 +272,7 @@ module config_bus
       6'b000100: n102_o <= 1'b0;
       6'b000010: n102_o <= 1'b0;
       6'b000001: n102_o <= 1'b0;
+      default: n102_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:194:59  */
   assign n104_o = n15_o[31:0];
@@ -301,6 +306,7 @@ module config_bus
       6'b000100: n122_o <= n110_o;
       6'b000010: n122_o <= n107_o;
       6'b000001: n122_o <= n104_o;
+      default: n122_o <= n22_o;
     endcase
   /* ni/config_bus.vhd:215:7  */
   assign n127_o = reset ? 2'b00 : next_ocp_resp;

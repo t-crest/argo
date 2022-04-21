@@ -36,3 +36,5 @@ synth:
 	ghdl --synth -fsynopsys --std=08 -frelaxed --out=verilog hpu               > test/resources/hpu.v
 	ghdl --synth -fsynopsys --std=08 -frelaxed --out=verilog router            > test/resources/router.v
 	ghdl --synth -fsynopsys --std=08 -frelaxed --out=verilog noc_node          > test/resources/noc_node.v
+	mkdir -p main/resources && cp test/resources/*.v main/resources
+

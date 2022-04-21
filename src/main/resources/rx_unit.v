@@ -286,6 +286,7 @@ module rx_unit
       6'b000100: n102_o <= n99_o;
       6'b000010: n102_o <= n60_o;
       6'b000001: n102_o <= n100_o;
+      default: n102_o <= 1'bX;
     endcase
   assign n103_o = n71_o[1];
   assign n104_o = n37_o[1];
@@ -298,6 +299,7 @@ module rx_unit
       6'b000100: n106_o <= n103_o;
       6'b000010: n106_o <= n104_o;
       6'b000001: n106_o <= n104_o;
+      default: n106_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -308,6 +310,7 @@ module rx_unit
       6'b000100: n108_o <= 1'b1;
       6'b000010: n108_o <= n61_o;
       6'b000001: n108_o <= 1'b0;
+      default: n108_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -318,6 +321,7 @@ module rx_unit
       6'b000100: n110_o <= wdata_high;
       6'b000010: n110_o <= n62_o;
       6'b000001: n110_o <= wdata_high;
+      default: n110_o <= 32'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -328,6 +332,7 @@ module rx_unit
       6'b000100: n113_o <= 1'b0;
       6'b000010: n113_o <= 1'b0;
       6'b000001: n113_o <= 1'b0;
+      default: n113_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -338,6 +343,7 @@ module rx_unit
       6'b000100: n115_o <= 1'b0;
       6'b000010: n115_o <= 1'b0;
       6'b000001: n115_o <= 1'b0;
+      default: n115_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -348,6 +354,7 @@ module rx_unit
       6'b000100: n117_o <= int_addr;
       6'b000010: n117_o <= addr;
       6'b000001: n117_o <= addr;
+      default: n117_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -358,6 +365,7 @@ module rx_unit
       6'b000100: n121_o <= 1'b0;
       6'b000010: n121_o <= 1'b0;
       6'b000001: n121_o <= 1'b0;
+      default: n121_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -368,6 +376,7 @@ module rx_unit
       6'b000100: n125_o <= 1'b0;
       6'b000010: n125_o <= n65_o;
       6'b000001: n125_o <= 1'b0;
+      default: n125_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -378,6 +387,7 @@ module rx_unit
       6'b000100: n130_o <= 1'b0;
       6'b000010: n130_o <= 1'b0;
       6'b000001: n130_o <= 1'b1;
+      default: n130_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -388,6 +398,7 @@ module rx_unit
       6'b000100: n133_o <= next_int_addr;
       6'b000010: n133_o <= addr;
       6'b000001: n133_o <= addr;
+      default: n133_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -398,6 +409,7 @@ module rx_unit
       6'b000100: n135_o <= n42_o;
       6'b000010: n135_o <= n53_o;
       6'b000001: n135_o <= n43_o;
+      default: n135_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -408,6 +420,7 @@ module rx_unit
       6'b000100: n139_o <= n77_o;
       6'b000010: n139_o <= n68_o;
       6'b000001: n139_o <= n49_o;
+      default: n139_o <= 3'bX;
     endcase
   /* ni/rx_unit.vhd:180:56  */
   assign n145_o = pkt_in[29:16];

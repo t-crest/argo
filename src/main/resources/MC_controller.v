@@ -251,12 +251,14 @@ module MC_controller
   always @*
     case (n21_o)
       1'b1: n24_o <= 1'b0;
+      default: n24_o <= 1'b1;
     endcase
   assign n25_o = read_reg[1:0];
   /* ni/MC_controller.vhd:129:9  */
   always @*
     case (n21_o)
       1'b1: n26_o <= mode_idx_reg;
+      default: n26_o <= n25_o;
     endcase
   /* ni/MC_controller.vhd:144:26  */
   assign n27_o = n0_o[10:0];
@@ -272,24 +274,28 @@ module MC_controller
     case (n33_o)
       2'b10: n34_o <= mode_change_idx_reg;
       2'b01: n34_o <= n28_o;
+      default: n34_o <= mode_change_idx_reg;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
     case (n33_o)
       2'b10: n35_o <= mode_change_cnt_reg;
       2'b01: n35_o <= mode_change_cnt_int;
+      default: n35_o <= mode_change_cnt_reg;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
     case (n33_o)
       2'b10: n38_o <= 1'b0;
       2'b01: n38_o <= 1'b1;
+      default: n38_o <= 1'b0;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
     case (n33_o)
       2'b10: n41_o <= 1'b0;
       2'b01: n41_o <= 1'b0;
+      default: n41_o <= 1'b1;
     endcase
   /* ni/MC_controller.vhd:158:24  */
   assign n43_o = $unsigned(mc_tbl_addr) < $unsigned(11'b00000000100);
@@ -360,6 +366,7 @@ module MC_controller
       3'b100: n103_o <= n93_o;
       3'b010: n103_o <= n87_o;
       3'b001: n103_o <= n83_o;
+      default: n103_o <= 2'bX;
     endcase
   /* ni/MC_controller.vhd:187:7  */
   always @*
@@ -367,6 +374,7 @@ module MC_controller
       3'b100: n106_o <= n96_o;
       3'b010: n106_o <= 1'b0;
       3'b001: n106_o <= 1'b0;
+      default: n106_o <= 1'bX;
     endcase
   /* ni/MC_controller.vhd:187:7  */
   always @*
@@ -374,6 +382,7 @@ module MC_controller
       3'b100: n109_o <= n98_o;
       3'b010: n109_o <= n89_o;
       3'b001: n109_o <= mc_reg;
+      default: n109_o <= 1'bX;
     endcase
   /* ni/MC_controller.vhd:257:57  */
   assign n114_o = n240_o[7:0];

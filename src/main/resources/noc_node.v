@@ -3782,6 +3782,7 @@ module config_bus
       6'b000100: n1710_o <= 1'b1;
       6'b000010: n1710_o <= 1'b0;
       6'b000001: n1710_o <= 1'b0;
+      default: n1710_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -3792,6 +3793,7 @@ module config_bus
       6'b000100: n1714_o <= 1'b0;
       6'b000010: n1714_o <= 1'b1;
       6'b000001: n1714_o <= 1'b0;
+      default: n1714_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -3802,6 +3804,7 @@ module config_bus
       6'b000100: n1718_o <= 1'b0;
       6'b000010: n1718_o <= 1'b0;
       6'b000001: n1718_o <= 1'b1;
+      default: n1718_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -3812,6 +3815,7 @@ module config_bus
       6'b000100: n1722_o <= 1'b0;
       6'b000010: n1722_o <= 1'b0;
       6'b000001: n1722_o <= 1'b0;
+      default: n1722_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
@@ -3822,6 +3826,7 @@ module config_bus
       6'b000100: n1726_o <= 1'b0;
       6'b000010: n1726_o <= 1'b0;
       6'b000001: n1726_o <= 1'b0;
+      default: n1726_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:194:59  */
   assign n1728_o = n1639_o[31:0];
@@ -3855,6 +3860,7 @@ module config_bus
       6'b000100: n1746_o <= n1734_o;
       6'b000010: n1746_o <= n1731_o;
       6'b000001: n1746_o <= n1728_o;
+      default: n1746_o <= n1646_o;
     endcase
   /* ni/config_bus.vhd:215:7  */
   assign n1751_o = reset ? 2'b00 : next_ocp_resp;
@@ -4234,24 +4240,28 @@ module irq_fifo
     case (n1455_o)
       2'b10: n1458_o <= 1'b0;
       2'b01: n1458_o <= 1'b0;
+      default: n1458_o <= 1'b1;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
     case (n1455_o)
       2'b10: n1461_o <= 1'b0;
       2'b01: n1461_o <= 1'b1;
+      default: n1461_o <= 1'b0;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
     case (n1455_o)
       2'b10: n1464_o <= 1'b1;
       2'b01: n1464_o <= 1'b0;
+      default: n1464_o <= 1'b0;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
     case (n1455_o)
       2'b10: n1465_o <= data_r_ptr;
       2'b01: n1465_o <= irq_r_ptr;
+      default: n1465_o <= data_r_ptr;
     endcase
   /* ni/irq_fifo.vhd:125:25  */
   assign n1467_o = n1449_o ? n1458_o : 1'b1;
@@ -4652,6 +4662,7 @@ module rx_unit
       6'b000100: n1314_o <= n1311_o;
       6'b000010: n1314_o <= n1272_o;
       6'b000001: n1314_o <= n1312_o;
+      default: n1314_o <= 1'bX;
     endcase
   assign n1315_o = n1283_o[1];
   assign n1316_o = n1249_o[1];
@@ -4664,6 +4675,7 @@ module rx_unit
       6'b000100: n1318_o <= n1315_o;
       6'b000010: n1318_o <= n1316_o;
       6'b000001: n1318_o <= n1316_o;
+      default: n1318_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4674,6 +4686,7 @@ module rx_unit
       6'b000100: n1320_o <= 1'b1;
       6'b000010: n1320_o <= n1273_o;
       6'b000001: n1320_o <= 1'b0;
+      default: n1320_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4684,6 +4697,7 @@ module rx_unit
       6'b000100: n1322_o <= wdata_high;
       6'b000010: n1322_o <= n1274_o;
       6'b000001: n1322_o <= wdata_high;
+      default: n1322_o <= 32'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4694,6 +4708,7 @@ module rx_unit
       6'b000100: n1325_o <= 1'b0;
       6'b000010: n1325_o <= 1'b0;
       6'b000001: n1325_o <= 1'b0;
+      default: n1325_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4704,6 +4719,7 @@ module rx_unit
       6'b000100: n1327_o <= 1'b0;
       6'b000010: n1327_o <= 1'b0;
       6'b000001: n1327_o <= 1'b0;
+      default: n1327_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4714,6 +4730,7 @@ module rx_unit
       6'b000100: n1329_o <= int_addr;
       6'b000010: n1329_o <= addr;
       6'b000001: n1329_o <= addr;
+      default: n1329_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4724,6 +4741,7 @@ module rx_unit
       6'b000100: n1333_o <= 1'b0;
       6'b000010: n1333_o <= 1'b0;
       6'b000001: n1333_o <= 1'b0;
+      default: n1333_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4734,6 +4752,7 @@ module rx_unit
       6'b000100: n1337_o <= 1'b0;
       6'b000010: n1337_o <= n1277_o;
       6'b000001: n1337_o <= 1'b0;
+      default: n1337_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4744,6 +4763,7 @@ module rx_unit
       6'b000100: n1342_o <= 1'b0;
       6'b000010: n1342_o <= 1'b0;
       6'b000001: n1342_o <= 1'b1;
+      default: n1342_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4754,6 +4774,7 @@ module rx_unit
       6'b000100: n1345_o <= next_int_addr;
       6'b000010: n1345_o <= addr;
       6'b000001: n1345_o <= addr;
+      default: n1345_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4764,6 +4785,7 @@ module rx_unit
       6'b000100: n1347_o <= n1254_o;
       6'b000010: n1347_o <= n1265_o;
       6'b000001: n1347_o <= n1255_o;
+      default: n1347_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
@@ -4774,6 +4796,7 @@ module rx_unit
       6'b000100: n1351_o <= n1289_o;
       6'b000010: n1351_o <= n1280_o;
       6'b000001: n1351_o <= n1261_o;
+      default: n1351_o <= 3'bX;
     endcase
   /* ni/rx_unit.vhd:180:56  */
   assign n1357_o = pkt_in[29:16];
@@ -5414,6 +5437,7 @@ module packet_manager
       5'b00100: n1052_o <= n1033_o;
       5'b00010: n1052_o <= n1050_o;
       5'b00001: n1052_o <= n969_o;
+      default: n1052_o <= 16'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -5423,6 +5447,7 @@ module packet_manager
       5'b00100: n1054_o <= n1034_o;
       5'b00010: n1054_o <= n1008_o;
       5'b00001: n1054_o <= n971_o;
+      default: n1054_o <= 35'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -5432,6 +5457,7 @@ module packet_manager
       5'b00100: n1059_o <= n1037_o;
       5'b00010: n1059_o <= n1011_o;
       5'b00001: n1059_o <= n972_o;
+      default: n1059_o <= 3'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -5441,6 +5467,7 @@ module packet_manager
       5'b00100: n1061_o <= n1018_o;
       5'b00010: n1061_o <= n994_o;
       5'b00001: n1061_o <= n973_o;
+      default: n1061_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -5450,6 +5477,7 @@ module packet_manager
       5'b00100: n1063_o <= n874_o;
       5'b00010: n1063_o <= n874_o;
       5'b00001: n1063_o <= n974_o;
+      default: n1063_o <= 2'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -5459,6 +5487,7 @@ module packet_manager
       5'b00100: n1065_o <= n1038_o;
       5'b00010: n1065_o <= n1012_o;
       5'b00001: n1065_o <= n975_o;
+      default: n1065_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -5468,6 +5497,7 @@ module packet_manager
       5'b00100: n1068_o <= 1'b0;
       5'b00010: n1068_o <= 1'b0;
       5'b00001: n1068_o <= n977_o;
+      default: n1068_o <= 1'bX;
     endcase
   assign n1070_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:174:3  */
@@ -5478,6 +5508,7 @@ module packet_manager
       5'b00100: n1072_o <= n1070_o;
       5'b00010: n1072_o <= n1070_o;
       5'b00001: n1072_o <= n979_o;
+      default: n1072_o <= 14'bX;
     endcase
   assign n1073_o = dmatbl_data[43:16];
   assign n1074_o = {1'b0, n1073_o};
@@ -5489,6 +5520,7 @@ module packet_manager
       5'b00100: n1076_o <= n1074_o;
       5'b00010: n1076_o <= n1074_o;
       5'b00001: n1076_o <= n982_o;
+      default: n1076_o <= 29'bX;
     endcase
   assign n1078_o = dmatbl_data[15:14];
   /* ni/packet_manager.vhd:174:3  */
@@ -5499,6 +5531,7 @@ module packet_manager
       5'b00100: n1080_o <= n1016_o;
       5'b00010: n1080_o <= n992_o;
       5'b00001: n1080_o <= n983_o;
+      default: n1080_o <= 4'bX;
     endcase
   assign n1081_o = n990_o[1:0];
   /* ni/packet_manager.vhd:174:3  */
@@ -5509,6 +5542,7 @@ module packet_manager
       5'b00100: n1084_o <= 2'b00;
       5'b00010: n1084_o <= n1081_o;
       5'b00001: n1084_o <= n985_o;
+      default: n1084_o <= 2'bX;
     endcase
   assign n1085_o = n990_o[15:2];
   /* ni/packet_manager.vhd:174:3  */
@@ -5519,6 +5553,7 @@ module packet_manager
       5'b00100: n1088_o <= 14'b00000000000000;
       5'b00010: n1088_o <= n1085_o;
       5'b00001: n1088_o <= 14'b00000000000000;
+      default: n1088_o <= 14'bX;
     endcase
   assign n1089_o = n990_o[17:16];
   /* ni/packet_manager.vhd:174:3  */
@@ -5529,6 +5564,7 @@ module packet_manager
       5'b00100: n1092_o <= 2'b00;
       5'b00010: n1092_o <= n1089_o;
       5'b00001: n1092_o <= n987_o;
+      default: n1092_o <= 2'bX;
     endcase
   assign n1093_o = n990_o[31:18];
   /* ni/packet_manager.vhd:174:3  */
@@ -5539,6 +5575,7 @@ module packet_manager
       5'b00100: n1096_o <= 14'b00000000000000;
       5'b00010: n1096_o <= n1093_o;
       5'b00001: n1096_o <= 14'b00000000000000;
+      default: n1096_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:256:29  */
   assign n1103_o = n855_o[6:1];
@@ -6075,12 +6112,14 @@ module mc_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
   always @*
     case (n565_o)
       1'b1: n568_o <= 1'b0;
+      default: n568_o <= 1'b1;
     endcase
   assign n569_o = read_reg[1:0];
   /* ni/MC_controller.vhd:129:9  */
   always @*
     case (n565_o)
       1'b1: n570_o <= mode_idx_reg;
+      default: n570_o <= n569_o;
     endcase
   /* ni/MC_controller.vhd:144:26  */
   assign n571_o = n544_o[10:0];
@@ -6096,24 +6135,28 @@ module mc_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
     case (n577_o)
       2'b10: n578_o <= mode_change_idx_reg;
       2'b01: n578_o <= n572_o;
+      default: n578_o <= mode_change_idx_reg;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
     case (n577_o)
       2'b10: n579_o <= mode_change_cnt_reg;
       2'b01: n579_o <= mode_change_cnt_int;
+      default: n579_o <= mode_change_cnt_reg;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
     case (n577_o)
       2'b10: n582_o <= 1'b0;
       2'b01: n582_o <= 1'b1;
+      default: n582_o <= 1'b0;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
     case (n577_o)
       2'b10: n585_o <= 1'b0;
       2'b01: n585_o <= 1'b0;
+      default: n585_o <= 1'b1;
     endcase
   /* ni/MC_controller.vhd:158:24  */
   assign n587_o = $unsigned(mc_tbl_addr) < $unsigned(11'b00000000100);
@@ -6548,6 +6591,7 @@ module tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
       5'b00100: n420_o <= n417_o;
       5'b00010: n420_o <= n416_o;
       5'b00001: n420_o <= n415_o;
+      default: n420_o <= n419_o;
     endcase
   assign n421_o = tdm_s_cnt_reg[9:1];
   assign n422_o = tdm_p_cnt_reg[9:1];
@@ -6563,6 +6607,7 @@ module tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
       5'b00100: n427_o <= n423_o;
       5'b00010: n427_o <= n422_o;
       5'b00001: n427_o <= n421_o;
+      default: n427_o <= n426_o;
     endcase
   assign n428_o = tdm_p_cnt_reg[31:10];
   assign n429_o = clock_delay_reg[31:10];
@@ -6577,6 +6622,7 @@ module tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
       5'b00100: n433_o <= n429_o;
       5'b00010: n433_o <= n428_o;
       5'b00001: n433_o <= n432_o;
+      default: n433_o <= n432_o;
     endcase
   /* ni/TDM_controller.vhd:157:9  */
   always @*
@@ -6586,6 +6632,7 @@ module tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
       5'b00100: n439_o <= 1'b0;
       5'b00010: n439_o <= 1'b0;
       5'b00001: n439_o <= 1'b0;
+      default: n439_o <= 1'b1;
     endcase
   /* ni/TDM_controller.vhd:174:37  */
   assign n440_o = n383_o[10:0];
@@ -6597,6 +6644,7 @@ module tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
   always @*
     case (n443_o)
       1'b1: n446_o <= 1'b0;
+      default: n446_o <= 1'b1;
     endcase
   assign n447_o = {n433_o, n427_o, n420_o};
   /* ni/TDM_controller.vhd:154:5  */

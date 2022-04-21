@@ -65,6 +65,7 @@ module tdp_ram_14_5
   /* mem/tdp_ram.vhd:88:17  */
   /* mem/tdp_ram.vhd:103:9  */
 endmodule
+
 module irq_fifo
   (input  clk,
    input  reset,
@@ -271,24 +272,28 @@ module irq_fifo
     case (n52_o)
       2'b10: n55_o <= 1'b0;
       2'b01: n55_o <= 1'b0;
+      default: n55_o <= 1'b1;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
     case (n52_o)
       2'b10: n58_o <= 1'b0;
       2'b01: n58_o <= 1'b1;
+      default: n58_o <= 1'b0;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
     case (n52_o)
       2'b10: n61_o <= 1'b1;
       2'b01: n61_o <= 1'b0;
+      default: n61_o <= 1'b0;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
     case (n52_o)
       2'b10: n62_o <= data_r_ptr;
       2'b01: n62_o <= irq_r_ptr;
+      default: n62_o <= data_r_ptr;
     endcase
   /* ni/irq_fifo.vhd:125:25  */
   assign n64_o = n46_o ? n55_o : 1'b1;

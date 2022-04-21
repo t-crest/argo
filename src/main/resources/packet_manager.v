@@ -779,6 +779,7 @@ module packet_manager
       5'b00100: n197_o <= n178_o;
       5'b00010: n197_o <= n195_o;
       5'b00001: n197_o <= n114_o;
+      default: n197_o <= 16'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -788,6 +789,7 @@ module packet_manager
       5'b00100: n199_o <= n179_o;
       5'b00010: n199_o <= n153_o;
       5'b00001: n199_o <= n116_o;
+      default: n199_o <= 35'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -797,6 +799,7 @@ module packet_manager
       5'b00100: n204_o <= n182_o;
       5'b00010: n204_o <= n156_o;
       5'b00001: n204_o <= n117_o;
+      default: n204_o <= 3'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -806,6 +809,7 @@ module packet_manager
       5'b00100: n206_o <= n163_o;
       5'b00010: n206_o <= n139_o;
       5'b00001: n206_o <= n118_o;
+      default: n206_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -815,6 +819,7 @@ module packet_manager
       5'b00100: n208_o <= n19_o;
       5'b00010: n208_o <= n19_o;
       5'b00001: n208_o <= n119_o;
+      default: n208_o <= 2'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -824,6 +829,7 @@ module packet_manager
       5'b00100: n210_o <= n183_o;
       5'b00010: n210_o <= n157_o;
       5'b00001: n210_o <= n120_o;
+      default: n210_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
@@ -833,6 +839,7 @@ module packet_manager
       5'b00100: n213_o <= 1'b0;
       5'b00010: n213_o <= 1'b0;
       5'b00001: n213_o <= n122_o;
+      default: n213_o <= 1'bX;
     endcase
   assign n215_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:174:3  */
@@ -843,6 +850,7 @@ module packet_manager
       5'b00100: n217_o <= n215_o;
       5'b00010: n217_o <= n215_o;
       5'b00001: n217_o <= n124_o;
+      default: n217_o <= 14'bX;
     endcase
   assign n218_o = dmatbl_data[43:16];
   assign n219_o = {1'b0, n218_o};
@@ -854,6 +862,7 @@ module packet_manager
       5'b00100: n221_o <= n219_o;
       5'b00010: n221_o <= n219_o;
       5'b00001: n221_o <= n127_o;
+      default: n221_o <= 29'bX;
     endcase
   assign n223_o = dmatbl_data[15:14];
   /* ni/packet_manager.vhd:174:3  */
@@ -864,6 +873,7 @@ module packet_manager
       5'b00100: n225_o <= n161_o;
       5'b00010: n225_o <= n137_o;
       5'b00001: n225_o <= n128_o;
+      default: n225_o <= 4'bX;
     endcase
   assign n226_o = n135_o[1:0];
   /* ni/packet_manager.vhd:174:3  */
@@ -874,6 +884,7 @@ module packet_manager
       5'b00100: n229_o <= 2'b00;
       5'b00010: n229_o <= n226_o;
       5'b00001: n229_o <= n130_o;
+      default: n229_o <= 2'bX;
     endcase
   assign n230_o = n135_o[15:2];
   /* ni/packet_manager.vhd:174:3  */
@@ -884,6 +895,7 @@ module packet_manager
       5'b00100: n233_o <= 14'b00000000000000;
       5'b00010: n233_o <= n230_o;
       5'b00001: n233_o <= 14'b00000000000000;
+      default: n233_o <= 14'bX;
     endcase
   assign n234_o = n135_o[17:16];
   /* ni/packet_manager.vhd:174:3  */
@@ -894,6 +906,7 @@ module packet_manager
       5'b00100: n237_o <= 2'b00;
       5'b00010: n237_o <= n234_o;
       5'b00001: n237_o <= n132_o;
+      default: n237_o <= 2'bX;
     endcase
   assign n238_o = n135_o[31:18];
   /* ni/packet_manager.vhd:174:3  */
@@ -904,6 +917,7 @@ module packet_manager
       5'b00100: n241_o <= 14'b00000000000000;
       5'b00010: n241_o <= n238_o;
       5'b00001: n241_o <= 14'b00000000000000;
+      default: n241_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:256:29  */
   assign n248_o = n0_o[6:1];

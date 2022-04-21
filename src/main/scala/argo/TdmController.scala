@@ -55,6 +55,9 @@ class TdmController(val master: Boolean = true) extends Module {
   val time2next = RegInit(0.U(STBL_IDX_WIDTH.W))
   val t2nLoad = RegInit(true.B)
 
+  //when io.run=1, we insert a '1' in the LSB of masterRun
+  //On each CC, the two LSB of masterRun are left-shifted and the LSB is replicated
+  //Thus, if addr 0x04 is toggled, after 3 cc the masterRun signal will likewise toggle
   val masterRun = RegInit(0.U(3.W))
 
   //Wires
@@ -82,7 +85,7 @@ class TdmController(val master: Boolean = true) extends Module {
   mcPeriodCnt := Mux(periodBoundary, mcPeriodCnt + 1.U, mcPeriodCnt)
 
   //Time until next entry in schedule table
-  //Decremented on each cc, loads when it reaches 0
+  //Decremented on each cc, loads a new value when it reaches 0
   time2next := Mux(t2nLoad, io.stbl.t2n, time2next - 1.U)
 
   //Schedule table index update
@@ -160,7 +163,7 @@ class TdmController(val master: Boolean = true) extends Module {
   io.config.s.rdData := readReg
   io.config.s.error := error
 
-  io.masterRun := masterRun
+  io.masterRun := masterRun(masterRun.getWidth-1)
 
   io.stbl.idx := stblIdxNext
   io.stbl.en := stblIdxEn

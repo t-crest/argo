@@ -42,6 +42,15 @@ object ArgoTypes {
   /* Configuration packet constants and types */
   val CPKT_BANK_WIDTH = 3
   val CPKT_ADDR_WIDTH = HEADER_FIELD_WIDTH - HEADER_CTRL_WIDTH - CPKT_BANK_WIDTH
+
+  //NI banks. CPKT_BANK_WIDTH wide
+  val DMA_BANK   = 0x0
+  val SCHED_BANK = 0x1
+  val TDM_BANK   = 0x2
+  val MC_BANK    = 0x3
+  val IRQ_BANK   = 0x4
+  val PERF_BANK  = 0x7
+
   /* Constants for router/router links */
   val LINK_DATA_WIDTH = WORD_WIDTH
   val LINK_CTRL_WIDTH = 3
@@ -52,9 +61,5 @@ object ArgoTypes {
   val GENERATE_CLK_COUNTER = false
   val GENERATE_PERIOD_COUNTER = false
   val GENERATE_SLOT_COUNTER = false
-
-
-  /* General constants */
-  val MC_BANK = "b011".U(CPKT_BANK_WIDTH.W)
 
 }

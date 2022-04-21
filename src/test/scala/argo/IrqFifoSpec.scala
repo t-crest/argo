@@ -13,11 +13,8 @@ class IrqFifoSpec extends AnyFlatSpec with ChiselScalatestTester {
     val cio = dut.io.chisel
     val vio = dut.io.verilog
 
-    cio.irq.irqSig.expect(vio.irq.irqSig.peek())
-    cio.irq.dataSig.expect(vio.irq.dataSig.peek())
-
-    cio.config.error.expect(vio.config.error.peek())
-    cio.config.rdData.expect(vio.config.rdData.peek())
+    cio.irq.expect(vio.irq.peek())
+    cio.config.expect(vio.config.peek())
   }
 
   it should "accept a data packet" in {
@@ -154,8 +151,8 @@ class IrqFifoSpec extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.in.config.addr.poke(2.U)
 
       dut.clock.step()
+      compareOutputs(dut)
       dut.io.chisel.config.error.expect(true.B)
-      dut.clock.step()
     }
   }
 

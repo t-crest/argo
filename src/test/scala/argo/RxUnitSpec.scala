@@ -17,20 +17,9 @@ class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
     val cio = dut.io.chisel
     val vio = dut.io.verilog
 
-    //Simply compare and expect all signals to be the same
-    cio.irq.irqValid.expect(vio.irq.irqValid.peek())
-    cio.irq.dataValid.expect(vio.irq.dataValid.peek())
-    cio.irq.data.expect(vio.irq.data.peek())
-
-    cio.spm.wrData.expect(vio.spm.wrData.peek())
-    cio.spm.en.expect(vio.spm.en.peek())
-    cio.spm.addr.expect(vio.spm.addr.peek())
-    cio.spm.wr.expect(vio.spm.wr.peek())
-
-    cio.config.addr.expect(vio.config.addr.peek())
-    cio.config.wrData.expect(vio.config.wrData.peek())
-    cio.config.en.expect(vio.config.en.peek())
-    cio.config.wr.expect(vio.config.wr.peek())
+    cio.irq.expect(vio.irq.peek())
+    cio.spm.expect(vio.spm.peek())
+    cio.config.expect(vio.config.peek())
   }
 
   def genPacket(data: Array[Int]): Array[Long] = {

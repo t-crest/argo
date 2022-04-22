@@ -148,7 +148,7 @@ begin
             mode_change_cnt_next <= mode_change_cnt_int;
             local_mode_change_idx <= '1';
 			 --when to_unsigned(1,CPKT_ADDR_WIDTH) =>
-       when "00000000001" => --CPKT_ADDR_WIDTH = 11
+       --when "00000000001" => --CPKT_ADDR_WIDTH = 11
 
           when others =>
             config_slv_error_next <= '1';

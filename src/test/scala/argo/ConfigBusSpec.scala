@@ -16,7 +16,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
 
     cio.config.expect(vio.config.peek())
     cio.ocp.expect(vio.ocp.peek())
-    cio.sel.dma.expect(vio.sel.dma.peek())
+    cio.sel.pktman.expect(vio.sel.pktman.peek())
     cio.sel.irq.expect(vio.sel.irq.peek())
     cio.sel.mc.expect(vio.sel.mc.peek())
     cio.sel.tdm.expect(vio.sel.tdm.peek())
@@ -29,7 +29,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
       val shamt = HEADER_FIELD_WIDTH-HEADER_CTRL_WIDTH-CPKT_BANK_WIDTH
       dut.io.in.config.en.poke(false.B)
 
-      dut.io.in.slaves.dma.rdData.poke(10.U)
+      dut.io.in.slaves.pktman.rdData.poke(10.U)
       dut.io.in.slaves.schedTable.rdData.poke(20.U)
       dut.io.in.slaves.tdm.rdData.poke(30.U)
       dut.io.in.slaves.mc.rdData.poke(40.U)
@@ -40,7 +40,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
 
       dut.io.in.config.addr.poke(DMA_BANK << shamt)
       //The value of sel should propagate immediately
-      dut.io.chisel.sel.dma.expect(true.B)
+      dut.io.chisel.sel.pktman.expect(true.B)
       dut.clock.step()
       compareOutputs(dut)
       dut.io.chisel.ocp.SData.expect(10.U)
@@ -48,7 +48,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.in.config.addr.poke(SCHED_BANK << shamt)
       //The value of sel should propagate immediately
       dut.io.chisel.sel.schedTable.expect(true.B)
-      dut.io.chisel.sel.dma.expect(false.B)
+      dut.io.chisel.sel.pktman.expect(false.B)
       dut.clock.step()
       compareOutputs(dut)
       dut.io.chisel.ocp.SData.expect(20.U)
@@ -93,7 +93,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.in.config.en.poke(false.B)
       dut.io.in.ocp.MCmd.poke(OCP_CMD_RD.U)
 
-      dut.io.in.slaves.dma.rdData.poke(10.U)
+      dut.io.in.slaves.pktman.rdData.poke(10.U)
       dut.io.in.slaves.schedTable.rdData.poke(20.U)
       dut.io.in.slaves.tdm.rdData.poke(30.U)
       dut.io.in.slaves.mc.rdData.poke(40.U)
@@ -104,7 +104,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
 
       dut.io.in.ocp.MAddr.poke(DMA_BANK << shamt)
       //The value of sel should propagate immediately
-      dut.io.chisel.sel.dma.expect(true.B)
+      dut.io.chisel.sel.pktman.expect(true.B)
       dut.clock.step()
       compareOutputs(dut)
       dut.io.chisel.ocp.SData.expect(10.U)
@@ -112,7 +112,7 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.in.ocp.MAddr.poke(SCHED_BANK << shamt)
       //The value of sel should propagate immediately
       dut.io.chisel.sel.schedTable.expect(true.B)
-      dut.io.chisel.sel.dma.expect(false.B)
+      dut.io.chisel.sel.pktman.expect(false.B)
       dut.clock.step()
       compareOutputs(dut)
       dut.io.chisel.ocp.SData.expect(20.U)
@@ -239,12 +239,6 @@ class ConfigBusSpec extends AnyFlatSpec with ChiselScalatestTester {
       dut.clock.step()
       compareOutputs(dut)
       dut.io.chisel.config.wrData.expect(42.U)
-    }
-  }
-
-  it should "correctly perform OCP signalling" in {
-    test(new ConfigBusWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-
     }
   }
 

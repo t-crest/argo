@@ -13,7 +13,7 @@ class ConfigBusWrapper extends Module {
       val slaves = new Bundle {
         val tdm = new ConfigIfSlave
         val schedTable = new ConfigIfSlave
-        val dma = new ConfigIfSlave
+        val pktman = new ConfigIfSlave
         val mc = new ConfigIfSlave
         val irq = new ConfigIfSlave
       }
@@ -24,7 +24,7 @@ class ConfigBusWrapper extends Module {
       val sel = new Bundle {
         val tdm = Bool()
         val schedTable = Bool()
-        val dma = Bool()
+        val pktman = Bool()
         val mc = Bool()
         val irq = Bool()
       }
@@ -35,7 +35,7 @@ class ConfigBusWrapper extends Module {
       val sel = new Bundle {
         val tdm = Bool()
         val schedTable = Bool()
-        val dma = Bool()
+        val pktman = Bool()
         val mc = Bool()
         val irq = Bool()
       }
@@ -67,8 +67,8 @@ class ConfigBusWrapper extends Module {
   v.io.TDM_ctrl_rdata := io.in.slaves.tdm.rdData
   v.io.sched_tbl_error := io.in.slaves.schedTable.error
   v.io.sched_tbl_rdata := io.in.slaves.schedTable.rdData
-  v.io.DMA_tbl_error := io.in.slaves.dma.error
-  v.io.DMA_tbl_rdata := io.in.slaves.dma.rdData
+  v.io.DMA_tbl_error := io.in.slaves.pktman.error
+  v.io.DMA_tbl_rdata := io.in.slaves.pktman.rdData
   v.io.MC_ctrl_error := io.in.slaves.mc.error
   v.io.MC_ctrl_rdata := io.in.slaves.mc.rdData
   v.io.irq_unit_fifo_error := io.in.slaves.irq.error
@@ -88,7 +88,7 @@ class ConfigBusWrapper extends Module {
   io.verilog.config.wrData := v.io.config_wdata
   io.verilog.sel.tdm := v.io.TDM_ctrl_sel
   io.verilog.sel.schedTable := v.io.sched_tbl_sel
-  io.verilog.sel.dma := v.io.DMA_tbl_sel
+  io.verilog.sel.pktman := v.io.DMA_tbl_sel
   io.verilog.sel.mc := v.io.MC_ctrl_sel
   io.verilog.sel.irq := v.io.irq_unit_fifo_sel
 }

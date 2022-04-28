@@ -38,7 +38,7 @@ class IrqFifoWrapper extends Module {
 
   c.io.irqIn := io.in.irq
   c.io.config.m := io.in.config
-  c.io.sel := io.in.sel
+  c.io.config.sel := io.in.sel
 
   //Assign outputs
   io.verilog.config.rdData :=  v.io.config_slv_rdata

@@ -17,10 +17,11 @@ class IrqFIFO extends Module {
     val irqIn = Input(new IrqFifoInput)
     val irqOut = Output(new IrqFifoOutput)
     val config = new Bundle {
+      val sel = Input(Bool())
       val m = Input(new ConfigIfMaster)
       val s = Output(new ConfigIfSlave)
     }
-    val sel = Input(Bool())
+
   })
   /*
   Adresses of readable/writeable registers
@@ -87,7 +88,7 @@ class IrqFIFO extends Module {
   io.irqOut.dataSig := !dataEmpty
 
   //Address decode logic
-  when(io.sel && io.config.m.en) {
+  when(io.config.sel && io.config.m.en) {
     when(!io.config.m.wr) {
       val maddr = io.config.m.addr(CPKT_ADDR_WIDTH-1, 0)
       when(maddr === 0.U) {

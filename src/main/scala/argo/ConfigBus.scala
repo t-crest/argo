@@ -27,14 +27,14 @@ class ConfigBus extends Module {
     val slaves = Input(new Bundle {
       val tdm = new ConfigIfSlave
       val schedTable = new ConfigIfSlave
-      val dma = new ConfigIfSlave
+      val pktman = new ConfigIfSlave
       val mc = new ConfigIfSlave
       val irq = new ConfigIfSlave
     })
     val sel = Output(new Bundle {
       val tdm = Bool()
       val schedTable = Bool()
-      val dma = Bool()
+      val pktman = Bool()
       val mc = Bool()
       val irq = Bool()
     })
@@ -69,7 +69,7 @@ class ConfigBus extends Module {
   /* Assignment */
   //Default values, some of these may be overwritten below
   io.ocp.s.SResp := ocpResp
-  io.ocp.s.SData := io.slaves.dma.rdData
+  io.ocp.s.SData := io.slaves.pktman.rdData
   io.ocp.s.SCmdAccept := false.B
 
   io.configOut.addr := io.configIn.addr
@@ -82,7 +82,7 @@ class ConfigBus extends Module {
   io.sel.tdm := bankId === TDM_BANK.U(CPKT_BANK_WIDTH.W)
   io.sel.irq := bankId === IRQ_BANK.U(CPKT_BANK_WIDTH.W)
   io.sel.schedTable := bankId === SCHED_BANK.U(CPKT_BANK_WIDTH.W)
-  io.sel.dma := bankId === DMA_BANK.U(CPKT_BANK_WIDTH.W)
+  io.sel.pktman := bankId === DMA_BANK.U(CPKT_BANK_WIDTH.W)
   io.sel.mc := bankId === MC_BANK.U(CPKT_BANK_WIDTH.W)
 
   //If there is no request from config unit and there is a request from OCP, handle it
@@ -118,7 +118,7 @@ class ConfigBus extends Module {
 
   //Select data based on previous value of bank id
   switch(prevBankId) {
-    is(DMA_BANK.U(CPKT_BANK_WIDTH.W)) { io.ocp.s.SData := io.slaves.dma.rdData}
+    is(DMA_BANK.U(CPKT_BANK_WIDTH.W)) { io.ocp.s.SData := io.slaves.pktman.rdData}
     is(SCHED_BANK.U(CPKT_BANK_WIDTH.W)) {io.ocp.s.SData := io.slaves.schedTable.rdData}
     is(TDM_BANK.U(CPKT_BANK_WIDTH.W)) {io.ocp.s.SData := io.slaves.tdm.rdData}
     is(MC_BANK.U(CPKT_BANK_WIDTH.W)) {io.ocp.s.SData := io.slaves.mc.rdData}

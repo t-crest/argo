@@ -1,3 +1,5 @@
+package  router
+
 import chisel3._
 import chisel3.util._
 
@@ -30,7 +32,6 @@ class HPU extends Module{
 
   io.outLine.req := true.B
   io.inLine.ack := true.B
-  io.outLine.data := outInt
 
   switch(dest){
     is(0.U){decodedSel := 1.U}
@@ -52,12 +53,13 @@ class HPU extends Module{
   }
 
   when(SOP === 1.U){
-    outInt := Cat("b110".U, io.inLine.data(31,16), "b00".U , io.inLine.data(15,2))
+    outInt := Cat("b110".U(3.W), io.inLine.data(31,16),0.U(2.W), io.inLine.data(15,2))
   }.otherwise{
     outInt := io.inLine.data
   }
 
   selInt := selIntNext
+  io.outLine.data := outInt
 }
 
 class Xbar extends Module {

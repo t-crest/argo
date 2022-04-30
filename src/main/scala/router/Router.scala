@@ -43,7 +43,8 @@ class HPU extends Module{
   when(SOP === 1.U){
     selIntNext := decodedSel
   }.otherwise{
-    selIntNext := selInt & Mux((VLD|EOP),1.U,0.U)
+    selIntNext := selInt & Mux((VLD|EOP),(-1).S(4.W).asUInt, 0.U(4.W))
+//    selIntNext := Mux((VLD|EOP),1.U,0.U)
   }
 
   when((EOP === 1.U || VLD === 1.U) && SOP === 0.U){

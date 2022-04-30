@@ -4,6 +4,17 @@ import chisel3._
 import ArgoTypes._
 
 object ArgoBundles {
+
+  class Channel extends Bundle {
+    val req = Input(Bool())
+    val data = Input(UInt(LINK_WIDTH.W))
+    //35bit link width = 32bit word width+3bit ctrl
+    val ack = Output(Bool())
+  }
+
+  class RouterPort extends Bundle{
+    val port = Vec(5, new Channel())
+  }
   /**
    * Input bundle to the [[IrqFIFO]] from RxUnit
    * Use as Input() in IrqFIFO, use Output() in RxUnit

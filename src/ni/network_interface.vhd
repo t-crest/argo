@@ -46,7 +46,7 @@ use work.ocp.all;
 
 entity network_interface is
 generic (
-	MASTER : boolean := false
+	MASTER : boolean := true
 	);
 port (
 	clk 		: in std_logic;

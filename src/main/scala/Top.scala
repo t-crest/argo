@@ -4,5 +4,5 @@ import argo._
 import blackbox._
 
 object Top extends App {
-  (new ChiselStage).emitVerilog(new PacketManager, Array("-td", "gen"))
+  (new ChiselStage).emitVerilog(new ComSpmWrapper, Array("-td", "gen"))
 }

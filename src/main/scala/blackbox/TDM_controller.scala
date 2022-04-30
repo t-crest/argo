@@ -5,7 +5,7 @@ import chisel3.util.HasBlackBoxResource
 
 import argo.ArgoTypes._
 
-class TDM_controller extends BlackBox with HasBlackBoxResource {
+class TDM_controller(val master: Boolean) extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle {
     val clk = Input(Bool())
     val reset = Input(Bool())
@@ -26,5 +26,16 @@ class TDM_controller extends BlackBox with HasBlackBoxResource {
     val period_boundary = Output(Bool())
     val mc_p_cnt = Output(UInt(2.W))
   })
-  addResource("/TDM_controller.v")
+
+  override def desiredName: String = if(this.master) {
+    "TDM_controller"
+  } else {
+    "TDM_controller_s"
+  }
+
+  if(this.master) {
+    addResource("/TDM_controller.v")
+  } else {
+    addResource("/TDM_controller_s.v")
+  }
 }

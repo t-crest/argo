@@ -5,7 +5,7 @@ import argo.ArgoTypes._
 import argo.PacketManager
 import chisel3._
 
-class PacketManagerWrapper extends Module {
+class PacketManagerWrapper(val master: Boolean = true) extends Module {
   val io = IO(new Bundle {
     val in = Input(new Bundle {
       val config = new ConfigIfMaster
@@ -26,7 +26,7 @@ class PacketManagerWrapper extends Module {
     })
   })
 
-  val c = Module(new PacketManager)
+  val c = Module(new PacketManager(master))
   val v = Module(new packet_manager)
 
   //Inputs

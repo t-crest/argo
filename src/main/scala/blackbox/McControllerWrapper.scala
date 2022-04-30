@@ -5,7 +5,7 @@ import argo.McController
 import argo.ArgoBundles._
 import argo.ArgoTypes._
 
-class McControllerWrapper extends Module {
+class McControllerWrapper(val master: Boolean) extends Module {
   val io = IO(new Bundle {
     val in = Input(new Bundle {
       val config = new ConfigIfMaster
@@ -32,8 +32,8 @@ class McControllerWrapper extends Module {
     })
   })
 
-  val v = Module(new MC_controller)
-  val c = Module(new McController)
+  val v = Module(new MC_controller(master))
+  val c = Module(new McController(master))
 
   //Inputs
   c.io.run := io.in.run

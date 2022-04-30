@@ -46,3 +46,4 @@ project/target
 gen
 *.cf
 test_run_dir
+argo_build

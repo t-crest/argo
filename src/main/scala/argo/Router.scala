@@ -1,18 +1,8 @@
-package  router
+package argo
 
 import chisel3._
 import chisel3.util._
-
-class Channel extends Bundle {
-  val req = Input(Bool())
-  val data = Input(UInt(35.W))
-  //35bit link width = 32bit word width+3bit ctrl
-  val ack = Output(Bool())
-}
-
-class RouterPort extends Bundle{
-  val port = Vec(5, new Channel())
-}
+import argo.ArgoBundles._
 
 class HPU extends Module{
   val io = IO(new Bundle {
@@ -54,7 +44,7 @@ class HPU extends Module{
   }
 
   when(SOP === 1.U){
-    outInt := Cat("b110".U(3.W), io.inLine.data(31,16),0.U(2.W), io.inLine.data(15,2))
+    outInt := Cat("b110".U(3.W), io.inLine.data(31,16), "b00".U(2.W) , io.inLine.data(15,2))
   }.otherwise{
     outInt := io.inLine.data
   }
@@ -117,7 +107,7 @@ class Xbar extends Module {
     (io.inPort.port(3).data & linkData(3)(3))
 }
 
-class router extends Module{
+class Router extends Module{
   val io=IO(new Bundle{
     val inPort = new RouterPort()
     val outPort = Flipped(new RouterPort())
@@ -152,13 +142,12 @@ class router extends Module{
   Xbar.io.inPort <> HPUout
   Xbar.io.func <> XbarSel.asUInt
   XbarOut <> Xbar.io.outPort
-
 }
 
 /**
  * An object extending App to generate the Verilog code.
  */
-object router extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new router())
+object Router extends App {
+  (new chisel3.stage.ChiselStage).emitVerilog(new Router())
 }
 

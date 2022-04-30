@@ -1,4 +1,4 @@
-package router
+package argo
 
 import chisel3._
 import chiseltest._
@@ -6,7 +6,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class SingleRouterPort0Test extends AnyFlatSpec with ChiselScalatestTester{
   "DUT" should "pass" in{
-    test(new router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
+    test(new Router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
       for(i <- 0 to 4){
         if(i ===0){
           dut.io.inPort.port(i).data.poke("b11000111111111111111111111111111100".U)
@@ -73,7 +73,7 @@ class SingleRouterPort0Test extends AnyFlatSpec with ChiselScalatestTester{
 
 class SingleRouterPort1Test extends AnyFlatSpec with ChiselScalatestTester{
   "DUT" should "pass" in{
-    test(new router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
+    test(new Router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
       for(i <- 0 to 4){
         if(i ===1){
           dut.io.inPort.port(i).data.poke("b11000111111111111111111111111111101".U)
@@ -140,7 +140,7 @@ class SingleRouterPort1Test extends AnyFlatSpec with ChiselScalatestTester{
 
 class SingleRouterPort2Test extends AnyFlatSpec with ChiselScalatestTester{
   "DUT" should "pass" in{
-    test(new router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
+    test(new Router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
       for(i <- 0 to 4){
         if(i ===2){
           dut.io.inPort.port(i).data.poke("b11000111111111111111111111111111110".U)
@@ -207,7 +207,7 @@ class SingleRouterPort2Test extends AnyFlatSpec with ChiselScalatestTester{
 
 class SingleRouterPort3Test extends AnyFlatSpec with ChiselScalatestTester{
   "DUT" should "pass" in{
-    test(new router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
+    test(new Router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
       for(i <- 0 to 4){
         if(i ===3){
           dut.io.inPort.port(i).data.poke("b11000111111111111111111111111111111".U)
@@ -273,7 +273,7 @@ class SingleRouterPort3Test extends AnyFlatSpec with ChiselScalatestTester{
 
 class SingleRouterPort4Test extends AnyFlatSpec with ChiselScalatestTester{
   "DUT" should "pass" in{
-    test(new router){dut=>
+    test(new Router){dut=>
 //from 4 to 0
       dut.io.inPort.port(4).data.poke("b11000111111111111111111111111111100".U)
       dut.clock.step()
@@ -386,8 +386,6 @@ class SingleRouterPort4Test extends AnyFlatSpec with ChiselScalatestTester{
       println("port0:  ")
       dut.io.outPort.port(3).data.expect("h000000000".U)
       dut.clock.step()
-
-
     }
   }
 }

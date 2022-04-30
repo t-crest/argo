@@ -5,6 +5,18 @@ import OcpTypes._
 
 object OcpBundles {
 
+  class OcpCoreMaster extends Bundle {
+    val MCmd = UInt(OCP_CMD_WIDTH.W)
+    val MAddr = UInt(OCP_ADDR_WIDTH.W)
+    val MData = UInt(OCP_DATA_WIDTH.W)
+    val MByteEn = UInt(OCP_BYTE_WIDTH.W)
+  }
+
+  class OcpCoreSlave extends Bundle {
+    val SResp = UInt(OCP_RESP_WIDTH.W)
+    val SData = UInt(OCP_DATA_WIDTH.W)
+  }
+
   class OcpIOMaster extends Bundle {
     val MCmd = UInt(OCP_CMD_WIDTH.W)
     val MAddr = UInt(OCP_ADDR_WIDTH.W)

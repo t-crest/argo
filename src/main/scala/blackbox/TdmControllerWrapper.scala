@@ -5,7 +5,7 @@ import argo.ArgoTypes._
 import argo.TdmController
 import chisel3._
 
-class TdmControllerWrapper extends Module {
+class TdmControllerWrapper(val master: Boolean) extends Module {
   val io = IO(new Bundle {
     val in = new Bundle {
       val config = Input(new ConfigIfMaster)
@@ -33,8 +33,8 @@ class TdmControllerWrapper extends Module {
     })
   })
 
-  val v = Module(new TDM_controller)
-  val c = Module(new TdmController)
+  val v = Module(new TDM_controller(master))
+  val c = Module(new TdmController(master))
 
   //Inputs
   c.io.config.m <> io.in.config

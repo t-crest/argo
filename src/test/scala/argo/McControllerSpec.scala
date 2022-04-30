@@ -7,7 +7,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import argo.ArgoTypes._
 
 class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
-  behavior of "Mode change controller"
+  behavior of "Mode change controller master"
 
   def compareOutputs(dut: McControllerWrapper): Unit = {
     val cio = dut.io.chisel
@@ -27,7 +27,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "change and read the value of MODE_CHANGE_IDX" in {
-    test(new McControllerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       //to change MODE_CHANGE_IDX, we write to address "0"
       //When local_mode_change_idx=true, that changes mode_change_idx_reg
         //localMcIdx=true whenever we write to that address
@@ -96,7 +96,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "generate an error when reading other addresses than 0" in {
-    test(new McControllerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(false.B)
       dut.io.in.sel.poke(true.B)
@@ -114,7 +114,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "not generate an error when writing to an address that maps to a mcTblAddr" in {
-    test(new McControllerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) { dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) { dut =>
 
       //mcTblAddr is the input address - 2. If within range [0;2^MCTBL_IDX_WIDTH[ it deasserts the error signal
       //since MCTBL_IDX_WIDTH=2, addresses [2;5] should deassert the error signal
@@ -134,7 +134,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "generate an error when writing other addresses than 0 that do not map to a mcTblAddr" in {
-    test(new McControllerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(true.B)
       dut.io.in.sel.poke(true.B)
@@ -155,7 +155,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "write mode change registers" in {
-    test(new McControllerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       //To write the mode-change registers, we write to one of addresses [2:5] which map to mode index [0:3]
       //This is transferred to mode_reg, and read into stblMinNext and stblMaxp1Next
 
@@ -202,7 +202,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "update the value of mcCnt" in {
-    test(new McControllerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       //the internal register mcCnt is updated whenever we write to the mc controller
       //the value becomes 2+tdm.periodCount
       dut.io.in.periodBoundary.poke(false.B)
@@ -219,4 +219,89 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
       }
     }
   }
+
+  behavior of "Mode change controller slave"
+
+  it should "not be possible to change the value of mc" in {
+    test(new McControllerWrapper(false)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+      //to change MODE_CHANGE_IDX, we write to address "0"
+      //When local_mode_change_idx=true, that changes mode_change_idx_reg
+      //localMcIdx=true whenever we write to that address
+      //if run=1 while we write, that moves us to state waitMc where we wait for a period boundary
+      //on a boundary, we set mc_next=1 and go to modechange state
+      //in that state, out.mc should be true
+      //on the next period boundary, the global mode change idx should go high, modifying mode_idx_reg
+
+      //First, attempt to read the current value of MODE_IDX_reg
+      dut.io.in.periodBoundary.poke(false.B)
+      dut.io.in.run.poke(true.B)
+      dut.io.in.sel.poke(true.B)
+      dut.io.in.config.en.poke(true.B)
+      dut.io.in.config.wr.poke(false.B)
+      dut.io.in.config.addr.poke(0.U)
+      dut.io.in.config.wrData.poke(1.U)
+      stepCompare(dut)
+      dut.io.chisel.config.rdData.expect(0.U)
+
+      //Now, attempt to write it
+      dut.io.in.config.wr.poke(true.B)
+      stepCompare(dut)
+
+      //Disengage writing
+      dut.io.in.sel.poke(false.B)
+      //value of mcIdx should have updated
+      dut.io.chisel.mcIdx.expect(0.U)
+      stepCompare(dut)
+
+      //Run for a couple of cc keeping periodBoundary low, don't expect any changes
+      for(_ <- 0 until 5) {
+        stepCompare(dut)
+        dut.io.chisel.mc.expect(false.B)
+        dut.io.chisel.config.rdData.expect(0.U)
+      }
+
+      //Now, take periodBoundary high for one cc, we expect to move into state sModeChange where out.mc=1
+      dut.io.in.periodBoundary.poke(true.B)
+      stepCompare(dut)
+
+      dut.io.in.periodBoundary.poke(false.B)
+      dut.io.chisel.mc.expect(false.B)
+
+      //Again, run for a couple of cc to verify that things are the same
+      for(_ <- 0 until 5) {
+        stepCompare(dut)
+        dut.io.chisel.mc.expect(false.B)
+        dut.io.chisel.config.rdData.expect(0.U)
+      }
+
+      //Take periodBoundary high again. This should update MODE_IDX_reg and disable out.mc
+      dut.io.in.periodBoundary.poke(true.B)
+      stepCompare(dut)
+      dut.io.in.periodBoundary.poke(false.B)
+      dut.io.chisel.mc.expect(false.B)
+
+      //We still expect rdData to be 0 as we haven't specifically read it yet
+      dut.io.chisel.config.rdData.expect(0.U)
+
+      //Attempt to read it
+      dut.io.in.sel.poke(true.B)
+      dut.io.in.config.wr.poke(false.B)
+      stepCompare(dut)
+      dut.io.chisel.config.rdData.expect(1.U)
+    }
+  }
+
+  it should "take the value of modeChangeCntInt from config bus instead of mc_p_cnt" in {
+    test(new McControllerWrapper(false)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+      dut.io.in.mcPCnt.poke(1.U)
+      dut.io.in.config.wrData.poke(0.U)
+
+      dut.io.in.config.wr.poke(true.B)
+      dut.io.in.sel.poke(true.B)
+      dut.io.in.config.en.poke(true.B)
+      stepCompare(dut)
+      //modeChangeCntReg should now be 0
+    }
+  }
+
 }

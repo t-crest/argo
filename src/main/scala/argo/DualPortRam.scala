@@ -9,6 +9,7 @@ import ArgoBundles._
  * @param dataType The type of data stored in the table
  */
 class DualPortRam[T<: Data](addrWidth: Int, dataType: T) extends RawModule {
+  override def desiredName: String = s"DualPortRam_${addrWidth}_${dataType.toString}"
   val io = IO(new Bundle {
     val port1 = new RamPort(addrWidth, dataType)
     val port2 = new RamPort(addrWidth, dataType)

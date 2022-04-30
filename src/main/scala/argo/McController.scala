@@ -18,6 +18,12 @@ class McController(val master: Boolean = true) extends Module {
     val tdm = Flipped(new TdmControlModeChangeIO)
     val pktman = new ModeChangePacketManIO
   })
+
+  override def desiredName: String = if(master) {
+    "McController_m"
+  } else {
+    "McController_s"
+  }
 /*
 --------------------------------------------------------------------------------
 -- Addresses of readable/writable registers (Word based addresses inside the NI)

@@ -27,6 +27,12 @@ class TdmController(val master: Boolean = true) extends Module {
     val masterRun = Output(Bool())
   })
 
+  override def desiredName: String = if(this.master) {
+    "TdmController_m"
+  } else {
+    "TdmController_s"
+  }
+
   /*
   Addresses of readable/writeable registers inside TDM controller
 
@@ -68,8 +74,8 @@ class TdmController(val master: Boolean = true) extends Module {
   //Schedule table index is updated when time2next (from SchedTable) = 1
   // or when time2next-counter is 1
   val stblIdxEn = (((time2next === 1.U) || (((time2next === 0.U) || (time2next === -1.S(STBL_IDX_WIDTH.W).asUInt)) && (!io.stbl.t2n))) || (io.run =/= runReg)) && io.run
-  //schedule table idx reset is triggered when index reaches current mode's max value
-  val stblIdxReset = ((stblIdx + 1.U === io.mc.stblMaxp1) || (io.run =/= runReg)) && io.run
+  //schedule table idx reset is triggered when index reaches current mode's max index
+  val stblIdxReset = (((stblIdx + 1.U) === io.mc.stblMaxp1) || (io.run =/= runReg)) && io.run
   //Period boundary signal is high on the last cc of a TDM period
   val periodBoundary = stblIdxReset && stblIdxEn
   //Next value for stblIdx. Defined as separate signal as this also drives the output

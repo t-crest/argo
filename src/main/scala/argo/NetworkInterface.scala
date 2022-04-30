@@ -35,11 +35,17 @@ class NetworkInterface(val master: Boolean = false) extends Module {
     }
   })
 
+  override def desiredName: String = if(this.master) {
+    "NetworkInterface_m"
+  } else {
+    "NetworkInterface_s"
+  }
+
   //Components
   val tdm = Module(new TdmController(master))
   val mc = Module(new McController(master))
   val schedTbl = Module(new ScheduleTable)
-  val pktman = Module(new PacketManager)
+  val pktman = Module(new PacketManager(master))
   val rxUnit = Module(new RxUnit)
   val irqFifo = Module(new IrqFIFO)
   val config = Module(new ConfigBus)
@@ -53,7 +59,7 @@ class NetworkInterface(val master: Boolean = false) extends Module {
   tdm.io.stbl <> schedTbl.io.tdm
 
   mc.io.run := io.run
-  mc.io.config.sel := config.io.sel.tdm
+  mc.io.config.sel := config.io.sel.mc
   mc.io.config.m := config.io.configOut
   mc.io.pktman <> pktman.io.mc
 

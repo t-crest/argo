@@ -92,10 +92,11 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
 
   it should "transmit a 1-word packet" in {
     test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
-      val dma = genDmaPacket(1, 7, 0, 0)
+      val dma = genDmaPacket(1, 7, 0, 3)
       setupDma(dut, dma)
       timescope {
         dut.io.in.schedTbl.dmaEn.poke(true.B)
+        dut.io.in.schedTbl.dmaNum.poke(3.U)
         dut.io.in.schedTbl.route.poke(16.U)
         dut.io.in.schedTbl.pktLen.poke(1.U)
         stepCompare(dut)
@@ -111,7 +112,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
 
   it should "transmit a 2-word packet" in {
     test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      val dma = genDmaPacket(2, 4, 8, 0)
+      val dma = genDmaPacket(2, 4, 8, 6)
       val rdData = Array.ofDim[Long](2)
       rdData(0) = VLD.toLong << 32L | 42
       rdData(1) = EOP.toLong << 32L | 84
@@ -120,6 +121,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
       //We should see that data coming out as packets. Route s also supplied by schedule table
       timescope {
         dut.io.in.schedTbl.dmaEn.poke(true.B)
+        dut.io.in.schedTbl.dmaNum.poke(6.U)
         dut.io.in.schedTbl.route.poke(15.U)
 
         stepCompare(dut)
@@ -137,7 +139,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
 
   it should "transmit a 3-word packet" in {
     test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
-      val dma = genDmaPacket(3, 7, 0, 0)
+      val dma = genDmaPacket(3, 7, 0, 2)
       setupDma(dut, dma)
       val rdData = Array.ofDim[Long](3)
       rdData(0) = VLD.toLong << 32L | 10
@@ -145,6 +147,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
       rdData(2) = EOP.toLong << 32L | 30
       timescope {
         dut.io.in.schedTbl.dmaEn.poke(true.B)
+        dut.io.in.schedTbl.dmaNum.poke(2.U)
         dut.io.in.schedTbl.route.poke(16.U)
         dut.io.in.schedTbl.pktLen.poke(3.U)
         stepCompare(dut)

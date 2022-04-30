@@ -68,4 +68,6 @@ object ArgoTypes {
   val GENERATE_PERIOD_COUNTER = false
   val GENERATE_SLOT_COUNTER = false
 
+  val SPM_IDX_SIZE = 12
+
 }

@@ -9,9 +9,11 @@ import chisel3.util._
  * Argo 2.0 packet manager component of the network interface
  * WIP
  *
+ * @param master Whether this packet manager is in the master node or not
+ *               Does not modify behavior, but is necessary for proper verilog generation
  * @author Kasper Juul Hesse Rasmussen, s183735@student.dtu.dk
  */
-class PacketManager extends Module {
+class PacketManager(val master: Boolean) extends Module {
   val io = IO(new Bundle {
     val config = new Bundle {
       val m = Input(new ConfigIfMaster)
@@ -26,6 +28,12 @@ class PacketManager extends Module {
     val mc = Flipped(new ModeChangePacketManIO)
     val pktOut = Output(UInt(LINK_WIDTH.W))
   })
+
+  override def desiredName: String = if(this.master) {
+    "PacketManager_m"
+  } else {
+    "PacketManager_s"
+  }
 
   /*
   DMA Table fields (write-only)
@@ -46,7 +54,7 @@ class PacketManager extends Module {
   val route = RegNext(io.schedTbl.route, 0.U(HEADER_ROUTE_WIDTH.W))
   val payloadData = RegInit(0.U(WORD_WIDTH.W))
   val readPtr = RegInit(0.U(DMATBL_READ_PTR_WIDTH.W))
-  val dmaNum = RegInit(0.U(DMATBL_IDX_WIDTH.W))
+  val dmaNum = RegNext(io.schedTbl.dmaNum, 0.U(DMATBL_IDX_WIDTH.W))
   val countReg = RegInit(0.U(DMATBL_COUNT_WIDTH.W))
   val error = RegInit(false.B)
   val hiLo = RegInit(false.B)
@@ -61,7 +69,6 @@ class PacketManager extends Module {
   val dmaPktType = dmaTable.header(HEADER_FIELD_WIDTH-1, HEADER_FIELD_WIDTH-2)
   val pktType = WireDefault(dmaPktType)
   val dmaUpdateEn = WireDefault(false.B)
-  val dmaUpdateAddr = WireDefault(dmaNum)
 
   //Constants
   /** Valid, start of packet header */
@@ -136,6 +143,7 @@ class PacketManager extends Module {
             dmaUpdate.active := true.B
           }
 
+          //TODO errors are probably due to something here not being set correctly
           //Updating some bits in header
           //Original VHDL code sets header(header'high-2 downto 0) <= header(header'high-2 downto 0) + pktLen
           //Since header'high returns (HEADER_FIELD_WIDTH-1), so we preserve those two bits from previous value
@@ -221,7 +229,7 @@ class PacketManager extends Module {
 
   portBdata := dmaUpdate
   val portBwr = Mux(io.schedTbl.dmaEn, false.B, dmaUpdateEn)
-  val portBaddr = Mux(io.schedTbl.dmaEn, dmaNum, dmaUpdateAddr)
+  val portBaddr = Mux(io.schedTbl.dmaEn, io.schedTbl.dmaNum, dmaNum)
 
   countReadPtrTable.io.port1.clk := this.clock
   countReadPtrTable.io.port1.we := portAwriteHigh

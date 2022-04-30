@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util.HasBlackBoxResource
 import argo.ArgoTypes._
 
-class MC_controller extends BlackBox with HasBlackBoxResource {
+class MC_controller(val master: Boolean) extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle {
     val clk = Input(Bool())
     val reset = Input(Bool())
@@ -25,5 +25,16 @@ class MC_controller extends BlackBox with HasBlackBoxResource {
     val mc_idx = Output(UInt(2.W))
     val mc_p = Output(UInt(2.W))
   })
-  addResource("/MC_controller.v")
+
+  override def desiredName: String = if(this.master) {
+    "MC_controller"
+  } else {
+    "MC_controller_s"
+  }
+  println(s"MC controller, master=$master")
+  if (this.master) {
+    addResource("/MC_controller.v")
+  } else {
+    addResource("/MC_controller_s.v")
+  }
 }

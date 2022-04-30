@@ -21,35 +21,44 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
   }
 
   it should "change stbl output when data is written in on the config bus" in {
-    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
 
-      val wrData = (new SchedTableContents).Lit(
-        _.route -> 0.U, _.dma -> 1.U, _.t2n -> 2.U, _.pktLen -> 3.U
-      ).litValue
+//      val wrData = (new SchedTableContents).Lit(
+//        _.route -> 15.U, _.dma -> 1.U, _.t2n -> 3.U, _.pktLen -> 7.U
+//      ).litValue
+      val dma = 1
+      val t2n = 3
+      val pktlen = 7
+      val route = 15
+      val expect = route << HALF_WORD_WIDTH | dma << QUAD_WORD_WIDTH | pktlen << STBL_T2N_WIDTH | t2n
       dut.io.in.sel.poke(true.B)
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(true.B)
-      dut.io.in.config.addr.poke(4)
-      dut.io.in.config.wrData.poke(wrData.U)
+      dut.io.in.config.addr.poke(5)
+      dut.io.in.config.wrData.poke(expect.U)
 
       dut.clock.step()
       dut.io.in.sel.poke(false.B)
       dut.io.in.config.en.poke(false.B)
 
-      dut.clock.step()
+      dut.clock.step(3)
       //At this point we should see some outputs on the slave bus
       compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(wrData.U)
+      println(s"Expecting $expect (${expect.toBinaryString})")
+      dut.io.chisel.config.rdData.expect(expect.U)
 
       //but the packet manager outputs should not have changed
       dut.io.chisel.pktman.dmaNum.expect(0.U)
 
       dut.io.in.tdm.en.poke(true.B)
-      dut.io.in.tdm.idx.poke(4.U)
+      dut.io.in.tdm.idx.poke(5.U)
       dut.clock.step()
       //Now the stbl outputs should also have changed
       compareOutputs(dut)
+      dut.io.chisel.t2n.expect(3.U)
       dut.io.chisel.pktman.dmaNum.expect(1.U)
+      dut.io.chisel.pktman.pktLen.expect(7.U)
+      dut.io.chisel.pktman.route.expect(15.U)
 
       dut.clock.step()
     }

@@ -8,7 +8,7 @@ import ArgoTypes._
 /**
  * Argo 2.0 schedule table
  * The schedule table is programmed through the config bus, and takes inputs
- * from the [[TDMController]] telling it which schedule table slot is currently active.
+ * from the [[TdmController]] telling it which schedule table slot is currently active.
  * The currently active slot selects which DMA should be used for data transfers.
  * The currently active config address can be used to read/write schedule table contents,
  * and the stblIdx-input is used to select the current entry
@@ -72,6 +72,6 @@ class ScheduleTable extends Module {
 
   io.tdm.t2n := port2.rdData.t2n
 
-  io.config.s.rdData := Cat(port1.rdData.route, port1.rdData.dma, port1.rdData.pktLen, port1.rdData.t2n)
+  io.config.s.rdData := Cat(port1.rdData.route, 0.U((QUAD_WORD_WIDTH-DMATBL_IDX_WIDTH).W), port1.rdData.dma, port1.rdData.pktLen, port1.rdData.t2n)
   io.config.s.error := error
 }

@@ -9,10 +9,10 @@ module tdp_ram_14_5
    input  [13:0] b_din,
    output [13:0] a_dout,
    output [13:0] b_dout);
-  reg [13:0] n1740_data; // mem_rd
-  reg [13:0] n1743_data; // mem_rd
-  assign a_dout = n1743_data;
-  assign b_dout = n1740_data;
+  reg [13:0] n1719_data; // mem_rd
+  reg [13:0] n1722_data; // mem_rd
+  assign a_dout = n1722_data;
+  assign b_dout = n1719_data;
   /* mem/tdp_ram.vhd:57:5  */
   reg [13:0] mem[31:0] ; // memory
   initial begin
@@ -54,13 +54,13 @@ module tdp_ram_14_5
       mem[b_addr] <= b_din;
   always @(posedge b_clk)
     if (1'b1)
-      n1740_data <= mem[b_addr];
+      n1719_data <= mem[b_addr];
   always @(posedge a_clk)
     if (a_wr)
       mem[a_addr] <= a_din;
   always @(posedge a_clk)
     if (1'b1)
-      n1743_data <= mem[a_addr];
+      n1722_data <= mem[a_addr];
   /* mem/tdp_ram.vhd:104:17  */
   /* mem/tdp_ram.vhd:88:17  */
   /* mem/tdp_ram.vhd:103:9  */
@@ -77,10 +77,10 @@ module tdp_ram_16_6
    input  [15:0] b_din,
    output [15:0] a_dout,
    output [15:0] b_dout);
-  reg [15:0] n1701_data; // mem_rd
-  reg [15:0] n1704_data; // mem_rd
-  assign a_dout = n1704_data;
-  assign b_dout = n1701_data;
+  reg [15:0] n1680_data; // mem_rd
+  reg [15:0] n1683_data; // mem_rd
+  assign a_dout = n1683_data;
+  assign b_dout = n1680_data;
   /* mem/tdp_ram.vhd:57:5  */
   reg [15:0] mem[63:0] ; // memory
   initial begin
@@ -154,13 +154,13 @@ module tdp_ram_16_6
       mem[b_addr] <= b_din;
   always @(posedge b_clk)
     if (1'b1)
-      n1701_data <= mem[b_addr];
+      n1680_data <= mem[b_addr];
   always @(posedge a_clk)
     if (a_wr)
       mem[a_addr] <= a_din;
   always @(posedge a_clk)
     if (1'b1)
-      n1704_data <= mem[a_addr];
+      n1683_data <= mem[a_addr];
   /* mem/tdp_ram.vhd:104:17  */
   /* mem/tdp_ram.vhd:88:17  */
   /* mem/tdp_ram.vhd:103:9  */
@@ -177,10 +177,10 @@ module tdp_ram_29_6
    input  [28:0] b_din,
    output [28:0] a_dout,
    output [28:0] b_dout);
-  reg [28:0] n1662_data; // mem_rd
-  reg [28:0] n1665_data; // mem_rd
-  assign a_dout = n1665_data;
-  assign b_dout = n1662_data;
+  reg [28:0] n1641_data; // mem_rd
+  reg [28:0] n1644_data; // mem_rd
+  assign a_dout = n1644_data;
+  assign b_dout = n1641_data;
   /* mem/tdp_ram.vhd:57:5  */
   reg [28:0] mem[63:0] ; // memory
   initial begin
@@ -254,13 +254,13 @@ module tdp_ram_29_6
       mem[b_addr] <= b_din;
   always @(posedge b_clk)
     if (1'b1)
-      n1662_data <= mem[b_addr];
+      n1641_data <= mem[b_addr];
   always @(posedge a_clk)
     if (a_wr)
       mem[a_addr] <= a_din;
   always @(posedge a_clk)
     if (1'b1)
-      n1665_data <= mem[a_addr];
+      n1644_data <= mem[a_addr];
   /* mem/tdp_ram.vhd:104:17  */
   /* mem/tdp_ram.vhd:88:17  */
   /* mem/tdp_ram.vhd:103:9  */
@@ -277,10 +277,10 @@ module tdp_ram_30_8
    input  [29:0] b_din,
    output [29:0] a_dout,
    output [29:0] b_dout);
-  reg [29:0] n1623_data; // mem_rd
-  reg [29:0] n1626_data; // mem_rd
-  assign a_dout = n1626_data;
-  assign b_dout = n1623_data;
+  reg [29:0] n1602_data; // mem_rd
+  reg [29:0] n1605_data; // mem_rd
+  assign a_dout = n1605_data;
+  assign b_dout = n1602_data;
   /* mem/tdp_ram.vhd:57:5  */
   reg [29:0] mem[255:0] ; // memory
   initial begin
@@ -546,13 +546,13 @@ module tdp_ram_30_8
       mem[b_addr] <= b_din;
   always @(posedge b_clk)
     if (1'b1)
-      n1623_data <= mem[b_addr];
+      n1602_data <= mem[b_addr];
   always @(posedge a_clk)
     if (a_wr)
       mem[a_addr] <= a_din;
   always @(posedge a_clk)
     if (1'b1)
-      n1626_data <= mem[a_addr];
+      n1605_data <= mem[a_addr];
   /* mem/tdp_ram.vhd:104:17  */
   /* mem/tdp_ram.vhd:88:17  */
   /* mem/tdp_ram.vhd:103:9  */
@@ -593,297 +593,297 @@ module config_bus
    output dma_tbl_sel,
    output mc_ctrl_sel,
    output irq_unit_fifo_sel);
-  wire [71:0] n1452_o;
-  wire [1:0] n1454_o;
-  wire [31:0] n1455_o;
-  wire n1456_o;
-  wire [47:0] n1457_o;
-  wire [13:0] n1459_o;
-  wire n1460_o;
-  wire n1461_o;
-  wire [31:0] n1462_o;
-  wire [32:0] n1463_o;
-  wire [32:0] n1465_o;
-  wire [32:0] n1467_o;
-  wire [32:0] n1469_o;
-  wire [32:0] n1471_o;
+  wire [71:0] n1431_o;
+  wire [1:0] n1433_o;
+  wire [31:0] n1434_o;
+  wire n1435_o;
+  wire [47:0] n1436_o;
+  wire [13:0] n1438_o;
+  wire n1439_o;
+  wire n1440_o;
+  wire [31:0] n1441_o;
+  wire [32:0] n1442_o;
+  wire [32:0] n1444_o;
+  wire [32:0] n1446_o;
+  wire [32:0] n1448_o;
+  wire [32:0] n1450_o;
   wire [1:0] next_ocp_resp;
   wire [1:0] ocp_resp_reg;
   wire [2:0] bank_id;
   wire [2:0] prev_bank_id;
-  wire [31:0] n1474_o;
+  wire [31:0] n1453_o;
+  wire [2:0] n1455_o;
+  wire [13:0] n1456_o;
+  wire n1457_o;
+  wire n1458_o;
+  wire [31:0] n1459_o;
+  wire n1460_o;
+  wire n1461_o;
+  wire [2:0] n1462_o;
+  wire n1464_o;
+  wire n1465_o;
+  wire [31:0] n1467_o;
+  wire [2:0] n1468_o;
+  wire [13:0] n1469_o;
+  wire [2:0] n1472_o;
+  wire n1474_o;
+  wire n1475_o;
   wire [2:0] n1476_o;
-  wire [13:0] n1477_o;
   wire n1478_o;
-  wire n1479_o;
-  wire [31:0] n1480_o;
+  wire n1480_o;
   wire n1481_o;
   wire n1482_o;
-  wire [2:0] n1483_o;
-  wire n1485_o;
-  wire n1486_o;
-  wire [31:0] n1488_o;
-  wire [2:0] n1489_o;
-  wire [13:0] n1490_o;
-  wire [2:0] n1493_o;
-  wire n1495_o;
-  wire n1496_o;
-  wire [2:0] n1497_o;
-  wire n1499_o;
-  wire n1501_o;
-  wire n1502_o;
+  wire [47:0] n1483_o;
+  wire [47:0] n1484_o;
+  wire [47:0] n1485_o;
+  wire [1:0] n1487_o;
+  wire [2:0] n1488_o;
+  wire n1490_o;
+  wire n1491_o;
+  wire n1492_o;
+  wire [1:0] n1494_o;
   wire n1503_o;
-  wire [47:0] n1504_o;
-  wire [47:0] n1505_o;
-  wire [47:0] n1506_o;
-  wire [1:0] n1508_o;
-  wire [2:0] n1509_o;
+  wire n1505_o;
+  wire n1507_o;
+  wire n1509_o;
   wire n1511_o;
-  wire n1512_o;
   wire n1513_o;
-  wire [1:0] n1515_o;
-  wire n1524_o;
-  wire n1526_o;
-  wire n1528_o;
-  wire n1530_o;
-  wire n1532_o;
-  wire n1534_o;
-  wire [5:0] n1535_o;
-  reg n1538_o;
-  reg n1542_o;
-  reg n1546_o;
-  reg n1550_o;
-  reg n1554_o;
-  wire [31:0] n1556_o;
-  wire n1558_o;
-  wire [31:0] n1559_o;
-  wire n1561_o;
-  wire [31:0] n1562_o;
-  wire n1564_o;
-  wire [31:0] n1565_o;
-  wire n1567_o;
-  wire [31:0] n1568_o;
-  wire n1570_o;
-  wire n1572_o;
-  wire [5:0] n1573_o;
-  reg [31:0] n1574_o;
-  wire [1:0] n1579_o;
-  wire [2:0] n1581_o;
-  reg [1:0] n1585_q;
-  reg [2:0] n1586_q;
-  wire [34:0] n1587_o;
-  assign ocp_config_s_sresp = n1454_o;
-  assign ocp_config_s_sdata = n1455_o;
-  assign ocp_config_s_scmdaccept = n1456_o;
-  assign config_addr = n1459_o;
-  assign config_en = n1460_o;
-  assign config_wr = n1461_o;
-  assign config_wdata = n1462_o;
-  assign tdm_ctrl_sel = n1538_o;
-  assign sched_tbl_sel = n1542_o;
-  assign dma_tbl_sel = n1546_o;
-  assign mc_ctrl_sel = n1550_o;
-  assign irq_unit_fifo_sel = n1554_o;
+  wire [5:0] n1514_o;
+  reg n1517_o;
+  reg n1521_o;
+  reg n1525_o;
+  reg n1529_o;
+  reg n1533_o;
+  wire [31:0] n1535_o;
+  wire n1537_o;
+  wire [31:0] n1538_o;
+  wire n1540_o;
+  wire [31:0] n1541_o;
+  wire n1543_o;
+  wire [31:0] n1544_o;
+  wire n1546_o;
+  wire [31:0] n1547_o;
+  wire n1549_o;
+  wire n1551_o;
+  wire [5:0] n1552_o;
+  reg [31:0] n1553_o;
+  wire [1:0] n1558_o;
+  wire [2:0] n1560_o;
+  reg [1:0] n1564_q;
+  reg [2:0] n1565_q;
+  wire [34:0] n1566_o;
+  assign ocp_config_s_sresp = n1433_o;
+  assign ocp_config_s_sdata = n1434_o;
+  assign ocp_config_s_scmdaccept = n1435_o;
+  assign config_addr = n1438_o;
+  assign config_en = n1439_o;
+  assign config_wr = n1440_o;
+  assign config_wdata = n1441_o;
+  assign tdm_ctrl_sel = n1517_o;
+  assign sched_tbl_sel = n1521_o;
+  assign dma_tbl_sel = n1525_o;
+  assign mc_ctrl_sel = n1529_o;
+  assign irq_unit_fifo_sel = n1533_o;
   /* ni/spm_bus.vhd:50:17  */
-  assign n1452_o = {ocp_config_m_mrespaccept, ocp_config_m_mbyteen, ocp_config_m_mdata, ocp_config_m_maddr, ocp_config_m_mcmd};
+  assign n1431_o = {ocp_config_m_mrespaccept, ocp_config_m_mbyteen, ocp_config_m_mdata, ocp_config_m_maddr, ocp_config_m_mcmd};
   /* ni/spm_bus.vhd:81:9  */
-  assign n1454_o = n1587_o[1:0];
-  assign n1455_o = n1587_o[33:2];
+  assign n1433_o = n1566_o[1:0];
+  assign n1434_o = n1566_o[33:2];
   /* ni/spm_bus.vhd:63:9  */
-  assign n1456_o = n1587_o[34];
+  assign n1435_o = n1566_o[34];
   /* ni/spm_bus.vhd:83:17  */
-  assign n1457_o = {config_unit_wdata, config_unit_wr, config_unit_en, config_unit_addr};
-  assign n1459_o = n1506_o[13:0];
-  assign n1460_o = n1506_o[14];
-  assign n1461_o = n1506_o[15];
-  assign n1462_o = n1506_o[47:16];
-  assign n1463_o = {tdm_ctrl_error, tdm_ctrl_rdata};
-  assign n1465_o = {sched_tbl_error, sched_tbl_rdata};
-  assign n1467_o = {dma_tbl_error, dma_tbl_rdata};
-  assign n1469_o = {mc_ctrl_error, mc_ctrl_rdata};
-  assign n1471_o = {irq_unit_fifo_error, irq_unit_fifo_rdata};
+  assign n1436_o = {config_unit_wdata, config_unit_wr, config_unit_en, config_unit_addr};
+  assign n1438_o = n1485_o[13:0];
+  assign n1439_o = n1485_o[14];
+  assign n1440_o = n1485_o[15];
+  assign n1441_o = n1485_o[47:16];
+  assign n1442_o = {tdm_ctrl_error, tdm_ctrl_rdata};
+  assign n1444_o = {sched_tbl_error, sched_tbl_rdata};
+  assign n1446_o = {dma_tbl_error, dma_tbl_rdata};
+  assign n1448_o = {mc_ctrl_error, mc_ctrl_rdata};
+  assign n1450_o = {irq_unit_fifo_error, irq_unit_fifo_rdata};
   /* ni/config_bus.vhd:88:8  */
-  assign next_ocp_resp = n1515_o; // (signal)
+  assign next_ocp_resp = n1494_o; // (signal)
   /* ni/config_bus.vhd:88:23  */
-  assign ocp_resp_reg = n1585_q; // (signal)
+  assign ocp_resp_reg = n1564_q; // (signal)
   /* ni/config_bus.vhd:89:8  */
-  assign bank_id = n1509_o; // (signal)
+  assign bank_id = n1488_o; // (signal)
   /* ni/config_bus.vhd:89:17  */
-  assign prev_bank_id = n1586_q; // (signal)
+  assign prev_bank_id = n1565_q; // (signal)
   /* ni/config_bus.vhd:105:55  */
-  assign n1474_o = n1467_o[31:0];
+  assign n1453_o = n1446_o[31:0];
   /* ni/config_bus.vhd:108:30  */
-  assign n1476_o = n1457_o[13:11];
+  assign n1455_o = n1436_o[13:11];
   /* ni/config_bus.vhd:110:30  */
-  assign n1477_o = n1457_o[13:0];
+  assign n1456_o = n1436_o[13:0];
   /* ni/config_bus.vhd:111:28  */
-  assign n1478_o = n1457_o[14];
+  assign n1457_o = n1436_o[14];
   /* ni/config_bus.vhd:112:28  */
-  assign n1479_o = n1457_o[15];
+  assign n1458_o = n1436_o[15];
   /* ni/config_bus.vhd:113:31  */
-  assign n1480_o = n1457_o[47:16];
+  assign n1459_o = n1436_o[47:16];
   /* ni/config_bus.vhd:120:18  */
-  assign n1481_o = n1457_o[14];
+  assign n1460_o = n1436_o[14];
   /* ni/config_bus.vhd:120:21  */
-  assign n1482_o = ~n1481_o;
+  assign n1461_o = ~n1460_o;
   /* ni/config_bus.vhd:120:44  */
-  assign n1483_o = n1452_o[2:0];
+  assign n1462_o = n1431_o[2:0];
   /* ni/config_bus.vhd:120:49  */
-  assign n1485_o = n1483_o != 3'b000;
+  assign n1464_o = n1462_o != 3'b000;
   /* ni/config_bus.vhd:120:27  */
-  assign n1486_o = n1482_o & n1485_o;
+  assign n1465_o = n1461_o & n1464_o;
   /* ni/config_bus.vhd:124:66  */
-  assign n1488_o = n1452_o[66:35];
+  assign n1467_o = n1431_o[66:35];
   /* ni/config_bus.vhd:126:43  */
-  assign n1489_o = n1452_o[18:16];
+  assign n1468_o = n1431_o[18:16];
   /* ni/config_bus.vhd:129:47  */
-  assign n1490_o = n1452_o[18:5];
+  assign n1469_o = n1431_o[18:5];
   /* ni/config_bus.vhd:134:21  */
-  assign n1493_o = n1452_o[2:0];
+  assign n1472_o = n1431_o[2:0];
   /* ni/config_bus.vhd:134:26  */
-  assign n1495_o = n1493_o != 3'b000;
+  assign n1474_o = n1472_o != 3'b000;
   /* ni/config_bus.vhd:134:42  */
-  assign n1496_o = n1495_o & supervisor;
+  assign n1475_o = n1474_o & supervisor;
   /* ni/config_bus.vhd:135:23  */
-  assign n1497_o = n1452_o[2:0];
+  assign n1476_o = n1431_o[2:0];
   /* ni/config_bus.vhd:135:28  */
-  assign n1499_o = n1497_o == 3'b001;
+  assign n1478_o = n1476_o == 3'b001;
   /* ni/config_bus.vhd:134:5  */
-  assign n1501_o = n1502_o ? 1'b1 : 1'b0;
+  assign n1480_o = n1481_o ? 1'b1 : 1'b0;
   /* ni/config_bus.vhd:134:5  */
-  assign n1502_o = n1496_o & n1499_o;
+  assign n1481_o = n1475_o & n1478_o;
   /* ni/config_bus.vhd:120:3  */
-  assign n1503_o = n1486_o ? 1'b1 : 1'b0;
-  assign n1504_o = {n1488_o, n1501_o, 1'b1, n1490_o};
-  assign n1505_o = {n1480_o, n1479_o, n1478_o, n1477_o};
+  assign n1482_o = n1465_o ? 1'b1 : 1'b0;
+  assign n1483_o = {n1467_o, n1480_o, 1'b1, n1469_o};
+  assign n1484_o = {n1459_o, n1458_o, n1457_o, n1456_o};
   /* ni/config_bus.vhd:120:3  */
-  assign n1506_o = n1486_o ? n1504_o : n1505_o;
+  assign n1485_o = n1465_o ? n1483_o : n1484_o;
   /* ni/config_bus.vhd:120:3  */
-  assign n1508_o = n1486_o ? 2'b01 : ocp_resp_reg;
+  assign n1487_o = n1465_o ? 2'b01 : ocp_resp_reg;
   /* ni/config_bus.vhd:120:3  */
-  assign n1509_o = n1486_o ? n1489_o : n1476_o;
+  assign n1488_o = n1465_o ? n1468_o : n1455_o;
   /* ni/config_bus.vhd:161:20  */
-  assign n1511_o = ocp_resp_reg != 2'b00;
+  assign n1490_o = ocp_resp_reg != 2'b00;
   /* ni/config_bus.vhd:161:56  */
-  assign n1512_o = n1452_o[71];
+  assign n1491_o = n1431_o[71];
   /* ni/config_bus.vhd:161:38  */
-  assign n1513_o = n1511_o & n1512_o;
+  assign n1492_o = n1490_o & n1491_o;
   /* ni/config_bus.vhd:161:3  */
-  assign n1515_o = n1513_o ? 2'b00 : n1508_o;
+  assign n1494_o = n1492_o ? 2'b00 : n1487_o;
   /* ni/config_bus.vhd:177:5  */
-  assign n1524_o = bank_id == 3'b000;
+  assign n1503_o = bank_id == 3'b000;
   /* ni/config_bus.vhd:179:5  */
-  assign n1526_o = bank_id == 3'b001;
+  assign n1505_o = bank_id == 3'b001;
   /* ni/config_bus.vhd:181:5  */
-  assign n1528_o = bank_id == 3'b010;
+  assign n1507_o = bank_id == 3'b010;
   /* ni/config_bus.vhd:183:5  */
-  assign n1530_o = bank_id == 3'b011;
+  assign n1509_o = bank_id == 3'b011;
   /* ni/config_bus.vhd:185:5  */
-  assign n1532_o = bank_id == 3'b100;
+  assign n1511_o = bank_id == 3'b100;
   /* ni/config_bus.vhd:187:5  */
-  assign n1534_o = bank_id == 3'b111;
-  assign n1535_o = {n1534_o, n1532_o, n1530_o, n1528_o, n1526_o, n1524_o};
+  assign n1513_o = bank_id == 3'b111;
+  assign n1514_o = {n1513_o, n1511_o, n1509_o, n1507_o, n1505_o, n1503_o};
   /* ni/config_bus.vhd:176:3  */
   always @*
-    case (n1535_o)
-      6'b100000: n1538_o <= 1'b0;
-      6'b010000: n1538_o <= 1'b0;
-      6'b001000: n1538_o <= 1'b0;
-      6'b000100: n1538_o <= 1'b1;
-      6'b000010: n1538_o <= 1'b0;
-      6'b000001: n1538_o <= 1'b0;
-      default: n1538_o <= 1'b0;
+    case (n1514_o)
+      6'b100000: n1517_o <= 1'b0;
+      6'b010000: n1517_o <= 1'b0;
+      6'b001000: n1517_o <= 1'b0;
+      6'b000100: n1517_o <= 1'b1;
+      6'b000010: n1517_o <= 1'b0;
+      6'b000001: n1517_o <= 1'b0;
+      default: n1517_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
-    case (n1535_o)
-      6'b100000: n1542_o <= 1'b0;
-      6'b010000: n1542_o <= 1'b0;
-      6'b001000: n1542_o <= 1'b0;
-      6'b000100: n1542_o <= 1'b0;
-      6'b000010: n1542_o <= 1'b1;
-      6'b000001: n1542_o <= 1'b0;
-      default: n1542_o <= 1'b0;
+    case (n1514_o)
+      6'b100000: n1521_o <= 1'b0;
+      6'b010000: n1521_o <= 1'b0;
+      6'b001000: n1521_o <= 1'b0;
+      6'b000100: n1521_o <= 1'b0;
+      6'b000010: n1521_o <= 1'b1;
+      6'b000001: n1521_o <= 1'b0;
+      default: n1521_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
-    case (n1535_o)
-      6'b100000: n1546_o <= 1'b0;
-      6'b010000: n1546_o <= 1'b0;
-      6'b001000: n1546_o <= 1'b0;
-      6'b000100: n1546_o <= 1'b0;
-      6'b000010: n1546_o <= 1'b0;
-      6'b000001: n1546_o <= 1'b1;
-      default: n1546_o <= 1'b0;
+    case (n1514_o)
+      6'b100000: n1525_o <= 1'b0;
+      6'b010000: n1525_o <= 1'b0;
+      6'b001000: n1525_o <= 1'b0;
+      6'b000100: n1525_o <= 1'b0;
+      6'b000010: n1525_o <= 1'b0;
+      6'b000001: n1525_o <= 1'b1;
+      default: n1525_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
-    case (n1535_o)
-      6'b100000: n1550_o <= 1'b0;
-      6'b010000: n1550_o <= 1'b0;
-      6'b001000: n1550_o <= 1'b1;
-      6'b000100: n1550_o <= 1'b0;
-      6'b000010: n1550_o <= 1'b0;
-      6'b000001: n1550_o <= 1'b0;
-      default: n1550_o <= 1'b0;
+    case (n1514_o)
+      6'b100000: n1529_o <= 1'b0;
+      6'b010000: n1529_o <= 1'b0;
+      6'b001000: n1529_o <= 1'b1;
+      6'b000100: n1529_o <= 1'b0;
+      6'b000010: n1529_o <= 1'b0;
+      6'b000001: n1529_o <= 1'b0;
+      default: n1529_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:176:3  */
   always @*
-    case (n1535_o)
-      6'b100000: n1554_o <= 1'b0;
-      6'b010000: n1554_o <= 1'b1;
-      6'b001000: n1554_o <= 1'b0;
-      6'b000100: n1554_o <= 1'b0;
-      6'b000010: n1554_o <= 1'b0;
-      6'b000001: n1554_o <= 1'b0;
-      default: n1554_o <= 1'b0;
+    case (n1514_o)
+      6'b100000: n1533_o <= 1'b0;
+      6'b010000: n1533_o <= 1'b1;
+      6'b001000: n1533_o <= 1'b0;
+      6'b000100: n1533_o <= 1'b0;
+      6'b000010: n1533_o <= 1'b0;
+      6'b000001: n1533_o <= 1'b0;
+      default: n1533_o <= 1'b0;
     endcase
   /* ni/config_bus.vhd:194:59  */
-  assign n1556_o = n1467_o[31:0];
+  assign n1535_o = n1446_o[31:0];
   /* ni/config_bus.vhd:193:5  */
-  assign n1558_o = prev_bank_id == 3'b000;
+  assign n1537_o = prev_bank_id == 3'b000;
   /* ni/config_bus.vhd:196:61  */
-  assign n1559_o = n1465_o[31:0];
+  assign n1538_o = n1444_o[31:0];
   /* ni/config_bus.vhd:195:5  */
-  assign n1561_o = prev_bank_id == 3'b001;
+  assign n1540_o = prev_bank_id == 3'b001;
   /* ni/config_bus.vhd:198:60  */
-  assign n1562_o = n1463_o[31:0];
+  assign n1541_o = n1442_o[31:0];
   /* ni/config_bus.vhd:197:5  */
-  assign n1564_o = prev_bank_id == 3'b010;
+  assign n1543_o = prev_bank_id == 3'b010;
   /* ni/config_bus.vhd:200:59  */
-  assign n1565_o = n1469_o[31:0];
+  assign n1544_o = n1448_o[31:0];
   /* ni/config_bus.vhd:199:5  */
-  assign n1567_o = prev_bank_id == 3'b011;
+  assign n1546_o = prev_bank_id == 3'b011;
   /* ni/config_bus.vhd:202:65  */
-  assign n1568_o = n1471_o[31:0];
+  assign n1547_o = n1450_o[31:0];
   /* ni/config_bus.vhd:201:5  */
-  assign n1570_o = prev_bank_id == 3'b100;
+  assign n1549_o = prev_bank_id == 3'b100;
   /* ni/config_bus.vhd:203:5  */
-  assign n1572_o = prev_bank_id == 3'b111;
-  assign n1573_o = {n1572_o, n1570_o, n1567_o, n1564_o, n1561_o, n1558_o};
+  assign n1551_o = prev_bank_id == 3'b111;
+  assign n1552_o = {n1551_o, n1549_o, n1546_o, n1543_o, n1540_o, n1537_o};
   /* ni/config_bus.vhd:192:3  */
   always @*
-    case (n1573_o)
-      6'b100000: n1574_o <= n1474_o;
-      6'b010000: n1574_o <= n1568_o;
-      6'b001000: n1574_o <= n1565_o;
-      6'b000100: n1574_o <= n1562_o;
-      6'b000010: n1574_o <= n1559_o;
-      6'b000001: n1574_o <= n1556_o;
-      default: n1574_o <= n1474_o;
+    case (n1552_o)
+      6'b100000: n1553_o <= n1453_o;
+      6'b010000: n1553_o <= n1547_o;
+      6'b001000: n1553_o <= n1544_o;
+      6'b000100: n1553_o <= n1541_o;
+      6'b000010: n1553_o <= n1538_o;
+      6'b000001: n1553_o <= n1535_o;
+      default: n1553_o <= n1453_o;
     endcase
   /* ni/config_bus.vhd:215:7  */
-  assign n1579_o = reset ? 2'b00 : next_ocp_resp;
+  assign n1558_o = reset ? 2'b00 : next_ocp_resp;
   /* ni/config_bus.vhd:215:7  */
-  assign n1581_o = reset ? 3'b000 : bank_id;
+  assign n1560_o = reset ? 3'b000 : bank_id;
   /* ni/config_bus.vhd:214:5  */
   always @(posedge clk)
-    n1585_q <= n1579_o;
+    n1564_q <= n1558_o;
   /* ni/config_bus.vhd:214:5  */
   always @(posedge clk)
-    n1586_q <= n1581_o;
+    n1565_q <= n1560_o;
   /* ni/config_bus.vhd:214:5  */
-  assign n1587_o = {n1503_o, n1574_o, ocp_resp_reg};
+  assign n1566_o = {n1482_o, n1553_o, ocp_resp_reg};
 endmodule
 
 module spm_bus
@@ -905,16 +905,32 @@ module spm_bus
    output [63:0] spm_wdata,
    output [63:0] tx_spm_slv_rdata,
    output tx_spm_slv_error);
-  wire [64:0] n1396_o;
-  wire [13:0] n1398_o;
-  wire [1:0] n1399_o;
-  wire n1400_o;
-  wire [63:0] n1401_o;
-  wire [63:0] n1403_o;
-  wire n1404_o;
-  wire [80:0] n1405_o;
-  wire [80:0] n1406_o;
+  wire [64:0] n1375_o;
+  wire [13:0] n1377_o;
+  wire [1:0] n1378_o;
+  wire n1379_o;
+  wire [63:0] n1380_o;
+  wire [63:0] n1382_o;
+  wire n1383_o;
+  wire [80:0] n1384_o;
+  wire [80:0] n1385_o;
   wire [80:0] rx_spm_buff;
+  wire n1388_o;
+  wire n1389_o;
+  wire n1390_o;
+  wire n1391_o;
+  wire n1392_o;
+  wire n1393_o;
+  wire n1394_o;
+  wire n1395_o;
+  wire n1396_o;
+  wire [80:0] n1397_o;
+  wire [80:0] n1398_o;
+  wire [80:0] n1399_o;
+  wire n1405_o;
+  wire n1406_o;
+  wire n1407_o;
+  wire n1408_o;
   wire n1409_o;
   wire n1410_o;
   wire n1411_o;
@@ -922,123 +938,107 @@ module spm_bus
   wire n1413_o;
   wire n1414_o;
   wire n1415_o;
-  wire n1416_o;
-  wire n1417_o;
+  wire [13:0] n1416_o;
+  wire [63:0] n1417_o;
   wire [80:0] n1418_o;
-  wire [80:0] n1419_o;
-  wire [80:0] n1420_o;
-  wire n1426_o;
-  wire n1427_o;
-  wire n1428_o;
-  wire n1429_o;
-  wire n1430_o;
-  wire n1431_o;
-  wire n1432_o;
-  wire n1433_o;
-  wire n1434_o;
-  wire n1435_o;
-  wire n1436_o;
-  wire [13:0] n1437_o;
-  wire [63:0] n1438_o;
-  wire [80:0] n1439_o;
-  wire [13:0] n1440_o;
-  wire [13:0] n1441_o;
-  wire [13:0] n1442_o;
-  wire [1:0] n1443_o;
-  wire [1:0] n1444_o;
-  wire [64:0] n1445_o;
-  wire [64:0] n1446_o;
-  wire [64:0] n1447_o;
-  wire [80:0] n1448_o;
-  reg [80:0] n1451_q;
-  assign spm_addr = n1398_o;
-  assign spm_en = n1399_o;
-  assign spm_wr = n1400_o;
-  assign spm_wdata = n1401_o;
-  assign tx_spm_slv_rdata = n1403_o;
-  assign tx_spm_slv_error = n1404_o;
+  wire [13:0] n1419_o;
+  wire [13:0] n1420_o;
+  wire [13:0] n1421_o;
+  wire [1:0] n1422_o;
+  wire [1:0] n1423_o;
+  wire [64:0] n1424_o;
+  wire [64:0] n1425_o;
+  wire [64:0] n1426_o;
+  wire [80:0] n1427_o;
+  reg [80:0] n1430_q;
+  assign spm_addr = n1377_o;
+  assign spm_en = n1378_o;
+  assign spm_wr = n1379_o;
+  assign spm_wdata = n1380_o;
+  assign tx_spm_slv_rdata = n1382_o;
+  assign tx_spm_slv_error = n1383_o;
   /* ni/irq_fifo.vhd:146:9  */
-  assign n1396_o = {spm_slv_error, spm_slv_rdata};
+  assign n1375_o = {spm_slv_error, spm_slv_rdata};
   /* ni/irq_fifo.vhd:53:17  */
-  assign n1398_o = n1420_o[13:0];
+  assign n1377_o = n1399_o[13:0];
   /* ni/irq_fifo.vhd:51:17  */
-  assign n1399_o = n1420_o[15:14];
-  assign n1400_o = n1420_o[16];
-  assign n1401_o = n1420_o[80:17];
-  assign n1403_o = n1396_o[63:0];
+  assign n1378_o = n1399_o[15:14];
+  assign n1379_o = n1399_o[16];
+  assign n1380_o = n1399_o[80:17];
+  assign n1382_o = n1375_o[63:0];
   /* ni/irq_fifo.vhd:216:9  */
-  assign n1404_o = n1396_o[64];
-  assign n1405_o = {tx_spm_wdata, tx_spm_wr, tx_spm_en, tx_spm_addr};
+  assign n1383_o = n1375_o[64];
+  assign n1384_o = {tx_spm_wdata, tx_spm_wr, tx_spm_en, tx_spm_addr};
   /* ni/irq_fifo.vhd:200:9  */
-  assign n1406_o = {rx_spm_wdata, rx_spm_wr, rx_spm_en, rx_spm_addr};
+  assign n1385_o = {rx_spm_wdata, rx_spm_wr, rx_spm_en, rx_spm_addr};
   /* ni/spm_bus.vhd:58:16  */
-  assign rx_spm_buff = n1451_q; // (signal)
+  assign rx_spm_buff = n1430_q; // (signal)
   /* ni/spm_bus.vhd:65:31  */
-  assign n1409_o = n1405_o[14];
+  assign n1388_o = n1384_o[14];
   /* ni/spm_bus.vhd:65:55  */
-  assign n1410_o = n1405_o[15];
+  assign n1389_o = n1384_o[15];
   /* ni/spm_bus.vhd:65:42  */
-  assign n1411_o = n1409_o | n1410_o;
+  assign n1390_o = n1388_o | n1389_o;
   /* ni/spm_bus.vhd:68:44  */
-  assign n1412_o = rx_spm_buff[14];
+  assign n1391_o = rx_spm_buff[14];
   /* ni/spm_bus.vhd:68:73  */
-  assign n1413_o = rx_spm_buff[15];
+  assign n1392_o = rx_spm_buff[15];
   /* ni/spm_bus.vhd:68:55  */
-  assign n1414_o = n1412_o | n1413_o;
+  assign n1393_o = n1391_o | n1392_o;
   /* ni/spm_bus.vhd:71:47  */
-  assign n1415_o = n1406_o[14];
+  assign n1394_o = n1385_o[14];
   /* ni/spm_bus.vhd:71:71  */
-  assign n1416_o = n1406_o[15];
+  assign n1395_o = n1385_o[15];
   /* ni/spm_bus.vhd:71:58  */
-  assign n1417_o = n1415_o | n1416_o;
+  assign n1396_o = n1394_o | n1395_o;
   /* ni/spm_bus.vhd:71:33  */
-  assign n1418_o = n1417_o ? n1406_o : n1405_o;
+  assign n1397_o = n1396_o ? n1385_o : n1384_o;
   /* ni/spm_bus.vhd:68:25  */
-  assign n1419_o = n1414_o ? rx_spm_buff : n1418_o;
+  assign n1398_o = n1393_o ? rx_spm_buff : n1397_o;
   /* ni/spm_bus.vhd:65:17  */
-  assign n1420_o = n1411_o ? n1405_o : n1419_o;
+  assign n1399_o = n1390_o ? n1384_o : n1398_o;
   /* ni/spm_bus.vhd:87:63  */
-  assign n1426_o = n1406_o[14];
+  assign n1405_o = n1385_o[14];
   /* ni/spm_bus.vhd:87:81  */
-  assign n1427_o = n1405_o[14];
+  assign n1406_o = n1384_o[14];
   /* ni/spm_bus.vhd:87:97  */
-  assign n1428_o = n1405_o[15];
+  assign n1407_o = n1384_o[15];
   /* ni/spm_bus.vhd:87:85  */
-  assign n1429_o = n1427_o | n1428_o;
+  assign n1408_o = n1406_o | n1407_o;
   /* ni/spm_bus.vhd:87:67  */
-  assign n1430_o = n1426_o & n1429_o;
+  assign n1409_o = n1405_o & n1408_o;
   /* ni/spm_bus.vhd:88:63  */
-  assign n1431_o = n1406_o[15];
+  assign n1410_o = n1385_o[15];
   /* ni/spm_bus.vhd:88:81  */
-  assign n1432_o = n1405_o[14];
+  assign n1411_o = n1384_o[14];
   /* ni/spm_bus.vhd:88:97  */
-  assign n1433_o = n1405_o[15];
+  assign n1412_o = n1384_o[15];
   /* ni/spm_bus.vhd:88:85  */
-  assign n1434_o = n1432_o | n1433_o;
+  assign n1413_o = n1411_o | n1412_o;
   /* ni/spm_bus.vhd:88:67  */
-  assign n1435_o = n1431_o & n1434_o;
+  assign n1414_o = n1410_o & n1413_o;
   /* ni/spm_bus.vhd:89:61  */
-  assign n1436_o = n1406_o[16];
+  assign n1415_o = n1385_o[16];
   /* ni/spm_bus.vhd:90:61  */
-  assign n1437_o = n1406_o[13:0];
+  assign n1416_o = n1385_o[13:0];
   /* ni/spm_bus.vhd:91:61  */
-  assign n1438_o = n1406_o[80:17];
-  assign n1439_o = {n1438_o, n1436_o, n1435_o, n1430_o, n1437_o};
-  assign n1440_o = n1439_o[13:0];
-  assign n1441_o = rx_spm_buff[13:0];
+  assign n1417_o = n1385_o[80:17];
+  assign n1418_o = {n1417_o, n1415_o, n1414_o, n1409_o, n1416_o};
+  assign n1419_o = n1418_o[13:0];
+  assign n1420_o = rx_spm_buff[13:0];
   /* ni/spm_bus.vhd:84:25  */
-  assign n1442_o = reset ? n1441_o : n1440_o;
-  assign n1443_o = n1439_o[15:14];
+  assign n1421_o = reset ? n1420_o : n1419_o;
+  assign n1422_o = n1418_o[15:14];
   /* ni/spm_bus.vhd:84:25  */
-  assign n1444_o = reset ? 2'b00 : n1443_o;
-  assign n1445_o = n1439_o[80:16];
-  assign n1446_o = rx_spm_buff[80:16];
+  assign n1423_o = reset ? 2'b00 : n1422_o;
+  assign n1424_o = n1418_o[80:16];
+  assign n1425_o = rx_spm_buff[80:16];
   /* ni/spm_bus.vhd:84:25  */
-  assign n1447_o = reset ? n1446_o : n1445_o;
-  assign n1448_o = {n1447_o, n1444_o, n1442_o};
+  assign n1426_o = reset ? n1425_o : n1424_o;
+  assign n1427_o = {n1426_o, n1423_o, n1421_o};
   /* ni/spm_bus.vhd:83:17  */
   always @(posedge clk)
-    n1451_q <= n1448_o;
+    n1430_q <= n1427_o;
 endmodule
 
 module irq_fifo
@@ -1056,9 +1056,9 @@ module irq_fifo
    output config_slv_error,
    output irq_irq_sig,
    output irq_data_sig);
-  wire [47:0] n1231_o;
-  wire [31:0] n1233_o;
-  wire n1234_o;
+  wire [47:0] n1210_o;
+  wire [31:0] n1212_o;
+  wire n1213_o;
   wire irq_not_empty;
   wire data_not_empty;
   wire next_error;
@@ -1073,309 +1073,309 @@ module irq_fifo
   wire [4:0] w_ptr;
   wire [4:0] r_ptr;
   wire [13:0] w_data;
-  wire n1239_o;
+  wire n1218_o;
+  wire n1219_o;
+  wire n1222_o;
+  wire n1223_o;
+  wire [4:0] n1227_o;
+  wire n1228_o;
+  wire n1230_o;
+  wire n1232_o;
+  wire n1233_o;
+  wire n1234_o;
+  wire n1235_o;
+  wire [4:0] n1239_o;
   wire n1240_o;
-  wire n1243_o;
+  wire n1242_o;
   wire n1244_o;
-  wire [4:0] n1248_o;
+  wire n1245_o;
+  wire n1246_o;
+  wire n1247_o;
   wire n1249_o;
-  wire n1251_o;
+  wire [4:0] n1250_o;
   wire n1253_o;
   wire n1254_o;
   wire n1255_o;
   wire n1256_o;
-  wire [4:0] n1260_o;
+  wire [10:0] n1257_o;
+  wire n1259_o;
   wire n1261_o;
-  wire n1263_o;
-  wire n1265_o;
-  wire n1266_o;
-  wire n1267_o;
-  wire n1268_o;
-  wire n1270_o;
-  wire [4:0] n1271_o;
+  wire [1:0] n1262_o;
+  reg n1265_o;
+  reg n1268_o;
+  reg n1271_o;
+  reg [4:0] n1272_o;
   wire n1274_o;
-  wire n1275_o;
   wire n1276_o;
-  wire n1277_o;
-  wire [10:0] n1278_o;
-  wire n1280_o;
-  wire n1282_o;
-  wire [1:0] n1283_o;
-  reg n1286_o;
-  reg n1289_o;
-  reg n1292_o;
-  reg [4:0] n1293_o;
-  wire n1295_o;
-  wire n1297_o;
-  wire n1299_o;
-  wire [4:0] n1300_o;
-  wire n1302_o;
-  wire n1305_o;
-  wire n1308_o;
-  wire n1310_o;
-  wire n1312_o;
-  wire n1313_o;
-  wire n1314_o;
-  localparam n1316_o = 1'b0;
-  localparam [13:0] n1317_o = 14'b00000000000000;
-  wire [13:0] tdpram_n1318;
+  wire n1278_o;
+  wire [4:0] n1279_o;
+  wire n1281_o;
+  wire n1284_o;
+  wire n1287_o;
+  wire n1289_o;
+  wire n1291_o;
+  wire n1292_o;
+  wire n1293_o;
+  localparam n1295_o = 1'b0;
+  localparam [13:0] n1296_o = 14'b00000000000000;
+  wire [13:0] tdpram_n1297;
   wire [13:0] tdpram_a_dout;
   wire [13:0] tdpram_b_dout;
-  wire n1325_o;
-  wire n1327_o;
+  wire n1304_o;
+  wire n1306_o;
+  wire [4:0] n1308_o;
+  wire [4:0] n1310_o;
+  wire [4:0] n1311_o;
+  wire [4:0] n1313_o;
+  reg [4:0] n1316_q;
+  wire n1320_o;
+  wire n1322_o;
+  wire [4:0] n1324_o;
+  wire [4:0] n1326_o;
+  wire [4:0] n1327_o;
   wire [4:0] n1329_o;
-  wire [4:0] n1331_o;
-  wire [4:0] n1332_o;
-  wire [4:0] n1334_o;
-  reg [4:0] n1337_q;
-  wire n1341_o;
-  wire n1343_o;
+  reg [4:0] n1332_q;
+  wire n1336_o;
+  wire n1338_o;
+  wire [4:0] n1340_o;
+  wire [4:0] n1342_o;
+  wire [4:0] n1343_o;
   wire [4:0] n1345_o;
-  wire [4:0] n1347_o;
-  wire [4:0] n1348_o;
-  wire [4:0] n1350_o;
-  reg [4:0] n1353_q;
-  wire n1357_o;
-  wire n1359_o;
+  reg [4:0] n1348_q;
+  wire n1352_o;
+  wire n1354_o;
+  wire [4:0] n1356_o;
+  wire [4:0] n1358_o;
+  wire [4:0] n1359_o;
   wire [4:0] n1361_o;
-  wire [4:0] n1363_o;
-  wire [4:0] n1364_o;
-  wire [4:0] n1366_o;
-  reg [4:0] n1369_q;
-  wire n1373_o;
-  wire n1375_o;
-  wire [4:0] n1377_o;
-  wire [4:0] n1379_o;
-  wire [4:0] n1380_o;
-  wire [4:0] n1382_o;
-  reg [4:0] n1385_q;
-  wire n1390_o;
-  reg n1394_q;
-  wire [32:0] n1395_o;
-  assign config_slv_rdata = n1233_o;
-  assign config_slv_error = n1234_o;
+  reg [4:0] n1364_q;
+  wire n1369_o;
+  reg n1373_q;
+  wire [32:0] n1374_o;
+  assign config_slv_rdata = n1212_o;
+  assign config_slv_error = n1213_o;
   assign irq_irq_sig = irq_not_empty;
   assign irq_data_sig = data_not_empty;
   /* ni/rx_unit.vhd:55:17  */
-  assign n1231_o = {config_wdata, config_wr, config_en, config_addr};
+  assign n1210_o = {config_wdata, config_wr, config_en, config_addr};
   /* ni/rx_unit.vhd:52:17  */
-  assign n1233_o = n1395_o[31:0];
+  assign n1212_o = n1374_o[31:0];
   /* ni/rx_unit.vhd:50:17  */
-  assign n1234_o = n1395_o[32];
+  assign n1213_o = n1374_o[32];
   /* ni/irq_fifo.vhd:94:16  */
-  assign irq_not_empty = n1240_o; // (signal)
+  assign irq_not_empty = n1219_o; // (signal)
   /* ni/irq_fifo.vhd:94:31  */
-  assign data_not_empty = n1244_o; // (signal)
+  assign data_not_empty = n1223_o; // (signal)
   /* ni/irq_fifo.vhd:94:47  */
-  assign next_error = n1302_o; // (signal)
+  assign next_error = n1281_o; // (signal)
   /* ni/irq_fifo.vhd:94:59  */
-  assign irq_read = n1305_o; // (signal)
+  assign irq_read = n1284_o; // (signal)
   /* ni/irq_fifo.vhd:94:69  */
-  assign data_read = n1308_o; // (signal)
+  assign data_read = n1287_o; // (signal)
   /* ni/irq_fifo.vhd:94:80  */
-  assign irq_not_full = n1256_o; // (signal)
+  assign irq_not_full = n1235_o; // (signal)
   /* ni/irq_fifo.vhd:94:94  */
-  assign data_not_full = n1268_o; // (signal)
+  assign data_not_full = n1247_o; // (signal)
   /* ni/irq_fifo.vhd:95:16  */
-  assign data_w_ptr = n1353_q; // (signal)
+  assign data_w_ptr = n1332_q; // (signal)
   /* ni/irq_fifo.vhd:95:28  */
-  assign data_r_ptr = n1385_q; // (signal)
+  assign data_r_ptr = n1364_q; // (signal)
   /* ni/irq_fifo.vhd:95:40  */
-  assign irq_w_ptr = n1337_q; // (signal)
+  assign irq_w_ptr = n1316_q; // (signal)
   /* ni/irq_fifo.vhd:95:51  */
-  assign irq_r_ptr = n1369_q; // (signal)
+  assign irq_r_ptr = n1348_q; // (signal)
   /* ni/irq_fifo.vhd:95:62  */
-  assign w_ptr = n1271_o; // (signal)
+  assign w_ptr = n1250_o; // (signal)
   /* ni/irq_fifo.vhd:95:69  */
-  assign r_ptr = n1300_o; // (signal)
+  assign r_ptr = n1279_o; // (signal)
   /* ni/irq_fifo.vhd:96:16  */
   assign w_data = irq_data_fifo_data; // (signal)
   /* ni/irq_fifo.vhd:106:46  */
-  assign n1239_o = irq_w_ptr == irq_r_ptr;
+  assign n1218_o = irq_w_ptr == irq_r_ptr;
   /* ni/irq_fifo.vhd:106:31  */
-  assign n1240_o = n1239_o ? 1'b0 : 1'b1;
+  assign n1219_o = n1218_o ? 1'b0 : 1'b1;
   /* ni/irq_fifo.vhd:107:47  */
-  assign n1243_o = data_w_ptr == data_r_ptr;
+  assign n1222_o = data_w_ptr == data_r_ptr;
   /* ni/irq_fifo.vhd:107:31  */
-  assign n1244_o = n1243_o ? 1'b0 : 1'b1;
+  assign n1223_o = n1222_o ? 1'b0 : 1'b1;
   /* ni/irq_fifo.vhd:109:59  */
-  assign n1248_o = irq_r_ptr - 5'b00001;
+  assign n1227_o = irq_r_ptr - 5'b00001;
   /* ni/irq_fifo.vhd:109:47  */
-  assign n1249_o = irq_w_ptr == n1248_o;
+  assign n1228_o = irq_w_ptr == n1227_o;
   /* ni/irq_fifo.vhd:109:78  */
-  assign n1251_o = irq_w_ptr == 5'b01111;
+  assign n1230_o = irq_w_ptr == 5'b01111;
   /* ni/irq_fifo.vhd:109:146  */
-  assign n1253_o = irq_r_ptr == 5'b00000;
+  assign n1232_o = irq_r_ptr == 5'b00000;
   /* ni/irq_fifo.vhd:109:132  */
-  assign n1254_o = n1251_o & n1253_o;
+  assign n1233_o = n1230_o & n1232_o;
   /* ni/irq_fifo.vhd:109:64  */
-  assign n1255_o = n1249_o | n1254_o;
+  assign n1234_o = n1228_o | n1233_o;
   /* ni/irq_fifo.vhd:109:30  */
-  assign n1256_o = n1255_o ? 1'b0 : 1'b1;
+  assign n1235_o = n1234_o ? 1'b0 : 1'b1;
   /* ni/irq_fifo.vhd:110:61  */
-  assign n1260_o = data_r_ptr + 5'b00001;
+  assign n1239_o = data_r_ptr + 5'b00001;
   /* ni/irq_fifo.vhd:110:48  */
-  assign n1261_o = data_w_ptr == n1260_o;
+  assign n1240_o = data_w_ptr == n1239_o;
   /* ni/irq_fifo.vhd:110:81  */
-  assign n1263_o = data_w_ptr == 5'b10000;
+  assign n1242_o = data_w_ptr == 5'b10000;
   /* ni/irq_fifo.vhd:110:151  */
-  assign n1265_o = data_r_ptr == 5'b11111;
+  assign n1244_o = data_r_ptr == 5'b11111;
   /* ni/irq_fifo.vhd:110:136  */
-  assign n1266_o = n1263_o & n1265_o;
+  assign n1245_o = n1242_o & n1244_o;
   /* ni/irq_fifo.vhd:110:66  */
-  assign n1267_o = n1261_o | n1266_o;
+  assign n1246_o = n1240_o | n1245_o;
   /* ni/irq_fifo.vhd:110:30  */
-  assign n1268_o = n1267_o ? 1'b0 : 1'b1;
+  assign n1247_o = n1246_o ? 1'b0 : 1'b1;
   /* ni/irq_fifo.vhd:113:59  */
-  assign n1270_o = ~irq_data_fifo_data_valid;
+  assign n1249_o = ~irq_data_fifo_data_valid;
   /* ni/irq_fifo.vhd:113:29  */
-  assign n1271_o = n1270_o ? irq_w_ptr : data_w_ptr;
+  assign n1250_o = n1249_o ? irq_w_ptr : data_w_ptr;
   /* ni/irq_fifo.vhd:123:42  */
-  assign n1274_o = n1231_o[14];
+  assign n1253_o = n1210_o[14];
   /* ni/irq_fifo.vhd:123:31  */
-  assign n1275_o = sel & n1274_o;
+  assign n1254_o = sel & n1253_o;
   /* ni/irq_fifo.vhd:125:35  */
-  assign n1276_o = n1231_o[15];
+  assign n1255_o = n1210_o[15];
   /* ni/irq_fifo.vhd:125:38  */
-  assign n1277_o = ~n1276_o;
+  assign n1256_o = ~n1255_o;
   /* ni/irq_fifo.vhd:126:50  */
-  assign n1278_o = n1231_o[10:0];
+  assign n1257_o = n1210_o[10:0];
   /* ni/irq_fifo.vhd:128:11  */
-  assign n1280_o = n1278_o == 11'b00000000000;
+  assign n1259_o = n1257_o == 11'b00000000000;
   /* ni/irq_fifo.vhd:132:11  */
-  assign n1282_o = n1278_o == 11'b00000000001;
-  assign n1283_o = {n1282_o, n1280_o};
+  assign n1261_o = n1257_o == 11'b00000000001;
+  assign n1262_o = {n1261_o, n1259_o};
   /* ni/irq_fifo.vhd:126:33  */
   always @*
-    case (n1283_o)
-      2'b10: n1286_o <= 1'b0;
-      2'b01: n1286_o <= 1'b0;
-      default: n1286_o <= 1'b1;
+    case (n1262_o)
+      2'b10: n1265_o <= 1'b0;
+      2'b01: n1265_o <= 1'b0;
+      default: n1265_o <= 1'b1;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
-    case (n1283_o)
-      2'b10: n1289_o <= 1'b0;
-      2'b01: n1289_o <= 1'b1;
-      default: n1289_o <= 1'b0;
+    case (n1262_o)
+      2'b10: n1268_o <= 1'b0;
+      2'b01: n1268_o <= 1'b1;
+      default: n1268_o <= 1'b0;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
-    case (n1283_o)
-      2'b10: n1292_o <= 1'b1;
-      2'b01: n1292_o <= 1'b0;
-      default: n1292_o <= 1'b0;
+    case (n1262_o)
+      2'b10: n1271_o <= 1'b1;
+      2'b01: n1271_o <= 1'b0;
+      default: n1271_o <= 1'b0;
     endcase
   /* ni/irq_fifo.vhd:126:33  */
   always @*
-    case (n1283_o)
-      2'b10: n1293_o <= data_r_ptr;
-      2'b01: n1293_o <= irq_r_ptr;
-      default: n1293_o <= data_r_ptr;
+    case (n1262_o)
+      2'b10: n1272_o <= data_r_ptr;
+      2'b01: n1272_o <= irq_r_ptr;
+      default: n1272_o <= data_r_ptr;
     endcase
   /* ni/irq_fifo.vhd:125:25  */
-  assign n1295_o = n1277_o ? n1286_o : 1'b1;
+  assign n1274_o = n1256_o ? n1265_o : 1'b1;
   /* ni/irq_fifo.vhd:125:25  */
-  assign n1297_o = n1277_o ? n1289_o : 1'b0;
+  assign n1276_o = n1256_o ? n1268_o : 1'b0;
   /* ni/irq_fifo.vhd:125:25  */
-  assign n1299_o = n1277_o ? n1292_o : 1'b0;
+  assign n1278_o = n1256_o ? n1271_o : 1'b0;
   /* ni/irq_fifo.vhd:123:17  */
-  assign n1300_o = n1310_o ? n1293_o : data_r_ptr;
+  assign n1279_o = n1289_o ? n1272_o : data_r_ptr;
   /* ni/irq_fifo.vhd:123:17  */
-  assign n1302_o = n1275_o ? n1295_o : 1'b0;
+  assign n1281_o = n1254_o ? n1274_o : 1'b0;
   /* ni/irq_fifo.vhd:123:17  */
-  assign n1305_o = n1275_o ? n1297_o : 1'b0;
+  assign n1284_o = n1254_o ? n1276_o : 1'b0;
   /* ni/irq_fifo.vhd:123:17  */
-  assign n1308_o = n1275_o ? n1299_o : 1'b0;
+  assign n1287_o = n1254_o ? n1278_o : 1'b0;
   /* ni/irq_fifo.vhd:123:17  */
-  assign n1310_o = n1275_o & n1277_o;
+  assign n1289_o = n1254_o & n1256_o;
   /* ni/irq_fifo.vhd:154:60  */
-  assign n1312_o = irq_irq_fifo_data_valid & irq_not_full;
+  assign n1291_o = irq_irq_fifo_data_valid & irq_not_full;
   /* ni/irq_fifo.vhd:154:108  */
-  assign n1313_o = irq_data_fifo_data_valid & data_not_full;
+  assign n1292_o = irq_data_fifo_data_valid & data_not_full;
   /* ni/irq_fifo.vhd:154:79  */
-  assign n1314_o = n1312_o | n1313_o;
+  assign n1293_o = n1291_o | n1292_o;
   /* ni/irq_fifo.vhd:164:35  */
-  assign tdpram_n1318 = tdpram_b_dout; // (signal)
+  assign tdpram_n1297 = tdpram_b_dout; // (signal)
   /* ni/irq_fifo.vhd:146:9  */
   tdp_ram_14_5 tdpram (
     .a_clk(clk),
-    .a_wr(n1314_o),
+    .a_wr(n1293_o),
     .a_addr(w_ptr),
     .a_din(w_data),
     .b_clk(clk),
-    .b_wr(n1316_o),
+    .b_wr(n1295_o),
     .b_addr(r_ptr),
-    .b_din(n1317_o),
+    .b_din(n1296_o),
     .a_dout(),
     .b_dout(tdpram_b_dout));
   /* ni/irq_fifo.vhd:173:57  */
-  assign n1325_o = irq_irq_fifo_data_valid & irq_not_full;
+  assign n1304_o = irq_irq_fifo_data_valid & irq_not_full;
   /* ni/irq_fifo.vhd:174:47  */
-  assign n1327_o = irq_w_ptr == 5'b01111;
+  assign n1306_o = irq_w_ptr == 5'b01111;
   /* ni/irq_fifo.vhd:177:64  */
-  assign n1329_o = irq_w_ptr + 5'b00001;
+  assign n1308_o = irq_w_ptr + 5'b00001;
   /* ni/irq_fifo.vhd:174:33  */
-  assign n1331_o = n1327_o ? 5'b00000 : n1329_o;
+  assign n1310_o = n1306_o ? 5'b00000 : n1308_o;
   /* ni/irq_fifo.vhd:173:25  */
-  assign n1332_o = n1325_o ? n1331_o : irq_w_ptr;
+  assign n1311_o = n1304_o ? n1310_o : irq_w_ptr;
   /* ni/irq_fifo.vhd:171:25  */
-  assign n1334_o = reset ? 5'b00000 : n1332_o;
+  assign n1313_o = reset ? 5'b00000 : n1311_o;
   /* ni/irq_fifo.vhd:170:17  */
   always @(posedge clk)
-    n1337_q <= n1334_o;
+    n1316_q <= n1313_o;
   /* ni/irq_fifo.vhd:189:58  */
-  assign n1341_o = irq_data_fifo_data_valid & data_not_full;
+  assign n1320_o = irq_data_fifo_data_valid & data_not_full;
   /* ni/irq_fifo.vhd:190:48  */
-  assign n1343_o = data_w_ptr == 5'b10000;
+  assign n1322_o = data_w_ptr == 5'b10000;
   /* ni/irq_fifo.vhd:193:66  */
-  assign n1345_o = data_w_ptr - 5'b00001;
+  assign n1324_o = data_w_ptr - 5'b00001;
   /* ni/irq_fifo.vhd:190:33  */
-  assign n1347_o = n1343_o ? 5'b11111 : n1345_o;
+  assign n1326_o = n1322_o ? 5'b11111 : n1324_o;
   /* ni/irq_fifo.vhd:189:25  */
-  assign n1348_o = n1341_o ? n1347_o : data_w_ptr;
+  assign n1327_o = n1320_o ? n1326_o : data_w_ptr;
   /* ni/irq_fifo.vhd:187:25  */
-  assign n1350_o = reset ? 5'b11111 : n1348_o;
+  assign n1329_o = reset ? 5'b11111 : n1327_o;
   /* ni/irq_fifo.vhd:186:17  */
   always @(posedge clk)
-    n1353_q <= n1350_o;
+    n1332_q <= n1329_o;
   /* ni/irq_fifo.vhd:205:49  */
-  assign n1357_o = irq_read & irq_not_empty;
+  assign n1336_o = irq_read & irq_not_empty;
   /* ni/irq_fifo.vhd:206:47  */
-  assign n1359_o = irq_r_ptr == 5'b01111;
+  assign n1338_o = irq_r_ptr == 5'b01111;
   /* ni/irq_fifo.vhd:209:64  */
-  assign n1361_o = irq_r_ptr + 5'b00001;
+  assign n1340_o = irq_r_ptr + 5'b00001;
   /* ni/irq_fifo.vhd:206:33  */
-  assign n1363_o = n1359_o ? 5'b00000 : n1361_o;
+  assign n1342_o = n1338_o ? 5'b00000 : n1340_o;
   /* ni/irq_fifo.vhd:205:25  */
-  assign n1364_o = n1357_o ? n1363_o : irq_r_ptr;
+  assign n1343_o = n1336_o ? n1342_o : irq_r_ptr;
   /* ni/irq_fifo.vhd:203:25  */
-  assign n1366_o = reset ? 5'b00000 : n1364_o;
+  assign n1345_o = reset ? 5'b00000 : n1343_o;
   /* ni/irq_fifo.vhd:202:17  */
   always @(posedge clk)
-    n1369_q <= n1366_o;
+    n1348_q <= n1345_o;
   /* ni/irq_fifo.vhd:221:50  */
-  assign n1373_o = data_read & data_not_empty;
+  assign n1352_o = data_read & data_not_empty;
   /* ni/irq_fifo.vhd:222:48  */
-  assign n1375_o = data_r_ptr == 5'b10000;
+  assign n1354_o = data_r_ptr == 5'b10000;
   /* ni/irq_fifo.vhd:225:66  */
-  assign n1377_o = data_r_ptr - 5'b00001;
+  assign n1356_o = data_r_ptr - 5'b00001;
   /* ni/irq_fifo.vhd:222:33  */
-  assign n1379_o = n1375_o ? 5'b11111 : n1377_o;
+  assign n1358_o = n1354_o ? 5'b11111 : n1356_o;
   /* ni/irq_fifo.vhd:221:25  */
-  assign n1380_o = n1373_o ? n1379_o : data_r_ptr;
+  assign n1359_o = n1352_o ? n1358_o : data_r_ptr;
   /* ni/irq_fifo.vhd:219:25  */
-  assign n1382_o = reset ? 5'b11111 : n1380_o;
+  assign n1361_o = reset ? 5'b11111 : n1359_o;
   /* ni/irq_fifo.vhd:218:17  */
   always @(posedge clk)
-    n1385_q <= n1382_o;
+    n1364_q <= n1361_o;
   /* ni/irq_fifo.vhd:234:25  */
-  assign n1390_o = reset ? 1'b0 : next_error;
+  assign n1369_o = reset ? 1'b0 : next_error;
   /* ni/irq_fifo.vhd:233:17  */
   always @(posedge clk)
-    n1394_q <= n1390_o;
+    n1373_q <= n1369_o;
   /* ni/irq_fifo.vhd:233:17  */
-  assign n1395_o = {n1394_q, 18'b000000000000000000, tdpram_n1318};
+  assign n1374_o = {n1373_q, 18'b000000000000000000, tdpram_n1297};
 endmodule
 
 module rx_unit
@@ -1393,14 +1393,14 @@ module rx_unit
    output [13:0] irq_fifo_data,
    output irq_fifo_data_valid,
    output irq_fifo_irq_valid);
-  wire [13:0] n1041_o;
-  wire [1:0] n1042_o;
-  wire n1043_o;
-  wire [63:0] n1044_o;
-  wire [13:0] n1046_o;
-  wire n1047_o;
-  wire n1048_o;
-  wire [31:0] n1049_o;
+  wire [13:0] n1020_o;
+  wire [1:0] n1021_o;
+  wire n1022_o;
+  wire [63:0] n1023_o;
+  wire [13:0] n1025_o;
+  wire n1026_o;
+  wire n1027_o;
+  wire [31:0] n1028_o;
   wire new_pkt;
   wire new_data_pkt;
   wire new_config_pkt;
@@ -1415,449 +1415,449 @@ module rx_unit
   wire [31:0] wdata_high;
   wire [2:0] state;
   wire [2:0] next_state;
+  wire n1032_o;
+  wire n1033_o;
+  wire n1034_o;
+  wire n1035_o;
+  wire n1036_o;
+  wire n1037_o;
+  wire n1038_o;
+  wire n1039_o;
+  wire n1040_o;
+  wire n1041_o;
+  wire n1042_o;
+  wire n1043_o;
+  wire n1044_o;
+  wire n1045_o;
+  wire n1046_o;
+  wire n1047_o;
+  wire n1048_o;
+  wire n1049_o;
+  wire [31:0] n1050_o;
+  wire [31:0] n1051_o;
+  wire n1052_o;
   wire n1053_o;
-  wire n1054_o;
-  wire n1055_o;
-  wire n1056_o;
-  wire n1057_o;
-  wire n1058_o;
-  wire n1059_o;
-  wire n1060_o;
-  wire n1061_o;
-  wire n1062_o;
-  wire n1063_o;
-  wire n1064_o;
-  wire n1065_o;
-  wire n1066_o;
-  wire n1067_o;
-  wire n1068_o;
-  wire n1069_o;
+  localparam [1:0] n1056_o = 2'b00;
+  wire [13:0] n1061_o;
+  wire [13:0] n1062_o;
+  wire [2:0] n1064_o;
+  wire [2:0] n1066_o;
+  wire [2:0] n1068_o;
   wire n1070_o;
-  wire [31:0] n1071_o;
-  wire [31:0] n1072_o;
+  wire [13:0] n1072_o;
   wire n1073_o;
   wire n1074_o;
-  localparam [1:0] n1077_o = 2'b00;
-  wire [13:0] n1082_o;
-  wire [13:0] n1083_o;
-  wire [2:0] n1085_o;
+  wire [31:0] n1077_o;
+  wire n1078_o;
+  wire n1079_o;
+  wire n1080_o;
+  wire [31:0] n1081_o;
+  wire n1084_o;
   wire [2:0] n1087_o;
-  wire [2:0] n1089_o;
-  wire n1091_o;
-  wire [13:0] n1093_o;
-  wire n1094_o;
-  wire n1095_o;
-  wire [31:0] n1098_o;
-  wire n1099_o;
-  wire n1100_o;
+  wire n1089_o;
+  localparam [1:0] n1090_o = 2'b11;
+  wire n1092_o;
+  wire n1093_o;
+  wire [2:0] n1096_o;
+  wire n1098_o;
   wire n1101_o;
-  wire [31:0] n1102_o;
-  wire n1105_o;
-  wire [2:0] n1108_o;
-  wire n1110_o;
-  localparam [1:0] n1111_o = 2'b11;
-  wire n1113_o;
-  wire n1114_o;
-  wire [2:0] n1117_o;
+  wire n1102_o;
+  wire [2:0] n1105_o;
+  wire n1107_o;
+  wire n1111_o;
+  wire [31:0] n1114_o;
+  wire n1116_o;
+  wire [5:0] n1117_o;
+  wire n1118_o;
   wire n1119_o;
+  reg n1121_o;
   wire n1122_o;
   wire n1123_o;
-  wire [2:0] n1126_o;
-  wire n1128_o;
-  wire n1132_o;
-  wire [31:0] n1135_o;
-  wire n1137_o;
-  wire [5:0] n1138_o;
-  wire n1139_o;
-  wire n1140_o;
-  reg n1142_o;
-  wire n1143_o;
-  wire n1144_o;
-  reg n1146_o;
-  reg n1148_o;
-  reg [31:0] n1150_o;
-  reg n1153_o;
-  reg n1155_o;
-  reg [13:0] n1157_o;
-  reg n1161_o;
-  reg n1165_o;
-  reg n1170_o;
-  reg [13:0] n1173_o;
-  reg [13:0] n1175_o;
-  reg [2:0] n1179_o;
-  wire [13:0] n1185_o;
-  wire [13:0] n1186_o;
-  reg [13:0] n1189_q;
-  wire [31:0] n1193_o;
-  wire [31:0] n1197_o;
-  reg [31:0] n1198_q;
-  wire [13:0] n1203_o;
-  wire [2:0] n1205_o;
-  reg [13:0] n1209_q;
-  reg [2:0] n1210_q;
-  wire n1214_o;
-  wire n1215_o;
-  wire n1216_o;
-  wire n1217_o;
-  wire n1218_o;
-  wire n1219_o;
-  wire n1220_o;
-  wire n1221_o;
-  wire n1223_o;
-  wire n1225_o;
-  reg n1228_q;
-  wire [80:0] n1229_o;
-  wire [47:0] n1230_o;
-  assign spm_addr = n1041_o;
-  assign spm_en = n1042_o;
-  assign spm_wr = n1043_o;
-  assign spm_wdata = n1044_o;
-  assign config_addr = n1046_o;
-  assign config_en = n1047_o;
-  assign config_wr = n1048_o;
-  assign config_wdata = n1049_o;
-  assign irq_fifo_data = n1157_o;
-  assign irq_fifo_data_valid = n1074_o;
-  assign irq_fifo_irq_valid = n1161_o;
+  reg n1125_o;
+  reg n1127_o;
+  reg [31:0] n1129_o;
+  reg n1132_o;
+  reg n1134_o;
+  reg [13:0] n1136_o;
+  reg n1140_o;
+  reg n1144_o;
+  reg n1149_o;
+  reg [13:0] n1152_o;
+  reg [13:0] n1154_o;
+  reg [2:0] n1158_o;
+  wire [13:0] n1164_o;
+  wire [13:0] n1165_o;
+  reg [13:0] n1168_q;
+  wire [31:0] n1172_o;
+  wire [31:0] n1176_o;
+  reg [31:0] n1177_q;
+  wire [13:0] n1182_o;
+  wire [2:0] n1184_o;
+  reg [13:0] n1188_q;
+  reg [2:0] n1189_q;
+  wire n1193_o;
+  wire n1194_o;
+  wire n1195_o;
+  wire n1196_o;
+  wire n1197_o;
+  wire n1198_o;
+  wire n1199_o;
+  wire n1200_o;
+  wire n1202_o;
+  wire n1204_o;
+  reg n1207_q;
+  wire [80:0] n1208_o;
+  wire [47:0] n1209_o;
+  assign spm_addr = n1020_o;
+  assign spm_en = n1021_o;
+  assign spm_wr = n1022_o;
+  assign spm_wdata = n1023_o;
+  assign config_addr = n1025_o;
+  assign config_en = n1026_o;
+  assign config_wr = n1027_o;
+  assign config_wdata = n1028_o;
+  assign irq_fifo_data = n1136_o;
+  assign irq_fifo_data_valid = n1053_o;
+  assign irq_fifo_irq_valid = n1140_o;
   /* ni/packet_manager.vhd:323:16  */
-  assign n1041_o = n1229_o[13:0];
+  assign n1020_o = n1208_o[13:0];
   /* ni/packet_manager.vhd:318:16  */
-  assign n1042_o = n1229_o[15:14];
+  assign n1021_o = n1208_o[15:14];
   /* ni/packet_manager.vhd:60:5  */
-  assign n1043_o = n1229_o[16];
+  assign n1022_o = n1208_o[16];
   /* ni/packet_manager.vhd:51:5  */
-  assign n1044_o = n1229_o[80:17];
-  assign n1046_o = n1230_o[13:0];
+  assign n1023_o = n1208_o[80:17];
+  assign n1025_o = n1209_o[13:0];
   /* ni/packet_manager.vhd:399:1  */
-  assign n1047_o = n1230_o[14];
-  assign n1048_o = n1230_o[15];
+  assign n1026_o = n1209_o[14];
+  assign n1027_o = n1209_o[15];
   /* ni/packet_manager.vhd:387:1  */
-  assign n1049_o = n1230_o[47:16];
+  assign n1028_o = n1209_o[47:16];
   /* ni/rx_unit.vhd:63:16  */
-  assign new_pkt = n1058_o; // (signal)
+  assign new_pkt = n1037_o; // (signal)
   /* ni/rx_unit.vhd:63:25  */
-  assign new_data_pkt = n1061_o; // (signal)
+  assign new_data_pkt = n1040_o; // (signal)
   /* ni/rx_unit.vhd:63:39  */
-  assign new_config_pkt = n1066_o; // (signal)
+  assign new_config_pkt = n1045_o; // (signal)
   /* ni/rx_unit.vhd:63:55  */
-  assign new_irq_pkt = n1070_o; // (signal)
+  assign new_irq_pkt = n1049_o; // (signal)
   /* ni/rx_unit.vhd:64:16  */
-  assign wdata_high_en = n1165_o; // (signal)
+  assign wdata_high_en = n1144_o; // (signal)
   /* ni/rx_unit.vhd:64:45  */
-  assign addr_load = n1170_o; // (signal)
+  assign addr_load = n1149_o; // (signal)
   /* ni/rx_unit.vhd:64:56  */
-  assign lst_data_pkt = n1228_q; // (signal)
+  assign lst_data_pkt = n1207_q; // (signal)
   /* ni/rx_unit.vhd:65:16  */
-  assign addr = n1189_q; // (signal)
+  assign addr = n1168_q; // (signal)
   /* ni/rx_unit.vhd:65:22  */
-  assign next_addr = n1173_o; // (signal)
+  assign next_addr = n1152_o; // (signal)
   /* ni/rx_unit.vhd:65:33  */
-  assign int_addr = n1209_q; // (signal)
+  assign int_addr = n1188_q; // (signal)
   /* ni/rx_unit.vhd:65:43  */
-  assign next_int_addr = n1175_o; // (signal)
+  assign next_int_addr = n1154_o; // (signal)
   /* ni/rx_unit.vhd:67:8  */
-  assign wdata_high = n1198_q; // (signal)
+  assign wdata_high = n1177_q; // (signal)
   /* ni/rx_unit.vhd:71:16  */
-  assign state = n1210_q; // (signal)
+  assign state = n1189_q; // (signal)
   /* ni/rx_unit.vhd:71:23  */
-  assign next_state = n1179_o; // (signal)
+  assign next_state = n1158_o; // (signal)
   /* ni/rx_unit.vhd:75:26  */
-  assign n1053_o = pkt_in[34];
+  assign n1032_o = pkt_in[34];
   /* ni/rx_unit.vhd:75:53  */
-  assign n1054_o = pkt_in[33];
+  assign n1033_o = pkt_in[33];
   /* ni/rx_unit.vhd:75:43  */
-  assign n1055_o = n1053_o & n1054_o;
+  assign n1034_o = n1032_o & n1033_o;
   /* ni/rx_unit.vhd:75:85  */
-  assign n1056_o = pkt_in[32];
+  assign n1035_o = pkt_in[32];
   /* ni/rx_unit.vhd:75:75  */
-  assign n1057_o = ~n1056_o;
+  assign n1036_o = ~n1035_o;
   /* ni/rx_unit.vhd:75:70  */
-  assign n1058_o = n1055_o & n1057_o;
+  assign n1037_o = n1034_o & n1036_o;
   /* ni/rx_unit.vhd:78:48  */
-  assign n1059_o = pkt_in[30];
+  assign n1038_o = pkt_in[30];
   /* ni/rx_unit.vhd:78:38  */
-  assign n1060_o = ~n1059_o;
+  assign n1039_o = ~n1038_o;
   /* ni/rx_unit.vhd:78:33  */
-  assign n1061_o = new_pkt & n1060_o;
+  assign n1040_o = new_pkt & n1039_o;
   /* ni/rx_unit.vhd:81:49  */
-  assign n1062_o = pkt_in[31];
+  assign n1041_o = pkt_in[31];
   /* ni/rx_unit.vhd:81:39  */
-  assign n1063_o = ~n1062_o;
+  assign n1042_o = ~n1041_o;
   /* ni/rx_unit.vhd:81:35  */
-  assign n1064_o = new_pkt & n1063_o;
+  assign n1043_o = new_pkt & n1042_o;
   /* ni/rx_unit.vhd:81:106  */
-  assign n1065_o = pkt_in[30];
+  assign n1044_o = pkt_in[30];
   /* ni/rx_unit.vhd:81:96  */
-  assign n1066_o = n1064_o & n1065_o;
+  assign n1045_o = n1043_o & n1044_o;
   /* ni/rx_unit.vhd:84:42  */
-  assign n1067_o = pkt_in[31];
+  assign n1046_o = pkt_in[31];
   /* ni/rx_unit.vhd:84:32  */
-  assign n1068_o = new_pkt & n1067_o;
+  assign n1047_o = new_pkt & n1046_o;
   /* ni/rx_unit.vhd:84:98  */
-  assign n1069_o = pkt_in[30];
+  assign n1048_o = pkt_in[30];
   /* ni/rx_unit.vhd:84:88  */
-  assign n1070_o = n1068_o & n1069_o;
+  assign n1049_o = n1047_o & n1048_o;
   /* ni/rx_unit.vhd:87:62  */
-  assign n1071_o = pkt_in[31:0];
+  assign n1050_o = pkt_in[31:0];
   /* ni/rx_unit.vhd:89:65  */
-  assign n1072_o = pkt_in[31:0];
+  assign n1051_o = pkt_in[31:0];
   /* ni/rx_unit.vhd:96:55  */
-  assign n1073_o = pkt_in[32];
+  assign n1052_o = pkt_in[32];
   /* ni/rx_unit.vhd:96:45  */
-  assign n1074_o = lst_data_pkt & n1073_o;
+  assign n1053_o = lst_data_pkt & n1052_o;
   /* ni/rx_unit.vhd:113:43  */
-  assign n1082_o = int_addr + 14'b00000000000001;
+  assign n1061_o = int_addr + 14'b00000000000001;
   /* ni/rx_unit.vhd:117:65  */
-  assign n1083_o = pkt_in[29:16];
+  assign n1062_o = pkt_in[29:16];
   /* ni/rx_unit.vhd:122:33  */
-  assign n1085_o = new_irq_pkt ? 3'b101 : state;
+  assign n1064_o = new_irq_pkt ? 3'b101 : state;
   /* ni/rx_unit.vhd:120:33  */
-  assign n1087_o = new_config_pkt ? 3'b100 : n1085_o;
+  assign n1066_o = new_config_pkt ? 3'b100 : n1064_o;
   /* ni/rx_unit.vhd:118:33  */
-  assign n1089_o = new_data_pkt ? 3'b010 : n1087_o;
+  assign n1068_o = new_data_pkt ? 3'b010 : n1066_o;
   /* ni/rx_unit.vhd:115:25  */
-  assign n1091_o = state == 3'b000;
+  assign n1070_o = state == 3'b000;
   /* ni/rx_unit.vhd:127:55  */
-  assign n1093_o = addr + 14'b00000000000001;
+  assign n1072_o = addr + 14'b00000000000001;
   /* ni/rx_unit.vhd:128:43  */
-  assign n1094_o = pkt_in[32];
+  assign n1073_o = pkt_in[32];
   /* ni/rx_unit.vhd:128:60  */
-  assign n1095_o = ~n1094_o;
+  assign n1074_o = ~n1073_o;
   /* ni/rx_unit.vhd:134:107  */
-  assign n1098_o = pkt_in[31:0];
-  assign n1099_o = n1077_o[0];
+  assign n1077_o = pkt_in[31:0];
+  assign n1078_o = n1056_o[0];
   /* ni/rx_unit.vhd:128:33  */
-  assign n1100_o = n1095_o ? n1099_o : 1'b1;
+  assign n1079_o = n1074_o ? n1078_o : 1'b1;
   /* ni/rx_unit.vhd:128:33  */
-  assign n1101_o = n1095_o ? 1'b0 : 1'b1;
+  assign n1080_o = n1074_o ? 1'b0 : 1'b1;
   /* ni/rx_unit.vhd:128:33  */
-  assign n1102_o = n1095_o ? wdata_high : n1098_o;
+  assign n1081_o = n1074_o ? wdata_high : n1077_o;
   /* ni/rx_unit.vhd:128:33  */
-  assign n1105_o = n1095_o ? 1'b1 : 1'b0;
+  assign n1084_o = n1074_o ? 1'b1 : 1'b0;
   /* ni/rx_unit.vhd:128:33  */
-  assign n1108_o = n1095_o ? 3'b001 : 3'b000;
+  assign n1087_o = n1074_o ? 3'b001 : 3'b000;
   /* ni/rx_unit.vhd:126:25  */
-  assign n1110_o = state == 3'b010;
+  assign n1089_o = state == 3'b010;
   /* ni/rx_unit.vhd:143:43  */
-  assign n1113_o = pkt_in[32];
+  assign n1092_o = pkt_in[32];
   /* ni/rx_unit.vhd:143:60  */
-  assign n1114_o = ~n1113_o;
+  assign n1093_o = ~n1092_o;
   /* ni/rx_unit.vhd:143:33  */
-  assign n1117_o = n1114_o ? 3'b010 : 3'b000;
+  assign n1096_o = n1093_o ? 3'b010 : 3'b000;
   /* ni/rx_unit.vhd:138:25  */
-  assign n1119_o = state == 3'b001;
+  assign n1098_o = state == 3'b001;
   /* ni/rx_unit.vhd:153:43  */
-  assign n1122_o = pkt_in[32];
+  assign n1101_o = pkt_in[32];
   /* ni/rx_unit.vhd:153:60  */
-  assign n1123_o = ~n1122_o;
+  assign n1102_o = ~n1101_o;
   /* ni/rx_unit.vhd:153:33  */
-  assign n1126_o = n1123_o ? 3'b011 : 3'b000;
+  assign n1105_o = n1102_o ? 3'b011 : 3'b000;
   /* ni/rx_unit.vhd:150:25  */
-  assign n1128_o = state == 3'b100;
+  assign n1107_o = state == 3'b100;
   /* ni/rx_unit.vhd:159:25  */
-  assign n1132_o = state == 3'b011;
+  assign n1111_o = state == 3'b011;
   /* ni/rx_unit.vhd:169:99  */
-  assign n1135_o = pkt_in[31:0];
+  assign n1114_o = pkt_in[31:0];
   /* ni/rx_unit.vhd:165:25  */
-  assign n1137_o = state == 3'b101;
-  assign n1138_o = {n1137_o, n1132_o, n1128_o, n1119_o, n1110_o, n1091_o};
-  assign n1139_o = n1111_o[0];
-  assign n1140_o = n1077_o[0];
+  assign n1116_o = state == 3'b101;
+  assign n1117_o = {n1116_o, n1111_o, n1107_o, n1098_o, n1089_o, n1070_o};
+  assign n1118_o = n1090_o[0];
+  assign n1119_o = n1056_o[0];
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1142_o <= 1'b1;
-      6'b010000: n1142_o <= n1140_o;
-      6'b001000: n1142_o <= n1140_o;
-      6'b000100: n1142_o <= n1139_o;
-      6'b000010: n1142_o <= n1100_o;
-      6'b000001: n1142_o <= n1140_o;
-      default: n1142_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1121_o <= 1'b1;
+      6'b010000: n1121_o <= n1119_o;
+      6'b001000: n1121_o <= n1119_o;
+      6'b000100: n1121_o <= n1118_o;
+      6'b000010: n1121_o <= n1079_o;
+      6'b000001: n1121_o <= n1119_o;
+      default: n1121_o <= 1'bX;
     endcase
-  assign n1143_o = n1111_o[1];
-  assign n1144_o = n1077_o[1];
+  assign n1122_o = n1090_o[1];
+  assign n1123_o = n1056_o[1];
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1146_o <= n1144_o;
-      6'b010000: n1146_o <= n1144_o;
-      6'b001000: n1146_o <= n1144_o;
-      6'b000100: n1146_o <= n1143_o;
-      6'b000010: n1146_o <= n1144_o;
-      6'b000001: n1146_o <= n1144_o;
-      default: n1146_o <= 1'bX;
-    endcase
-  /* ni/rx_unit.vhd:114:17  */
-  always @*
-    case (n1138_o)
-      6'b100000: n1148_o <= 1'b1;
-      6'b010000: n1148_o <= 1'b0;
-      6'b001000: n1148_o <= 1'b0;
-      6'b000100: n1148_o <= 1'b1;
-      6'b000010: n1148_o <= n1101_o;
-      6'b000001: n1148_o <= 1'b0;
-      default: n1148_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1125_o <= n1123_o;
+      6'b010000: n1125_o <= n1123_o;
+      6'b001000: n1125_o <= n1123_o;
+      6'b000100: n1125_o <= n1122_o;
+      6'b000010: n1125_o <= n1123_o;
+      6'b000001: n1125_o <= n1123_o;
+      default: n1125_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1150_o <= n1135_o;
-      6'b010000: n1150_o <= wdata_high;
-      6'b001000: n1150_o <= wdata_high;
-      6'b000100: n1150_o <= wdata_high;
-      6'b000010: n1150_o <= n1102_o;
-      6'b000001: n1150_o <= wdata_high;
-      default: n1150_o <= 32'bX;
+    case (n1117_o)
+      6'b100000: n1127_o <= 1'b1;
+      6'b010000: n1127_o <= 1'b0;
+      6'b001000: n1127_o <= 1'b0;
+      6'b000100: n1127_o <= 1'b1;
+      6'b000010: n1127_o <= n1080_o;
+      6'b000001: n1127_o <= 1'b0;
+      default: n1127_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1153_o <= 1'b0;
-      6'b010000: n1153_o <= 1'b1;
-      6'b001000: n1153_o <= 1'b1;
-      6'b000100: n1153_o <= 1'b0;
-      6'b000010: n1153_o <= 1'b0;
-      6'b000001: n1153_o <= 1'b0;
-      default: n1153_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1129_o <= n1114_o;
+      6'b010000: n1129_o <= wdata_high;
+      6'b001000: n1129_o <= wdata_high;
+      6'b000100: n1129_o <= wdata_high;
+      6'b000010: n1129_o <= n1081_o;
+      6'b000001: n1129_o <= wdata_high;
+      default: n1129_o <= 32'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1155_o <= 1'b0;
-      6'b010000: n1155_o <= 1'b1;
-      6'b001000: n1155_o <= 1'b1;
-      6'b000100: n1155_o <= 1'b0;
-      6'b000010: n1155_o <= 1'b0;
-      6'b000001: n1155_o <= 1'b0;
-      default: n1155_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1132_o <= 1'b0;
+      6'b010000: n1132_o <= 1'b1;
+      6'b001000: n1132_o <= 1'b1;
+      6'b000100: n1132_o <= 1'b0;
+      6'b000010: n1132_o <= 1'b0;
+      6'b000001: n1132_o <= 1'b0;
+      default: n1132_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1157_o <= addr;
-      6'b010000: n1157_o <= addr;
-      6'b001000: n1157_o <= addr;
-      6'b000100: n1157_o <= int_addr;
-      6'b000010: n1157_o <= addr;
-      6'b000001: n1157_o <= addr;
-      default: n1157_o <= 14'bX;
+    case (n1117_o)
+      6'b100000: n1134_o <= 1'b0;
+      6'b010000: n1134_o <= 1'b1;
+      6'b001000: n1134_o <= 1'b1;
+      6'b000100: n1134_o <= 1'b0;
+      6'b000010: n1134_o <= 1'b0;
+      6'b000001: n1134_o <= 1'b0;
+      default: n1134_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1161_o <= 1'b1;
-      6'b010000: n1161_o <= 1'b0;
-      6'b001000: n1161_o <= 1'b0;
-      6'b000100: n1161_o <= 1'b0;
-      6'b000010: n1161_o <= 1'b0;
-      6'b000001: n1161_o <= 1'b0;
-      default: n1161_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1136_o <= addr;
+      6'b010000: n1136_o <= addr;
+      6'b001000: n1136_o <= addr;
+      6'b000100: n1136_o <= int_addr;
+      6'b000010: n1136_o <= addr;
+      6'b000001: n1136_o <= addr;
+      default: n1136_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1165_o <= 1'b0;
-      6'b010000: n1165_o <= 1'b0;
-      6'b001000: n1165_o <= 1'b0;
-      6'b000100: n1165_o <= 1'b0;
-      6'b000010: n1165_o <= n1105_o;
-      6'b000001: n1165_o <= 1'b0;
-      default: n1165_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1140_o <= 1'b1;
+      6'b010000: n1140_o <= 1'b0;
+      6'b001000: n1140_o <= 1'b0;
+      6'b000100: n1140_o <= 1'b0;
+      6'b000010: n1140_o <= 1'b0;
+      6'b000001: n1140_o <= 1'b0;
+      default: n1140_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1170_o <= 1'b0;
-      6'b010000: n1170_o <= 1'b0;
-      6'b001000: n1170_o <= 1'b0;
-      6'b000100: n1170_o <= 1'b0;
-      6'b000010: n1170_o <= 1'b0;
-      6'b000001: n1170_o <= 1'b1;
-      default: n1170_o <= 1'bX;
+    case (n1117_o)
+      6'b100000: n1144_o <= 1'b0;
+      6'b010000: n1144_o <= 1'b0;
+      6'b001000: n1144_o <= 1'b0;
+      6'b000100: n1144_o <= 1'b0;
+      6'b000010: n1144_o <= n1084_o;
+      6'b000001: n1144_o <= 1'b0;
+      default: n1144_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1173_o <= addr;
-      6'b010000: n1173_o <= addr;
-      6'b001000: n1173_o <= addr;
-      6'b000100: n1173_o <= next_int_addr;
-      6'b000010: n1173_o <= addr;
-      6'b000001: n1173_o <= addr;
-      default: n1173_o <= 14'bX;
+    case (n1117_o)
+      6'b100000: n1149_o <= 1'b0;
+      6'b010000: n1149_o <= 1'b0;
+      6'b001000: n1149_o <= 1'b0;
+      6'b000100: n1149_o <= 1'b0;
+      6'b000010: n1149_o <= 1'b0;
+      6'b000001: n1149_o <= 1'b1;
+      default: n1149_o <= 1'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1175_o <= n1082_o;
-      6'b010000: n1175_o <= n1082_o;
-      6'b001000: n1175_o <= n1082_o;
-      6'b000100: n1175_o <= n1082_o;
-      6'b000010: n1175_o <= n1093_o;
-      6'b000001: n1175_o <= n1083_o;
-      default: n1175_o <= 14'bX;
+    case (n1117_o)
+      6'b100000: n1152_o <= addr;
+      6'b010000: n1152_o <= addr;
+      6'b001000: n1152_o <= addr;
+      6'b000100: n1152_o <= next_int_addr;
+      6'b000010: n1152_o <= addr;
+      6'b000001: n1152_o <= addr;
+      default: n1152_o <= 14'bX;
     endcase
   /* ni/rx_unit.vhd:114:17  */
   always @*
-    case (n1138_o)
-      6'b100000: n1179_o <= 3'b000;
-      6'b010000: n1179_o <= 3'b000;
-      6'b001000: n1179_o <= n1126_o;
-      6'b000100: n1179_o <= n1117_o;
-      6'b000010: n1179_o <= n1108_o;
-      6'b000001: n1179_o <= n1089_o;
-      default: n1179_o <= 3'bX;
+    case (n1117_o)
+      6'b100000: n1154_o <= n1061_o;
+      6'b010000: n1154_o <= n1061_o;
+      6'b001000: n1154_o <= n1061_o;
+      6'b000100: n1154_o <= n1061_o;
+      6'b000010: n1154_o <= n1072_o;
+      6'b000001: n1154_o <= n1062_o;
+      default: n1154_o <= 14'bX;
+    endcase
+  /* ni/rx_unit.vhd:114:17  */
+  always @*
+    case (n1117_o)
+      6'b100000: n1158_o <= 3'b000;
+      6'b010000: n1158_o <= 3'b000;
+      6'b001000: n1158_o <= n1105_o;
+      6'b000100: n1158_o <= n1096_o;
+      6'b000010: n1158_o <= n1087_o;
+      6'b000001: n1158_o <= n1068_o;
+      default: n1158_o <= 3'bX;
     endcase
   /* ni/rx_unit.vhd:180:56  */
-  assign n1185_o = pkt_in[29:16];
+  assign n1164_o = pkt_in[29:16];
   /* ni/rx_unit.vhd:179:25  */
-  assign n1186_o = addr_load ? n1185_o : next_addr;
+  assign n1165_o = addr_load ? n1164_o : next_addr;
   /* ni/rx_unit.vhd:178:17  */
   always @(posedge clk)
-    n1189_q <= n1186_o;
+    n1168_q <= n1165_o;
   /* ni/rx_unit.vhd:192:62  */
-  assign n1193_o = pkt_in[31:0];
+  assign n1172_o = pkt_in[31:0];
   /* ni/rx_unit.vhd:190:17  */
-  assign n1197_o = wdata_high_en ? n1193_o : wdata_high;
+  assign n1176_o = wdata_high_en ? n1172_o : wdata_high;
   /* ni/rx_unit.vhd:190:17  */
   always @(posedge clk)
-    n1198_q <= n1197_o;
+    n1177_q <= n1176_o;
   /* ni/rx_unit.vhd:201:25  */
-  assign n1203_o = reset ? 14'b00000000000000 : next_int_addr;
+  assign n1182_o = reset ? 14'b00000000000000 : next_int_addr;
   /* ni/rx_unit.vhd:201:25  */
-  assign n1205_o = reset ? 3'b000 : next_state;
+  assign n1184_o = reset ? 3'b000 : next_state;
   /* ni/rx_unit.vhd:200:17  */
   always @(posedge clk)
-    n1209_q <= n1203_o;
+    n1188_q <= n1182_o;
   /* ni/rx_unit.vhd:200:17  */
   always @(posedge clk)
-    n1210_q <= n1205_o;
+    n1189_q <= n1184_o;
   /* ni/rx_unit.vhd:217:77  */
-  assign n1214_o = pkt_in[31];
+  assign n1193_o = pkt_in[31];
   /* ni/rx_unit.vhd:217:67  */
-  assign n1215_o = new_data_pkt & n1214_o;
+  assign n1194_o = new_data_pkt & n1193_o;
   /* ni/rx_unit.vhd:217:49  */
-  assign n1216_o = ~n1215_o;
+  assign n1195_o = ~n1194_o;
   /* ni/rx_unit.vhd:217:135  */
-  assign n1217_o = pkt_in[32];
+  assign n1196_o = pkt_in[32];
   /* ni/rx_unit.vhd:217:125  */
-  assign n1218_o = n1216_o & n1217_o;
+  assign n1197_o = n1195_o & n1196_o;
   /* ni/rx_unit.vhd:217:43  */
-  assign n1219_o = reset | n1218_o;
+  assign n1198_o = reset | n1197_o;
   /* ni/rx_unit.vhd:219:56  */
-  assign n1220_o = pkt_in[31];
+  assign n1199_o = pkt_in[31];
   /* ni/rx_unit.vhd:219:46  */
-  assign n1221_o = new_data_pkt & n1220_o;
+  assign n1200_o = new_data_pkt & n1199_o;
   /* ni/rx_unit.vhd:219:25  */
-  assign n1223_o = n1221_o ? 1'b1 : lst_data_pkt;
+  assign n1202_o = n1200_o ? 1'b1 : lst_data_pkt;
   /* ni/rx_unit.vhd:217:25  */
-  assign n1225_o = n1219_o ? 1'b0 : n1223_o;
+  assign n1204_o = n1198_o ? 1'b0 : n1202_o;
   /* ni/rx_unit.vhd:216:17  */
   always @(posedge clk)
-    n1228_q <= n1225_o;
+    n1207_q <= n1204_o;
   /* ni/rx_unit.vhd:216:17  */
-  assign n1229_o = {n1150_o, n1071_o, n1148_o, n1146_o, n1142_o, addr};
-  assign n1230_o = {n1072_o, n1155_o, n1153_o, int_addr};
+  assign n1208_o = {n1129_o, n1050_o, n1127_o, n1125_o, n1121_o, addr};
+  assign n1209_o = {n1051_o, n1134_o, n1132_o, int_addr};
 endmodule
 
 module packet_manager
@@ -1884,14 +1884,14 @@ module packet_manager
    output spm_wr,
    output [63:0] spm_wdata,
    output [34:0] pkt_out);
-  wire [47:0] n683_o;
-  wire [31:0] n685_o;
-  wire n686_o;
-  wire [13:0] n688_o;
-  wire [1:0] n689_o;
-  wire n690_o;
-  wire [63:0] n691_o;
-  wire [64:0] n692_o;
+  wire [47:0] n662_o;
+  wire [31:0] n664_o;
+  wire n665_o;
+  wire [13:0] n667_o;
+  wire [1:0] n668_o;
+  wire n669_o;
+  wire [63:0] n670_o;
+  wire [64:0] n671_o;
   wire [2:0] state;
   wire [2:0] next_state;
   wire [44:0] dmatbl_data;
@@ -1922,808 +1922,808 @@ module packet_manager
   wire [15:0] route_reg;
   wire [31:0] payload_data;
   wire [31:0] payload_data_next;
+  wire [13:0] n679_o;
+  wire [3:0] n680_o;
+  wire [1:0] n681_o;
+  wire n683_o;
+  wire [1:0] n685_o;
+  wire [4:0] n687_o;
+  wire [7:0] n689_o;
+  wire [18:0] n691_o;
+  wire [34:0] n692_o;
+  wire n693_o;
+  wire [13:0] n695_o;
+  wire [13:0] n696_o;
+  wire [13:0] n697_o;
+  wire [13:0] n699_o;
   wire [13:0] n700_o;
-  wire [3:0] n701_o;
-  wire [1:0] n702_o;
-  wire n704_o;
-  wire [1:0] n706_o;
-  wire [4:0] n708_o;
-  wire [7:0] n710_o;
-  wire [18:0] n712_o;
-  wire [34:0] n713_o;
-  wire n714_o;
+  wire [13:0] n701_o;
+  wire n702_o;
+  wire [1:0] n703_o;
+  wire n705_o;
+  wire [1:0] n707_o;
+  wire n709_o;
+  wire n710_o;
+  wire [13:0] n711_o;
+  wire [13:0] n712_o;
+  wire [13:0] n713_o;
+  wire [13:0] n714_o;
+  wire [13:0] n715_o;
   wire [13:0] n716_o;
   wire [13:0] n717_o;
   wire [13:0] n718_o;
-  wire [13:0] n720_o;
-  wire [13:0] n721_o;
-  wire [13:0] n722_o;
-  wire n723_o;
-  wire [1:0] n724_o;
-  wire n726_o;
-  wire [1:0] n728_o;
-  wire n730_o;
-  wire n731_o;
-  wire [13:0] n732_o;
-  wire [13:0] n733_o;
-  wire [13:0] n734_o;
-  wire [13:0] n735_o;
-  wire [13:0] n736_o;
-  wire [13:0] n737_o;
-  wire [13:0] n738_o;
-  wire [13:0] n739_o;
-  wire [13:0] n740_o;
-  wire [1:0] n741_o;
-  wire n743_o;
-  wire [3:0] n744_o;
-  wire [3:0] n745_o;
-  wire [3:0] n746_o;
-  wire [9:0] n747_o;
-  wire [3:0] n749_o;
-  wire [4:0] n751_o;
-  wire [13:0] n752_o;
-  wire [18:0] n753_o;
-  wire [34:0] n754_o;
+  wire [13:0] n719_o;
+  wire [1:0] n720_o;
+  wire n722_o;
+  wire [3:0] n723_o;
+  wire [3:0] n724_o;
+  wire [3:0] n725_o;
+  wire [9:0] n726_o;
+  wire [3:0] n728_o;
+  wire [4:0] n730_o;
+  wire [13:0] n731_o;
+  wire [18:0] n732_o;
+  wire [34:0] n733_o;
+  wire [15:0] n734_o;
+  wire [15:0] n735_o;
+  wire [15:0] n736_o;
+  wire [34:0] n738_o;
+  wire [2:0] n740_o;
+  wire [13:0] n741_o;
+  wire n742_o;
+  wire [13:0] n743_o;
+  wire n746_o;
+  wire [13:0] n747_o;
+  wire [28:0] n748_o;
+  wire [13:0] n749_o;
+  wire [13:0] n750_o;
+  wire [27:0] n751_o;
+  wire [28:0] n752_o;
+  wire [28:0] n753_o;
+  wire [3:0] n754_o;
   wire [15:0] n755_o;
   wire [15:0] n756_o;
-  wire [15:0] n757_o;
-  wire [34:0] n759_o;
-  wire [2:0] n761_o;
+  wire [34:0] n757_o;
+  wire [2:0] n759_o;
+  wire [13:0] n760_o;
+  wire [1:0] n761_o;
   wire [13:0] n762_o;
-  wire n763_o;
-  wire [13:0] n764_o;
-  wire n767_o;
-  wire [13:0] n768_o;
+  wire n764_o;
+  wire [13:0] n765_o;
+  wire [13:0] n766_o;
+  wire [27:0] n767_o;
+  wire [28:0] n768_o;
   wire [28:0] n769_o;
-  wire [13:0] n770_o;
-  wire [13:0] n771_o;
-  wire [27:0] n772_o;
-  wire [28:0] n773_o;
-  wire [28:0] n774_o;
-  wire [3:0] n775_o;
+  wire [3:0] n770_o;
+  wire [1:0] n772_o;
+  wire [1:0] n774_o;
+  wire [15:0] n775_o;
   wire [15:0] n776_o;
-  wire [15:0] n777_o;
   wire [34:0] n778_o;
-  wire [2:0] n780_o;
-  wire [13:0] n781_o;
-  wire [1:0] n782_o;
-  wire [13:0] n783_o;
-  wire n785_o;
+  wire [2:0] n779_o;
+  wire [13:0] n780_o;
+  wire [1:0] n781_o;
+  wire [13:0] n782_o;
+  wire n784_o;
+  wire [13:0] n785_o;
   wire [13:0] n786_o;
-  wire [13:0] n787_o;
-  wire [27:0] n788_o;
+  wire [27:0] n787_o;
+  wire [28:0] n788_o;
   wire [28:0] n789_o;
-  wire [28:0] n790_o;
-  wire [3:0] n791_o;
-  wire [1:0] n793_o;
-  wire [1:0] n795_o;
-  wire [15:0] n796_o;
-  wire [15:0] n797_o;
-  wire [34:0] n799_o;
-  wire [2:0] n800_o;
+  wire [3:0] n790_o;
+  wire [1:0] n792_o;
+  wire [1:0] n794_o;
+  wire n796_o;
+  wire [31:0] n797_o;
+  wire [3:0] n799_o;
   wire [13:0] n801_o;
-  wire [1:0] n802_o;
-  wire [13:0] n803_o;
+  wire n803_o;
   wire n805_o;
-  wire [13:0] n806_o;
-  wire [13:0] n807_o;
-  wire [27:0] n808_o;
-  wire [28:0] n809_o;
-  wire [28:0] n810_o;
-  wire [3:0] n811_o;
-  wire [1:0] n813_o;
-  wire [1:0] n815_o;
-  wire n817_o;
-  wire [31:0] n818_o;
-  wire [3:0] n820_o;
-  wire [13:0] n822_o;
-  wire n824_o;
-  wire n826_o;
+  wire n806_o;
+  wire [31:0] n807_o;
+  wire [34:0] n809_o;
+  wire [13:0] n811_o;
+  wire [31:0] n812_o;
+  wire [34:0] n814_o;
+  wire [34:0] n815_o;
+  wire [2:0] n818_o;
+  wire [13:0] n819_o;
+  wire n821_o;
+  wire [3:0] n823_o;
+  wire [13:0] n825_o;
   wire n827_o;
-  wire [31:0] n828_o;
-  wire [34:0] n830_o;
-  wire [13:0] n832_o;
-  wire [31:0] n833_o;
-  wire [34:0] n835_o;
-  wire [34:0] n836_o;
-  wire [2:0] n839_o;
-  wire [13:0] n840_o;
-  wire n842_o;
-  wire [3:0] n844_o;
-  wire [13:0] n846_o;
-  wire n848_o;
-  wire n850_o;
+  wire n829_o;
+  wire n830_o;
+  wire [34:0] n832_o;
+  wire [13:0] n835_o;
+  wire [34:0] n837_o;
+  wire [15:0] n838_o;
+  wire [15:0] n839_o;
+  wire [15:0] n840_o;
+  wire [34:0] n841_o;
+  wire [2:0] n844_o;
+  wire [13:0] n845_o;
+  wire n847_o;
+  wire [34:0] n849_o;
   wire n851_o;
   wire [34:0] n853_o;
-  wire [13:0] n856_o;
-  wire [34:0] n858_o;
-  wire [15:0] n859_o;
-  wire [15:0] n860_o;
-  wire [15:0] n861_o;
-  wire [34:0] n862_o;
-  wire [2:0] n865_o;
-  wire [13:0] n866_o;
-  wire n868_o;
-  wire [34:0] n870_o;
-  wire n872_o;
-  wire [34:0] n874_o;
-  wire n876_o;
-  wire [4:0] n877_o;
-  wire [15:0] n878_o;
-  reg [15:0] n880_o;
-  reg [34:0] n882_o;
-  reg [2:0] n887_o;
-  reg [13:0] n889_o;
+  wire n855_o;
+  wire [4:0] n856_o;
+  wire [15:0] n857_o;
+  reg [15:0] n859_o;
+  reg [34:0] n861_o;
+  reg [2:0] n866_o;
+  reg [13:0] n868_o;
+  reg [1:0] n870_o;
+  reg [13:0] n872_o;
+  reg n875_o;
+  wire [13:0] n877_o;
+  reg [13:0] n879_o;
+  wire [27:0] n880_o;
+  wire [28:0] n881_o;
+  reg [28:0] n883_o;
+  wire [1:0] n885_o;
+  reg [3:0] n887_o;
+  wire [1:0] n888_o;
   reg [1:0] n891_o;
-  reg [13:0] n893_o;
-  reg n896_o;
-  wire [13:0] n898_o;
-  reg [13:0] n900_o;
-  wire [27:0] n901_o;
-  wire [28:0] n902_o;
-  reg [28:0] n904_o;
-  wire [1:0] n906_o;
-  reg [3:0] n908_o;
-  wire [1:0] n909_o;
-  reg [1:0] n912_o;
-  wire [13:0] n913_o;
-  reg [13:0] n916_o;
-  wire [1:0] n917_o;
-  reg [1:0] n920_o;
-  wire [13:0] n921_o;
-  reg [13:0] n924_o;
-  wire [5:0] n931_o;
-  localparam [31:0] n932_o = 32'b00000000000000000000000000000000;
-  wire n933_o;
-  wire [27:0] n934_o;
+  wire [13:0] n892_o;
+  reg [13:0] n895_o;
+  wire [1:0] n896_o;
+  reg [1:0] n899_o;
+  wire [13:0] n900_o;
+  reg [13:0] n903_o;
+  wire [5:0] n910_o;
+  localparam [31:0] n911_o = 32'b00000000000000000000000000000000;
+  wire n912_o;
+  wire [27:0] n913_o;
+  wire [15:0] n914_o;
+  wire n915_o;
+  wire n916_o;
+  wire n917_o;
+  wire n918_o;
+  wire n919_o;
+  wire n920_o;
+  wire n921_o;
+  wire n923_o;
+  wire n925_o;
+  wire n928_o;
+  wire n930_o;
+  wire n931_o;
+  wire [27:0] n932_o;
+  wire [15:0] n933_o;
+  wire [15:0] n934_o;
   wire [15:0] n935_o;
-  wire n936_o;
-  wire n937_o;
-  wire n938_o;
+  wire [11:0] n936_o;
+  wire [11:0] n937_o;
+  wire [11:0] n938_o;
   wire n939_o;
   wire n940_o;
-  wire n941_o;
-  wire n942_o;
-  wire n944_o;
-  wire n946_o;
-  wire n949_o;
-  wire n951_o;
-  wire n952_o;
-  wire [27:0] n953_o;
-  wire [15:0] n954_o;
-  wire [15:0] n955_o;
-  wire [15:0] n956_o;
-  wire [11:0] n957_o;
-  wire [11:0] n958_o;
-  wire [11:0] n959_o;
-  wire n960_o;
-  wire n961_o;
-  wire [2:0] n964_o;
-  wire n968_o;
-  wire [5:0] n969_o;
+  wire [2:0] n943_o;
+  wire n947_o;
+  wire [5:0] n948_o;
   wire [28:0] dmatbl1_a_dout;
   wire [28:0] dmatbl1_b_dout;
-  wire [28:0] n971_o;
-  wire [28:0] n973_o;
+  wire [28:0] n950_o;
+  wire [28:0] n952_o;
   wire [15:0] dmatbl2_a_dout;
   wire [15:0] dmatbl2_b_dout;
-  wire [15:0] n975_o;
-  wire [15:0] n977_o;
-  wire [3:0] n980_o;
-  wire n982_o;
-  wire n983_o;
-  wire n986_o;
-  wire n992_o;
-  reg n995_q;
-  wire n999_o;
-  reg n1002_q;
-  wire n1006_o;
-  reg n1010_q;
-  wire [2:0] n1014_o;
-  reg [2:0] n1017_q;
-  reg [13:0] n1027_q;
-  reg [13:0] n1028_q;
-  reg [5:0] n1029_q;
-  reg [3:0] n1030_q;
-  reg [15:0] n1031_q;
-  reg [31:0] n1032_q;
-  wire [44:0] n1033_o;
-  wire [44:0] n1034_o;
-  wire [44:0] n1035_o;
-  wire [44:0] n1036_o;
-  wire [31:0] n1037_o;
-  wire [32:0] n1038_o;
-  wire [80:0] n1039_o;
-  assign config_slv_rdata = n685_o;
-  assign config_slv_error = n686_o;
-  assign spm_addr = n688_o;
-  assign spm_en = n689_o;
-  assign spm_wr = n690_o;
-  assign spm_wdata = n691_o;
-  assign pkt_out = n882_o;
+  wire [15:0] n954_o;
+  wire [15:0] n956_o;
+  wire [3:0] n959_o;
+  wire n961_o;
+  wire n962_o;
+  wire n965_o;
+  wire n971_o;
+  reg n974_q;
+  wire n978_o;
+  reg n981_q;
+  wire n985_o;
+  reg n989_q;
+  wire [2:0] n993_o;
+  reg [2:0] n996_q;
+  reg [13:0] n1006_q;
+  reg [13:0] n1007_q;
+  reg [5:0] n1008_q;
+  reg [3:0] n1009_q;
+  reg [15:0] n1010_q;
+  reg [31:0] n1011_q;
+  wire [44:0] n1012_o;
+  wire [44:0] n1013_o;
+  wire [44:0] n1014_o;
+  wire [44:0] n1015_o;
+  wire [31:0] n1016_o;
+  wire [32:0] n1017_o;
+  wire [80:0] n1018_o;
+  assign config_slv_rdata = n664_o;
+  assign config_slv_error = n665_o;
+  assign spm_addr = n667_o;
+  assign spm_en = n668_o;
+  assign spm_wr = n669_o;
+  assign spm_wdata = n670_o;
+  assign pkt_out = n861_o;
   /* ni/schedule_table.vhd:103:16  */
-  assign n683_o = {config_wdata, config_wr, config_en, config_addr};
+  assign n662_o = {config_wdata, config_wr, config_en, config_addr};
   /* ni/schedule_table.vhd:59:5  */
-  assign n685_o = n1038_o[31:0];
+  assign n664_o = n1017_o[31:0];
   /* ni/schedule_table.vhd:58:5  */
-  assign n686_o = n1038_o[32];
+  assign n665_o = n1017_o[32];
   /* ni/schedule_table.vhd:56:5  */
-  assign n688_o = n1039_o[13:0];
+  assign n667_o = n1018_o[13:0];
   /* ni/schedule_table.vhd:51:5  */
-  assign n689_o = n1039_o[15:14];
-  assign n690_o = n1039_o[16];
-  assign n691_o = n1039_o[80:17];
+  assign n668_o = n1018_o[15:14];
+  assign n669_o = n1018_o[16];
+  assign n670_o = n1018_o[80:17];
   /* ni/schedule_table.vhd:190:1  */
-  assign n692_o = {spm_slv_error, spm_slv_rdata};
+  assign n671_o = {spm_slv_error, spm_slv_rdata};
   /* ni/packet_manager.vhd:78:8  */
-  assign state = n1017_q; // (signal)
+  assign state = n996_q; // (signal)
   /* ni/packet_manager.vhd:78:15  */
-  assign next_state = n887_o; // (signal)
+  assign next_state = n866_o; // (signal)
   /* ni/packet_manager.vhd:83:8  */
   assign dmatbl_data = port_b_dout; // (signal)
   /* ni/packet_manager.vhd:94:8  */
-  assign count_reg = n1027_q; // (signal)
+  assign count_reg = n1006_q; // (signal)
   /* ni/packet_manager.vhd:94:19  */
-  assign count_next = n889_o; // (signal)
+  assign count_next = n868_o; // (signal)
   /* ni/packet_manager.vhd:101:8  */
-  assign pkt_type = n891_o; // (signal)
+  assign pkt_type = n870_o; // (signal)
   /* ni/packet_manager.vhd:103:8  */
-  assign dma_en_reg = n995_q; // (signal)
+  assign dma_en_reg = n974_q; // (signal)
   /* ni/packet_manager.vhd:105:8  */
-  assign read_ptr_reg = n1028_q; // (signal)
+  assign read_ptr_reg = n1007_q; // (signal)
   /* ni/packet_manager.vhd:105:22  */
-  assign read_ptr_next = n893_o; // (signal)
+  assign read_ptr_next = n872_o; // (signal)
   /* ni/packet_manager.vhd:107:8  */
-  assign hi_lo_next = n951_o; // (signal)
+  assign hi_lo_next = n930_o; // (signal)
   /* ni/packet_manager.vhd:108:8  */
-  assign hi_lo_reg = n1002_q; // (signal)
+  assign hi_lo_reg = n981_q; // (signal)
   /* ni/packet_manager.vhd:110:8  */
-  assign port_b_wr = n968_o; // (signal)
+  assign port_b_wr = n947_o; // (signal)
   /* ni/packet_manager.vhd:111:8  */
-  assign port_b_addr = n969_o; // (signal)
+  assign port_b_addr = n948_o; // (signal)
   /* ni/packet_manager.vhd:112:8  */
   assign port_b_din = dma_update_data; // (signal)
   /* ni/packet_manager.vhd:113:8  */
-  assign port_b_dout = n1033_o; // (signal)
+  assign port_b_dout = n1012_o; // (signal)
   /* ni/packet_manager.vhd:115:8  */
-  assign dma_num_reg = n1029_q; // (signal)
+  assign dma_num_reg = n1008_q; // (signal)
   /* ni/packet_manager.vhd:116:8  */
-  assign dma_update_en = n896_o; // (signal)
+  assign dma_update_en = n875_o; // (signal)
   /* ni/packet_manager.vhd:117:8  */
   assign dma_update_addr = dma_num_reg; // (signal)
   /* ni/packet_manager.vhd:118:8  */
-  assign dma_update_data = n1034_o; // (signal)
+  assign dma_update_data = n1013_o; // (signal)
   /* ni/packet_manager.vhd:131:8  */
-  assign port_a_wr_hi = n946_o; // (signal)
+  assign port_a_wr_hi = n925_o; // (signal)
   /* ni/packet_manager.vhd:132:8  */
-  assign port_a_wr_lo = n949_o; // (signal)
+  assign port_a_wr_lo = n928_o; // (signal)
   /* ni/packet_manager.vhd:133:8  */
-  assign port_a_addr = n931_o; // (signal)
+  assign port_a_addr = n910_o; // (signal)
   /* ni/packet_manager.vhd:134:8  */
-  assign port_a_din = n1035_o; // (signal)
+  assign port_a_din = n1014_o; // (signal)
   /* ni/packet_manager.vhd:135:8  */
-  assign port_a_dout = n1036_o; // (signal)
+  assign port_a_dout = n1015_o; // (signal)
   /* ni/packet_manager.vhd:137:8  */
-  assign config_slv_error_next = n986_o; // (signal)
+  assign config_slv_error_next = n965_o; // (signal)
   /* ni/packet_manager.vhd:139:8  */
-  assign pkt_len_reg = n1030_q; // (signal)
+  assign pkt_len_reg = n1009_q; // (signal)
   /* ni/packet_manager.vhd:139:21  */
-  assign pkt_len_next = n908_o; // (signal)
+  assign pkt_len_next = n887_o; // (signal)
   /* ni/packet_manager.vhd:141:8  */
-  assign route_reg = n1031_q; // (signal)
+  assign route_reg = n1010_q; // (signal)
   /* ni/packet_manager.vhd:147:8  */
-  assign payload_data = n1032_q; // (signal)
+  assign payload_data = n1011_q; // (signal)
   /* ni/packet_manager.vhd:147:22  */
-  assign payload_data_next = n1037_o; // (signal)
-  assign n700_o = dmatbl_data[29:16];
+  assign payload_data_next = n1016_o; // (signal)
+  assign n679_o = dmatbl_data[29:16];
   /* ni/packet_manager.vhd:167:3  */
-  assign n701_o = dma_en ? pkt_len : pkt_len_reg;
-  assign n702_o = dmatbl_data[15:14];
+  assign n680_o = dma_en ? pkt_len : pkt_len_reg;
+  assign n681_o = dmatbl_data[15:14];
   /* ni/packet_manager.vhd:179:26  */
-  assign n704_o = $unsigned(pkt_len_reg) >= $unsigned(4'b0001);
+  assign n683_o = $unsigned(pkt_len_reg) >= $unsigned(4'b0001);
   /* ni/packet_manager.vhd:179:11  */
-  assign n706_o = n704_o ? 2'b01 : n702_o;
+  assign n685_o = n683_o ? 2'b01 : n681_o;
   /* ni/packet_manager.vhd:182:49  */
-  assign n708_o = {3'b110, pkt_type};
+  assign n687_o = {3'b110, pkt_type};
   /* ni/packet_manager.vhd:182:60  */
-  assign n710_o = {n708_o, 3'b011};
+  assign n689_o = {n687_o, 3'b011};
   /* ni/packet_manager.vhd:182:70  */
-  assign n712_o = {n710_o, 11'b00000000000};
+  assign n691_o = {n689_o, 11'b00000000000};
   /* ni/packet_manager.vhd:182:103  */
-  assign n713_o = {n712_o, route_reg};
-  assign n714_o = dmatbl_data[44];
-  assign n716_o = dmatbl_data[29:16];
-  assign n717_o = dmatbl_data[29:16];
-  assign n718_o = dmatbl_data[43:30];
+  assign n692_o = {n691_o, route_reg};
+  assign n693_o = dmatbl_data[44];
+  assign n695_o = dmatbl_data[29:16];
+  assign n696_o = dmatbl_data[29:16];
+  assign n697_o = dmatbl_data[43:30];
   /* ni/packet_manager.vhd:191:30  */
-  assign n720_o = n718_o - 14'b00000000000001;
-  assign n721_o = dmatbl_data[43:30];
+  assign n699_o = n697_o - 14'b00000000000001;
+  assign n700_o = dmatbl_data[43:30];
   /* ni/packet_manager.vhd:192:20  */
-  assign n722_o = {10'b0, pkt_len_reg};  //  uext
+  assign n701_o = {10'b0, pkt_len_reg};  //  uext
   /* ni/packet_manager.vhd:192:20  */
-  assign n723_o = $unsigned(n721_o) > $unsigned(n722_o);
-  assign n724_o = dmatbl_data[15:14];
+  assign n702_o = $unsigned(n700_o) > $unsigned(n701_o);
+  assign n703_o = dmatbl_data[15:14];
   /* ni/packet_manager.vhd:193:29  */
-  assign n726_o = n724_o == 2'b10;
+  assign n705_o = n703_o == 2'b10;
   /* ni/packet_manager.vhd:185:9  */
-  assign n728_o = n763_o ? 2'b00 : n702_o;
+  assign n707_o = n742_o ? 2'b00 : n681_o;
   /* ni/packet_manager.vhd:192:11  */
-  assign n730_o = n723_o & n726_o;
+  assign n709_o = n702_o & n705_o;
   /* ni/packet_manager.vhd:192:11  */
-  assign n731_o = n723_o ? 1'b1 : 1'b0;
+  assign n710_o = n702_o ? 1'b1 : 1'b0;
   /* ni/packet_manager.vhd:199:43  */
-  assign n732_o = dmatbl_data[13:0];
+  assign n711_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:199:68  */
-  assign n733_o = {10'b0, pkt_len_reg};  //  uext
+  assign n712_o = {10'b0, pkt_len_reg};  //  uext
   /* ni/packet_manager.vhd:199:68  */
-  assign n734_o = n732_o + n733_o;
-  assign n735_o = dmatbl_data[29:16];
+  assign n713_o = n711_o + n712_o;
+  assign n714_o = dmatbl_data[29:16];
   /* ni/packet_manager.vhd:200:39  */
-  assign n736_o = {10'b0, pkt_len_reg};  //  uext
+  assign n715_o = {10'b0, pkt_len_reg};  //  uext
   /* ni/packet_manager.vhd:200:39  */
-  assign n737_o = n735_o + n736_o;
-  assign n738_o = dmatbl_data[43:30];
+  assign n716_o = n714_o + n715_o;
+  assign n717_o = dmatbl_data[43:30];
   /* ni/packet_manager.vhd:201:33  */
-  assign n739_o = {10'b0, pkt_len_reg};  //  uext
+  assign n718_o = {10'b0, pkt_len_reg};  //  uext
   /* ni/packet_manager.vhd:201:33  */
-  assign n740_o = n738_o - n739_o;
-  assign n741_o = dmatbl_data[15:14];
+  assign n719_o = n717_o - n718_o;
+  assign n720_o = dmatbl_data[15:14];
   /* ni/packet_manager.vhd:202:27  */
-  assign n743_o = n741_o == 2'b01;
+  assign n722_o = n720_o == 2'b01;
   /* ni/packet_manager.vhd:205:43  */
-  assign n744_o = dmatbl_data[13:10];
-  assign n745_o = n734_o[13:10];
+  assign n723_o = dmatbl_data[13:10];
+  assign n724_o = n713_o[13:10];
   /* ni/packet_manager.vhd:202:11  */
-  assign n746_o = n743_o ? n744_o : n745_o;
-  assign n747_o = n734_o[9:0];
+  assign n725_o = n722_o ? n723_o : n724_o;
+  assign n726_o = n713_o[9:0];
   /* ni/packet_manager.vhd:207:39  */
-  assign n749_o = pkt_len_reg - 4'b0001;
+  assign n728_o = pkt_len_reg - 4'b0001;
   /* ni/packet_manager.vhd:208:49  */
-  assign n751_o = {3'b110, pkt_type};
+  assign n730_o = {3'b110, pkt_type};
   /* ni/packet_manager.vhd:208:68  */
-  assign n752_o = dmatbl_data[13:0];
+  assign n731_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:208:60  */
-  assign n753_o = {n751_o, n752_o};
+  assign n732_o = {n730_o, n731_o};
   /* ni/packet_manager.vhd:208:93  */
-  assign n754_o = {n753_o, route_reg};
-  assign n755_o = {2'b11, n716_o};
-  assign n756_o = {2'b00, n700_o};
+  assign n733_o = {n732_o, route_reg};
+  assign n734_o = {2'b11, n695_o};
+  assign n735_o = {2'b00, n679_o};
   /* ni/packet_manager.vhd:185:9  */
-  assign n757_o = n714_o ? n755_o : n756_o;
+  assign n736_o = n693_o ? n734_o : n735_o;
   /* ni/packet_manager.vhd:185:9  */
-  assign n759_o = n714_o ? n754_o : 35'b00000000000000000000000000000000000;
+  assign n738_o = n693_o ? n733_o : 35'b00000000000000000000000000000000000;
   /* ni/packet_manager.vhd:185:9  */
-  assign n761_o = n714_o ? 3'b001 : state;
+  assign n740_o = n693_o ? 3'b001 : state;
   /* ni/packet_manager.vhd:185:9  */
-  assign n762_o = n714_o ? n720_o : count_reg;
+  assign n741_o = n693_o ? n699_o : count_reg;
   /* ni/packet_manager.vhd:185:9  */
-  assign n763_o = n714_o & n730_o;
+  assign n742_o = n693_o & n709_o;
   /* ni/packet_manager.vhd:185:9  */
-  assign n764_o = n714_o ? n717_o : read_ptr_reg;
+  assign n743_o = n693_o ? n696_o : read_ptr_reg;
   /* ni/packet_manager.vhd:185:9  */
-  assign n767_o = n714_o ? 1'b1 : 1'b0;
-  assign n768_o = {n746_o, n747_o};
-  assign n769_o = {n731_o, n740_o, n737_o};
-  assign n770_o = dmatbl_data[13:0];
+  assign n746_o = n693_o ? 1'b1 : 1'b0;
+  assign n747_o = {n725_o, n726_o};
+  assign n748_o = {n710_o, n719_o, n716_o};
+  assign n749_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:185:9  */
-  assign n771_o = n714_o ? n768_o : n770_o;
-  assign n772_o = dmatbl_data[43:16];
-  assign n773_o = {1'b0, n772_o};
+  assign n750_o = n693_o ? n747_o : n749_o;
+  assign n751_o = dmatbl_data[43:16];
+  assign n752_o = {1'b0, n751_o};
   /* ni/packet_manager.vhd:185:9  */
-  assign n774_o = n714_o ? n769_o : n773_o;
+  assign n753_o = n693_o ? n748_o : n752_o;
   /* ni/packet_manager.vhd:185:9  */
-  assign n775_o = n714_o ? n749_o : n701_o;
-  assign n776_o = {2'b00, n700_o};
+  assign n754_o = n693_o ? n728_o : n680_o;
+  assign n755_o = {2'b00, n679_o};
   /* ni/packet_manager.vhd:177:9  */
-  assign n777_o = mc ? n776_o : n757_o;
+  assign n756_o = mc ? n755_o : n736_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n778_o = mc ? n713_o : n759_o;
+  assign n757_o = mc ? n692_o : n738_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n780_o = mc ? 3'b011 : n761_o;
+  assign n759_o = mc ? 3'b011 : n740_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n781_o = mc ? count_reg : n762_o;
+  assign n760_o = mc ? count_reg : n741_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n782_o = mc ? n706_o : n728_o;
+  assign n761_o = mc ? n685_o : n707_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n783_o = mc ? read_ptr_reg : n764_o;
+  assign n762_o = mc ? read_ptr_reg : n743_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n785_o = mc ? 1'b0 : n767_o;
-  assign n786_o = dmatbl_data[13:0];
+  assign n764_o = mc ? 1'b0 : n746_o;
+  assign n765_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:177:9  */
-  assign n787_o = mc ? n786_o : n771_o;
-  assign n788_o = dmatbl_data[43:16];
-  assign n789_o = {1'b0, n788_o};
+  assign n766_o = mc ? n765_o : n750_o;
+  assign n767_o = dmatbl_data[43:16];
+  assign n768_o = {1'b0, n767_o};
   /* ni/packet_manager.vhd:177:9  */
-  assign n790_o = mc ? n789_o : n774_o;
+  assign n769_o = mc ? n768_o : n753_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n791_o = mc ? n701_o : n775_o;
+  assign n770_o = mc ? n680_o : n754_o;
   /* ni/packet_manager.vhd:177:9  */
-  assign n793_o = mc ? mc_idx : 2'b00;
+  assign n772_o = mc ? mc_idx : 2'b00;
   /* ni/packet_manager.vhd:177:9  */
-  assign n795_o = mc ? mc_p : 2'b00;
-  assign n796_o = {2'b00, n700_o};
+  assign n774_o = mc ? mc_p : 2'b00;
+  assign n775_o = {2'b00, n679_o};
   /* ni/packet_manager.vhd:176:7  */
-  assign n797_o = dma_en_reg ? n777_o : n796_o;
+  assign n776_o = dma_en_reg ? n756_o : n775_o;
   /* ni/packet_manager.vhd:176:7  */
-  assign n799_o = dma_en_reg ? n778_o : 35'b00000000000000000000000000000000000;
+  assign n778_o = dma_en_reg ? n757_o : 35'b00000000000000000000000000000000000;
   /* ni/packet_manager.vhd:176:7  */
-  assign n800_o = dma_en_reg ? n780_o : state;
+  assign n779_o = dma_en_reg ? n759_o : state;
   /* ni/packet_manager.vhd:176:7  */
-  assign n801_o = dma_en_reg ? n781_o : count_reg;
+  assign n780_o = dma_en_reg ? n760_o : count_reg;
   /* ni/packet_manager.vhd:176:7  */
-  assign n802_o = dma_en_reg ? n782_o : n702_o;
+  assign n781_o = dma_en_reg ? n761_o : n681_o;
   /* ni/packet_manager.vhd:176:7  */
-  assign n803_o = dma_en_reg ? n783_o : read_ptr_reg;
+  assign n782_o = dma_en_reg ? n762_o : read_ptr_reg;
   /* ni/packet_manager.vhd:176:7  */
-  assign n805_o = dma_en_reg ? n785_o : 1'b0;
-  assign n806_o = dmatbl_data[13:0];
+  assign n784_o = dma_en_reg ? n764_o : 1'b0;
+  assign n785_o = dmatbl_data[13:0];
   /* ni/packet_manager.vhd:176:7  */
-  assign n807_o = dma_en_reg ? n787_o : n806_o;
-  assign n808_o = dmatbl_data[43:16];
-  assign n809_o = {1'b0, n808_o};
+  assign n786_o = dma_en_reg ? n766_o : n785_o;
+  assign n787_o = dmatbl_data[43:16];
+  assign n788_o = {1'b0, n787_o};
   /* ni/packet_manager.vhd:176:7  */
-  assign n810_o = dma_en_reg ? n790_o : n809_o;
+  assign n789_o = dma_en_reg ? n769_o : n788_o;
   /* ni/packet_manager.vhd:176:7  */
-  assign n811_o = dma_en_reg ? n791_o : n701_o;
+  assign n790_o = dma_en_reg ? n770_o : n680_o;
   /* ni/packet_manager.vhd:176:7  */
-  assign n813_o = dma_en_reg ? n793_o : 2'b00;
+  assign n792_o = dma_en_reg ? n772_o : 2'b00;
   /* ni/packet_manager.vhd:176:7  */
-  assign n815_o = dma_en_reg ? n795_o : 2'b00;
+  assign n794_o = dma_en_reg ? n774_o : 2'b00;
   /* ni/packet_manager.vhd:175:5  */
-  assign n817_o = state == 3'b000;
+  assign n796_o = state == 3'b000;
   /* ni/packet_manager.vhd:213:41  */
-  assign n818_o = n692_o[31:0];
+  assign n797_o = n671_o[31:0];
   /* ni/packet_manager.vhd:214:35  */
-  assign n820_o = pkt_len_reg - 4'b0001;
+  assign n799_o = pkt_len_reg - 4'b0001;
   /* ni/packet_manager.vhd:215:31  */
-  assign n822_o = count_reg - 14'b00000000000001;
+  assign n801_o = count_reg - 14'b00000000000001;
   /* ni/packet_manager.vhd:216:22  */
-  assign n824_o = $unsigned(pkt_len_reg) > $unsigned(4'b0000);
+  assign n803_o = $unsigned(pkt_len_reg) > $unsigned(4'b0000);
   /* ni/packet_manager.vhd:216:40  */
-  assign n826_o = $unsigned(count_reg) > $unsigned(14'b00000000000000);
+  assign n805_o = $unsigned(count_reg) > $unsigned(14'b00000000000000);
   /* ni/packet_manager.vhd:216:26  */
-  assign n827_o = n824_o & n826_o;
+  assign n806_o = n803_o & n805_o;
   /* ni/packet_manager.vhd:218:58  */
-  assign n828_o = n692_o[63:32];
+  assign n807_o = n671_o[63:32];
   /* ni/packet_manager.vhd:218:43  */
-  assign n830_o = {3'b100, n828_o};
+  assign n809_o = {3'b100, n807_o};
   /* ni/packet_manager.vhd:219:39  */
-  assign n832_o = read_ptr_reg + 14'b00000000000001;
+  assign n811_o = read_ptr_reg + 14'b00000000000001;
   /* ni/packet_manager.vhd:222:62  */
-  assign n833_o = n692_o[63:32];
+  assign n812_o = n671_o[63:32];
   /* ni/packet_manager.vhd:222:47  */
-  assign n835_o = {3'b101, n833_o};
+  assign n814_o = {3'b101, n812_o};
   /* ni/packet_manager.vhd:216:7  */
-  assign n836_o = n827_o ? n830_o : n835_o;
+  assign n815_o = n806_o ? n809_o : n814_o;
   /* ni/packet_manager.vhd:216:7  */
-  assign n839_o = n827_o ? 3'b010 : 3'b000;
+  assign n818_o = n806_o ? 3'b010 : 3'b000;
   /* ni/packet_manager.vhd:216:7  */
-  assign n840_o = n827_o ? n832_o : read_ptr_reg;
+  assign n819_o = n806_o ? n811_o : read_ptr_reg;
   /* ni/packet_manager.vhd:212:5  */
-  assign n842_o = state == 3'b001;
+  assign n821_o = state == 3'b001;
   /* ni/packet_manager.vhd:226:35  */
-  assign n844_o = pkt_len_reg - 4'b0001;
+  assign n823_o = pkt_len_reg - 4'b0001;
   /* ni/packet_manager.vhd:227:31  */
-  assign n846_o = count_reg - 14'b00000000000001;
+  assign n825_o = count_reg - 14'b00000000000001;
   /* ni/packet_manager.vhd:228:22  */
-  assign n848_o = $unsigned(pkt_len_reg) > $unsigned(4'b0000);
+  assign n827_o = $unsigned(pkt_len_reg) > $unsigned(4'b0000);
   /* ni/packet_manager.vhd:228:40  */
-  assign n850_o = $unsigned(count_reg) > $unsigned(14'b00000000000000);
+  assign n829_o = $unsigned(count_reg) > $unsigned(14'b00000000000000);
   /* ni/packet_manager.vhd:228:26  */
-  assign n851_o = n848_o & n850_o;
+  assign n830_o = n827_o & n829_o;
   /* ni/packet_manager.vhd:230:43  */
-  assign n853_o = {3'b100, payload_data};
+  assign n832_o = {3'b100, payload_data};
   /* ni/packet_manager.vhd:232:39  */
-  assign n856_o = read_ptr_reg + 14'b00000000000001;
+  assign n835_o = read_ptr_reg + 14'b00000000000001;
   /* ni/packet_manager.vhd:238:47  */
-  assign n858_o = {3'b101, payload_data};
-  assign n859_o = {2'b11, read_ptr_next};
-  assign n860_o = {2'b00, n700_o};
+  assign n837_o = {3'b101, payload_data};
+  assign n838_o = {2'b11, read_ptr_next};
+  assign n839_o = {2'b00, n679_o};
   /* ni/packet_manager.vhd:228:7  */
-  assign n861_o = n851_o ? n859_o : n860_o;
+  assign n840_o = n830_o ? n838_o : n839_o;
   /* ni/packet_manager.vhd:228:7  */
-  assign n862_o = n851_o ? n853_o : n858_o;
+  assign n841_o = n830_o ? n832_o : n837_o;
   /* ni/packet_manager.vhd:228:7  */
-  assign n865_o = n851_o ? 3'b001 : 3'b000;
+  assign n844_o = n830_o ? 3'b001 : 3'b000;
   /* ni/packet_manager.vhd:228:7  */
-  assign n866_o = n851_o ? n856_o : read_ptr_reg;
+  assign n845_o = n830_o ? n835_o : read_ptr_reg;
   /* ni/packet_manager.vhd:225:5  */
-  assign n868_o = state == 3'b010;
+  assign n847_o = state == 3'b010;
   /* ni/packet_manager.vhd:243:41  */
-  assign n870_o = {3'b100, payload_data};
+  assign n849_o = {3'b100, payload_data};
   /* ni/packet_manager.vhd:241:5  */
-  assign n872_o = state == 3'b011;
+  assign n851_o = state == 3'b011;
   /* ni/packet_manager.vhd:247:45  */
-  assign n874_o = {3'b101, payload_data};
+  assign n853_o = {3'b101, payload_data};
   /* ni/packet_manager.vhd:245:5  */
-  assign n876_o = state == 3'b100;
-  assign n877_o = {n876_o, n872_o, n868_o, n842_o, n817_o};
-  assign n878_o = {2'b00, n700_o};
+  assign n855_o = state == 3'b100;
+  assign n856_o = {n855_o, n851_o, n847_o, n821_o, n796_o};
+  assign n857_o = {2'b00, n679_o};
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n880_o <= n878_o;
-      5'b01000: n880_o <= n878_o;
-      5'b00100: n880_o <= n861_o;
-      5'b00010: n880_o <= n878_o;
-      5'b00001: n880_o <= n797_o;
-      default: n880_o <= 16'bX;
+    case (n856_o)
+      5'b10000: n859_o <= n857_o;
+      5'b01000: n859_o <= n857_o;
+      5'b00100: n859_o <= n840_o;
+      5'b00010: n859_o <= n857_o;
+      5'b00001: n859_o <= n776_o;
+      default: n859_o <= 16'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n882_o <= n874_o;
-      5'b01000: n882_o <= n870_o;
-      5'b00100: n882_o <= n862_o;
-      5'b00010: n882_o <= n836_o;
-      5'b00001: n882_o <= n799_o;
-      default: n882_o <= 35'bX;
+    case (n856_o)
+      5'b10000: n861_o <= n853_o;
+      5'b01000: n861_o <= n849_o;
+      5'b00100: n861_o <= n841_o;
+      5'b00010: n861_o <= n815_o;
+      5'b00001: n861_o <= n778_o;
+      default: n861_o <= 35'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n887_o <= 3'b000;
-      5'b01000: n887_o <= 3'b100;
-      5'b00100: n887_o <= n865_o;
-      5'b00010: n887_o <= n839_o;
-      5'b00001: n887_o <= n800_o;
-      default: n887_o <= 3'bX;
+    case (n856_o)
+      5'b10000: n866_o <= 3'b000;
+      5'b01000: n866_o <= 3'b100;
+      5'b00100: n866_o <= n844_o;
+      5'b00010: n866_o <= n818_o;
+      5'b00001: n866_o <= n779_o;
+      default: n866_o <= 3'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n889_o <= count_reg;
-      5'b01000: n889_o <= count_reg;
-      5'b00100: n889_o <= n846_o;
-      5'b00010: n889_o <= n822_o;
-      5'b00001: n889_o <= n801_o;
-      default: n889_o <= 14'bX;
+    case (n856_o)
+      5'b10000: n868_o <= count_reg;
+      5'b01000: n868_o <= count_reg;
+      5'b00100: n868_o <= n825_o;
+      5'b00010: n868_o <= n801_o;
+      5'b00001: n868_o <= n780_o;
+      default: n868_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n891_o <= n702_o;
-      5'b01000: n891_o <= n702_o;
-      5'b00100: n891_o <= n702_o;
-      5'b00010: n891_o <= n702_o;
-      5'b00001: n891_o <= n802_o;
+    case (n856_o)
+      5'b10000: n870_o <= n681_o;
+      5'b01000: n870_o <= n681_o;
+      5'b00100: n870_o <= n681_o;
+      5'b00010: n870_o <= n681_o;
+      5'b00001: n870_o <= n781_o;
+      default: n870_o <= 2'bX;
+    endcase
+  /* ni/packet_manager.vhd:174:3  */
+  always @*
+    case (n856_o)
+      5'b10000: n872_o <= read_ptr_reg;
+      5'b01000: n872_o <= read_ptr_reg;
+      5'b00100: n872_o <= n845_o;
+      5'b00010: n872_o <= n819_o;
+      5'b00001: n872_o <= n782_o;
+      default: n872_o <= 14'bX;
+    endcase
+  /* ni/packet_manager.vhd:174:3  */
+  always @*
+    case (n856_o)
+      5'b10000: n875_o <= 1'b0;
+      5'b01000: n875_o <= 1'b0;
+      5'b00100: n875_o <= 1'b0;
+      5'b00010: n875_o <= 1'b0;
+      5'b00001: n875_o <= n784_o;
+      default: n875_o <= 1'bX;
+    endcase
+  assign n877_o = dmatbl_data[13:0];
+  /* ni/packet_manager.vhd:174:3  */
+  always @*
+    case (n856_o)
+      5'b10000: n879_o <= n877_o;
+      5'b01000: n879_o <= n877_o;
+      5'b00100: n879_o <= n877_o;
+      5'b00010: n879_o <= n877_o;
+      5'b00001: n879_o <= n786_o;
+      default: n879_o <= 14'bX;
+    endcase
+  assign n880_o = dmatbl_data[43:16];
+  assign n881_o = {1'b0, n880_o};
+  /* ni/packet_manager.vhd:174:3  */
+  always @*
+    case (n856_o)
+      5'b10000: n883_o <= n881_o;
+      5'b01000: n883_o <= n881_o;
+      5'b00100: n883_o <= n881_o;
+      5'b00010: n883_o <= n881_o;
+      5'b00001: n883_o <= n789_o;
+      default: n883_o <= 29'bX;
+    endcase
+  assign n885_o = dmatbl_data[15:14];
+  /* ni/packet_manager.vhd:174:3  */
+  always @*
+    case (n856_o)
+      5'b10000: n887_o <= n680_o;
+      5'b01000: n887_o <= n680_o;
+      5'b00100: n887_o <= n823_o;
+      5'b00010: n887_o <= n799_o;
+      5'b00001: n887_o <= n790_o;
+      default: n887_o <= 4'bX;
+    endcase
+  assign n888_o = n797_o[1:0];
+  /* ni/packet_manager.vhd:174:3  */
+  always @*
+    case (n856_o)
+      5'b10000: n891_o <= 2'b00;
+      5'b01000: n891_o <= 2'b00;
+      5'b00100: n891_o <= 2'b00;
+      5'b00010: n891_o <= n888_o;
+      5'b00001: n891_o <= n792_o;
       default: n891_o <= 2'bX;
     endcase
+  assign n892_o = n797_o[15:2];
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n893_o <= read_ptr_reg;
-      5'b01000: n893_o <= read_ptr_reg;
-      5'b00100: n893_o <= n866_o;
-      5'b00010: n893_o <= n840_o;
-      5'b00001: n893_o <= n803_o;
-      default: n893_o <= 14'bX;
+    case (n856_o)
+      5'b10000: n895_o <= 14'b00000000000000;
+      5'b01000: n895_o <= 14'b00000000000000;
+      5'b00100: n895_o <= 14'b00000000000000;
+      5'b00010: n895_o <= n892_o;
+      5'b00001: n895_o <= 14'b00000000000000;
+      default: n895_o <= 14'bX;
     endcase
+  assign n896_o = n797_o[17:16];
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n896_o <= 1'b0;
-      5'b01000: n896_o <= 1'b0;
-      5'b00100: n896_o <= 1'b0;
-      5'b00010: n896_o <= 1'b0;
-      5'b00001: n896_o <= n805_o;
-      default: n896_o <= 1'bX;
+    case (n856_o)
+      5'b10000: n899_o <= 2'b00;
+      5'b01000: n899_o <= 2'b00;
+      5'b00100: n899_o <= 2'b00;
+      5'b00010: n899_o <= n896_o;
+      5'b00001: n899_o <= n794_o;
+      default: n899_o <= 2'bX;
     endcase
-  assign n898_o = dmatbl_data[13:0];
+  assign n900_o = n797_o[31:18];
   /* ni/packet_manager.vhd:174:3  */
   always @*
-    case (n877_o)
-      5'b10000: n900_o <= n898_o;
-      5'b01000: n900_o <= n898_o;
-      5'b00100: n900_o <= n898_o;
-      5'b00010: n900_o <= n898_o;
-      5'b00001: n900_o <= n807_o;
-      default: n900_o <= 14'bX;
-    endcase
-  assign n901_o = dmatbl_data[43:16];
-  assign n902_o = {1'b0, n901_o};
-  /* ni/packet_manager.vhd:174:3  */
-  always @*
-    case (n877_o)
-      5'b10000: n904_o <= n902_o;
-      5'b01000: n904_o <= n902_o;
-      5'b00100: n904_o <= n902_o;
-      5'b00010: n904_o <= n902_o;
-      5'b00001: n904_o <= n810_o;
-      default: n904_o <= 29'bX;
-    endcase
-  assign n906_o = dmatbl_data[15:14];
-  /* ni/packet_manager.vhd:174:3  */
-  always @*
-    case (n877_o)
-      5'b10000: n908_o <= n701_o;
-      5'b01000: n908_o <= n701_o;
-      5'b00100: n908_o <= n844_o;
-      5'b00010: n908_o <= n820_o;
-      5'b00001: n908_o <= n811_o;
-      default: n908_o <= 4'bX;
-    endcase
-  assign n909_o = n818_o[1:0];
-  /* ni/packet_manager.vhd:174:3  */
-  always @*
-    case (n877_o)
-      5'b10000: n912_o <= 2'b00;
-      5'b01000: n912_o <= 2'b00;
-      5'b00100: n912_o <= 2'b00;
-      5'b00010: n912_o <= n909_o;
-      5'b00001: n912_o <= n813_o;
-      default: n912_o <= 2'bX;
-    endcase
-  assign n913_o = n818_o[15:2];
-  /* ni/packet_manager.vhd:174:3  */
-  always @*
-    case (n877_o)
-      5'b10000: n916_o <= 14'b00000000000000;
-      5'b01000: n916_o <= 14'b00000000000000;
-      5'b00100: n916_o <= 14'b00000000000000;
-      5'b00010: n916_o <= n913_o;
-      5'b00001: n916_o <= 14'b00000000000000;
-      default: n916_o <= 14'bX;
-    endcase
-  assign n917_o = n818_o[17:16];
-  /* ni/packet_manager.vhd:174:3  */
-  always @*
-    case (n877_o)
-      5'b10000: n920_o <= 2'b00;
-      5'b01000: n920_o <= 2'b00;
-      5'b00100: n920_o <= 2'b00;
-      5'b00010: n920_o <= n917_o;
-      5'b00001: n920_o <= n815_o;
-      default: n920_o <= 2'bX;
-    endcase
-  assign n921_o = n818_o[31:18];
-  /* ni/packet_manager.vhd:174:3  */
-  always @*
-    case (n877_o)
-      5'b10000: n924_o <= 14'b00000000000000;
-      5'b01000: n924_o <= 14'b00000000000000;
-      5'b00100: n924_o <= 14'b00000000000000;
-      5'b00010: n924_o <= n921_o;
-      5'b00001: n924_o <= 14'b00000000000000;
-      default: n924_o <= 14'bX;
+    case (n856_o)
+      5'b10000: n903_o <= 14'b00000000000000;
+      5'b01000: n903_o <= 14'b00000000000000;
+      5'b00100: n903_o <= 14'b00000000000000;
+      5'b00010: n903_o <= n900_o;
+      5'b00001: n903_o <= 14'b00000000000000;
+      default: n903_o <= 14'bX;
     endcase
   /* ni/packet_manager.vhd:256:29  */
-  assign n931_o = n683_o[6:1];
+  assign n910_o = n662_o[6:1];
   /* ni/packet_manager.vhd:259:52  */
-  assign n933_o = n683_o[47];
+  assign n912_o = n662_o[47];
   /* ni/packet_manager.vhd:262:26  */
-  assign n934_o = n683_o[43:16];
+  assign n913_o = n662_o[43:16];
   /* ni/packet_manager.vhd:264:48  */
-  assign n935_o = n683_o[31:16];
+  assign n914_o = n662_o[31:16];
   /* ni/packet_manager.vhd:266:17  */
-  assign n936_o = n683_o[0];
+  assign n915_o = n662_o[0];
   /* ni/packet_manager.vhd:272:28  */
-  assign n937_o = n683_o[15];
+  assign n916_o = n662_o[15];
   /* ni/packet_manager.vhd:272:31  */
-  assign n938_o = n937_o & sel;
+  assign n917_o = n916_o & sel;
   /* ni/packet_manager.vhd:273:20  */
-  assign n939_o = n683_o[0];
+  assign n918_o = n662_o[0];
   /* ni/packet_manager.vhd:273:24  */
-  assign n940_o = ~n939_o;
+  assign n919_o = ~n918_o;
   /* ni/packet_manager.vhd:277:28  */
-  assign n941_o = n683_o[15];
+  assign n920_o = n662_o[15];
   /* ni/packet_manager.vhd:277:31  */
-  assign n942_o = n941_o & sel;
+  assign n921_o = n920_o & sel;
   /* ni/packet_manager.vhd:273:3  */
-  assign n944_o = n940_o ? n942_o : 1'b0;
+  assign n923_o = n919_o ? n921_o : 1'b0;
   /* ni/packet_manager.vhd:266:3  */
-  assign n946_o = n936_o ? n938_o : 1'b0;
+  assign n925_o = n915_o ? n917_o : 1'b0;
   /* ni/packet_manager.vhd:266:3  */
-  assign n949_o = n936_o ? 1'b0 : n944_o;
+  assign n928_o = n915_o ? 1'b0 : n923_o;
   /* ni/packet_manager.vhd:280:28  */
-  assign n951_o = n683_o[0];
+  assign n930_o = n662_o[0];
   /* ni/packet_manager.vhd:282:50  */
-  assign n952_o = port_a_dout[44];
+  assign n931_o = port_a_dout[44];
   /* ni/packet_manager.vhd:284:32  */
-  assign n953_o = port_a_dout[43:16];
+  assign n932_o = port_a_dout[43:16];
   /* ni/packet_manager.vhd:287:48  */
-  assign n954_o = port_a_dout[15:0];
-  assign n955_o = n953_o[15:0];
+  assign n933_o = port_a_dout[15:0];
+  assign n934_o = n932_o[15:0];
   /* ni/packet_manager.vhd:281:3  */
-  assign n956_o = hi_lo_reg ? n955_o : n954_o;
-  assign n957_o = n953_o[27:16];
-  assign n958_o = n932_o[27:16];
+  assign n935_o = hi_lo_reg ? n934_o : n933_o;
+  assign n936_o = n932_o[27:16];
+  assign n937_o = n911_o[27:16];
   /* ni/packet_manager.vhd:281:3  */
-  assign n959_o = hi_lo_reg ? n957_o : n958_o;
-  assign n960_o = n932_o[31];
+  assign n938_o = hi_lo_reg ? n936_o : n937_o;
+  assign n939_o = n911_o[31];
   /* ni/packet_manager.vhd:281:3  */
-  assign n961_o = hi_lo_reg ? n952_o : n960_o;
-  assign n964_o = n932_o[30:28];
+  assign n940_o = hi_lo_reg ? n931_o : n939_o;
+  assign n943_o = n911_o[30:28];
   /* ni/packet_manager.vhd:297:3  */
-  assign n968_o = dma_en ? 1'b0 : dma_update_en;
+  assign n947_o = dma_en ? 1'b0 : dma_update_en;
   /* ni/packet_manager.vhd:297:3  */
-  assign n969_o = dma_en ? dma_num : dma_update_addr;
+  assign n948_o = dma_en ? dma_num : dma_update_addr;
   /* ni/packet_manager.vhd:308:1  */
   tdp_ram_29_6 dmatbl1 (
     .a_clk(clk),
     .a_wr(port_a_wr_hi),
     .a_addr(port_a_addr),
-    .a_din(n971_o),
+    .a_din(n950_o),
     .b_clk(clk),
     .b_wr(port_b_wr),
     .b_addr(port_b_addr),
-    .b_din(n973_o),
+    .b_din(n952_o),
     .a_dout(dmatbl1_a_dout),
     .b_dout(dmatbl1_b_dout));
   /* ni/packet_manager.vhd:317:26  */
-  assign n971_o = port_a_din[44:16];
+  assign n950_o = port_a_din[44:16];
   /* ni/packet_manager.vhd:322:26  */
-  assign n973_o = port_b_din[44:16];
+  assign n952_o = port_b_din[44:16];
   /* ni/packet_manager.vhd:327:3  */
   tdp_ram_16_6 dmatbl2 (
     .a_clk(clk),
     .a_wr(port_a_wr_lo),
     .a_addr(port_a_addr),
-    .a_din(n975_o),
+    .a_din(n954_o),
     .b_clk(clk),
     .b_wr(port_b_wr),
     .b_addr(port_b_addr),
-    .b_din(n977_o),
+    .b_din(n956_o),
     .a_dout(dmatbl2_a_dout),
     .b_dout(dmatbl2_b_dout));
   /* ni/packet_manager.vhd:336:26  */
-  assign n975_o = port_a_din[15:0];
+  assign n954_o = port_a_din[15:0];
   /* ni/packet_manager.vhd:341:26  */
-  assign n977_o = port_b_din[15:0];
+  assign n956_o = port_b_din[15:0];
   /* ni/packet_manager.vhd:348:31  */
-  assign n980_o = n683_o[10:7];
+  assign n959_o = n662_o[10:7];
   /* ni/packet_manager.vhd:348:77  */
-  assign n982_o = n980_o != 4'b0000;
+  assign n961_o = n959_o != 4'b0000;
   /* ni/packet_manager.vhd:348:16  */
-  assign n983_o = sel & n982_o;
+  assign n962_o = sel & n961_o;
   /* ni/packet_manager.vhd:348:3  */
-  assign n986_o = n983_o ? 1'b1 : 1'b0;
+  assign n965_o = n962_o ? 1'b1 : 1'b0;
   /* ni/packet_manager.vhd:357:5  */
-  assign n992_o = reset ? 1'b0 : dma_en;
+  assign n971_o = reset ? 1'b0 : dma_en;
   /* ni/packet_manager.vhd:356:3  */
   always @(posedge clk)
-    n995_q <= n992_o;
+    n974_q <= n971_o;
   /* ni/packet_manager.vhd:368:5  */
-  assign n999_o = reset ? 1'b0 : hi_lo_next;
+  assign n978_o = reset ? 1'b0 : hi_lo_next;
   /* ni/packet_manager.vhd:367:3  */
   always @(posedge clk)
-    n1002_q <= n999_o;
+    n981_q <= n978_o;
   /* ni/packet_manager.vhd:379:5  */
-  assign n1006_o = reset ? 1'b0 : config_slv_error_next;
+  assign n985_o = reset ? 1'b0 : config_slv_error_next;
   /* ni/packet_manager.vhd:378:3  */
   always @(posedge clk)
-    n1010_q <= n1006_o;
+    n989_q <= n985_o;
   /* ni/packet_manager.vhd:390:5  */
-  assign n1014_o = reset ? 3'b000 : next_state;
+  assign n993_o = reset ? 3'b000 : next_state;
   /* ni/packet_manager.vhd:389:3  */
   always @(posedge clk)
-    n1017_q <= n1014_o;
+    n996_q <= n993_o;
   /* ni/packet_manager.vhd:401:3  */
   always @(posedge clk)
-    n1027_q <= count_next;
+    n1006_q <= count_next;
   /* ni/packet_manager.vhd:401:3  */
   always @(posedge clk)
-    n1028_q <= read_ptr_next;
+    n1007_q <= read_ptr_next;
   /* ni/packet_manager.vhd:401:3  */
   always @(posedge clk)
-    n1029_q <= dma_num;
+    n1008_q <= dma_num;
   /* ni/packet_manager.vhd:401:3  */
   always @(posedge clk)
-    n1030_q <= pkt_len_next;
+    n1009_q <= pkt_len_next;
   /* ni/packet_manager.vhd:401:3  */
   always @(posedge clk)
-    n1031_q <= route;
+    n1010_q <= route;
   /* ni/packet_manager.vhd:401:3  */
   always @(posedge clk)
-    n1032_q <= payload_data_next;
+    n1011_q <= payload_data_next;
   /* ni/packet_manager.vhd:401:3  */
-  assign n1033_o = {dmatbl1_b_dout, dmatbl2_b_dout};
-  assign n1034_o = {n904_o, n906_o, n900_o};
-  assign n1035_o = {n933_o, n934_o, n935_o};
-  assign n1036_o = {dmatbl1_a_dout, dmatbl2_a_dout};
-  assign n1037_o = {n924_o, n920_o, n916_o, n912_o};
-  assign n1038_o = {n1010_q, n961_o, n964_o, n959_o, n956_o};
-  assign n1039_o = {64'b0000000000000000000000000000000000000000000000000000000000000000, 1'b0, n880_o};
+  assign n1012_o = {dmatbl1_b_dout, dmatbl2_b_dout};
+  assign n1013_o = {n883_o, n885_o, n879_o};
+  assign n1014_o = {n912_o, n913_o, n914_o};
+  assign n1015_o = {dmatbl1_a_dout, dmatbl2_a_dout};
+  assign n1016_o = {n903_o, n899_o, n895_o, n891_o};
+  assign n1017_o = {n989_q, n940_o, n943_o, n938_o, n935_o};
+  assign n1018_o = {64'b0000000000000000000000000000000000000000000000000000000000000000, 1'b0, n859_o};
 endmodule
 
 module schedule_table
@@ -2743,9 +2743,9 @@ module schedule_table
    output [3:0] t2n,
    output [5:0] dma_num,
    output dma_en);
-  wire [47:0] n611_o;
-  wire [31:0] n613_o;
-  wire n614_o;
+  wire [47:0] n590_o;
+  wire [31:0] n592_o;
+  wire n593_o;
   wire [29:0] stbl_data;
   wire stbl_idx_en_reg;
   wire config_slv_error_next;
@@ -2753,135 +2753,137 @@ module schedule_table
   wire [29:0] port_a_din;
   wire [29:0] port_a_dout;
   wire a_wr;
-  wire n620_o;
-  wire n621_o;
+  wire n599_o;
+  wire n600_o;
   wire [29:0] stbl_a_dout;
   wire [29:0] stbl_b_dout;
-  wire [7:0] n622_o;
-  localparam n624_o = 1'b0;
-  localparam [29:0] n625_o = 30'b000000000000000000000000000000;
-  localparam [31:0] n628_o = 32'b00000000000000000000000000000000;
-  wire [15:0] n629_o;
-  wire [5:0] n631_o;
-  wire [1:0] n632_o;
-  wire [3:0] n634_o;
-  wire [3:0] n636_o;
-  wire [15:0] n637_o;
-  wire [5:0] n640_o;
-  wire [3:0] n642_o;
-  wire [3:0] n644_o;
-  wire [2:0] n647_o;
-  wire n649_o;
+  wire [7:0] n601_o;
+  localparam n603_o = 1'b0;
+  localparam [29:0] n604_o = 30'b000000000000000000000000000000;
+  localparam [31:0] n607_o = 32'b00000000000000000000000000000000;
+  wire [15:0] n608_o;
+  wire [5:0] n610_o;
+  wire [1:0] n611_o;
+  wire [3:0] n613_o;
+  wire [3:0] n615_o;
+  wire [15:0] n616_o;
+  wire [5:0] n619_o;
+  wire [3:0] n621_o;
+  wire [3:0] n623_o;
+  wire [2:0] n626_o;
+  wire n628_o;
+  wire n629_o;
+  wire n632_o;
+  wire [15:0] n635_o;
+  wire [5:0] n636_o;
+  wire [3:0] n637_o;
+  wire [3:0] n638_o;
+  wire n642_o;
+  reg n645_q;
+  wire n648_o;
   wire n650_o;
-  wire n653_o;
-  wire [15:0] n656_o;
-  wire [5:0] n657_o;
-  wire [3:0] n658_o;
-  wire [3:0] n659_o;
-  wire n663_o;
-  reg n666_q;
-  wire n669_o;
-  wire n671_o;
-  wire n676_o;
-  reg n680_q;
-  wire [29:0] n681_o;
-  wire [32:0] n682_o;
-  assign config_slv_rdata = n613_o;
-  assign config_slv_error = n614_o;
-  assign route = n656_o;
-  assign pkt_len = n658_o;
-  assign t2n = n659_o;
+  wire n655_o;
+  reg n659_q;
+  wire [29:0] n660_o;
+  wire [32:0] n661_o;
+  assign config_slv_rdata = n592_o;
+  assign config_slv_error = n593_o;
+  assign route = n635_o;
+  assign pkt_len = n637_o;
+  assign t2n = n638_o;
   assign dma_num = dma_num_sig;
-  assign dma_en = n671_o;
+  assign dma_en = n650_o;
   /* ni/MC_controller.vhd:258:32  */
-  assign n611_o = {config_wdata, config_wr, config_en, config_addr};
-  assign n613_o = n682_o[31:0];
-  assign n614_o = n682_o[32];
+  assign n590_o = {config_wdata, config_wr, config_en, config_addr};
+  /* ni/MC_controller.vhd:101:40  */
+  assign n592_o = n661_o[31:0];
+  /* ni/MC_controller.vhd:101:24  */
+  assign n593_o = n661_o[32];
   /* ni/schedule_table.vhd:78:8  */
   assign stbl_data = stbl_b_dout; // (signal)
   /* ni/schedule_table.vhd:80:8  */
-  assign stbl_idx_en_reg = n666_q; // (signal)
+  assign stbl_idx_en_reg = n645_q; // (signal)
   /* ni/schedule_table.vhd:82:8  */
-  assign config_slv_error_next = n653_o; // (signal)
+  assign config_slv_error_next = n632_o; // (signal)
   /* ni/schedule_table.vhd:84:8  */
-  assign dma_num_sig = n657_o; // (signal)
+  assign dma_num_sig = n636_o; // (signal)
   /* ni/schedule_table.vhd:86:8  */
-  assign port_a_din = n681_o; // (signal)
+  assign port_a_din = n660_o; // (signal)
   /* ni/schedule_table.vhd:86:20  */
   assign port_a_dout = stbl_a_dout; // (signal)
   /* ni/schedule_table.vhd:88:8  */
-  assign a_wr = n621_o; // (signal)
+  assign a_wr = n600_o; // (signal)
   /* ni/schedule_table.vhd:91:18  */
-  assign n620_o = n611_o[15];
+  assign n599_o = n590_o[15];
   /* ni/schedule_table.vhd:91:21  */
-  assign n621_o = n620_o & sel;
+  assign n600_o = n599_o & sel;
   /* ni/schedule_table.vhd:93:1  */
   tdp_ram_30_8 stbl (
     .a_clk(clk),
     .a_wr(a_wr),
-    .a_addr(n622_o),
+    .a_addr(n601_o),
     .a_din(port_a_din),
     .b_clk(clk),
-    .b_wr(n624_o),
+    .b_wr(n603_o),
     .b_addr(stbl_idx),
-    .b_din(n625_o),
+    .b_din(n604_o),
     .a_dout(stbl_a_dout),
     .b_dout(stbl_b_dout));
   /* ni/schedule_table.vhd:101:27  */
-  assign n622_o = n611_o[7:0];
+  assign n601_o = n590_o[7:0];
   /* ni/schedule_table.vhd:117:33  */
-  assign n629_o = port_a_dout[29:14];
+  assign n608_o = port_a_dout[29:14];
   /* ni/schedule_table.vhd:121:33  */
-  assign n631_o = port_a_dout[13:8];
-  assign n632_o = n628_o[15:14];
+  assign n610_o = port_a_dout[13:8];
+  assign n611_o = n607_o[15:14];
   /* ni/schedule_table.vhd:125:33  */
-  assign n634_o = port_a_dout[7:4];
+  assign n613_o = port_a_dout[7:4];
   /* ni/schedule_table.vhd:129:33  */
-  assign n636_o = port_a_dout[3:0];
+  assign n615_o = port_a_dout[3:0];
   /* ni/schedule_table.vhd:135:34  */
-  assign n637_o = n611_o[47:32];
+  assign n616_o = n590_o[47:32];
   /* ni/schedule_table.vhd:140:34  */
-  assign n640_o = n611_o[29:24];
+  assign n619_o = n590_o[29:24];
   /* ni/schedule_table.vhd:143:34  */
-  assign n642_o = n611_o[23:20];
+  assign n621_o = n590_o[23:20];
   /* ni/schedule_table.vhd:146:34  */
-  assign n644_o = n611_o[19:16];
+  assign n623_o = n590_o[19:16];
   /* ni/schedule_table.vhd:154:31  */
-  assign n647_o = n611_o[10:8];
+  assign n626_o = n590_o[10:8];
   /* ni/schedule_table.vhd:154:73  */
-  assign n649_o = n647_o != 3'b000;
+  assign n628_o = n626_o != 3'b000;
   /* ni/schedule_table.vhd:154:16  */
-  assign n650_o = sel & n649_o;
+  assign n629_o = sel & n628_o;
   /* ni/schedule_table.vhd:154:3  */
-  assign n653_o = n650_o ? 1'b1 : 1'b0;
+  assign n632_o = n629_o ? 1'b1 : 1'b0;
   /* ni/schedule_table.vhd:159:21  */
-  assign n656_o = stbl_data[29:14];
+  assign n635_o = stbl_data[29:14];
   /* ni/schedule_table.vhd:161:34  */
-  assign n657_o = stbl_data[13:8];
+  assign n636_o = stbl_data[13:8];
   /* ni/schedule_table.vhd:164:30  */
-  assign n658_o = stbl_data[7:4];
+  assign n637_o = stbl_data[7:4];
   /* ni/schedule_table.vhd:166:30  */
-  assign n659_o = stbl_data[3:0];
+  assign n638_o = stbl_data[3:0];
   /* ni/schedule_table.vhd:172:5  */
-  assign n663_o = reset ? 1'b0 : stbl_idx_en;
+  assign n642_o = reset ? 1'b0 : stbl_idx_en;
   /* ni/schedule_table.vhd:171:3  */
   always @(posedge clk)
-    n666_q <= n663_o;
+    n645_q <= n642_o;
   /* ni/schedule_table.vhd:183:18  */
-  assign n669_o = dma_num_sig == 6'b111111;
+  assign n648_o = dma_num_sig == 6'b111111;
   /* ni/schedule_table.vhd:183:3  */
-  assign n671_o = n669_o ? 1'b0 : stbl_idx_en_reg;
+  assign n650_o = n648_o ? 1'b0 : stbl_idx_en_reg;
   /* ni/schedule_table.vhd:193:5  */
-  assign n676_o = reset ? 1'b0 : config_slv_error_next;
+  assign n655_o = reset ? 1'b0 : config_slv_error_next;
   /* ni/schedule_table.vhd:192:3  */
   always @(posedge clk)
-    n680_q <= n676_o;
+    n659_q <= n655_o;
   /* ni/schedule_table.vhd:192:3  */
-  assign n681_o = {n637_o, n640_o, n642_o, n644_o};
-  assign n682_o = {n680_q, n629_o, n632_o, n631_o, n634_o, n636_o};
+  assign n660_o = {n616_o, n619_o, n621_o, n623_o};
+  assign n661_o = {n659_q, n608_o, n611_o, n610_o, n613_o, n615_o};
 endmodule
 
-module mc_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
+module mc_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
   (input  clk,
    input  reset,
    input  run,
@@ -2899,11 +2901,9 @@ module mc_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
    output mc,
    output [1:0] mc_idx,
    output [1:0] mc_p);
-  wire [47:0] n367_o;
-  wire [31:0] n369_o;
-  wire n370_o;
-  wire [1:0] state;
-  wire [1:0] next_state;
+  wire [47:0] n354_o;
+  wire [31:0] n356_o;
+  wire n357_o;
   wire [7:0] stbl_min_next;
   wire [7:0] stbl_maxp1_next;
   wire [1:0] mode_change_idx_reg;
@@ -2919,93 +2919,105 @@ module mc_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
   wire config_slv_error_next;
   wire [31:0] read_reg;
   wire [31:0] read_next;
-  wire mc_reg;
-  wire mc_next;
+  wire mode_changed_reg;
   wire [7:0] stbl_min_reg;
   wire [10:0] mc_tbl_addr;
-  wire [10:0] n379_o;
+  wire [10:0] n366_o;
+  wire [10:0] n368_o;
+  wire n369_o;
+  wire n370_o;
+  wire n371_o;
+  wire n372_o;
+  wire [10:0] n373_o;
+  wire n375_o;
+  reg n378_o;
+  wire [1:0] n379_o;
+  reg [1:0] n380_o;
   wire [10:0] n381_o;
-  wire n382_o;
-  wire n383_o;
+  wire [1:0] n382_o;
   wire n384_o;
-  wire n385_o;
-  wire [10:0] n386_o;
-  wire n388_o;
-  reg n391_o;
-  wire [1:0] n392_o;
-  reg [1:0] n393_o;
-  wire [10:0] n394_o;
-  wire [1:0] n395_o;
-  wire n397_o;
-  reg [1:0] n398_o;
-  reg [1:0] n399_o;
-  reg n402_o;
-  reg n405_o;
+  reg [1:0] n385_o;
+  reg [1:0] n386_o;
+  reg n389_o;
+  reg n392_o;
+  wire n394_o;
+  wire [1:0] n396_o;
+  wire [7:0] n398_o;
+  wire [1:0] n401_o;
+  wire [7:0] n403_o;
+  wire [63:0] n405_o;
   wire n407_o;
+  wire [1:0] n408_o;
   wire [1:0] n409_o;
-  wire [7:0] n411_o;
+  wire [63:0] n410_o;
+  wire n412_o;
+  wire n413_o;
   wire [1:0] n414_o;
-  wire [7:0] n416_o;
+  wire [1:0] n415_o;
+  wire [1:0] n416_o;
+  wire [1:0] n417_o;
   wire [63:0] n418_o;
   wire n420_o;
-  wire [1:0] n421_o;
-  wire [1:0] n422_o;
-  wire [63:0] n423_o;
-  wire n425_o;
+  wire n423_o;
   wire n426_o;
-  wire [1:0] n427_o;
-  wire [1:0] n428_o;
-  wire [1:0] n429_o;
-  wire [1:0] n430_o;
-  wire [63:0] n431_o;
-  wire n433_o;
+  wire [29:0] n427_o;
+  localparam n429_o = 1'b0;
+  localparam [1:0] n430_o = 2'b00;
+  wire [1:0] n431_o;
+  localparam [1:0] n432_o = 2'b00;
   wire n436_o;
-  wire n439_o;
-  wire [29:0] n440_o;
-  wire [1:0] n443_o;
+  wire n438_o;
+  wire n440_o;
+  reg n443_q;
   wire n445_o;
-  wire [1:0] n447_o;
-  wire n449_o;
-  wire [1:0] n451_o;
-  wire n453_o;
-  wire n455_o;
-  wire [1:0] n457_o;
-  wire n460_o;
-  wire n462_o;
-  wire n464_o;
-  wire [2:0] n465_o;
-  reg [1:0] n467_o;
-  reg n470_o;
-  reg n473_o;
-  wire [7:0] n478_o;
-  wire [7:0] n482_o;
-  wire [7:0] n484_o;
-  wire n489_o;
-  wire [1:0] n491_o;
-  wire [1:0] n493_o;
-  wire [31:0] n495_o;
-  wire n497_o;
-  reg n505_q;
-  reg [1:0] n506_q;
-  reg [1:0] n507_q;
-  reg [31:0] n508_q;
-  reg n509_q;
-  wire [63:0] n513_o;
-  reg [63:0] n516_q;
-  wire [1:0] n519_o;
-  wire [1:0] n521_o;
-  reg [1:0] n524_q;
-  wire [1:0] n527_o;
-  wire [1:0] n529_o;
-  reg [1:0] n532_q;
-  wire [7:0] n535_o;
-  wire [7:0] n538_o;
-  reg [7:0] n544_q;
+  wire n448_o;
+  wire n450_o;
+  wire [7:0] n456_o;
+  wire [7:0] n460_o;
+  wire [7:0] n462_o;
+  wire n467_o;
+  wire [1:0] n471_o;
+  wire [31:0] n473_o;
+  reg n483_q;
+  reg [1:0] n485_q;
+  reg [31:0] n486_q;
+  wire [63:0] n491_o;
+  reg [63:0] n494_q;
+  wire [1:0] n497_o;
+  wire [1:0] n499_o;
+  reg [1:0] n502_q;
+  wire [1:0] n505_o;
+  wire [1:0] n507_o;
+  reg [1:0] n510_q;
+  wire [7:0] n513_o;
+  wire [7:0] n516_o;
+  reg [7:0] n522_q;
+  wire [7:0] n526_o;
+  wire [7:0] n528_o;
+  reg [7:0] n531_q;
+  wire [31:0] n533_o;
+  wire [32:0] n535_o;
+  wire n536_o;
+  wire n537_o;
+  wire n538_o;
+  wire n539_o;
+  wire n540_o;
+  wire n541_o;
+  wire n542_o;
+  wire n543_o;
+  wire [7:0] n544_o;
+  wire [7:0] n545_o;
+  wire [7:0] n546_o;
+  wire [7:0] n547_o;
   wire [7:0] n548_o;
+  wire [7:0] n549_o;
   wire [7:0] n550_o;
-  reg [7:0] n553_q;
-  wire [31:0] n554_o;
-  wire [32:0] n556_o;
+  wire [7:0] n551_o;
+  wire [7:0] n552_o;
+  wire [7:0] n553_o;
+  wire [7:0] n554_o;
+  wire [7:0] n555_o;
+  wire [63:0] n556_o;
   wire n557_o;
   wire n558_o;
   wire n559_o;
@@ -3027,420 +3039,352 @@ module mc_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
   wire [7:0] n575_o;
   wire [7:0] n576_o;
   wire [63:0] n577_o;
-  wire n578_o;
-  wire n579_o;
-  wire n580_o;
-  wire n581_o;
-  wire n582_o;
-  wire n583_o;
-  wire n584_o;
-  wire n585_o;
-  wire [7:0] n586_o;
-  wire [7:0] n587_o;
-  wire [7:0] n588_o;
-  wire [7:0] n589_o;
-  wire [7:0] n590_o;
-  wire [7:0] n591_o;
-  wire [7:0] n592_o;
-  wire [7:0] n593_o;
-  wire [7:0] n594_o;
-  wire [7:0] n595_o;
-  wire [7:0] n596_o;
-  wire [7:0] n597_o;
-  wire [63:0] n598_o;
-  wire [15:0] n599_o;
-  wire [15:0] n600_o;
-  wire [15:0] n601_o;
-  wire [15:0] n602_o;
-  wire [1:0] n603_o;
-  reg [15:0] n604_o;
-  wire [15:0] n605_o;
-  wire [15:0] n606_o;
-  wire [15:0] n607_o;
-  wire [15:0] n608_o;
-  wire [1:0] n609_o;
-  reg [15:0] n610_o;
-  assign config_slv_rdata = n369_o;
-  assign config_slv_error = n370_o;
-  assign stbl_min = n484_o;
-  assign stbl_maxp1 = n553_q;
-  assign mc = mc_reg;
-  assign mc_idx = mode_change_idx_reg;
-  assign mc_p = mode_change_cnt_reg;
+  wire [15:0] n578_o;
+  wire [15:0] n579_o;
+  wire [15:0] n580_o;
+  wire [15:0] n581_o;
+  wire [1:0] n582_o;
+  reg [15:0] n583_o;
+  wire [15:0] n584_o;
+  wire [15:0] n585_o;
+  wire [15:0] n586_o;
+  wire [15:0] n587_o;
+  wire [1:0] n588_o;
+  reg [15:0] n589_o;
+  assign config_slv_rdata = n356_o;
+  assign config_slv_error = n357_o;
+  assign stbl_min = n462_o;
+  assign stbl_maxp1 = n531_q;
+  assign mc = n429_o;
+  assign mc_idx = n430_o;
+  assign mc_p = n432_o;
   /* ni/TDM_controller.vhd:64:5  */
-  assign n367_o = {config_wdata, config_wr, config_en, config_addr};
+  assign n354_o = {config_wdata, config_wr, config_en, config_addr};
   /* ni/TDM_controller.vhd:60:5  */
-  assign n369_o = n556_o[31:0];
+  assign n356_o = n535_o[31:0];
   /* ni/TDM_controller.vhd:58:5  */
-  assign n370_o = n556_o[32];
-  /* ni/MC_controller.vhd:84:10  */
-  assign state = n506_q; // (signal)
-  /* ni/MC_controller.vhd:84:17  */
-  assign next_state = n467_o; // (signal)
+  assign n357_o = n535_o[32];
   /* ni/MC_controller.vhd:86:10  */
-  assign stbl_min_next = n478_o; // (signal)
+  assign stbl_min_next = n456_o; // (signal)
   /* ni/MC_controller.vhd:86:25  */
-  assign stbl_maxp1_next = n482_o; // (signal)
+  assign stbl_maxp1_next = n460_o; // (signal)
   /* ni/MC_controller.vhd:87:10  */
-  assign mode_change_idx_reg = n524_q; // (signal)
+  assign mode_change_idx_reg = n502_q; // (signal)
   /* ni/MC_controller.vhd:87:31  */
-  assign mode_change_idx_next = n429_o; // (signal)
+  assign mode_change_idx_next = n416_o; // (signal)
   /* ni/MC_controller.vhd:88:10  */
-  assign mode_idx_reg = n532_q; // (signal)
+  assign mode_idx_reg = n510_q; // (signal)
   /* ni/MC_controller.vhd:90:10  */
-  assign mode_change_cnt_reg = n507_q; // (signal)
+  assign mode_change_cnt_reg = n485_q; // (signal)
   /* ni/MC_controller.vhd:90:31  */
-  assign mode_change_cnt_next = n430_o; // (signal)
+  assign mode_change_cnt_next = n417_o; // (signal)
   /* ni/MC_controller.vhd:90:53  */
-  assign mode_change_cnt_int = n443_o; // (signal)
+  assign mode_change_cnt_int = n431_o; // (signal)
   /* ni/MC_controller.vhd:92:10  */
-  assign mode_reg = n516_q; // (signal)
+  assign mode_reg = n494_q; // (signal)
   /* ni/MC_controller.vhd:92:20  */
-  assign mode_next = n431_o; // (signal)
+  assign mode_next = n418_o; // (signal)
   /* ni/MC_controller.vhd:94:10  */
-  assign global_mode_change_idx = n470_o; // (signal)
+  assign global_mode_change_idx = n450_o; // (signal)
   /* ni/MC_controller.vhd:94:34  */
-  assign local_mode_change_idx = n433_o; // (signal)
+  assign local_mode_change_idx = n420_o; // (signal)
   /* ni/MC_controller.vhd:96:10  */
-  assign config_slv_error_next = n436_o; // (signal)
+  assign config_slv_error_next = n423_o; // (signal)
   /* ni/MC_controller.vhd:98:10  */
-  assign read_reg = n508_q; // (signal)
+  assign read_reg = n486_q; // (signal)
   /* ni/MC_controller.vhd:98:20  */
-  assign read_next = n554_o; // (signal)
-  /* ni/MC_controller.vhd:100:10  */
-  assign mc_reg = n509_q; // (signal)
-  /* ni/MC_controller.vhd:100:18  */
-  assign mc_next = n473_o; // (signal)
+  assign read_next = n533_o; // (signal)
+  /* ni/MC_controller.vhd:100:27  */
+  assign mode_changed_reg = n443_q; // (signal)
   /* ni/MC_controller.vhd:101:10  */
-  assign stbl_min_reg = n544_q; // (signal)
+  assign stbl_min_reg = n522_q; // (signal)
   /* ni/MC_controller.vhd:103:10  */
-  assign mc_tbl_addr = n381_o; // (signal)
+  assign mc_tbl_addr = n368_o; // (signal)
   /* ni/MC_controller.vhd:124:31  */
-  assign n379_o = n367_o[10:0];
+  assign n366_o = n354_o[10:0];
   /* ni/MC_controller.vhd:124:60  */
-  assign n381_o = n379_o - 11'b00000000010;
+  assign n368_o = n366_o - 11'b00000000010;
   /* ni/MC_controller.vhd:126:30  */
-  assign n382_o = n367_o[14];
+  assign n369_o = n354_o[14];
   /* ni/MC_controller.vhd:126:19  */
-  assign n383_o = sel & n382_o;
+  assign n370_o = sel & n369_o;
   /* ni/MC_controller.vhd:128:17  */
-  assign n384_o = n367_o[15];
+  assign n371_o = n354_o[15];
   /* ni/MC_controller.vhd:128:20  */
-  assign n385_o = ~n384_o;
+  assign n372_o = ~n371_o;
   /* ni/MC_controller.vhd:129:26  */
-  assign n386_o = n367_o[10:0];
+  assign n373_o = n354_o[10:0];
   /* ni/MC_controller.vhd:131:11  */
-  assign n388_o = n386_o == 11'b00000000000;
+  assign n375_o = n373_o == 11'b00000000000;
   /* ni/MC_controller.vhd:129:9  */
   always @*
-    case (n388_o)
-      1'b1: n391_o <= 1'b0;
-      default: n391_o <= 1'b1;
+    case (n375_o)
+      1'b1: n378_o <= 1'b0;
+      default: n378_o <= 1'b1;
     endcase
-  assign n392_o = read_reg[1:0];
+  assign n379_o = read_reg[1:0];
   /* ni/MC_controller.vhd:129:9  */
   always @*
-    case (n388_o)
-      1'b1: n393_o <= mode_idx_reg;
-      default: n393_o <= n392_o;
+    case (n375_o)
+      1'b1: n380_o <= mode_idx_reg;
+      default: n380_o <= n379_o;
     endcase
   /* ni/MC_controller.vhd:144:26  */
-  assign n394_o = n367_o[10:0];
+  assign n381_o = n354_o[10:0];
   /* ni/MC_controller.vhd:147:58  */
-  assign n395_o = n367_o[17:16];
+  assign n382_o = n354_o[17:16];
   /* ni/MC_controller.vhd:146:11  */
-  assign n397_o = n394_o == 11'b00000000000;
+  assign n384_o = n381_o == 11'b00000000000;
   /* ni/MC_controller.vhd:144:9  */
   always @*
-    case (n397_o)
-      1'b1: n398_o <= n395_o;
-      default: n398_o <= mode_change_idx_reg;
+    case (n384_o)
+      1'b1: n385_o <= n382_o;
+      default: n385_o <= mode_change_idx_reg;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
-    case (n397_o)
-      1'b1: n399_o <= mode_change_cnt_int;
-      default: n399_o <= mode_change_cnt_reg;
+    case (n384_o)
+      1'b1: n386_o <= mode_change_cnt_int;
+      default: n386_o <= mode_change_cnt_reg;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
-    case (n397_o)
-      1'b1: n402_o <= 1'b1;
-      default: n402_o <= 1'b0;
+    case (n384_o)
+      1'b1: n389_o <= 1'b1;
+      default: n389_o <= 1'b0;
     endcase
   /* ni/MC_controller.vhd:144:9  */
   always @*
-    case (n397_o)
-      1'b1: n405_o <= 1'b0;
-      default: n405_o <= 1'b1;
+    case (n384_o)
+      1'b1: n392_o <= 1'b0;
+      default: n392_o <= 1'b1;
     endcase
   /* ni/MC_controller.vhd:158:24  */
-  assign n407_o = $unsigned(mc_tbl_addr) < $unsigned(11'b00000000100);
+  assign n394_o = $unsigned(mc_tbl_addr) < $unsigned(11'b00000000100);
   /* ni/MC_controller.vhd:160:22  */
-  assign n409_o = mc_tbl_addr[1:0];  // trunc
+  assign n396_o = mc_tbl_addr[1:0];  // trunc
   /* ni/MC_controller.vhd:160:76  */
-  assign n411_o = n367_o[23:16];
+  assign n398_o = n354_o[23:16];
   /* ni/MC_controller.vhd:161:22  */
-  assign n414_o = mc_tbl_addr[1:0];  // trunc
+  assign n401_o = mc_tbl_addr[1:0];  // trunc
   /* ni/MC_controller.vhd:161:76  */
-  assign n416_o = n367_o[39:32];
+  assign n403_o = n354_o[39:32];
   /* ni/MC_controller.vhd:158:9  */
-  assign n418_o = n407_o ? n598_o : mode_reg;
+  assign n405_o = n394_o ? n577_o : mode_reg;
   /* ni/MC_controller.vhd:158:9  */
-  assign n420_o = n407_o ? 1'b0 : n405_o;
+  assign n407_o = n394_o ? 1'b0 : n392_o;
   /* ni/MC_controller.vhd:128:7  */
-  assign n421_o = n385_o ? mode_change_idx_reg : n398_o;
+  assign n408_o = n372_o ? mode_change_idx_reg : n385_o;
   /* ni/MC_controller.vhd:128:7  */
-  assign n422_o = n385_o ? mode_change_cnt_reg : n399_o;
+  assign n409_o = n372_o ? mode_change_cnt_reg : n386_o;
   /* ni/MC_controller.vhd:128:7  */
-  assign n423_o = n385_o ? mode_reg : n418_o;
+  assign n410_o = n372_o ? mode_reg : n405_o;
   /* ni/MC_controller.vhd:128:7  */
-  assign n425_o = n385_o ? 1'b0 : n402_o;
+  assign n412_o = n372_o ? 1'b0 : n389_o;
   /* ni/MC_controller.vhd:128:7  */
-  assign n426_o = n385_o ? n391_o : n420_o;
-  assign n427_o = read_reg[1:0];
+  assign n413_o = n372_o ? n378_o : n407_o;
+  assign n414_o = read_reg[1:0];
   /* ni/MC_controller.vhd:126:5  */
-  assign n428_o = n439_o ? n393_o : n427_o;
+  assign n415_o = n426_o ? n380_o : n414_o;
   /* ni/MC_controller.vhd:126:5  */
-  assign n429_o = n383_o ? n421_o : mode_change_idx_reg;
+  assign n416_o = n370_o ? n408_o : mode_change_idx_reg;
   /* ni/MC_controller.vhd:126:5  */
-  assign n430_o = n383_o ? n422_o : mode_change_cnt_reg;
+  assign n417_o = n370_o ? n409_o : mode_change_cnt_reg;
   /* ni/MC_controller.vhd:126:5  */
-  assign n431_o = n383_o ? n423_o : mode_reg;
+  assign n418_o = n370_o ? n410_o : mode_reg;
   /* ni/MC_controller.vhd:126:5  */
-  assign n433_o = n383_o ? n425_o : 1'b0;
+  assign n420_o = n370_o ? n412_o : 1'b0;
   /* ni/MC_controller.vhd:126:5  */
-  assign n436_o = n383_o ? n426_o : 1'b0;
+  assign n423_o = n370_o ? n413_o : 1'b0;
   /* ni/MC_controller.vhd:126:5  */
-  assign n439_o = n383_o & n385_o;
-  assign n440_o = read_reg[31:2];
-  /* ni/MC_controller.vhd:179:37  */
-  assign n443_o = mc_p_cnt + 2'b10;
-  /* ni/MC_controller.vhd:190:42  */
-  assign n445_o = local_mode_change_idx & run;
-  /* ni/MC_controller.vhd:190:11  */
-  assign n447_o = n445_o ? 2'b01 : state;
-  /* ni/MC_controller.vhd:189:9  */
-  assign n449_o = state == 2'b00;
-  /* ni/MC_controller.vhd:194:11  */
-  assign n451_o = period_boundary ? 2'b10 : state;
-  /* ni/MC_controller.vhd:194:11  */
-  assign n453_o = period_boundary ? 1'b1 : mc_reg;
-  /* ni/MC_controller.vhd:193:9  */
-  assign n455_o = state == 2'b01;
-  /* ni/MC_controller.vhd:199:11  */
-  assign n457_o = period_boundary ? 2'b00 : state;
-  /* ni/MC_controller.vhd:199:11  */
-  assign n460_o = period_boundary ? 1'b1 : 1'b0;
-  /* ni/MC_controller.vhd:199:11  */
-  assign n462_o = period_boundary ? 1'b0 : mc_reg;
-  /* ni/MC_controller.vhd:198:9  */
-  assign n464_o = state == 2'b10;
-  assign n465_o = {n464_o, n455_o, n449_o};
-  /* ni/MC_controller.vhd:187:7  */
-  always @*
-    case (n465_o)
-      3'b100: n467_o <= n457_o;
-      3'b010: n467_o <= n451_o;
-      3'b001: n467_o <= n447_o;
-      default: n467_o <= 2'bX;
-    endcase
-  /* ni/MC_controller.vhd:187:7  */
-  always @*
-    case (n465_o)
-      3'b100: n470_o <= n460_o;
-      3'b010: n470_o <= 1'b0;
-      3'b001: n470_o <= 1'b0;
-      default: n470_o <= 1'bX;
-    endcase
-  /* ni/MC_controller.vhd:187:7  */
-  always @*
-    case (n465_o)
-      3'b100: n473_o <= n462_o;
-      3'b010: n473_o <= n453_o;
-      3'b001: n473_o <= mc_reg;
-      default: n473_o <= 1'bX;
-    endcase
+  assign n426_o = n370_o & n372_o;
+  assign n427_o = read_reg[31:2];
+  /* ni/MC_controller.vhd:212:49  */
+  assign n431_o = n354_o[33:32];
+  /* ni/MC_controller.vhd:223:11  */
+  assign n436_o = global_mode_change_idx ? 1'b0 : mode_changed_reg;
+  /* ni/MC_controller.vhd:221:11  */
+  assign n438_o = local_mode_change_idx ? 1'b1 : n436_o;
+  /* ni/MC_controller.vhd:218:9  */
+  assign n440_o = reset ? 1'b0 : n438_o;
+  /* ni/MC_controller.vhd:217:7  */
+  always @(posedge clk)
+    n443_q <= n440_o;
+  /* ni/MC_controller.vhd:235:32  */
+  assign n445_o = mode_change_cnt_reg == mc_p_cnt;
+  /* ni/MC_controller.vhd:235:9  */
+  assign n448_o = n445_o ? 1'b1 : 1'b0;
+  /* ni/MC_controller.vhd:234:7  */
+  assign n450_o = mode_changed_reg ? n448_o : 1'b0;
   /* ni/MC_controller.vhd:257:57  */
-  assign n478_o = n604_o[7:0];
+  assign n456_o = n583_o[7:0];
   /* ni/MC_controller.vhd:258:59  */
-  assign n482_o = n610_o[15:8];
+  assign n460_o = n589_o[15:8];
   /* ni/MC_controller.vhd:268:5  */
-  assign n484_o = period_boundary ? stbl_min_next : stbl_min_reg;
+  assign n462_o = period_boundary ? stbl_min_next : stbl_min_reg;
   /* ni/MC_controller.vhd:281:7  */
-  assign n489_o = reset ? 1'b0 : config_slv_error_next;
+  assign n467_o = reset ? 1'b0 : config_slv_error_next;
   /* ni/MC_controller.vhd:281:7  */
-  assign n491_o = reset ? 2'b00 : next_state;
+  assign n471_o = reset ? 2'b00 : mode_change_cnt_next;
   /* ni/MC_controller.vhd:281:7  */
-  assign n493_o = reset ? 2'b00 : mode_change_cnt_next;
-  /* ni/MC_controller.vhd:281:7  */
-  assign n495_o = reset ? 32'b00000000000000000000000000000000 : read_next;
-  /* ni/MC_controller.vhd:281:7  */
-  assign n497_o = reset ? 1'b0 : mc_next;
+  assign n473_o = reset ? 32'b00000000000000000000000000000000 : read_next;
   /* ni/MC_controller.vhd:280:5  */
   always @(posedge clk)
-    n505_q <= n489_o;
+    n483_q <= n467_o;
   /* ni/MC_controller.vhd:280:5  */
   always @(posedge clk)
-    n506_q <= n491_o;
+    n485_q <= n471_o;
   /* ni/MC_controller.vhd:280:5  */
   always @(posedge clk)
-    n507_q <= n493_o;
-  /* ni/MC_controller.vhd:280:5  */
-  always @(posedge clk)
-    n508_q <= n495_o;
-  /* ni/MC_controller.vhd:280:5  */
-  always @(posedge clk)
-    n509_q <= n497_o;
+    n486_q <= n473_o;
   /* ni/MC_controller.vhd:302:7  */
-  assign n513_o = reset ? 64'b0000000000000000000000000000000000000000000000000000000000000000 : mode_next;
+  assign n491_o = reset ? 64'b0000000000000000000000000000000000000000000000000000000000000000 : mode_next;
   /* ni/MC_controller.vhd:301:5  */
   always @(posedge clk)
-    n516_q <= n513_o;
+    n494_q <= n491_o;
   /* ni/MC_controller.vhd:324:9  */
-  assign n519_o = local_mode_change_idx ? mode_change_idx_next : mode_change_idx_reg;
+  assign n497_o = local_mode_change_idx ? mode_change_idx_next : mode_change_idx_reg;
   /* ni/MC_controller.vhd:321:7  */
-  assign n521_o = reset ? 2'b00 : n519_o;
+  assign n499_o = reset ? 2'b00 : n497_o;
   /* ni/MC_controller.vhd:320:5  */
   always @(posedge clk)
-    n524_q <= n521_o;
+    n502_q <= n499_o;
   /* ni/MC_controller.vhd:338:9  */
-  assign n527_o = global_mode_change_idx ? mode_change_idx_reg : mode_idx_reg;
+  assign n505_o = global_mode_change_idx ? mode_change_idx_reg : mode_idx_reg;
   /* ni/MC_controller.vhd:335:7  */
-  assign n529_o = reset ? 2'b00 : n527_o;
+  assign n507_o = reset ? 2'b00 : n505_o;
   /* ni/MC_controller.vhd:334:5  */
   always @(posedge clk)
-    n532_q <= n529_o;
+    n510_q <= n507_o;
   /* ni/MC_controller.vhd:354:9  */
-  assign n535_o = period_boundary ? stbl_min_next : stbl_min_reg;
+  assign n513_o = period_boundary ? stbl_min_next : stbl_min_reg;
   /* ni/MC_controller.vhd:350:7  */
-  assign n538_o = reset ? 8'b00000000 : n535_o;
+  assign n516_o = reset ? 8'b00000000 : n513_o;
   /* ni/MC_controller.vhd:349:5  */
   always @(posedge clk)
-    n544_q <= n538_o;
+    n522_q <= n516_o;
   /* ni/MC_controller.vhd:373:9  */
-  assign n548_o = period_boundary ? stbl_maxp1_next : n553_q;
+  assign n526_o = period_boundary ? stbl_maxp1_next : n531_q;
   /* ni/MC_controller.vhd:370:7  */
-  assign n550_o = reset ? 8'b00000000 : n548_o;
+  assign n528_o = reset ? 8'b00000000 : n526_o;
   /* ni/MC_controller.vhd:369:5  */
   always @(posedge clk)
-    n553_q <= n550_o;
-  /* ni/MC_controller.vhd:369:5  */
-  assign n554_o = {n440_o, n428_o};
-  assign n556_o = {n505_q, read_reg};
+    n531_q <= n528_o;
+  assign n533_o = {n427_o, n415_o};
+  assign n535_o = {n483_q, read_reg};
   /* ni/MC_controller.vhd:160:13  */
-  assign n557_o = n409_o[1];
+  assign n536_o = n396_o[1];
   /* ni/MC_controller.vhd:160:13  */
-  assign n558_o = ~n557_o;
+  assign n537_o = ~n536_o;
   /* ni/MC_controller.vhd:160:13  */
-  assign n559_o = n409_o[0];
+  assign n538_o = n396_o[0];
   /* ni/MC_controller.vhd:160:13  */
-  assign n560_o = ~n559_o;
+  assign n539_o = ~n538_o;
   /* ni/MC_controller.vhd:160:13  */
-  assign n561_o = n558_o & n560_o;
+  assign n540_o = n537_o & n539_o;
   /* ni/MC_controller.vhd:160:13  */
-  assign n562_o = n558_o & n559_o;
+  assign n541_o = n537_o & n538_o;
   /* ni/MC_controller.vhd:160:13  */
-  assign n563_o = n557_o & n560_o;
+  assign n542_o = n536_o & n539_o;
   /* ni/MC_controller.vhd:160:13  */
-  assign n564_o = n557_o & n559_o;
-  /* ni/MC_controller.vhd:367:3  */
-  assign n565_o = mode_reg[7:0];
+  assign n543_o = n536_o & n538_o;
+  assign n544_o = mode_reg[7:0];
   /* ni/MC_controller.vhd:160:13  */
-  assign n566_o = n561_o ? n411_o : n565_o;
-  assign n567_o = mode_reg[15:8];
-  /* ni/MC_controller.vhd:350:7  */
-  assign n568_o = mode_reg[23:16];
+  assign n545_o = n540_o ? n398_o : n544_o;
+  /* ni/MC_controller.vhd:349:5  */
+  assign n546_o = mode_reg[15:8];
+  assign n547_o = mode_reg[23:16];
   /* ni/MC_controller.vhd:160:13  */
-  assign n569_o = n562_o ? n411_o : n568_o;
+  assign n548_o = n541_o ? n398_o : n547_o;
+  assign n549_o = mode_reg[31:24];
   /* ni/MC_controller.vhd:354:9  */
-  assign n570_o = mode_reg[31:24];
-  /* ni/MC_controller.vhd:347:3  */
-  assign n571_o = mode_reg[39:32];
+  assign n550_o = mode_reg[39:32];
   /* ni/MC_controller.vhd:160:13  */
-  assign n572_o = n563_o ? n411_o : n571_o;
+  assign n551_o = n542_o ? n398_o : n550_o;
+  assign n552_o = mode_reg[47:40];
   /* ni/MC_controller.vhd:332:3  */
-  assign n573_o = mode_reg[47:40];
-  assign n574_o = mode_reg[55:48];
+  assign n553_o = mode_reg[55:48];
   /* ni/MC_controller.vhd:160:13  */
-  assign n575_o = n564_o ? n411_o : n574_o;
-  assign n576_o = mode_reg[63:56];
-  /* ni/MC_controller.vhd:299:3  */
-  assign n577_o = {n576_o, n575_o, n573_o, n572_o, n570_o, n569_o, n567_o, n566_o};
+  assign n554_o = n543_o ? n398_o : n553_o;
+  /* ni/MC_controller.vhd:318:3  */
+  assign n555_o = mode_reg[63:56];
+  assign n556_o = {n555_o, n554_o, n552_o, n551_o, n549_o, n548_o, n546_o, n545_o};
   /* ni/MC_controller.vhd:161:13  */
-  assign n578_o = n414_o[1];
+  assign n557_o = n401_o[1];
   /* ni/MC_controller.vhd:161:13  */
-  assign n579_o = ~n578_o;
+  assign n558_o = ~n557_o;
   /* ni/MC_controller.vhd:161:13  */
-  assign n580_o = n414_o[0];
+  assign n559_o = n401_o[0];
   /* ni/MC_controller.vhd:161:13  */
-  assign n581_o = ~n580_o;
+  assign n560_o = ~n559_o;
   /* ni/MC_controller.vhd:161:13  */
-  assign n582_o = n579_o & n581_o;
+  assign n561_o = n558_o & n560_o;
   /* ni/MC_controller.vhd:161:13  */
-  assign n583_o = n579_o & n580_o;
+  assign n562_o = n558_o & n559_o;
   /* ni/MC_controller.vhd:161:13  */
-  assign n584_o = n578_o & n581_o;
+  assign n563_o = n557_o & n560_o;
   /* ni/MC_controller.vhd:161:13  */
-  assign n585_o = n578_o & n580_o;
+  assign n564_o = n557_o & n559_o;
+  assign n565_o = n556_o[7:0];
+  /* ni/MC_controller.vhd:281:7  */
+  assign n566_o = n556_o[15:8];
+  /* ni/MC_controller.vhd:161:13  */
+  assign n567_o = n561_o ? n403_o : n566_o;
+  /* ni/MC_controller.vhd:278:3  */
+  assign n568_o = n556_o[23:16];
+  assign n569_o = n556_o[31:24];
+  /* ni/MC_controller.vhd:161:13  */
+  assign n570_o = n562_o ? n403_o : n569_o;
+  /* ni/MC_controller.vhd:258:33  */
+  assign n571_o = n556_o[39:32];
   /* ni/MC_controller.vhd:257:31  */
-  assign n586_o = n577_o[7:0];
-  assign n587_o = n577_o[15:8];
+  assign n572_o = n556_o[47:40];
   /* ni/MC_controller.vhd:161:13  */
-  assign n588_o = n582_o ? n416_o : n587_o;
-  /* ni/MC_controller.vhd:182:5  */
-  assign n589_o = n577_o[23:16];
-  assign n590_o = n577_o[31:24];
+  assign n573_o = n563_o ? n403_o : n572_o;
+  assign n574_o = n556_o[55:48];
+  /* ni/MC_controller.vhd:231:5  */
+  assign n575_o = n556_o[63:56];
   /* ni/MC_controller.vhd:161:13  */
-  assign n591_o = n583_o ? n416_o : n590_o;
-  assign n592_o = n577_o[39:32];
-  assign n593_o = n577_o[47:40];
-  /* ni/MC_controller.vhd:161:13  */
-  assign n594_o = n584_o ? n416_o : n593_o;
-  /* ni/MC_controller.vhd:160:23  */
-  assign n595_o = n577_o[55:48];
-  assign n596_o = n577_o[63:56];
-  /* ni/MC_controller.vhd:161:13  */
-  assign n597_o = n585_o ? n416_o : n596_o;
-  /* ni/MC_controller.vhd:101:55  */
-  assign n598_o = {n597_o, n595_o, n594_o, n592_o, n591_o, n589_o, n588_o, n586_o};
+  assign n576_o = n564_o ? n403_o : n575_o;
+  /* ni/MC_controller.vhd:215:5  */
+  assign n577_o = {n576_o, n574_o, n573_o, n571_o, n570_o, n568_o, n567_o, n565_o};
   /* ni/MC_controller.vhd:161:23  */
-  assign n599_o = mode_reg[15:0];
+  assign n578_o = mode_reg[15:0];
   /* ni/MC_controller.vhd:161:13  */
-  assign n600_o = mode_reg[31:16];
-  /* ni/MC_controller.vhd:101:40  */
-  assign n601_o = mode_reg[47:32];
-  /* ni/MC_controller.vhd:101:24  */
-  assign n602_o = mode_reg[63:48];
+  assign n579_o = mode_reg[31:16];
+  assign n580_o = mode_reg[47:32];
+  assign n581_o = mode_reg[63:48];
   /* ni/MC_controller.vhd:257:30  */
-  assign n603_o = mode_idx_reg[1:0];
+  assign n582_o = mode_idx_reg[1:0];
   /* ni/MC_controller.vhd:257:30  */
   always @*
-    case (n603_o)
-      2'b00: n604_o <= n599_o;
-      2'b01: n604_o <= n600_o;
-      2'b10: n604_o <= n601_o;
-      2'b11: n604_o <= n602_o;
+    case (n582_o)
+      2'b00: n583_o <= n578_o;
+      2'b01: n583_o <= n579_o;
+      2'b10: n583_o <= n580_o;
+      2'b11: n583_o <= n581_o;
     endcase
   /* ni/MC_controller.vhd:257:31  */
-  assign n605_o = mode_reg[15:0];
+  assign n584_o = mode_reg[15:0];
   /* ni/MC_controller.vhd:257:30  */
-  assign n606_o = mode_reg[31:16];
-  assign n607_o = mode_reg[47:32];
-  assign n608_o = mode_reg[63:48];
+  assign n585_o = mode_reg[31:16];
+  /* ni/MC_controller.vhd:161:23  */
+  assign n586_o = mode_reg[47:32];
+  /* ni/MC_controller.vhd:160:23  */
+  assign n587_o = mode_reg[63:48];
   /* ni/MC_controller.vhd:258:32  */
-  assign n609_o = mode_idx_reg[1:0];
+  assign n588_o = mode_idx_reg[1:0];
   /* ni/MC_controller.vhd:258:32  */
   always @*
-    case (n609_o)
-      2'b00: n610_o <= n605_o;
-      2'b01: n610_o <= n606_o;
-      2'b10: n610_o <= n607_o;
-      2'b11: n610_o <= n608_o;
+    case (n588_o)
+      2'b00: n589_o <= n584_o;
+      2'b01: n589_o <= n585_o;
+      2'b10: n589_o <= n586_o;
+      2'b11: n589_o <= n587_o;
     endcase
 endmodule
 
-module tdm_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
+module tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f
   (input  clk,
    input  reset,
    input  run,
@@ -3468,7 +3412,6 @@ module tdm_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
   wire [7:0] stbl_idx_next;
   wire [3:0] time2next_reg;
   wire [31:0] clock_cnt_lo_reg;
-  wire master_run_next;
   wire [1:0] mc_p_cnt_reg;
   wire [31:0] read_reg;
   wire [31:0] read_next;
@@ -3479,102 +3422,92 @@ module tdm_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
   wire t2n_ld_reg;
   wire [7:0] stbl_idx_inc;
   wire config_slv_error_next;
-  wire [2:0] master_run_reg;
   wire run_reg;
-  wire n201_o;
-  wire [1:0] n205_o;
-  wire [2:0] n206_o;
-  wire [2:0] n208_o;
-  reg [2:0] n211_q;
+  localparam n201_o = 1'b0;
+  wire n206_o;
+  wire n207_o;
+  wire n208_o;
+  wire n209_o;
+  wire [10:0] n210_o;
+  wire [30:0] n211_o;
+  wire n213_o;
   wire n215_o;
-  wire n216_o;
   wire n217_o;
-  wire n218_o;
   wire n219_o;
-  wire [10:0] n220_o;
+  localparam [31:0] n220_o = 32'b00000000000000000000000000000000;
   wire [30:0] n221_o;
   wire n223_o;
+  wire [4:0] n224_o;
   wire n225_o;
+  wire n226_o;
   wire n227_o;
+  wire n228_o;
   wire n229_o;
-  localparam [31:0] n230_o = 32'b00000000000000000000000000000000;
-  wire [30:0] n231_o;
-  wire n233_o;
-  wire [4:0] n234_o;
-  wire n235_o;
-  wire n236_o;
-  wire n237_o;
-  wire n238_o;
-  wire n239_o;
-  reg n240_o;
-  wire [8:0] n241_o;
-  wire [8:0] n242_o;
-  wire [8:0] n243_o;
-  wire [8:0] n244_o;
-  wire [8:0] n245_o;
-  wire [8:0] n246_o;
-  reg [8:0] n247_o;
-  wire [21:0] n248_o;
-  wire [21:0] n249_o;
-  wire [21:0] n250_o;
-  wire [21:0] n251_o;
-  wire [21:0] n252_o;
-  reg [21:0] n253_o;
-  reg n259_o;
-  wire [10:0] n260_o;
-  wire [30:0] n261_o;
+  reg n230_o;
+  wire [8:0] n231_o;
+  wire [8:0] n232_o;
+  wire [8:0] n233_o;
+  wire [8:0] n234_o;
+  wire [8:0] n235_o;
+  wire [8:0] n236_o;
+  reg [8:0] n237_o;
+  wire [21:0] n238_o;
+  wire [21:0] n239_o;
+  wire [21:0] n240_o;
+  wire [21:0] n241_o;
+  wire [21:0] n242_o;
+  reg [21:0] n243_o;
+  reg n249_o;
+  wire [10:0] n250_o;
+  wire [30:0] n251_o;
+  wire n253_o;
+  reg n256_o;
+  wire [31:0] n257_o;
+  wire [31:0] n258_o;
+  wire n261_o;
   wire n262_o;
-  wire n264_o;
-  reg n265_o;
-  reg n268_o;
-  wire n269_o;
-  wire [31:0] n270_o;
-  wire [31:0] n271_o;
+  wire n267_o;
+  wire [7:0] n271_o;
   wire n274_o;
-  wire n275_o;
   wire n276_o;
-  wire n281_o;
-  wire [7:0] n285_o;
+  wire [4:0] n277_o;
+  wire n279_o;
+  wire n280_o;
+  wire n282_o;
+  wire n283_o;
+  wire n284_o;
+  wire n285_o;
+  wire n286_o;
+  wire n287_o;
   wire n288_o;
-  wire n290_o;
-  wire [4:0] n291_o;
+  wire n291_o;
+  wire n292_o;
   wire n293_o;
   wire n294_o;
-  wire n296_o;
+  wire n295_o;
   wire n297_o;
   wire n298_o;
-  wire n299_o;
-  wire n300_o;
-  wire n301_o;
-  wire n302_o;
-  wire n305_o;
-  wire n306_o;
+  wire [7:0] n299_o;
+  wire n303_o;
+  wire [31:0] n305_o;
   wire n307_o;
   wire n308_o;
-  wire n309_o;
-  wire n311_o;
-  wire n312_o;
-  wire [7:0] n313_o;
-  wire n317_o;
-  wire [31:0] n319_o;
-  wire n321_o;
-  wire n322_o;
-  reg n329_q;
-  reg [31:0] n330_q;
-  reg n331_q;
-  reg n332_q;
-  wire [1:0] n341_o;
-  wire [1:0] n342_o;
-  wire [1:0] n344_o;
-  reg [1:0] n347_q;
-  wire [3:0] n351_o;
-  wire [3:0] n352_o;
-  wire [3:0] n354_o;
-  reg [3:0] n357_q;
-  wire [7:0] n360_o;
-  wire [7:0] n362_o;
-  reg [7:0] n365_q;
-  wire [32:0] n366_o;
+  reg n315_q;
+  reg [31:0] n316_q;
+  reg n317_q;
+  reg n318_q;
+  wire [1:0] n327_o;
+  wire [1:0] n328_o;
+  wire [1:0] n330_o;
+  reg [1:0] n333_q;
+  wire [3:0] n337_o;
+  wire [3:0] n338_o;
+  wire [3:0] n340_o;
+  reg [3:0] n343_q;
+  wire [7:0] n346_o;
+  wire [7:0] n348_o;
+  reg [7:0] n351_q;
+  wire [32:0] n353_o;
   assign master_run = n201_o;
   assign config_slv_rdata = n195_o;
   assign config_slv_error = n196_o;
@@ -3582,286 +3515,256 @@ module tdm_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7
   assign stbl_idx_en = stbl_idx_en_sig;
   assign period_boundary = period_boundary_sig;
   assign mc_p_cnt = mc_p_cnt_reg;
-  /* ni/network_interface.vhd:398:40  */
+  /* ni/network_interface_s.vhd:398:40  */
   assign n193_o = {config_wdata, config_wr, config_en, config_addr};
-  /* ni/network_interface.vhd:394:41  */
-  assign n195_o = n366_o[31:0];
-  /* ni/network_interface.vhd:392:35  */
-  assign n196_o = n366_o[32];
+  /* ni/network_interface_s.vhd:394:41  */
+  assign n195_o = n353_o[31:0];
+  /* ni/network_interface_s.vhd:392:35  */
+  assign n196_o = n353_o[32];
   /* ni/TDM_controller.vhd:84:10  */
   assign tdm_s_cnt_reg = 10'b0000000000; // (signal)
   /* ni/TDM_controller.vhd:85:10  */
   assign tdm_p_cnt_reg = 32'b00000000000000000000000000000000; // (signal)
   /* ni/TDM_controller.vhd:87:10  */
-  assign stbl_idx_reg = n365_q; // (signal)
+  assign stbl_idx_reg = n351_q; // (signal)
   /* ni/TDM_controller.vhd:88:10  */
-  assign stbl_idx_next = n313_o; // (signal)
+  assign stbl_idx_next = n299_o; // (signal)
   /* ni/TDM_controller.vhd:89:10  */
-  assign time2next_reg = n357_q; // (signal)
+  assign time2next_reg = n343_q; // (signal)
   /* ni/TDM_controller.vhd:165:42  */
   assign clock_cnt_lo_reg = 32'b00000000000000000000000000000000; // (signal)
-  /* ni/TDM_controller.vhd:93:10  */
-  assign master_run_next = n275_o; // (signal)
   /* ni/TDM_controller.vhd:95:10  */
-  assign mc_p_cnt_reg = n347_q; // (signal)
+  assign mc_p_cnt_reg = n333_q; // (signal)
   /* ni/TDM_controller.vhd:105:10  */
-  assign read_reg = n330_q; // (signal)
+  assign read_reg = n316_q; // (signal)
   /* ni/TDM_controller.vhd:105:20  */
-  assign read_next = n271_o; // (signal)
+  assign read_next = n258_o; // (signal)
   /* ni/TDM_controller.vhd:106:10  */
   assign clock_delay_reg = 32'b00000000000000000000000000000000; // (signal)
   /* ni/TDM_controller.vhd:108:10  */
-  assign period_boundary_sig = n311_o; // (signal)
+  assign period_boundary_sig = n297_o; // (signal)
   /* ni/TDM_controller.vhd:109:10  */
-  assign stbl_idx_reset = n309_o; // (signal)
+  assign stbl_idx_reset = n295_o; // (signal)
   /* ni/TDM_controller.vhd:109:26  */
-  assign stbl_idx_en_sig = n302_o; // (signal)
+  assign stbl_idx_en_sig = n288_o; // (signal)
   /* ni/TDM_controller.vhd:109:43  */
-  assign t2n_ld_reg = n331_q; // (signal)
+  assign t2n_ld_reg = n317_q; // (signal)
   /* ni/TDM_controller.vhd:110:10  */
-  assign stbl_idx_inc = n285_o; // (signal)
+  assign stbl_idx_inc = n271_o; // (signal)
   /* ni/TDM_controller.vhd:112:10  */
-  assign config_slv_error_next = n281_o; // (signal)
-  /* ni/TDM_controller.vhd:115:10  */
-  assign master_run_reg = n211_q; // (signal)
+  assign config_slv_error_next = n267_o; // (signal)
   /* ni/TDM_controller.vhd:117:10  */
-  assign run_reg = n332_q; // (signal)
-  /* ni/TDM_controller.vhd:124:33  */
-  assign n201_o = master_run_reg[2];
-  /* ni/TDM_controller.vhd:131:43  */
-  assign n205_o = master_run_reg[1:0];
-  /* ni/TDM_controller.vhd:131:76  */
-  assign n206_o = {n205_o, master_run_next};
-  /* ni/TDM_controller.vhd:128:9  */
-  assign n208_o = reset ? 3'b000 : n206_o;
-  /* ni/TDM_controller.vhd:127:7  */
-  always @(posedge clk)
-    n211_q <= n208_o;
-  /* ni/TDM_controller.vhd:153:41  */
-  assign n215_o = master_run_reg[0];
+  assign run_reg = n318_q; // (signal)
   /* ni/TDM_controller.vhd:154:30  */
-  assign n216_o = n193_o[14];
+  assign n206_o = n193_o[14];
   /* ni/TDM_controller.vhd:154:19  */
-  assign n217_o = sel & n216_o;
+  assign n207_o = sel & n206_o;
   /* ni/TDM_controller.vhd:156:17  */
-  assign n218_o = n193_o[15];
+  assign n208_o = n193_o[15];
   /* ni/TDM_controller.vhd:156:20  */
-  assign n219_o = ~n218_o;
+  assign n209_o = ~n208_o;
   /* ni/TDM_controller.vhd:157:37  */
-  assign n220_o = n193_o[10:0];
+  assign n210_o = n193_o[10:0];
   /* ni/TDM_controller.vhd:157:15  */
-  assign n221_o = {20'b0, n220_o};  //  uext
+  assign n211_o = {20'b0, n210_o};  //  uext
   /* ni/TDM_controller.vhd:158:11  */
-  assign n223_o = n221_o == 31'b0000000000000000000000000000000;
+  assign n213_o = n211_o == 31'b0000000000000000000000000000000;
   /* ni/TDM_controller.vhd:160:11  */
-  assign n225_o = n221_o == 31'b0000000000000000000000000000001;
+  assign n215_o = n211_o == 31'b0000000000000000000000000000001;
   /* ni/TDM_controller.vhd:162:11  */
-  assign n227_o = n221_o == 31'b0000000000000000000000000000010;
+  assign n217_o = n211_o == 31'b0000000000000000000000000000010;
   /* ni/TDM_controller.vhd:164:11  */
-  assign n229_o = n221_o == 31'b0000000000000000000000000000011;
-  /* ni/network_interface.vhd:284:9  */
-  assign n231_o = n230_o[31:1];
+  assign n219_o = n211_o == 31'b0000000000000000000000000000011;
+  /* ni/network_interface_s.vhd:305:9  */
+  assign n221_o = n220_o[31:1];
   /* ni/TDM_controller.vhd:167:11  */
-  assign n233_o = n221_o == 31'b0000000000000000000000000000100;
-  /* ni/network_interface.vhd:284:9  */
-  assign n234_o = {n233_o, n229_o, n227_o, n225_o, n223_o};
-  /* ni/network_interface.vhd:284:9  */
-  assign n235_o = tdm_s_cnt_reg[0];
-  /* ni/network_interface.vhd:284:9  */
-  assign n236_o = tdm_p_cnt_reg[0];
-  /* ni/network_interface.vhd:279:29  */
-  assign n237_o = clock_delay_reg[0];
-  /* ni/network_interface.vhd:278:36  */
-  assign n238_o = clock_cnt_lo_reg[0];
-  /* ni/network_interface.vhd:276:32  */
-  assign n239_o = tdm_p_cnt_reg[0];
+  assign n223_o = n211_o == 31'b0000000000000000000000000000100;
+  /* ni/network_interface_s.vhd:300:27  */
+  assign n224_o = {n223_o, n219_o, n217_o, n215_o, n213_o};
+  /* ni/network_interface_s.vhd:299:23  */
+  assign n225_o = tdm_s_cnt_reg[0];
+  /* ni/network_interface_s.vhd:298:31  */
+  assign n226_o = tdm_p_cnt_reg[0];
+  /* ni/network_interface_s.vhd:297:29  */
+  assign n227_o = clock_delay_reg[0];
+  /* ni/network_interface_s.vhd:294:31  */
+  assign n228_o = clock_cnt_lo_reg[0];
+  /* ni/network_interface_s.vhd:284:9  */
+  assign n229_o = tdm_p_cnt_reg[0];
   /* ni/TDM_controller.vhd:157:9  */
   always @*
-    case (n234_o)
-      5'b10000: n240_o <= run;
-      5'b01000: n240_o <= n238_o;
-      5'b00100: n240_o <= n237_o;
-      5'b00010: n240_o <= n236_o;
-      5'b00001: n240_o <= n235_o;
-      default: n240_o <= n239_o;
+    case (n224_o)
+      5'b10000: n230_o <= run;
+      5'b01000: n230_o <= n228_o;
+      5'b00100: n230_o <= n227_o;
+      5'b00010: n230_o <= n226_o;
+      5'b00001: n230_o <= n225_o;
+      default: n230_o <= n229_o;
     endcase
-  /* ni/network_interface.vhd:274:31  */
-  assign n241_o = tdm_s_cnt_reg[9:1];
-  /* ni/network_interface.vhd:271:31  */
-  assign n242_o = tdm_p_cnt_reg[9:1];
-  /* ni/network_interface.vhd:263:9  */
-  assign n243_o = clock_delay_reg[9:1];
-  /* ni/network_interface.vhd:263:9  */
-  assign n244_o = clock_cnt_lo_reg[9:1];
-  /* ni/network_interface.vhd:263:9  */
-  assign n245_o = n231_o[8:0];
-  /* ni/network_interface.vhd:263:9  */
-  assign n246_o = tdm_p_cnt_reg[9:1];
+  /* ni/network_interface_s.vhd:284:9  */
+  assign n231_o = tdm_s_cnt_reg[9:1];
+  /* ni/network_interface_s.vhd:284:9  */
+  assign n232_o = tdm_p_cnt_reg[9:1];
+  /* ni/network_interface_s.vhd:284:9  */
+  assign n233_o = clock_delay_reg[9:1];
+  /* ni/network_interface_s.vhd:284:9  */
+  assign n234_o = clock_cnt_lo_reg[9:1];
+  /* ni/network_interface_s.vhd:279:29  */
+  assign n235_o = n221_o[8:0];
+  /* ni/network_interface_s.vhd:278:36  */
+  assign n236_o = tdm_p_cnt_reg[9:1];
   /* ni/TDM_controller.vhd:157:9  */
   always @*
-    case (n234_o)
-      5'b10000: n247_o <= n245_o;
-      5'b01000: n247_o <= n244_o;
-      5'b00100: n247_o <= n243_o;
-      5'b00010: n247_o <= n242_o;
-      5'b00001: n247_o <= n241_o;
-      default: n247_o <= n246_o;
+    case (n224_o)
+      5'b10000: n237_o <= n235_o;
+      5'b01000: n237_o <= n234_o;
+      5'b00100: n237_o <= n233_o;
+      5'b00010: n237_o <= n232_o;
+      5'b00001: n237_o <= n231_o;
+      default: n237_o <= n236_o;
     endcase
-  /* ni/network_interface.vhd:263:9  */
-  assign n248_o = tdm_p_cnt_reg[31:10];
-  /* ni/network_interface.vhd:64:9  */
-  assign n249_o = clock_delay_reg[31:10];
-  /* ni/network_interface.vhd:62:9  */
-  assign n250_o = clock_cnt_lo_reg[31:10];
-  /* ni/network_interface.vhd:60:9  */
-  assign n251_o = n231_o[30:9];
-  /* ni/network_interface.vhd:59:9  */
-  assign n252_o = tdm_p_cnt_reg[31:10];
+  /* ni/network_interface_s.vhd:275:29  */
+  assign n238_o = tdm_p_cnt_reg[31:10];
+  /* ni/network_interface_s.vhd:274:31  */
+  assign n239_o = clock_delay_reg[31:10];
+  /* ni/network_interface_s.vhd:271:31  */
+  assign n240_o = clock_cnt_lo_reg[31:10];
+  /* ni/network_interface_s.vhd:263:9  */
+  assign n241_o = n221_o[30:9];
+  /* ni/network_interface_s.vhd:263:9  */
+  assign n242_o = tdm_p_cnt_reg[31:10];
   /* ni/TDM_controller.vhd:157:9  */
   always @*
-    case (n234_o)
-      5'b10000: n253_o <= n251_o;
-      5'b01000: n253_o <= n250_o;
-      5'b00100: n253_o <= n249_o;
-      5'b00010: n253_o <= n248_o;
-      5'b00001: n253_o <= n252_o;
-      default: n253_o <= n252_o;
+    case (n224_o)
+      5'b10000: n243_o <= n241_o;
+      5'b01000: n243_o <= n240_o;
+      5'b00100: n243_o <= n239_o;
+      5'b00010: n243_o <= n238_o;
+      5'b00001: n243_o <= n242_o;
+      default: n243_o <= n242_o;
     endcase
   /* ni/TDM_controller.vhd:157:9  */
   always @*
-    case (n234_o)
-      5'b10000: n259_o <= 1'b0;
-      5'b01000: n259_o <= 1'b0;
-      5'b00100: n259_o <= 1'b0;
-      5'b00010: n259_o <= 1'b0;
-      5'b00001: n259_o <= 1'b0;
-      default: n259_o <= 1'b1;
+    case (n224_o)
+      5'b10000: n249_o <= 1'b0;
+      5'b01000: n249_o <= 1'b0;
+      5'b00100: n249_o <= 1'b0;
+      5'b00010: n249_o <= 1'b0;
+      5'b00001: n249_o <= 1'b0;
+      default: n249_o <= 1'b1;
     endcase
   /* ni/TDM_controller.vhd:174:37  */
-  assign n260_o = n193_o[10:0];
+  assign n250_o = n193_o[10:0];
   /* ni/TDM_controller.vhd:174:15  */
-  assign n261_o = {20'b0, n260_o};  //  uext
-  /* ni/TDM_controller.vhd:177:63  */
-  assign n262_o = n193_o[16];
+  assign n251_o = {20'b0, n250_o};  //  uext
   /* ni/TDM_controller.vhd:175:11  */
-  assign n264_o = n261_o == 31'b0000000000000000000000000000100;
+  assign n253_o = n251_o == 31'b0000000000000000000000000000100;
   /* ni/TDM_controller.vhd:174:9  */
   always @*
-    case (n264_o)
-      1'b1: n265_o <= n262_o;
-      default: n265_o <= n215_o;
+    case (n253_o)
+      1'b1: n256_o <= 1'b0;
+      default: n256_o <= 1'b1;
     endcase
-  /* ni/TDM_controller.vhd:174:9  */
-  always @*
-    case (n264_o)
-      1'b1: n268_o <= 1'b0;
-      default: n268_o <= 1'b1;
-    endcase
+  assign n257_o = {n243_o, n237_o, n230_o};
+  /* ni/TDM_controller.vhd:154:5  */
+  assign n258_o = n262_o ? n257_o : tdm_p_cnt_reg;
   /* ni/TDM_controller.vhd:156:7  */
-  assign n269_o = n219_o ? n215_o : n265_o;
-  assign n270_o = {n253_o, n247_o, n240_o};
+  assign n261_o = n209_o ? n249_o : n256_o;
   /* ni/TDM_controller.vhd:154:5  */
-  assign n271_o = n276_o ? n270_o : tdm_p_cnt_reg;
-  /* ni/TDM_controller.vhd:156:7  */
-  assign n274_o = n219_o ? n259_o : n268_o;
+  assign n262_o = n207_o & n209_o;
   /* ni/TDM_controller.vhd:154:5  */
-  assign n275_o = n217_o ? n269_o : n215_o;
-  /* ni/TDM_controller.vhd:154:5  */
-  assign n276_o = n217_o & n219_o;
-  /* ni/TDM_controller.vhd:154:5  */
-  assign n281_o = n217_o ? n274_o : 1'b0;
+  assign n267_o = n207_o ? n261_o : 1'b0;
   /* ni/TDM_controller.vhd:194:32  */
-  assign n285_o = stbl_idx_reg + 8'b00000001;
+  assign n271_o = stbl_idx_reg + 8'b00000001;
   /* ni/TDM_controller.vhd:198:49  */
-  assign n288_o = time2next_reg == 4'b0001;
+  assign n274_o = time2next_reg == 4'b0001;
   /* ni/TDM_controller.vhd:198:74  */
-  assign n290_o = time2next_reg == 4'b0000;
+  assign n276_o = time2next_reg == 4'b0000;
   /* ni/TDM_controller.vhd:198:97  */
-  assign n291_o = {1'b0, time2next_reg};  //  uext
+  assign n277_o = {1'b0, time2next_reg};  //  uext
   /* ni/TDM_controller.vhd:198:97  */
-  assign n293_o = n291_o == 5'b11111;
+  assign n279_o = n277_o == 5'b11111;
   /* ni/TDM_controller.vhd:198:79  */
-  assign n294_o = n290_o | n293_o;
+  assign n280_o = n276_o | n279_o;
   /* ni/TDM_controller.vhd:198:118  */
-  assign n296_o = t2n == 4'b0000;
+  assign n282_o = t2n == 4'b0000;
   /* ni/TDM_controller.vhd:198:109  */
-  assign n297_o = n294_o & n296_o;
+  assign n283_o = n280_o & n282_o;
   /* ni/TDM_controller.vhd:198:54  */
-  assign n298_o = n288_o | n297_o;
+  assign n284_o = n274_o | n283_o;
   /* ni/TDM_controller.vhd:198:134  */
-  assign n299_o = run != run_reg;
+  assign n285_o = run != run_reg;
   /* ni/TDM_controller.vhd:198:125  */
-  assign n300_o = n298_o | n299_o;
+  assign n286_o = n284_o | n285_o;
   /* ni/TDM_controller.vhd:198:147  */
-  assign n301_o = n300_o & run;
+  assign n287_o = n286_o & run;
   /* ni/TDM_controller.vhd:198:26  */
-  assign n302_o = n301_o ? 1'b1 : 1'b0;
+  assign n288_o = n287_o ? 1'b1 : 1'b0;
   /* ni/TDM_controller.vhd:201:46  */
-  assign n305_o = stbl_idx_inc == stbl_maxp1;
+  assign n291_o = stbl_idx_inc == stbl_maxp1;
   /* ni/TDM_controller.vhd:201:69  */
-  assign n306_o = run != run_reg;
+  assign n292_o = run != run_reg;
   /* ni/TDM_controller.vhd:201:60  */
-  assign n307_o = n305_o | n306_o;
+  assign n293_o = n291_o | n292_o;
   /* ni/TDM_controller.vhd:201:82  */
-  assign n308_o = n307_o & run;
+  assign n294_o = n293_o & run;
   /* ni/TDM_controller.vhd:201:25  */
-  assign n309_o = n308_o ? 1'b1 : 1'b0;
+  assign n295_o = n294_o ? 1'b1 : 1'b0;
   /* ni/TDM_controller.vhd:205:41  */
-  assign n311_o = stbl_idx_reset & stbl_idx_en_sig;
+  assign n297_o = stbl_idx_reset & stbl_idx_en_sig;
   /* ni/TDM_controller.vhd:208:53  */
-  assign n312_o = ~stbl_idx_reset;
+  assign n298_o = ~stbl_idx_reset;
   /* ni/TDM_controller.vhd:208:33  */
-  assign n313_o = n312_o ? stbl_idx_inc : stbl_min;
+  assign n299_o = n298_o ? stbl_idx_inc : stbl_min;
   /* ni/TDM_controller.vhd:220:7  */
-  assign n317_o = reset ? 1'b0 : config_slv_error_next;
+  assign n303_o = reset ? 1'b0 : config_slv_error_next;
   /* ni/TDM_controller.vhd:220:7  */
-  assign n319_o = reset ? 32'b00000000000000000000000000000000 : read_next;
+  assign n305_o = reset ? 32'b00000000000000000000000000000000 : read_next;
   /* ni/TDM_controller.vhd:220:7  */
-  assign n321_o = reset ? 1'b1 : stbl_idx_en_sig;
+  assign n307_o = reset ? 1'b1 : stbl_idx_en_sig;
   /* ni/TDM_controller.vhd:220:7  */
-  assign n322_o = reset ? run_reg : run;
+  assign n308_o = reset ? run_reg : run;
   /* ni/TDM_controller.vhd:219:5  */
   always @(posedge clk)
-    n329_q <= n317_o;
+    n315_q <= n303_o;
   /* ni/TDM_controller.vhd:219:5  */
   always @(posedge clk)
-    n330_q <= n319_o;
+    n316_q <= n305_o;
   /* ni/TDM_controller.vhd:219:5  */
   always @(posedge clk)
-    n331_q <= n321_o;
+    n317_q <= n307_o;
   /* ni/TDM_controller.vhd:219:5  */
   always @(posedge clk)
-    n332_q <= n322_o;
+    n318_q <= n308_o;
   /* ni/TDM_controller.vhd:336:40  */
-  assign n341_o = mc_p_cnt_reg + 2'b01;
+  assign n327_o = mc_p_cnt_reg + 2'b01;
   /* ni/TDM_controller.vhd:335:9  */
-  assign n342_o = period_boundary_sig ? n341_o : mc_p_cnt_reg;
+  assign n328_o = period_boundary_sig ? n327_o : mc_p_cnt_reg;
   /* ni/TDM_controller.vhd:332:7  */
-  assign n344_o = reset ? 2'b00 : n342_o;
+  assign n330_o = reset ? 2'b00 : n328_o;
   /* ni/TDM_controller.vhd:331:5  */
   always @(posedge clk)
-    n347_q <= n344_o;
+    n333_q <= n330_o;
   /* ni/TDM_controller.vhd:354:42  */
-  assign n351_o = time2next_reg - 4'b0001;
+  assign n337_o = time2next_reg - 4'b0001;
   /* ni/TDM_controller.vhd:351:9  */
-  assign n352_o = t2n_ld_reg ? t2n : n351_o;
+  assign n338_o = t2n_ld_reg ? t2n : n337_o;
   /* ni/TDM_controller.vhd:348:7  */
-  assign n354_o = reset ? 4'b0000 : n352_o;
+  assign n340_o = reset ? 4'b0000 : n338_o;
   /* ni/TDM_controller.vhd:347:5  */
   always @(posedge clk)
-    n357_q <= n354_o;
+    n343_q <= n340_o;
   /* ni/TDM_controller.vhd:369:9  */
-  assign n360_o = stbl_idx_en_sig ? stbl_idx_next : stbl_idx_reg;
+  assign n346_o = stbl_idx_en_sig ? stbl_idx_next : stbl_idx_reg;
   /* ni/TDM_controller.vhd:365:7  */
-  assign n362_o = reset ? 8'b00000000 : n360_o;
+  assign n348_o = reset ? 8'b00000000 : n346_o;
   /* ni/TDM_controller.vhd:364:5  */
   always @(posedge clk)
-    n365_q <= n362_o;
-  /* ni/TDM_controller.vhd:364:5  */
-  assign n366_o = {n329_q, read_reg};
+    n351_q <= n348_o;
+  assign n353_o = {n315_q, read_reg};
 endmodule
 
-module network_interface
+module network_interface_s
   (input  clk,
    input  reset,
    input  run,
@@ -4108,84 +4011,84 @@ module network_interface
   assign n11_o = spmbus_n132[15:14];
   assign n12_o = spmbus_n132[16];
   assign n13_o = spmbus_n132[80:17];
-  /* ni/network_interface.vhd:227:8  */
+  /* ni/network_interface_s.vhd:227:8  */
   assign config_master = configbus_n151; // (signal)
-  /* ni/network_interface.vhd:229:8  */
+  /* ni/network_interface_s.vhd:229:8  */
   assign tdm_ctrl = tdmctrl_n16; // (signal)
-  /* ni/network_interface.vhd:229:18  */
+  /* ni/network_interface_s.vhd:229:18  */
   assign sched_tbl = schedtbl_n61; // (signal)
-  /* ni/network_interface.vhd:229:29  */
+  /* ni/network_interface_s.vhd:229:29  */
   assign dma_tbl = pktman_n84; // (signal)
-  /* ni/network_interface.vhd:229:38  */
+  /* ni/network_interface_s.vhd:229:38  */
   assign mc_ctrl = mcctrl_n38; // (signal)
-  /* ni/network_interface.vhd:230:8  */
+  /* ni/network_interface_s.vhd:230:8  */
   assign tdm_ctrl_sel = configbus_n152; // (signal)
-  /* ni/network_interface.vhd:230:22  */
+  /* ni/network_interface_s.vhd:230:22  */
   assign sched_tbl_sel = configbus_n153; // (signal)
-  /* ni/network_interface.vhd:230:37  */
+  /* ni/network_interface_s.vhd:230:37  */
   assign dma_tbl_sel = configbus_n154; // (signal)
-  /* ni/network_interface.vhd:230:50  */
+  /* ni/network_interface_s.vhd:230:50  */
   assign mc_ctrl_sel = configbus_n155; // (signal)
-  /* ni/network_interface.vhd:231:8  */
+  /* ni/network_interface_s.vhd:231:8  */
   assign stbl_idx = tdmctrl_n17; // (signal)
-  /* ni/network_interface.vhd:232:8  */
+  /* ni/network_interface_s.vhd:232:8  */
   assign stbl_idx_en = tdmctrl_n18; // (signal)
-  /* ni/network_interface.vhd:233:8  */
+  /* ni/network_interface_s.vhd:233:8  */
   assign t2n = schedtbl_n64; // (signal)
-  /* ni/network_interface.vhd:235:8  */
+  /* ni/network_interface_s.vhd:235:8  */
   assign route = schedtbl_n62; // (signal)
-  /* ni/network_interface.vhd:236:8  */
+  /* ni/network_interface_s.vhd:236:8  */
   assign pkt_len = schedtbl_n63; // (signal)
-  /* ni/network_interface.vhd:237:8  */
+  /* ni/network_interface_s.vhd:237:8  */
   assign dma_num = schedtbl_n65; // (signal)
-  /* ni/network_interface.vhd:238:8  */
+  /* ni/network_interface_s.vhd:238:8  */
   assign dma_en = schedtbl_n66; // (signal)
-  /* ni/network_interface.vhd:240:8  */
+  /* ni/network_interface_s.vhd:240:8  */
   assign period_boundary = tdmctrl_n19; // (signal)
-  /* ni/network_interface.vhd:241:8  */
+  /* ni/network_interface_s.vhd:241:8  */
   assign stbl_min = mcctrl_n39; // (signal)
-  /* ni/network_interface.vhd:242:8  */
+  /* ni/network_interface_s.vhd:242:8  */
   assign stbl_maxp1 = mcctrl_n40; // (signal)
-  /* ni/network_interface.vhd:244:8  */
+  /* ni/network_interface_s.vhd:244:8  */
   assign tx_spm = pktman_n85; // (signal)
-  /* ni/network_interface.vhd:244:16  */
+  /* ni/network_interface_s.vhd:244:16  */
   assign rx_spm = rxunit_n101; // (signal)
-  /* ni/network_interface.vhd:245:8  */
+  /* ni/network_interface_s.vhd:245:8  */
   assign tx_spm_slv = spmbus_n133; // (signal)
-  /* ni/network_interface.vhd:247:8  */
+  /* ni/network_interface_s.vhd:247:8  */
   assign irq_fifo_data = rxunit_n103; // (signal)
-  /* ni/network_interface.vhd:248:8  */
+  /* ni/network_interface_s.vhd:248:8  */
   assign irq_fifo_data_valid = rxunit_n104; // (signal)
-  /* ni/network_interface.vhd:248:29  */
+  /* ni/network_interface_s.vhd:248:29  */
   assign irq_fifo_irq_valid = rxunit_n105; // (signal)
-  /* ni/network_interface.vhd:250:8  */
+  /* ni/network_interface_s.vhd:250:8  */
   assign config_unit_master = rxunit_n102; // (signal)
-  /* ni/network_interface.vhd:251:8  */
+  /* ni/network_interface_s.vhd:251:8  */
   assign irq_if_fifo = irqfifo_n118; // (signal)
-  /* ni/network_interface.vhd:252:8  */
+  /* ni/network_interface_s.vhd:252:8  */
   assign irq_if_fifo_sel = configbus_n156; // (signal)
-  /* ni/network_interface.vhd:254:8  */
+  /* ni/network_interface_s.vhd:254:8  */
   assign mc = mcctrl_n41; // (signal)
-  /* ni/network_interface.vhd:255:8  */
+  /* ni/network_interface_s.vhd:255:8  */
   assign mc_idx = mcctrl_n42; // (signal)
-  /* ni/network_interface.vhd:256:8  */
+  /* ni/network_interface_s.vhd:256:8  */
   assign mc_p_cnt = tdmctrl_n20; // (signal)
-  /* ni/network_interface.vhd:257:8  */
+  /* ni/network_interface_s.vhd:257:8  */
   assign mc_p = mcctrl_n43; // (signal)
-  /* ni/network_interface.vhd:271:31  */
+  /* ni/network_interface_s.vhd:271:31  */
   assign tdmctrl_n15 = tdmctrl_master_run; // (signal)
-  /* ni/network_interface.vhd:274:31  */
+  /* ni/network_interface_s.vhd:274:31  */
   assign tdmctrl_n16 = n26_o; // (signal)
-  /* ni/network_interface.vhd:275:29  */
+  /* ni/network_interface_s.vhd:275:29  */
   assign tdmctrl_n17 = tdmctrl_stbl_idx; // (signal)
-  /* ni/network_interface.vhd:276:32  */
+  /* ni/network_interface_s.vhd:276:32  */
   assign tdmctrl_n18 = tdmctrl_stbl_idx_en; // (signal)
-  /* ni/network_interface.vhd:278:36  */
+  /* ni/network_interface_s.vhd:278:36  */
   assign tdmctrl_n19 = tdmctrl_period_boundary; // (signal)
-  /* ni/network_interface.vhd:279:29  */
+  /* ni/network_interface_s.vhd:279:29  */
   assign tdmctrl_n20 = tdmctrl_mc_p_cnt; // (signal)
-  /* ni/network_interface.vhd:263:9  */
-  tdm_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7 tdmctrl (
+  /* ni/network_interface_s.vhd:263:9  */
+  tdm_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f tdmctrl (
     .clk(clk),
     .reset(reset),
     .run(run),
@@ -4209,20 +4112,20 @@ module network_interface
   assign n24_o = config_master[15];
   assign n25_o = config_master[47:16];
   assign n26_o = {tdmctrl_config_slv_error, tdmctrl_config_slv_rdata};
-  /* ni/network_interface.vhd:294:31  */
+  /* ni/network_interface_s.vhd:294:31  */
   assign mcctrl_n38 = n48_o; // (signal)
-  /* ni/network_interface.vhd:297:29  */
+  /* ni/network_interface_s.vhd:297:29  */
   assign mcctrl_n39 = mcctrl_stbl_min; // (signal)
-  /* ni/network_interface.vhd:298:31  */
+  /* ni/network_interface_s.vhd:298:31  */
   assign mcctrl_n40 = mcctrl_stbl_maxp1; // (signal)
-  /* ni/network_interface.vhd:299:23  */
+  /* ni/network_interface_s.vhd:299:23  */
   assign mcctrl_n41 = mcctrl_mc; // (signal)
-  /* ni/network_interface.vhd:300:27  */
+  /* ni/network_interface_s.vhd:300:27  */
   assign mcctrl_n42 = mcctrl_mc_idx; // (signal)
-  /* ni/network_interface.vhd:301:25  */
+  /* ni/network_interface_s.vhd:301:25  */
   assign mcctrl_n43 = mcctrl_mc_p; // (signal)
-  /* ni/network_interface.vhd:284:9  */
-  mc_controller_bf8b4530d8d246dd74ac53a13471bba17941dff7 mcctrl (
+  /* ni/network_interface_s.vhd:284:9  */
+  mc_controller_5ba93c9db0cff93f52b521d7420e43f6eda2784f mcctrl (
     .clk(clk),
     .reset(reset),
     .run(run),
@@ -4245,19 +4148,19 @@ module network_interface
   assign n46_o = config_master[15];
   assign n47_o = config_master[47:16];
   assign n48_o = {mcctrl_config_slv_error, mcctrl_config_slv_rdata};
-  /* ni/network_interface.vhd:311:31  */
+  /* ni/network_interface_s.vhd:311:31  */
   assign schedtbl_n61 = n71_o; // (signal)
-  /* ni/network_interface.vhd:314:26  */
+  /* ni/network_interface_s.vhd:314:26  */
   assign schedtbl_n62 = schedtbl_route; // (signal)
-  /* ni/network_interface.vhd:315:28  */
+  /* ni/network_interface_s.vhd:315:28  */
   assign schedtbl_n63 = schedtbl_pkt_len; // (signal)
-  /* ni/network_interface.vhd:316:24  */
+  /* ni/network_interface_s.vhd:316:24  */
   assign schedtbl_n64 = schedtbl_t2n; // (signal)
-  /* ni/network_interface.vhd:317:28  */
+  /* ni/network_interface_s.vhd:317:28  */
   assign schedtbl_n65 = schedtbl_dma_num; // (signal)
-  /* ni/network_interface.vhd:318:27  */
+  /* ni/network_interface_s.vhd:318:27  */
   assign schedtbl_n66 = schedtbl_dma_en; // (signal)
-  /* ni/network_interface.vhd:305:9  */
+  /* ni/network_interface_s.vhd:305:9  */
   schedule_table schedtbl (
     .clk(clk),
     .reset(reset),
@@ -4280,13 +4183,13 @@ module network_interface
   assign n69_o = config_master[15];
   assign n70_o = config_master[47:16];
   assign n71_o = {schedtbl_config_slv_error, schedtbl_config_slv_rdata};
-  /* ni/network_interface.vhd:327:31  */
+  /* ni/network_interface_s.vhd:327:31  */
   assign pktman_n84 = n91_o; // (signal)
-  /* ni/network_interface.vhd:328:24  */
+  /* ni/network_interface_s.vhd:328:24  */
   assign pktman_n85 = n93_o; // (signal)
-  /* ni/network_interface.vhd:337:28  */
+  /* ni/network_interface_s.vhd:337:28  */
   assign pktman_n86 = pktman_pkt_out; // (signal)
-  /* ni/network_interface.vhd:321:9  */
+  /* ni/network_interface_s.vhd:321:9  */
   packet_manager pktman (
     .clk(clk),
     .reset(reset),
@@ -4319,17 +4222,17 @@ module network_interface
   assign n93_o = {pktman_spm_wdata, pktman_spm_wr, pktman_spm_en, pktman_spm_addr};
   assign n95_o = tx_spm_slv[63:0];
   assign n96_o = tx_spm_slv[64];
-  /* ni/network_interface.vhd:345:24  */
+  /* ni/network_interface_s.vhd:345:24  */
   assign rxunit_n101 = n106_o; // (signal)
-  /* ni/network_interface.vhd:346:27  */
+  /* ni/network_interface_s.vhd:346:27  */
   assign rxunit_n102 = n108_o; // (signal)
-  /* ni/network_interface.vhd:347:34  */
+  /* ni/network_interface_s.vhd:347:34  */
   assign rxunit_n103 = rxunit_irq_fifo_data; // (signal)
-  /* ni/network_interface.vhd:348:40  */
+  /* ni/network_interface_s.vhd:348:40  */
   assign rxunit_n104 = rxunit_irq_fifo_data_valid; // (signal)
-  /* ni/network_interface.vhd:349:39  */
+  /* ni/network_interface_s.vhd:349:39  */
   assign rxunit_n105 = rxunit_irq_fifo_irq_valid; // (signal)
-  /* ni/network_interface.vhd:341:9  */
+  /* ni/network_interface_s.vhd:341:9  */
   rx_unit rxunit (
     .clk(clk),
     .reset(reset),
@@ -4347,13 +4250,13 @@ module network_interface
     .irq_fifo_irq_valid(rxunit_irq_fifo_irq_valid));
   assign n106_o = {rxunit_spm_wdata, rxunit_spm_wr, rxunit_spm_en, rxunit_spm_addr};
   assign n108_o = {rxunit_config_wdata, rxunit_config_wr, rxunit_config_en, rxunit_config_addr};
-  /* ni/network_interface.vhd:360:31  */
+  /* ni/network_interface_s.vhd:360:31  */
   assign irqfifo_n118 = n125_o; // (signal)
-  /* ni/network_interface.vhd:362:32  */
+  /* ni/network_interface_s.vhd:362:32  */
   assign irqfifo_n119 = irqfifo_irq_irq_sig; // (signal)
-  /* ni/network_interface.vhd:363:34  */
+  /* ni/network_interface_s.vhd:363:34  */
   assign irqfifo_n120 = irqfifo_irq_data_sig; // (signal)
-  /* ni/network_interface.vhd:354:9  */
+  /* ni/network_interface_s.vhd:354:9  */
   irq_fifo irqfifo (
     .clk(clk),
     .reset(reset),
@@ -4374,11 +4277,11 @@ module network_interface
   assign n123_o = config_master[15];
   assign n124_o = config_master[47:16];
   assign n125_o = {irqfifo_config_slv_error, irqfifo_config_slv_rdata};
-  /* ni/network_interface.vhd:378:32  */
+  /* ni/network_interface_s.vhd:378:32  */
   assign spmbus_n132 = n136_o; // (signal)
-  /* ni/network_interface.vhd:379:39  */
+  /* ni/network_interface_s.vhd:379:39  */
   assign spmbus_n133 = n138_o; // (signal)
-  /* ni/network_interface.vhd:373:9  */
+  /* ni/network_interface_s.vhd:373:9  */
   spm_bus spmbus (
     .clk(clk),
     .reset(reset),
@@ -4410,21 +4313,21 @@ module network_interface
   assign n145_o = rx_spm[15:14];
   assign n146_o = rx_spm[16];
   assign n147_o = rx_spm[80:17];
-  /* ni/network_interface.vhd:389:41  */
+  /* ni/network_interface_s.vhd:389:41  */
   assign configbus_n150 = n162_o; // (signal)
-  /* ni/network_interface.vhd:392:35  */
+  /* ni/network_interface_s.vhd:392:35  */
   assign configbus_n151 = n168_o; // (signal)
-  /* ni/network_interface.vhd:394:41  */
+  /* ni/network_interface_s.vhd:394:41  */
   assign configbus_n152 = configbus_tdm_ctrl_sel; // (signal)
-  /* ni/network_interface.vhd:396:42  */
+  /* ni/network_interface_s.vhd:396:42  */
   assign configbus_n153 = configbus_sched_tbl_sel; // (signal)
-  /* ni/network_interface.vhd:398:40  */
+  /* ni/network_interface_s.vhd:398:40  */
   assign configbus_n154 = configbus_dma_tbl_sel; // (signal)
-  /* ni/network_interface.vhd:400:40  */
+  /* ni/network_interface_s.vhd:400:40  */
   assign configbus_n155 = configbus_mc_ctrl_sel; // (signal)
-  /* ni/network_interface.vhd:402:46  */
+  /* ni/network_interface_s.vhd:402:46  */
   assign configbus_n156 = configbus_irq_unit_fifo_sel; // (signal)
-  /* ni/network_interface.vhd:384:9  */
+  /* ni/network_interface_s.vhd:384:9  */
   config_bus configbus (
     .clk(clk),
     .reset(reset),

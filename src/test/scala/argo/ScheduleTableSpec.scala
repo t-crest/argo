@@ -80,12 +80,10 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(true.B)
       dut.io.in.config.wrData.poke(wrData.U)
-
       dut.clock.step()
       dut.io.in.sel.poke(false.B)
       dut.io.in.config.en.poke(false.B)
-
-      dut.clock.step(1)
+      dut.clock.step()
       //At this point we should see some outputs on the slave bus
       compareOutputs(dut)
       //Now, dma read should be all 1's, causing dma en to be false

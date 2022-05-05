@@ -137,7 +137,7 @@ class PacketManager(val master: Boolean) extends Module {
           dmaUpdateEn := true.B
           countReg := dmaTable.count - 1.U
           when(dmaTable.count > pktLen) {
-            when(dmaPktType === "b10".U) {
+            when(dmaPktType === "b10".U) { //10 is an IRQ packet, after sending one irq packet we reset it to a data packet
               pktType := 0.U
             }
             dmaUpdate.active := true.B

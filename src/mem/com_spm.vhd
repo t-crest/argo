@@ -153,9 +153,9 @@ begin
     begin
         if rising_edge(p_clk) then
             if reset = '0' then
-                MCmd <= ocp_core_m.MCmd  after PDELAY;
-                select_low_reg <= select_low after PDELAY;
-                select_high_reg <= select_high after PDELAY;
+                MCmd <= ocp_core_m.MCmd;
+                select_low_reg <= select_low;
+                select_high_reg <= select_high;
             else
                 MCmd <= (others => '0');
                 select_low_reg <= '0';

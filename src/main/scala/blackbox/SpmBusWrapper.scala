@@ -22,9 +22,8 @@ class SpmBusWrapper extends Module {
     })
   })
 
-  val c = Module(new SpmBus)
-  val v = Module(new spm_bus)
-
+  val c = Module(new SpmBus)  //Chisel version
+  val v = Module(new spm_bus) //Verilog version
   //Inputs
   c.io.spmSlv := io.in.spmSlv
   c.io.txSpm := io.in.txSpm

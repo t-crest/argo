@@ -42,7 +42,7 @@ class IrqFIFO extends Module {
   /* Registers */
   //irq write and read both operate on the same RAM block
   //irq is in the lower half of the RAM, data in the upper half
-  //Write pointers count up
+  //Irq pointers count up
   val irqWrPtr = RegInit(IRQ_IRQ_FIFO_MIN.U(IRQ_FIFO_IDX_WIDTH.W))
   val irqRdPtr = RegInit(IRQ_IRQ_FIFO_MIN.U(IRQ_FIFO_IDX_WIDTH.W))
   //Data pointers count down. Initialize to maximum value

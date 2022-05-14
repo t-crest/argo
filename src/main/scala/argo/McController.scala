@@ -72,13 +72,13 @@ class McController(val master: Boolean = true) extends Module {
   //Register read/write logic
   when(io.config.sel && io.config.m.en) {
     when(!io.config.m.wr) { //Register read
-      when(io.config.m.addr === 0.U(CPKT_ADDR_WIDTH)) {
+      when(io.config.m.addr(CPKT_ADDR_WIDTH-1, 0) === 0.U) {
         readReg := Cat(readReg(WORD_WIDTH-1, MCTBL_IDX_WIDTH), modeIdx)
       } .otherwise {
         error := true.B
       }
     } .otherwise { //Register write
-      when(io.config.m.addr === 0.U(CPKT_ADDR_WIDTH)) {
+      when(io.config.m.addr(CPKT_ADDR_WIDTH-1, 0) === 0.U) {
         mcIdx := io.config.m.wrData(MCTBL_IDX_WIDTH-1,0)
         mcCnt := mcCntInt
         localMcIdx := true.B

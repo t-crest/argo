@@ -27,7 +27,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "change and read the value of MODE_CHANGE_IDX" in {
-    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
       //to change MODE_CHANGE_IDX, we write to address "0"
       //When local_mode_change_idx=true, that changes mode_change_idx_reg
         //localMcIdx=true whenever we write to that address
@@ -42,7 +42,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
       dut.io.in.sel.poke(true.B)
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(false.B)
-      dut.io.in.config.addr.poke(0.U)
+      dut.io.in.config.addr.poke(0x1800.U)
       dut.io.in.config.wrData.poke(1.U)
       stepCompare(dut)
       dut.io.chisel.config.rdData.expect(0.U)

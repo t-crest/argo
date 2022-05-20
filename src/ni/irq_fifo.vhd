@@ -105,10 +105,10 @@ begin
 	--Detectors for the state of the two FIFOs
 	irq_not_empty  <= '0' when irq_w_ptr = irq_r_ptr else '1';
 	data_not_empty <= '0' when data_w_ptr = data_r_ptr else '1';
-	
+
 	irq_not_full  <= '0' when ((irq_w_ptr = (irq_r_ptr-1)) or ((irq_w_ptr=(to_unsigned(IRQ_IRQ_FIFO_MAX, IRQ_FIFO_IDX_WIDTH))) and (irq_r_ptr=(to_unsigned(0, IRQ_FIFO_IDX_WIDTH))))) else '1';
 	data_not_full <= '0' when ((data_w_ptr = (data_r_ptr+1)) or ((data_w_ptr=(to_unsigned(IRQ_DATA_FIFO_MIN, IRQ_FIFO_IDX_WIDTH))) and (data_r_ptr=(to_unsigned((2 ** IRQ_FIFO_IDX_WIDTH)-1, IRQ_FIFO_IDX_WIDTH))))) else '1';
-	
+
 	--Multiplexer to write into the FIFO
 	w_ptr  <= irq_w_ptr when irq_data_fifo_data_valid = '0' else data_w_ptr;
 	w_data <= irq_data_fifo_data;
@@ -124,10 +124,12 @@ begin
 			-- Read registers
 			if config.wr = '0' then
 				case (config.addr(CPKT_ADDR_WIDTH - 1 downto 0)) is
-					when to_unsigned(0, CPKT_ADDR_WIDTH) =>
+					--when to_unsigned(0, CPKT_ADDR_WIDTH) =>
+          when 11d"0" => --CPKT_ADDR_WIDTH=11
 						r_ptr    <= irq_r_ptr;
 						irq_read <= '1';
-					when to_unsigned(1, CPKT_ADDR_WIDTH) =>
+					--when to_unsigned(1, CPKT_ADDR_WIDTH) =>
+          when 11d"1" => --CPKT_ADDR_WIDTH=11
 						r_ptr     <= data_r_ptr;
 						data_read <= '1';
 					when others =>

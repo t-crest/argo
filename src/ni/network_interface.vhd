@@ -46,7 +46,7 @@ use work.ocp.all;
 
 entity network_interface is
 generic (
-	MASTER : boolean := false
+	MASTER : boolean := true
 	);
 port (
 	clk 		: in std_logic;
@@ -224,7 +224,7 @@ component spm_bus is
 	);
 end component;
 
-signal config : conf_if_master;
+signal config_master : conf_if_master;
 --signal config_dword : std_logic;
 signal TDM_ctrl, sched_tbl, DMA_tbl, MC_ctrl : conf_if_slave;
 signal TDM_ctrl_sel, sched_tbl_sel, DMA_tbl_sel, MC_ctrl_sel : std_logic;
@@ -269,7 +269,7 @@ begin
 		reset => reset,
 		run => run,
 		master_run => master_run,
-		config => config,
+		config => config_master,
 		sel => TDM_ctrl_sel,
 		config_slv => TDM_ctrl,
 		stbl_idx => stbl_idx,
@@ -289,7 +289,7 @@ begin
 		clk => clk,
 		reset => reset,
 		run => run,
-		config => config,
+		config => config_master,
 		sel => MC_ctrl_sel,
 		config_slv => MC_ctrl,
 		period_boundary => period_boundary,
@@ -306,7 +306,7 @@ begin
 	port map(
 		clk => clk,
 		reset => reset,
-		config => config,
+		config => config_master,
 		sel => sched_tbl_sel,
 		config_slv => sched_tbl,
 		stbl_idx => stbl_idx,
@@ -322,7 +322,7 @@ begin
 	port map (
 		clk => clk,
 		reset => reset,
-		config => config,
+		config => config_master,
 		sel => DMA_tbl_sel,
 		config_slv => DMA_tbl,
 		spm => tx_spm, 
@@ -355,7 +355,7 @@ begin
 	port map(
 		clk => clk,
 		reset => reset,
-		config => config,
+		config => config_master,
 		sel => irq_if_fifo_sel,
 		config_slv => irq_if_fifo,
 
@@ -389,7 +389,7 @@ begin
 			ocp_config_s => ocp_config_s,
 			supervisor => supervisor,
 			config_unit => config_unit_master,
-			config => config,
+			config => config_master,
 			TDM_ctrl => TDM_ctrl,
 			TDM_ctrl_sel => TDM_ctrl_sel,
 			sched_tbl => sched_tbl,

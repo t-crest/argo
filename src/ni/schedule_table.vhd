@@ -85,7 +85,10 @@ signal dma_num_sig : dma_idx_t;
 
 signal port_a_din, port_a_dout : unsigned(STBL_DATA_WIDTH-1 downto 0);
 
+signal a_wr: std_logic;
+
 begin
+  a_wr <= config.wr AND sel;
 
 stbl : entity work.tdp_ram
   generic map(
@@ -94,7 +97,7 @@ stbl : entity work.tdp_ram
   )
   port map(
     a_clk   => clk,
-    a_wr    => config.wr and sel,
+    a_wr    => a_wr,
     a_addr  => config.addr(STBL_IDX_WIDTH-1 downto 0),
     a_din   => port_a_din,
     a_dout  => port_a_dout,
@@ -129,7 +132,7 @@ stbl : entity work.tdp_ram
     port_a_din <= (others => '0');
     -- Route
     port_a_din(STBL_DATA_WIDTH - 1 downto STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH)
-                  <= config.wdata(HALF_WORD_WIDTH+HEADER_ROUTE_WIDTH-1 downto 
+                  <= config.wdata(HALF_WORD_WIDTH+HEADER_ROUTE_WIDTH-1 downto
                                                               HALF_WORD_WIDTH);
     -- dma_num
     port_a_din(STBL_DATA_WIDTH - HEADER_ROUTE_WIDTH - 1 downto
@@ -180,7 +183,7 @@ begin
   if dma_num_sig = (dma_num_sig'range => '1') then
     dma_en <= '0';
   end if ;
-  
+
 end process ; -- dma_en_proc
 
 

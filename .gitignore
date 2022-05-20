@@ -15,7 +15,8 @@ sched.xml
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -34,3 +35,15 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+# SBT and IntelliJ generated stuff
+target/
+project/project
+project/target
+.bsp
+.idea
+gen
+*.cf
+test_run_dir
+argo_build

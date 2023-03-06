@@ -4,6 +4,10 @@ import blackbox._
 import argo.ArgoTypes._
 import chisel3._
 import chiseltest._
+import chiselverify.crv
+import chiselverify.crv.backends.jacop
+import chiselverify.crv.{RangeBinder, ValueBinder, backends}
+import chiselverify.crv.backends.jacop.{Cyclic, IfCon, Model, Rand, RandCVar, RandObj, RandVar, Randc, rand}
 import org.scalatest.flatspec.AnyFlatSpec
 
 class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
@@ -81,6 +85,14 @@ class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
       }
       dut.clock.step()
     }
+  }
+
+//  class DataPacket extends RandObj {
+//    val len = new Rand("len", 1, 5)
+//  }
+
+  it should "forward a 1-word data packet, chisel-verify style" in {
+
   }
 
   it should "forward a 2-word data packet" in {

@@ -6,9 +6,13 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class SingleRouterPort0Test extends AnyFlatSpec with ChiselScalatestTester{
   "DUT" should "pass" in{
-    test(new Router).withAnnotations(Seq(WriteVcdAnnotation)){dut=>
+    test(new Router).withAnnotations(Seq(WriteVcdAnnotation)) {dut=>
       for(i <- 0 to 4){
-        if(i ===0){
+        if(i === 0){
+          //Incoming packet from port 0 (south) directed to port 4 (home).
+          //This is indicated by the direction (2 LSB) also being 0 (south)
+          //Packet headers: 110(SOP), 100(VLD), 100(VLD), 100(VLD), 101(EOP), 000(invalid)
+          dut.io.inPort.port(i).req.poke(true.B)
           dut.io.inPort.port(i).data.poke("b11000111111111111111111111111111100".U)
           dut.clock.step()
           dut.io.inPort.port(i).data.poke("b10000111111111111111111111111111100".U)

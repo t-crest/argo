@@ -1,18 +1,19 @@
 // See README.md for license details.
 
-ThisBuild / scalaVersion     := "2.13.8"
+//ThisBuild / scalaVersion     := "2.13.8"
 ThisBuild / version          := "0.1.0"
 ThisBuild / organization     := "DTU"
 
-val chiselVersion = "3.5.1"
+val chiselVersion = "3.5.5"
 
 lazy val root = (project in file("."))
   .settings(
     name := "Argo",
     libraryDependencies ++= Seq(
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-      "edu.berkeley.cs" %% "chiseltest" % "0.5.1" % "test"
+      "edu.berkeley.cs" %% "chiseltest" % "0.5.5" % "test"
     ),
+    libraryDependencies += "io.github.chiselverify" % "chiselverify" % "0.3.0",
     scalacOptions ++= Seq(
       "-language:reflectiveCalls",
       "-deprecation",

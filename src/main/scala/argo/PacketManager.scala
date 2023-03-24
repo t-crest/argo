@@ -120,7 +120,7 @@ class PacketManager(val master: Boolean) extends Module {
           when(pktLen >= 1.U) {
             pktType := "b01".U
           }
-          io.pktOut := Cat(VALID_SOP, pktType, MC_BANK.U(CPKT_BANK_WIDTH.W), 0.U(CPKT_ADDR_WIDTH), route)
+          io.pktOut := Cat(VALID_SOP, pktType, MC_BANK.U(CPKT_BANK_WIDTH.W), 0.U(CPKT_ADDR_WIDTH.W), route)
 
           //We do some subfield assignment here that is easier to handle with a vec of bits
           val ploadData = VecInit(Seq.fill(WORD_WIDTH)(false.B))

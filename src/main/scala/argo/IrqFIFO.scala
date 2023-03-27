@@ -24,7 +24,7 @@ class IrqFIFO extends Module {
 
   })
   /*
-  Adresses of readable/writeable registers
+  Addresses of readable/writeable registers
   Address | Access | Name
   ------------------------
   0x00    | R      | Top of the IRQ FIFO
@@ -105,6 +105,7 @@ class IrqFIFO extends Module {
     }
   }
 
+  //Whenever an IRQ or data read/write operation is performed, update pointer values
   //Write into irq
   when(io.irqIn.irqValid && !irqFull) {
     when(irqWrPtr === IRQ_IRQ_FIFO_MAX.U) {
@@ -113,6 +114,7 @@ class IrqFIFO extends Module {
       irqWrPtr := irqWrPtr + 1.U
     }
   }
+  //Read from IRQ
   when(irqRead && !irqEmpty) {
     when(irqRdPtr === IRQ_IRQ_FIFO_MAX.U) {
       irqRdPtr := IRQ_IRQ_FIFO_MIN.U
@@ -120,6 +122,7 @@ class IrqFIFO extends Module {
       irqRdPtr := irqRdPtr + 1.U
     }
   }
+  //Write new data
   when(io.irqIn.dataValid && !dataFull) {
     when(dataWrPtr === IRQ_DATA_FIFO_MIN.U) {
       dataWrPtr := IRQ_DATA_FIFO_MAX.U
@@ -127,6 +130,7 @@ class IrqFIFO extends Module {
       dataWrPtr := dataWrPtr - 1.U
     }
   }
+  //Read data
   when(dataRead && !dataEmpty) {
     when(dataRdPtr === IRQ_DATA_FIFO_MIN.U) {
       dataRdPtr := IRQ_DATA_FIFO_MAX.U

@@ -1,14 +1,13 @@
 package argo
 
+import argo.ArgoTypes.{LINK_DATA_WIDTH, MEM_ADDR_WIDTH}
 import blackbox._
-import argo.ArgoTypes._
 import chisel3._
 import chiseltest._
-import chiselverify.crv
-import chiselverify.crv.backends.jacop
-import chiselverify.crv.{RangeBinder, ValueBinder, backends}
-import chiselverify.crv.backends.jacop.{Cyclic, IfCon, Model, Rand, RandCVar, RandObj, RandVar, Randc, rand}
+import chiseltest.internal.CachingAnnotation
+import chiselverify.crv.backends.jacop.{Model, RandObj, RandVar, rand}
 import org.scalatest.flatspec.AnyFlatSpec
+
 
 class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "Rx Unit"
@@ -16,6 +15,39 @@ class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
   val VALID_SOP = 0x6L << 32L
   val VALID     = 0x4L << 32L
   val VALID_EOP = 0x5L << 32L
+
+  /**
+   * Create an Argo packet targeting a random address with random payload data
+   * @param pktType One of "00" (data), "01" (config) or "11" (irq)
+   */
+  class ArgoPacket(val pktType: Int) extends RandObj {
+    require(Seq(0, 1, 3).contains(pktType), s"argo packet type must be one of '00' (data), '01' (config) or '11' (irq), was ${pktType.toBinaryString}")
+    currentModel = new Model()
+    val len: RandVar = rand(1, 5)
+    val addr: RandVar = rand(0, math.pow(2, MEM_ADDR_WIDTH).toInt)
+
+
+    if (pktType == 1) { //if config packet: Max length is 2
+      len < 3
+    } else if (pktType == 3) { //if irq, always exactly one word
+      len == 1
+    }
+
+    //Must use LINK_DATA_WIDTH-2 as it otherwise generates an error (sees upper bound as negative)
+    val payload = Array.tabulate(len.max())(_ => rand(0, math.pow(2, LINK_DATA_WIDTH-2).toInt))
+
+    /** Convert the ArgoPacket to a series of pokeable values */
+    def toPackets: Seq[Long] = {
+      val pkts = Array.ofDim[Long](1+len.value())
+      //Header packet
+      pkts(0) = VALID_SOP | (addr.value() << 16)
+      for(i <- 1 until len.value()) {
+        pkts(i) = VALID | (payload(i-1).value().toLong << 2)
+      }
+      pkts(len.value()) = VALID_EOP | payload(len.value()-1).value()
+      pkts.toSeq
+    }
+  }
 
   def compareOutputs(dut: RxUnitWrapper): Unit = {
     val cio = dut.io.chisel
@@ -26,59 +58,16 @@ class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
     cio.config.expect(vio.config.peek())
   }
 
-  def genPacket(data: Array[Int]): Array[Long] = {
-    val r = Array.ofDim[Long](data.length)
-    r(0) = VALID_SOP | (data(0) & ((1L << 32)-1))
-    for(i <- 1 until r.length-1) {
-      r(i) = VALID | data(i)
-    }
-    r(data.length-1) = VALID_EOP | data.last
-    r
-  }
+  def testCRV(pktType: Int): Unit = {
+    test(new RxUnitWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) { dut =>
+      val ap = new ArgoPacket(pktType)
+      if (!ap.randomize) {
+        throw new UnknownError("Unable to randomize ap")
+      }
+      println(s"pktType=$pktType, pkt.len=${ap.len.value()}")
 
-  /**
-   * Generates a data packet bound the for the given address with the given payload data
-   * @param addr
-   * @param data
-   * @return
-   */
-  def genDataPacket(addr: Int, data: Array[Int]): Array[Long] = {
-    require(addr >= 0 && addr < math.pow(2, MEM_ADDR_WIDTH), s"Address must be between 0 and ${math.pow(2,MEM_ADDR_WIDTH).toInt}")
-    genPacket(Array.concat(Array(addr << 16), data))
-  }
-
-  def genConfigPacket(addr: Int, data: Array[Int]): Array[Long] = {
-    require(addr >= 0 && addr < math.pow(2, MEM_ADDR_WIDTH), s"Address must be between 0 and ${math.pow(2,MEM_ADDR_WIDTH).toInt}")
-    val route = 1 << 30 | addr << 16
-    genPacket(Array.concat(Array(route), data))
-  }
-
-  /**
-   * Generates a config packet of a given length with random payload data and addr
-   * @param length Either 1 or 2
-   * @return
-   */
-  def genConfigPacket(length: Int): Array[Long] = {
-    require(length == 1 || length == 2)
-    val R = scala.util.Random
-    val addr = R.nextInt(math.pow(2,MEM_ADDR_WIDTH).toInt)
-    val data = Array.fill(length)(R.nextInt()).map(math.abs)
-    genConfigPacket(addr, data)
-  }
-
-  def genIrqPacket(): Array[Long] = {
-    val R = scala.util.Random
-    val addr = 3 << 30 | R.nextInt(math.pow(2,MEM_ADDR_WIDTH).toInt) << 16
-    val data = math.abs(R.nextInt())
-    genPacket(Array(addr, data))
-
-  }
-
-  it should "forward a 1-word data packet" in {
-    val data = Array(5)
-    val packet = genDataPacket(42, data)
-    test(new RxUnitWrapper).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {dut =>
-      for(p <- packet) {
+      val packets = ap.toPackets
+      for (p <- packets) {
         dut.io.in.pkt.poke(p)
         dut.clock.step()
         compareOutputs(dut)
@@ -87,76 +76,34 @@ class RxUnitSpec extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 
-//  class DataPacket extends RandObj {
-//    val len = new Rand("len", 1, 5)
-//  }
-
-  it should "forward a 1-word data packet, chisel-verify style" in {
-
+  it should "forward a data packet, chisel-verify style" in {
+    testCRV(0)
   }
 
-  it should "forward a 2-word data packet" in {
-    val R = scala.util.Random
-    val data = Array.fill(2)(R.nextInt()).map(math.abs)
-    val packet = genDataPacket(R.nextInt(math.pow(2,MEM_ADDR_WIDTH).toInt), data)
-    test(new RxUnitWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
-      for(p <- packet) {
-        dut.io.in.pkt.poke(p)
-        dut.clock.step()
-        compareOutputs(dut)
+  it should "forward a config packet, chisel-verify style" in {
+    testCRV(1)
+  }
+
+  it should "forward an IRQ packet, chisel-verify style" in {
+    testCRV(3)
+  }
+
+  it should "forward multiple packets in a row" in {
+    test(new RxUnitWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
+      //Will poke 10 packets in a row
+      val aps = Array.fill(10)(new ArgoPacket(randFromSeq(Seq(0, 1, 3))))
+      for ((ap, i) <- aps.zipWithIndex) {
+        if (!ap.randomize) {
+          throw new Exception(s"Unable to randomize packet $i ($ap)")
+        }
+        println(s"Packet $i, type=${ap.pktType}, len=${ap.len.value()}")
+        for (p <- ap.toPackets) {
+          dut.io.in.pkt.poke(p)
+          dut.clock.step()
+          compareOutputs(dut)
+        }
       }
       dut.clock.step()
     }
   }
-
-  it should "forward a 3-word data packet" in {
-    val R = scala.util.Random
-    val data = Array.fill(3)(R.nextInt()).map(math.abs)
-    val packet = genDataPacket(R.nextInt(math.pow(2,MEM_ADDR_WIDTH).toInt), data)
-    test(new RxUnitWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      for(p <- packet) {
-        dut.io.in.pkt.poke(p)
-        dut.clock.step()
-        compareOutputs(dut)
-      }
-      dut.clock.step()
-    }
-  }
-
-  it should "forward a 1-word config packet" in {
-    val packet = genConfigPacket(1)
-    test(new RxUnitWrapper).withAnnotations(Seq(WriteVcdAnnotation, VerilatorBackendAnnotation)) {dut =>
-      for(p <- packet) {
-        dut.io.in.pkt.poke(p)
-        dut.clock.step()
-        compareOutputs(dut)
-      }
-      dut.clock.step()
-    }
-  }
-
-  it should "forward a 2-word config packet" in {
-    val packet = genConfigPacket(2)
-    test(new RxUnitWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      for(p <- packet) {
-        dut.io.in.pkt.poke(p)
-        dut.clock.step()
-        compareOutputs(dut)
-      }
-      dut.clock.step()
-    }
-  }
-
-  it should "forward an IRQ packet" in {
-    val packet = genIrqPacket()
-    test(new RxUnitWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
-      for(p <- packet) {
-        dut.io.in.pkt.poke(p)
-        dut.clock.step()
-        compareOutputs(dut)
-      }
-      dut.clock.step()
-    }
-  }
-
 }

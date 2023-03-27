@@ -27,7 +27,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "change and read the value of MODE_CHANGE_IDX" in {
-    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       //to change MODE_CHANGE_IDX, we write to address "0"
       //When local_mode_change_idx=true, that changes mode_change_idx_reg
         //localMcIdx=true whenever we write to that address
@@ -114,7 +114,7 @@ class McControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "not generate an error when writing to an address that maps to a mcTblAddr" in {
-    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) { dut =>
+    test(new McControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) { dut =>
 
       //mcTblAddr is the input address - 2. If within range [0;2^MCTBL_IDX_WIDTH[ it deasserts the error signal
       //since MCTBL_IDX_WIDTH=2, addresses [2;5] should deassert the error signal

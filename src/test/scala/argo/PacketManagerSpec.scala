@@ -72,7 +72,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
   //Writing to an address ending in 1 writes active bit, read ptr and count
   //read ptr goes into spm, count is the number of data words to transmit
   it should "setup a DMA transfer" in {
-    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       val dma = genDmaPacket(2, 4, 8, 16)
       //Write them
       setupDma(dut, dma)
@@ -91,7 +91,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "transmit a 1-word packet" in {
-    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       val dma = genDmaPacket(1, 7, 0, 3)
       setupDma(dut, dma)
       timescope {
@@ -138,7 +138,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "transmit a 3-word packet" in {
-    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       val dma = genDmaPacket(3, 7, 0, 2)
       setupDma(dut, dma)
       val rdData = Array.ofDim[Long](3)
@@ -168,7 +168,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "increment the LSB of header when not a configuration packet" in {
-    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       //When not a config packet, the header value of dmaUpdate is incremented with pktLen
       val dma = genDmaPacket(4, 8, 8, 0)
       setupDma(dut, dma)
@@ -191,7 +191,7 @@ class PacketManagerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "increment the LSB of header when a configuration packet" in {
-    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new PacketManagerWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
 
       //setting header = 1 << (HRW-2) makes this a configuration packet
       //These have special requirements to how they are modified in the init state

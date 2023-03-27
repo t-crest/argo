@@ -21,7 +21,7 @@ class TdmControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "toggle the masterRun signal" in {
-    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.sel.poke(true.B)
       dut.io.in.config.wr.poke(true.B)
@@ -50,7 +50,7 @@ class TdmControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "increment stblIdx and wrap around when running" in {
-    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.run.poke(true.B)
       dut.io.in.t2n.poke(4.U)
       dut.io.in.stblMaxp1.poke(6.U)
@@ -64,7 +64,7 @@ class TdmControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "disallow reading addresses larger than 4" in {
-    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.sel.poke(true.B)
       dut.io.in.config.wr.poke(false.B)
@@ -80,7 +80,7 @@ class TdmControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "disallow writing other addresses than 4" in {
-    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new TdmControllerWrapper(true)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.sel.poke(true.B)
       dut.io.in.config.wr.poke(true.B)
@@ -98,7 +98,7 @@ class TdmControllerSpec extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "TDM controller slave"
 
   it should "not toggle masterRun" in {
-    test(new TdmControllerWrapper(false)).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new TdmControllerWrapper(false)).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.sel.poke(true.B)
       dut.io.in.config.wr.poke(true.B)

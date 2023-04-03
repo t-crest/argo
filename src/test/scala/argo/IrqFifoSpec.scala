@@ -4,6 +4,8 @@ import ArgoTypes._
 import blackbox.IrqFifoWrapper
 import chisel3._
 import chiseltest._
+import chiseltest.internal.CachingAnnotation
+import chiselverify.crv.backends.jacop.{Model, RandObj, RandVar, rand}
 import org.scalatest.flatspec.AnyFlatSpec
 
 class IrqFifoSpec extends AnyFlatSpec with ChiselScalatestTester {
@@ -17,122 +19,167 @@ class IrqFifoSpec extends AnyFlatSpec with ChiselScalatestTester {
     cio.config.expect(vio.config.peek())
   }
 
-  it should "accept a data packet" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      dut.io.in.irq.data.poke(5L)
-      dut.io.in.irq.dataValid.poke(true.B)
-      dut.io.in.irq.irqValid.poke(false.B)
-      dut.clock.step(2)
-      compareOutputs(dut)
-      dut.io.chisel.irq.dataSig.expect(true.B)
+  /*
+  IRQ fifo test plan
+  All tests below, as they encapsulate behaviour of the IRQ fifo very well
+  Can create a bundle representing the value of data, datavalid and irqvalid. Can use these to poke information
+  Can use a function to parse bundles and generate the expected outputs? Or should we just allow the Verilog to do that
+   */
+
+  val irqType: Int = 0
+  val dataType: Int = 1
+
+  class IrqFifoPacket(val pktType: Int) extends RandObj {
+    require(Seq(0, 1).contains(pktType), s"Packet type must be one of '0' (data) and '1' (irq), was $pktType")
+    currentModel = new Model()
+
+    val data: RandVar = rand(0, (1 << IRQ_DATA_WIDTH) - 1)
+    val dataValid: RandVar = rand(0, 1)
+    val irqValid: RandVar = rand(0, 1)
+
+    lazy val dataV: Boolean = if (dataValid.value() == 1) true else false
+    lazy val irqV: Boolean = if (irqValid.value() == 1) true else false
+
+    if (pktType == 0) { //IRQ
+      dataValid == 0
+      irqValid == 1
+    } else { //Data
+      dataValid == 1
+      irqValid == 0
     }
   }
 
-  it should "accept an irq packet" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      dut.io.in.irq.data.poke(5L)
-      dut.io.in.irq.dataValid.poke(false.B)
-      dut.io.in.irq.irqValid.poke(true.B)
-      dut.clock.step(2)
+  /**
+   * Poke data onto the IRQ Fifo
+   * @param pkt The [[IrqFifoPacket]] to poke
+   * @param dut The DUT to poke onto
+   * @param randomize Whether to randomize the packet or not
+   */
+  def pokePacket(pkt: IrqFifoPacket, dut: IrqFifoWrapper, randomize: Boolean = true): Unit = {
+    if (randomize && !pkt.randomize) {
+      throw new Exception("Unable to randomize")
+    }
+    timescope {
+      dut.io.in.irq.data.poke(pkt.data.value())
+      dut.io.in.irq.dataValid.poke(pkt.dataV)
+      dut.io.in.irq.irqValid.poke(pkt.irqV)
+      dut.clock.step()
+    }
+  }
+
+  /**
+   * Read back the data from the IRQ fifo that was generated due to a given packet
+   * @param pkt
+   * @param dut
+   */
+  def readPacketData(pkt: IrqFifoPacket, dut: IrqFifoWrapper): Unit = {
+    timescope {
+      dut.io.in.sel.poke(true.B)
+      dut.io.in.config.en.poke(true.B)
+      dut.io.in.config.wr.poke(false.B)
+      dut.io.in.config.addr.poke(pkt.pktType.U) //pktType=0 -> read from IRQ. pktType=1 -> read from data
+
+      dut.clock.step()
+      compareOutputs(dut)
+      dut.io.chisel.config.rdData.expect(pkt.data.value())
+    }
+  }
+
+  it should "accept a single data packet" in {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) { dut =>
+      val pkt = new IrqFifoPacket(dataType)
+      pokePacket(pkt, dut)
+      compareOutputs(dut)
+      dut.io.chisel.irq.dataSig.expect(true.B)
+      dut.io.chisel.irq.irqSig.expect(false.B)
+    }
+  }
+
+  it should "accept a single IRQ packet" in {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) { dut =>
+      val pkt = new IrqFifoPacket(irqType)
+      pokePacket(pkt, dut)
       compareOutputs(dut)
       dut.io.chisel.irq.irqSig.expect(true.B)
+      dut.io.chisel.irq.dataSig.expect(false.B)
     }
   }
 
   it should "read back irq data" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) { dut =>
-      val R = scala.util.Random
-      val data = Array.fill(2)(R.nextInt(math.pow(2, IRQ_DATA_WIDTH).toInt))
-      //Write in two words of data, then attempt to read them back
-      dut.io.in.irq.dataValid.poke(false.B)
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
+      val pkts = Array.fill(4)(new IrqFifoPacket(irqType))
 
-      dut.io.in.irq.data.poke(data(0))
-      dut.io.in.irq.irqValid.poke(true.B)
-      dut.clock.step()
-
-      dut.io.in.irq.data.poke(data(1))
-      dut.clock.step()
-      compareOutputs(dut)
-
-      dut.io.in.irq.irqValid.poke(false.B)
-      //Should do nothing at this point
-      for (_ <- 0 until 3) {
+      //Poke all packets, then attempt to read them back
+      for (pkt <- pkts) {
+        pokePacket(pkt, dut)
+      }
+      //With no valid inputs, no outputs should change
+      for(_ <- 0 until 5) {
         dut.clock.step()
         compareOutputs(dut)
       }
+      //Read back each packet
+      for (pkt <- pkts) {
+        readPacketData(pkt, dut)
+      }
+      //irqSig should no longer be high, as queue has been emptied
+      dut.io.chisel.irq.irqSig.expect(false.B)
+      dut.io.chisel.irq.dataSig.expect(false.B)
+    }
+  }
 
-      //Attempt to read it back
-      dut.io.in.sel.poke(true.B)
-      dut.io.in.config.en.poke(true.B)
-      dut.io.in.config.wr.poke(false.B)
-      dut.io.in.config.addr.poke(0.U)
+  it should "read back data" in {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
+      val pkts = Array.fill(4)(new IrqFifoPacket(dataType))
 
-      //Data should be the first value we poked
-      dut.clock.step()
-      compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(data(0))
+      //Poke all packets, then attempt to read them back
+      for (pkt <- pkts) {
+        pokePacket(pkt, dut)
+      }
+      //With no valid inputs, no outputs should change
+      for(_ <- 0 until 5) {
+        dut.clock.step()
+        compareOutputs(dut)
+      }
+      //Read back each packet
+      for (pkt <- pkts) {
+        readPacketData(pkt, dut)
+      }
+      //dataSig should no longer be high, as queue has been emptied
+      dut.io.chisel.irq.irqSig.expect(false.B)
+      dut.io.chisel.irq.dataSig.expect(false.B)
+    }
+  }
 
-      //Data should be the second value we poked
-      dut.clock.step()
-      compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(data(1))
+  it should "write to and read from both queues" in {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
+      //Each of the data, irq queues have half of the IRQ_FIFO_IDX_WIDTH large address space.
+      //By generating 2^(IRQ_FIFO_IDX_WIDTH-1) packets, we ensure that none will be lost
+      // due to the queue running out of space
+      val pkts = Array.fill(1 << (IRQ_FIFO_IDX_WIDTH-1))(new IrqFifoPacket(randFromSeq(Seq(dataType, irqType))))
 
-      //When no data is available, the read value should be 0
-      dut.clock.step()
-      compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(0.U)
+      //Poke all packets, then attempt to read them back
+      for (pkt <- pkts) {
+        pokePacket(pkt, dut)
+      }
+      //With no valid inputs, no outputs should change
+      for(_ <- 0 until 5) {
+        dut.clock.step()
+        compareOutputs(dut)
+      }
+      //Read back each packet
+      for (pkt <- pkts) {
+        readPacketData(pkt, dut)
+      }
+      //dataSig should no longer be high, as queue has been emptied
+      dut.io.chisel.irq.irqSig.expect(false.B)
+      dut.io.chisel.irq.dataSig.expect(false.B)
     }
   }
 
 
-  it should "read back data written" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      val R = scala.util.Random
-      val data = Array.fill(2)(R.nextInt(math.pow(2,IRQ_DATA_WIDTH).toInt))
-      //Write in two words of data, then attempt to read them back
-      dut.io.in.irq.irqValid.poke(false.B)
-
-      dut.io.in.irq.data.poke(data(0))
-      dut.io.in.irq.dataValid.poke(true.B)
-      dut.clock.step()
-
-      dut.io.in.irq.data.poke(data(1))
-      dut.io.in.irq.dataValid.poke(true.B)
-      dut.clock.step()
-      compareOutputs(dut)
-
-      dut.io.in.irq.dataValid.poke(false.B)
-      //Should do nothing at this point
-      for(i <- 0 until 3) {
-        dut.clock.step()
-        compareOutputs(dut)
-      }
-
-      //Attempt to read it back
-      dut.io.in.sel.poke(true.B)
-      dut.io.in.config.en.poke(true.B)
-      dut.io.in.config.wr.poke(false.B)
-      dut.io.in.config.addr.poke(1.U)
-
-      //Data should be the first value we poked
-      dut.clock.step()
-      compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(data(0))
-
-      //Data should be the second value we poked
-      dut.clock.step()
-      compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(data(1))
-
-      //When no data is available, the read value should be 0
-      dut.clock.step()
-      compareOutputs(dut)
-      dut.io.chisel.config.rdData.expect(0.U)
-    }
-  }
-
-  it should "generate an error when writing on config" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
+  it should "generate an error when writing on config bus" in {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(true.B)
       dut.io.in.sel.poke(true.B)
@@ -144,11 +191,14 @@ class IrqFifoSpec extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   it should "generate an error when reading an address larger than 1" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
       dut.io.in.config.en.poke(true.B)
       dut.io.in.config.wr.poke(false.B)
       dut.io.in.sel.poke(true.B)
-      dut.io.in.config.addr.poke(2.U)
+
+      //Must be >1, so we subtract 2 from upper limit and then re-add 2 to result
+      val R = scala.util.Random
+      dut.io.in.config.addr.poke((R.nextInt((1 << MEM_ADDR_WIDTH) - 2) + 2).U)
 
       dut.clock.step()
       compareOutputs(dut)
@@ -156,191 +206,77 @@ class IrqFifoSpec extends AnyFlatSpec with ChiselScalatestTester {
     }
   }
 
-  it should "fill the data queue crossing back to the start" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
-      val R = scala.util.Random
+  def fillQueueTest(pktType: Int): Unit = {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
+      //Note: "Error" in original implementation which has been preserved here: The fifo has 16 locations, but can only store
+      //15 elements at once. This is because irqFull/dataFull goes high before the last position in the fifo has been written
+      //For that reason, must poke 15 elements instead of 16 for test to pass, as 16'th element is lost in both cases
       //First data to write in and fetch back out
-      val data1 = Array.fill(math.pow(2,IRQ_FIFO_IDX_WIDTH-1).toInt)(R.nextInt(math.pow(2,IRQ_DATA_WIDTH).toInt))
+      //First data to write in and fetch back out
+      val pkts1 = Array.fill(math.pow(2,IRQ_FIFO_IDX_WIDTH-1).toInt - 1)(new IrqFifoPacket(pktType))
       //Next data to write in, should cause pointers to reset
-      val data2 = Array.fill(5)(R.nextInt(math.pow(2,IRQ_DATA_WIDTH).toInt))
+      val pkts2 = Array.fill(5)(new IrqFifoPacket(pktType))
 
-      dut.io.in.irq.irqValid.poke(false.B)
-
-      //Poke in data words
-      timescope {
-        for(d <- data1) {
-          dut.io.in.irq.dataValid.poke(true.B)
-          dut.io.in.irq.data.poke(d)
-          dut.clock.step()
-        }
+      for (pkt <- pkts1) {
+        pokePacket(pkt, dut)
       }
-      dut.clock.step()
       //Read them back
-      timescope {
-        dut.io.in.config.en.poke(true.B)
-        dut.io.in.sel.poke(true.B)
-        dut.io.in.config.addr.poke(1.U)
-        dut.clock.step()
-        for(_ <- data1) {
-          compareOutputs(dut)
-          dut.clock.step()
-        }
+      for (pkt <- pkts1) {
+        readPacketData(pkt, dut)
       }
 
       //Write more data
-      timescope {
-        for(d <- data2) {
-          dut.io.in.irq.dataValid.poke(true.B)
-          dut.io.in.irq.data.poke(d)
-          dut.clock.step()
-        }
+      for (pkt <- pkts2) {
+        pokePacket(pkt, dut)
       }
-
-      //Read more data
-      dut.clock.step()
-      timescope {
-        dut.io.in.config.en.poke(true.B)
-        dut.io.in.sel.poke(true.B)
-        dut.io.in.config.addr.poke(1.U)
-        dut.clock.step()
-        for(_ <- data2) {
-          compareOutputs(dut)
-          dut.clock.step()
-        }
+      //Read more back
+      for (pkt <- pkts2) {
+        readPacketData(pkt, dut)
       }
     }
+  }
+
+  it should "fill the data queue crossing back to the start" in {
+    fillQueueTest(dataType)
   }
 
   it should "fill the IRQ queue crossing back to the start" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      val R = scala.util.Random
-      //First data to write in and fetch back out
-      val data1 = Array.fill(math.pow(2,IRQ_FIFO_IDX_WIDTH-1).toInt)(R.nextInt(math.pow(2,IRQ_DATA_WIDTH).toInt))
-      //Next data to write in, should cause pointers to reset
-      val data2 = Array.fill(5)(R.nextInt(math.pow(2,IRQ_DATA_WIDTH).toInt))
-
-      //Poke in data words
-      timescope {
-        for(d <- data1) {
-          dut.io.in.irq.irqValid.poke(true.B)
-          dut.io.in.irq.data.poke(d)
-          dut.clock.step()
-        }
-      }
-      dut.clock.step()
-      //Read them back
-      timescope {
-        dut.io.in.config.en.poke(true.B)
-        dut.io.in.sel.poke(true.B)
-        dut.io.in.config.addr.poke(0.U)
-        dut.clock.step()
-        for(_ <- data1) {
-          compareOutputs(dut)
-          dut.clock.step()
-        }
-      }
-
-      //Write more data
-      timescope {
-        for(d <- data2) {
-          dut.io.in.irq.irqValid.poke(true.B)
-          dut.io.in.irq.data.poke(d)
-          dut.clock.step()
-        }
-      }
-
-      //Read more data
-      dut.clock.step()
-      timescope {
-        dut.io.in.config.en.poke(true.B)
-        dut.io.in.sel.poke(true.B)
-        dut.io.in.config.addr.poke(0.U)
-        dut.clock.step()
-        for(_ <- data2) {
-          compareOutputs(dut)
-          dut.clock.step()
-        }
-      }
-    }
+    fillQueueTest(irqType)
   }
 
-  it should "read and write data at the same time" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      val R = scala.util.Random
-      val data = Array.fill(8)(R.nextInt(math.pow(2, IRQ_DATA_WIDTH).toInt))
+  def readWriteConcurrentlyTest(pktType: Int): Unit = {
+    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, CachingAnnotation)) {dut =>
+      val pkts = Array.fill(8)(new IrqFifoPacket(pktType))
 
-      //Poke in the first 4 values
-      timescope {
+      //Poke in the first 4 packets
+      for (i <- 0 until 4) {
+        pokePacket(pkts(i), dut)
+      }
+
+      //Poke in the last 4 packets while reading out the first 4
+      fork {
+        for (i <- 4 until 8) {
+          pokePacket(pkts(i), dut)
+        }
+      } .fork {
         for(i <- 0 until 4) {
-          dut.io.in.irq.dataValid.poke(true.B)
-          dut.io.in.irq.data.poke(data(i))
-          dut.clock.step()
+          readPacketData(pkts(i), dut)
         }
-      }
-      dut.clock.step()
-      //Poke in the last 4 while reading out all values
-      timescope {
-        for(i <- 4 until 8) {
-          dut.io.in.irq.dataValid.poke(true.B)
-          dut.io.in.irq.data.poke(data(i))
-          dut.io.in.config.en.poke(true.B)
-          dut.io.in.config.addr.poke(1.U)
-          dut.io.in.sel.poke(true.B)
-          dut.clock.step()
-          compareOutputs(dut)
-          dut.io.chisel.irq.dataSig.expect(true.B)
-        }
-      }
-      dut.clock.step()
+      } .join()
+
       //Read out last 4
-      for(i <- 0 until 4) {
-        dut.io.in.config.en.poke(true.B)
-        dut.io.in.config.addr.poke(1.U)
-        dut.io.in.sel.poke(true.B)
-        dut.clock.step()
-        compareOutputs(dut)
+      for(i <- 4 until 8) {
+        readPacketData(pkts(i), dut)
       }
       dut.io.chisel.irq.dataSig.expect(false.B)
     }
   }
 
-  it should "read and write irq at the same time" in {
-    test(new IrqFifoWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
-      val R = scala.util.Random
-      val data = Array.fill(8)(R.nextInt(math.pow(2, IRQ_DATA_WIDTH).toInt))
+  it should "read and write data at the same time" in {
+    readWriteConcurrentlyTest(dataType)
+  }
 
-      //Poke in the first 4 values
-      timescope {
-        for(i <- 0 until 4) {
-          dut.io.in.irq.irqValid.poke(true.B)
-          dut.io.in.irq.data.poke(data(i))
-          dut.clock.step()
-        }
-      }
-      dut.clock.step()
-      //Poke in the last 4 while reading out all values
-      timescope {
-        for(i <- 4 until 8) {
-          dut.io.in.irq.irqValid.poke(true.B)
-          dut.io.in.irq.data.poke(data(i))
-          dut.io.in.config.en.poke(true.B)
-          dut.io.in.config.addr.poke(0.U)
-          dut.io.in.sel.poke(true.B)
-          dut.clock.step()
-          compareOutputs(dut)
-          dut.io.chisel.irq.irqSig.expect(true.B)
-        }
-      }
-      dut.clock.step()
-      //Read out last 4
-      for(i <- 0 until 4) {
-        dut.io.in.config.en.poke(true.B)
-        dut.io.in.config.addr.poke(0.U)
-        dut.io.in.sel.poke(true.B)
-        dut.clock.step()
-        compareOutputs(dut)
-      }
-      dut.io.chisel.irq.irqSig.expect(false.B)
-    }
+  it should "read and write irq at the same time" in {
+    readWriteConcurrentlyTest(irqType)
   }
 }

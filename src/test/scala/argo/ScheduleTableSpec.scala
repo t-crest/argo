@@ -21,7 +21,7 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
   }
 
   it should "change stbl output when data is written in on the config bus" in {
-    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
 
 //      val wrData = (new SchedTableContents).Lit(
 //        _.route -> 15.U, _.dma -> 1.U, _.t2n -> 3.U, _.pktLen -> 7.U
@@ -65,7 +65,7 @@ class ScheduleTableSpec extends AnyFlatSpec with  ChiselScalatestTester{
   }
 
   it should "set pktman.en=false when current dma value is all ones when tdmEn=true" in {
-    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation, WriteVcdAnnotation)) {dut =>
+    test(new ScheduleTableWrapper).withAnnotations(Seq(VerilatorBackendAnnotation)) {dut =>
       dut.io.in.tdm.en.poke(true.B)
 
       dut.clock.step()

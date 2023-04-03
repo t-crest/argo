@@ -4,8 +4,14 @@ import chisel3._
 import chisel3.util._
 import argo.ArgoBundles._
 
+/**
+ * HPU module
+ * The HPU module extracts routing information from the 2 LSB of the header packet, and forwards the next packets along
+ * the same route
+ */
 class HPU extends Module{
   val io = IO(new Bundle {
+    /** Activation signal for which of the output channels data should be output on */
     val sel = Output(Vec(4, Bool()))
     val inLine = new Channel()
     val outLine = Flipped(new Channel())
@@ -117,17 +123,10 @@ class Router extends Module{
   //Stage 2: Output of HPU
   //Stage 3: Output of Xbar
 
-//  val linkStage = Reg(new RouterPort)
-//  val HPUstage = Reg(new RouterPort)
-//  val
-
-  // in reg -> HPU -> reg -> Xbar -> reg
-
   //Modules
   val xbar = Module(new Xbar())
   val HPUs = for(_ <- 0 to 4) yield {
-    val HPU = Module(new HPU())
-    HPU
+    Module(new HPU())
   }
 
   //Register stages
@@ -138,7 +137,6 @@ class Router extends Module{
 
   //Forward connections
   val xbarSel = HPUs(4).io.sel.asUInt ## HPUs(3).io.sel.asUInt ## HPUs(2).io.sel.asUInt ## HPUs(1).io.sel.asUInt ## HPUs(0).io.sel.asUInt
-//  val xbarSel = HPUs.map(_.io.sel.asUInt).foldLeft(0.U)((a,b) => a ## b)
   xbar.io.func := RegNext(xbarSel)
   for (i <- 0 to 4) {
     //Sample inputs into linkStage
@@ -172,51 +170,6 @@ class Router extends Module{
     HPUs.foreach(_.io.outLine.ack := DontCare)
     xbar.io.outPort.port.foreach(_.ack := DontCare)
   }
-
-//
-//  val HPUinReg = Wire(Output(new RouterPort()))
-//  val HPUin = RegNext(HPUinReg)
-//  val HPUoutReg = Wire(Output(new RouterPort()))
-//  val HPUout = RegNext(HPUoutReg)
-//  val XbarSel = Reg(Vec(20, Bool()))
-//  val XbarOutReg = Wire(Output(new RouterPort()))
-//  val XbarOut = RegNext(XbarOutReg)
-
-//  val Xbar = Module(new Xbar())
-//  val HPUs = for(i <- 0 to 4) yield {
-//    val HPU = Module(new HPU())
-//    HPU
-//  }
-
-
-  //Xbar connections
-//  xbar.io.inPort <> hpuOut
-//  xbarOut := xbar.io.outPort
-//  val xbarSel = Wire(UInt(20.W))
-//  val xbarSel = HPUs.map(_.io.sel.asUInt).foldLeft(0.U)((b,a) => a ## b)
-
-
-//  for (i <- 0 until 4) {
-//    for (j <- 0 to 3) {
-//      xbarSel(4*i+j) := HPUs(i).io.sel(j)
-//    }
-//  }
-
-//  HPUin <> io.inPort
-//  io.outPort <> XbarOut
-//
-//  for(i <- 0 to 4){
-//    HPUs(i).io.inLine <> HPUin.port(i)
-//    HPUout.port(i) <> HPUs(i).io.outLine
-//    for(j <- 0 to 3) {
-//      XbarSel(4*i+j) := HPUs(i).io.sel(j)
-//    }
-//  }
-//
-//
-//  Xbar.io.inPort <> HPUout
-//  Xbar.io.func <> XbarSel.asUInt
-//  XbarOut <> Xbar.io.outPort
 }
 
 /**
